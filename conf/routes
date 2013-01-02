@@ -4,7 +4,8 @@
 
 # Home page
 GET     /                           controllers.Application.index()
-GET     /register                   controllers.Application.registration()
+GET     /:event/register            controllers.Application.registration(event)
+GET     /init                       controllers.Application.initialize()
 
 
 # Map static resources from the /public folder to the /assets URL path

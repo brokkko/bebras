@@ -8,9 +8,6 @@ package models;
  */
 public class Contest {
 
-    private final String id;
-
-    public Contest(String id) {
-        this.id = id;
+    public Contest(StoredObject storedObject) {
     }
 }

@@ -1,2 +1,7 @@
-@(form:DynamicForm)
+@(event:Event, input:models.fields.InputForm, form:DynamicForm)
 @import play.data.DynamicForm
+@import scala.List
+@import models.fields.InputForm
+@main(event.getTitle)(List(), List()) {
+    @input.format(form, event)
+}

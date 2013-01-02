@@ -1,5 +1,6 @@
 package models.fields;
 
+import models.Event;
 import models.StoredObject;
 import play.api.templates.Html;
 import play.data.DynamicForm;
@@ -48,7 +49,7 @@ public class InputForm {
             validator.validate(form);
     }
 
-    public Html format(DynamicForm form) {
-        return views.html.fields.form.render(form, fields, controllers.routes.Application.registration());
+    public Html format(DynamicForm form, Event event) {
+        return views.html.fields.form.render(form, fields, controllers.routes.Application.registration(event.getId()));
     }
 }

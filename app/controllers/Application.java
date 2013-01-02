@@ -1,7 +1,10 @@
 package controllers;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import models.Event;
 import models.MongoObject;
 import models.fields.InputForm;
 import play.data.DynamicForm;
@@ -13,8 +16,10 @@ import play.mvc.*;
 import views.html.*;
 import views.html.helper.form;
 
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,30 +29,40 @@ public class Application extends Controller {
         return ok(index.render("Your new application is ready."));
     }
 
-    public static Result registration() {
+    public static Result registration(String eventId) {
         DynamicForm dyn = new DynamicForm();
-        //TODO in AS variable may be local - used in for
-        /*dyn.reject(new ValidationError(""));
-        ValidationError error = new ValidationError("field1", "msg.first", new ArrayList<Object>() {{
-            add("42");
-            add(239);
-        }});
+        Event e = Event.getInstance(eventId);
+        if (e == null)
+            return notFound("no such event");
+        else
+            return ok(register.render(e, e.getUsersForm(), dyn));
+    }
 
-        dyn.reject(error);
+    public static Result initialize() {
+        DBCollection configCollection = MongoConnection.getConfigCollection();
+        if (configCollection.findOne() != null)
+            return badRequest("Site is already initialized");
 
-        String msg = dyn.error("field1").message();
+        DBObject bbtcObject = new BasicDBObject();
 
-        return ok(msg).as("text/html");*/
+        bbtcObject.put("event_id", "bbtc");
+        bbtcObject.put("title", "Соревнование Английский Бульдог");
 
-        String formConfig =
+        String usersFormsConfig =
                 "{\"fields\": [" +
                         "{\"name\": \"login\", \"input\":{\"type\":\"string\", \"required\":true, \"placeholder\":\"Имя пользователя\"}}," +
                         "{\"name\": \"password\", \"input\":{\"type\":\"password\", \"required\":true, \"placeholder\":\"Пароль\"}}," +
                         "{\"name\": \"info\", \"input\":{\"type\":\"multiline\", \"required\":true, \"placeholder\":\"Дополнительные данные\"}}" +
-                "]}";
-        InputForm form = new InputForm(new MongoObject("no-collection", (DBObject) JSON.parse(formConfig)));
+                        "]}";
+        DBObject usersObject = (DBObject) JSON.parse(usersFormsConfig);
 
-        return ok(form.format(dyn));
+        bbtcObject.put("users", usersObject);
+        bbtcObject.put("contests", Collections.emptyList());
+
+        DBCollection bbtcCollection = MongoConnection.getEventsCollection();
+        bbtcCollection.save(bbtcObject);
+
+        configCollection.save(new BasicDBObject());
+        return ok("Site is successfully initialized");
     }
-
 }

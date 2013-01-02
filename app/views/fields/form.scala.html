@@ -6,7 +6,6 @@
     @if(form("id").value() != null) {
     <input type="hidden" value="@form("id").value" name="id">
     }
-
     @for(field <- fields) {
         @field.format(form)
     }

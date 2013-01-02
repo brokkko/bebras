@@ -20,6 +20,22 @@ import java.util.concurrent.Callable;
  */
 public class MongoConnection {
 
+    public static DBCollection getConfigCollection() {
+        return getCollection("config");
+    }
+
+    public static DBCollection getAnswersCollection(String eventId) {
+        return getCollection("answers-" + eventId);
+    }
+
+    public static DBCollection getUsersCollection() {
+        return getCollection("users");
+    }
+
+    public static DBCollection getEventsCollection() {
+        return getCollection("events");
+    }
+
     public static DBCollection getCollection(String contestId) {
         String dbname = Play.application().configuration().getString("mongodb.db");
         DB answersDB = getMongo().getDB(dbname);
