@@ -1,0 +1,23 @@
+@(title: String)(css:List[ResourceLink], js:List[ResourceLink])(content: Html)
+@import views.ResourceLink
+@import play.Play
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link media="screen" rel="stylesheet" media="screen" href="@ResourceLink.RESET">
+        @for(link <- css){
+            <link media="screen" rel="stylesheet" media="screen" href="@link">
+        }
+        <script src="@ResourceLink.JQUERY" type="text/javascript"></script>
+        @for(link <- js){
+            <script src="@link" type="text/javascript"></script>
+        }
+    </head>
+    <body>
+    @content
+    </body>
+</html>

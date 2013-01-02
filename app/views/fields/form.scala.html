@@ -1,0 +1,17 @@
+@(form: DynamicForm, fields:List[models.fields.InputField], action:Call)
+@import models.fields.InputTemplate
+@import play.data.DynamicForm
+<form class="register form-horizontal" action="@action" method="POST">
+    <fieldset>
+    @if(form("id").value() != null) {
+    <input type="hidden" value="@form("id").value" name="id">
+    }
+
+    @for(field <- fields) {
+        @field.format(form)
+    }
+    </fieldset>
+    <div class="form-actions">
+        <input type="submit" value="@if(form("id").value != null) {Save} else {Create}" class="btn btn-primary">
+    </div>
+</form>
