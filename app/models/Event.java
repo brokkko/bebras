@@ -5,7 +5,9 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import models.fields.InputForm;
+import play.Logger;
 import play.cache.Cache;
+import play.mvc.Http;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,20 +21,25 @@ import java.util.concurrent.Callable;
  */
 public class Event {
 
+    private final Object oid;
     private final String id;
     private final String title;
     private final List<Contest> contests;
     private final InputForm usersForm;
 
     private Event(StoredObject storedObject) {
-        this.id = storedObject.getString("event_id");
+        this.oid = storedObject.get("id");
+        this.id = storedObject.getString("string_id");
         this.title = storedObject.getString("title");
 
         this.contests = new ArrayList<>();
-        for (Object contestInfo : storedObject.getList("contests"))
-            contests.add(new Contest((StoredObject) contestInfo));
+        List contestsConfig = storedObject.getList("contests");
+        if (contestsConfig != null) {
+            for (Object contestInfo : contestsConfig)
+                contests.add(new Contest((StoredObject) contestInfo));
+        }
 
-        usersForm = new InputForm(storedObject.getObject("users"));
+        usersForm = new InputForm("user", storedObject.getObject("users"));
     }
 
     public static Event getInstance(final String eventId) {
@@ -44,17 +51,26 @@ public class Event {
                 }
             }, 0);
         } catch (Exception e) {
+            Logger.error("Error while getting event '" + eventId + "'", e);
             return null;
         }
     }
 
+    public static Event current() {
+        return (Event) Http.Context.current().args.get("event");
+    }
+
     private static Event createEventById(String eventId) throws Exception {
         DBCollection eventsCollection = MongoConnection.getEventsCollection();
-        DBObject eventObject = eventsCollection.findOne(new BasicDBObject("event_id", eventId));
+        DBObject eventObject = eventsCollection.findOne(new BasicDBObject("string_id", eventId));
         if (eventObject == null)
             throw new Exception("No such collection");
         else
             return new Event(new MongoObject(eventsCollection.getName(), eventObject));
+    }
+
+    public Object getOid() {
+        return oid;
     }
 
     public String getId() {

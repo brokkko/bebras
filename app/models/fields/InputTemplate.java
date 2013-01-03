@@ -21,10 +21,15 @@ public abstract class InputTemplate {
                 return new PasswordInputTemplate();
             case "multiline":
                 return new MultilineInputTemplate();
+            case "date":
+                return new DateInputTemplate();
         }
         throw new IllegalArgumentException("Unknown input template type '" + type + "'");
     }
 
     public abstract Html format(DynamicForm form, String field, Map<String, Object> config);
 
+    public abstract Object fillObject(DynamicForm form, String field);
+
+    public abstract void fillForm(DynamicForm form, String field, Object value);
 }

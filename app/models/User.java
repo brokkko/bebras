@@ -1,6 +1,12 @@
 package models;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import controllers.MongoConnection;
+import org.bson.types.ObjectId;
 import play.Play;
+import play.mvc.Http;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -8,6 +14,7 @@ import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,4 +62,33 @@ public class User {
         }
     }
 
+    public static User current() {
+        Map<String, Object> contextArgs = Http.Context.current().args;
+
+        User user = (User) contextArgs.get("user");
+        if (user == null) {
+            String username = Http.Context.current().request().username();
+            user = getInstance(username, false);
+            contextArgs.put("user", user);
+        }
+
+        return user;
+    }
+
+    public static User getInstance(String username, boolean byLogin) {
+        DBCollection usersCollection = MongoConnection.getUsersCollection();
+
+        DBObject query = new BasicDBObject("event_id", Event.current().getOid());
+
+        if (byLogin)
+            query.put("login", username);
+        else
+            query.put("id", new ObjectId(username));
+
+        DBObject userObject = usersCollection.findOne(query);
+        if (userObject == null)
+            return null;
+        else
+            return new User(new MongoObject(usersCollection.getName(), userObject));
+    }
 }

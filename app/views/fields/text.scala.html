@@ -1,9 +1,10 @@
-@(typ:String)(form:DynamicForm, field: String, required:Boolean, placeholder:String)
+@(typ:String)(form:DynamicForm, field: String, required:Boolean, title:String, placeholder:String)
 @import play.data.DynamicForm
 <div class="controls @if(form(field).hasErrors) {error}">
+    <label>@title</label>
     <input type="@typ" value="@form(field).value" name="@field" placeholder="@placeholder">
     <p class="help-inline">
-        @form(field).errors().mkString(", ")
         @if(required) {<small>*</small>}
+        @form(field).errors().mkString(", ")
     </p>
 </div>

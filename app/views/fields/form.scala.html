@@ -1,4 +1,4 @@
-@(form: DynamicForm, fields:List[models.fields.InputField], action:Call)
+@(form: DynamicForm, submit_text:String, fields:List[models.fields.InputField], action:Call)
 @import models.fields.InputTemplate
 @import play.data.DynamicForm
 <form class="register form-horizontal" action="@action" method="POST">
@@ -11,6 +11,6 @@
     }
     </fieldset>
     <div class="form-actions">
-        <input type="submit" value="@if(form("id").value != null) {Save} else {Create}" class="btn btn-primary">
+        <input type="submit" value="@submit_text" class="btn btn-primary">
     </div>
 </form>

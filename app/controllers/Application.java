@@ -5,23 +5,14 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import models.Event;
-import models.MongoObject;
-import models.fields.InputForm;
+import play.Play;
+import play.cache.Cache;
 import play.data.DynamicForm;
-import play.data.Form;
-import play.data.validation.ValidationError;
-import play.i18n.Messages;
 import play.mvc.*;
 
 import views.html.*;
-import views.html.helper.form;
 
-import java.nio.file.attribute.BasicFileAttributes;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.io.*;
 
 public class Application extends Controller {
 
@@ -29,7 +20,11 @@ public class Application extends Controller {
         return ok(index.render("Your new application is ready."));
     }
 
+    @NeedEvent
+    @Security.Authenticated
     public static Result registration(String eventId) {
+//        Event event = Http.Context.current().args.get("event");
+
         DynamicForm dyn = new DynamicForm();
         Event e = Event.getInstance(eventId);
         if (e == null)
@@ -38,31 +33,42 @@ public class Application extends Controller {
             return ok(register.render(e, e.getUsersForm(), dyn));
     }
 
-    public static Result initialize() {
+    public static Result doRegistration(String eventId) {
+        return null;
+    }
+
+    public static Result initialize() throws IOException {
         DBCollection configCollection = MongoConnection.getConfigCollection();
-        if (configCollection.findOne() != null)
+        if (configCollection.findOne() != null && ! Play.isDev())
             return badRequest("Site is already initialized");
+//            return notFound();
+//        TODO bug - wrong indent after comments
 
-        DBObject bbtcObject = new BasicDBObject();
-
-        bbtcObject.put("event_id", "bbtc");
-        bbtcObject.put("title", "Соревнование Английский Бульдог");
-
-        String usersFormsConfig =
-                "{\"fields\": [" +
-                        "{\"name\": \"login\", \"input\":{\"type\":\"string\", \"required\":true, \"placeholder\":\"Имя пользователя\"}}," +
-                        "{\"name\": \"password\", \"input\":{\"type\":\"password\", \"required\":true, \"placeholder\":\"Пароль\"}}," +
-                        "{\"name\": \"info\", \"input\":{\"type\":\"multiline\", \"required\":true, \"placeholder\":\"Дополнительные данные\"}}" +
-                        "]}";
-        DBObject usersObject = (DBObject) JSON.parse(usersFormsConfig);
-
-        bbtcObject.put("users", usersObject);
-        bbtcObject.put("contests", Collections.emptyList());
+        configCollection.remove(new BasicDBObject()); //remove all
 
         DBCollection bbtcCollection = MongoConnection.getEventsCollection();
+        bbtcCollection.remove(new BasicDBObject());
+
+        //bbtc event object
+        DBObject bbtcObject = (DBObject) JSON.parse(getResourceAsString("/bbtc_event.json"));
         bbtcCollection.save(bbtcObject);
 
+        //clear Cache
+        Cache.set("event-bbtc", null, 1);
+
+        //save configuration object to make it not possible to reinit the application
         configCollection.save(new BasicDBObject());
         return ok("Site is successfully initialized");
+    }
+
+    private static String getResourceAsString(String name) throws IOException {
+        InputStream inS = Application.class.getResourceAsStream(name);
+        BufferedReader inR = new BufferedReader(new InputStreamReader(inS, "UTF8"));
+        CharArrayWriter out = new CharArrayWriter();
+        int r;
+        while ((r = inR.read()) >= 0)
+            out.write(r);
+        inR.close();
+        return out.toString();
     }
 }

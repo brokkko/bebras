@@ -1,8 +1,10 @@
 package models.fields;
 
+import models.Event;
 import models.StoredObject;
 import play.api.templates.Html;
 import play.data.DynamicForm;
+import play.i18n.Messages;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +19,7 @@ import java.util.Map;
  */
 public class InputField {
 
+    private final InputForm form;
     private final String name;
 
     private final InputTemplate inputTemplate;
@@ -24,21 +27,28 @@ public class InputField {
 
     private final List<InputValidator> validators;
 
-    public InputField(String name, InputTemplate inputTemplate, Map<String, Object> inputConfiguration, List<InputValidator> validators) {
+    public InputField(InputForm form, String name, InputTemplate inputTemplate, Map<String, Object> inputConfiguration, List<InputValidator> validators) {
+        this.form = form;
         this.name = name;
         this.inputTemplate = inputTemplate;
         this.inputConfiguration = inputConfiguration;
         this.validators = validators;
+
+        populateInputConfiguration();
     }
 
-    public InputField(InputTemplate inputTemplate, String name, Map<String, Object> inputConfiguration, InputValidator... validators) {
+    public InputField(InputForm form, InputTemplate inputTemplate, String name, Map<String, Object> inputConfiguration, InputValidator... validators) {
+        this.form = form;
         this.name = name;
         this.inputTemplate = inputTemplate;
         this.inputConfiguration = inputConfiguration;
         this.validators = Arrays.asList(validators);
+
+        populateInputConfiguration();
     }
 
-    public InputField(StoredObject storedObject) {
+    public InputField(InputForm form, StoredObject storedObject) {
+        this.form = form;
         this.name = storedObject.getString("name");
 
         //get input method
@@ -59,6 +69,24 @@ public class InputField {
             }
 
         this.validators = validators;
+
+        populateInputConfiguration();
+    }
+
+    private void populateInputConfiguration() {
+        String[] possibleMessages = {"title", "placeholder"};
+        String eventId = Event.current().getId();
+
+        for (String message : possibleMessages)
+            if (inputConfiguration.get(message) == null) {
+                String messageKey = "form." + eventId + "." + form.getName() + "." + name + "." + message;
+                String value = Messages.get(messageKey);
+//                if (! value.equals(messageKey))
+                inputConfiguration.put(message, value);
+            }
+
+        if (! inputConfiguration.containsKey("required"))
+            inputConfiguration.put("required", false);
     }
 
     public Html format(DynamicForm form) {

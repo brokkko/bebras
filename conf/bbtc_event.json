@@ -1,0 +1,70 @@
+{
+    "event_id": "bbtc",
+    "title": "Соревнование Английский Бульдог",
+    "users": {
+        "fields": [
+            {
+                "name": "login",
+                "input": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            {
+                "name": "surname",
+                "input": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            {
+                "name": "name",
+                "input": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            {
+                "name": "patronymic",
+                "input": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            {
+                "name": "birthday",
+                "input": {
+                    "type": "date"
+                }
+            },
+            {
+                "name": "phone",
+                "input": {
+                    "type": "string"
+                }
+            },
+            {
+                "name": "email",
+                "input": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            {
+                "name": "schoolcode",
+                "input": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            {
+                "name": "schoolname",
+                "input": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        ],
+        "validators": []
+    }
+}

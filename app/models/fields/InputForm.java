@@ -4,7 +4,7 @@ import models.Event;
 import models.StoredObject;
 import play.api.templates.Html;
 import play.data.DynamicForm;
-import views.html.helper.form;
+import play.i18n.Messages;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +17,17 @@ import java.util.List;
  */
 public class InputForm {
 
+    private String name;
     private List<InputField> fields;
     private List<InputValidator> validators;
 
-    public InputForm(StoredObject storedObject) {
+    public InputForm(String name, StoredObject storedObject) {
+        this.name = name;
+
         ArrayList<InputField> fields = new ArrayList<>();
 
         for (Object field : storedObject.getList("fields"))
-            fields.add(new InputField((StoredObject) field));
+            fields.add(new InputField(this, (StoredObject) field));
 
         this.fields = fields;
 
@@ -49,7 +52,11 @@ public class InputForm {
             validator.validate(form);
     }
 
-    public Html format(DynamicForm form, Event event) {
-        return views.html.fields.form.render(form, fields, controllers.routes.Application.registration(event.getId()));
+    public Html format(DynamicForm form, String submitMessage) {
+        return views.html.fields.form.render(form, Messages.get(submitMessage), fields, controllers.routes.Application.registration(Event.current().getId()));
+    }
+
+    public String getName() {
+        return name;
     }
 }
