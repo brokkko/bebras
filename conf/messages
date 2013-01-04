@@ -35,3 +35,12 @@ form.bbtc.user.schoolcode.title=Код школы
 form.bbtc.user.schoolcode.placeholder=Введите код школы
 form.bbtc.user.schoolname.title=Полное название школы
 form.bbtc.user.schoolname.placeholder=Введите полное название школы
+
+error.msg.required=Поле должно быть заполнено
+error.msg.date.no_day=Неверно указан день
+error.msg.date.no_month=Неверно указан месяц
+error.msg.date.no_year=Неверно указан год
+error.msg.date.not_exists=Такой даты не существует
+error.msg.login=Такое имя пользователя уже зарегистрировано
+error.msg.schoolcode.wrong_pattern=Номер школы должен состоять из 8 цифр
+error.msg.schoolcode.no_such_school=Этого номера нет в базе

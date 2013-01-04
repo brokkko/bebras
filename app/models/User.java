@@ -83,7 +83,7 @@ public class User {
         if (byLogin)
             query.put("login", username);
         else
-            query.put("id", new ObjectId(username));
+            query.put("_id", new ObjectId(username));
 
         DBObject userObject = usersCollection.findOne(query);
         if (userObject == null)

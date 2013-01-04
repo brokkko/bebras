@@ -5,6 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import models.Event;
+import models.MongoObject;
 import play.Play;
 import play.cache.Cache;
 import play.data.DynamicForm;
@@ -20,21 +21,36 @@ public class Application extends Controller {
         return ok(index.render("Your new application is ready."));
     }
 
-    @NeedEvent
-    @Security.Authenticated
-    public static Result registration(String eventId) {
-//        Event event = Http.Context.current().args.get("event");
+    //@NeedEvent
+    public static Result registration(Event event) {
+        //TODO use form.errorsAsJson() to ajax validate form
 
-        DynamicForm dyn = new DynamicForm();
-        Event e = Event.getInstance(eventId);
-        if (e == null)
-            return notFound("no such event");
-        else
-            return ok(register.render(e, e.getUsersForm(), dyn));
+        Event.setCurrent(event);
+
+        DynamicForm form = new DynamicForm();
+        form = form.bindFromRequest();
+
+        return ok(register.render(form));
+        //TODO it is (almost) impossible to set breakpoint if there is a link to template
     }
 
-    public static Result doRegistration(String eventId) {
-        return null;
+    public static Result doRegistration(Event event) {
+        Event.setCurrent(event);
+
+        DynamicForm form = new DynamicForm();
+        form = form.bindFromRequest();
+
+        MongoObject user = new MongoObject(MongoConnection.getUsersCollection().getName()); //TODO no need to get all the collection
+        event.getUsersForm().getObject(user, form);
+
+        if (form.hasErrors())
+            return ok(register.render(form));
+//            return redirect(routes.Application.registration(event));
+
+        user.put("event_id", event.getOid());
+        user.store();
+
+        return redirect(routes.Application.index());
     }
 
     public static Result initialize() throws IOException {

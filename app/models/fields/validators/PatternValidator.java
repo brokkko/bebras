@@ -1,9 +1,6 @@
-package models.fields;
-
-import play.data.validation.Constraints;
+package models.fields.validators;
 
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,9 +8,9 @@ import java.util.regex.Pattern;
  * Date: 02.01.13
  * Time: 17:44
  */
-public class PatternValidator extends InputValidator {
+public class PatternValidator extends Validator {
 
-    protected PatternValidator(Map<String, Object> validationParameters) {
+    public PatternValidator(Map<String, Object> validationParameters) {
         super(validationParameters);
     }
 
@@ -21,7 +18,7 @@ public class PatternValidator extends InputValidator {
     public String validate(Object value) {
         String pattern = (String) validationParameters.get("pattern");
         if (! ((String) value).matches(pattern))
-            return ((String) validationParameters.get("message"));
+            return message();
         return null;
     }
 }

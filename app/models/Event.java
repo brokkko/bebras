@@ -8,6 +8,7 @@ import models.fields.InputForm;
 import play.Logger;
 import play.cache.Cache;
 import play.mvc.Http;
+import play.mvc.PathBindable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.concurrent.Callable;
  * Date: 01.01.13
  * Time: 13:34
  */
-public class Event {
+public class Event implements PathBindable<Event> {
 
     private final Object oid;
     private final String id;
@@ -28,8 +29,8 @@ public class Event {
     private final InputForm usersForm;
 
     private Event(StoredObject storedObject) {
-        this.oid = storedObject.get("id");
-        this.id = storedObject.getString("string_id");
+        this.oid = storedObject.get("_id");
+        this.id = storedObject.getString("id");
         this.title = storedObject.getString("title");
 
         this.contests = new ArrayList<>();
@@ -60,9 +61,13 @@ public class Event {
         return (Event) Http.Context.current().args.get("event");
     }
 
+    public static void setCurrent(Event event) {
+        Http.Context.current().args.put("event", event); //TODO find out how to bind with an event composition
+    }
+
     private static Event createEventById(String eventId) throws Exception {
         DBCollection eventsCollection = MongoConnection.getEventsCollection();
-        DBObject eventObject = eventsCollection.findOne(new BasicDBObject("string_id", eventId));
+        DBObject eventObject = eventsCollection.findOne(new BasicDBObject("id", eventId));
         if (eventObject == null)
             throw new Exception("No such collection");
         else
@@ -87,5 +92,34 @@ public class Event {
 
     public InputForm getUsersForm() {
         return usersForm;
+    }
+
+    //event binding
+
+    public Event() {
+        oid = null;
+        id = null;
+        title = null;
+        contests = null;
+        usersForm = null;
+        Logger.debug("Event empty constructor called");
+    }
+
+    @Override
+    public Event bind(String key, String path) {
+        Event event = getInstance(path);
+        if (event == null)
+            throw new IllegalArgumentException("failed to bind"); //TODO how to properly report a binding error?
+        return event;
+    }
+
+    @Override
+    public String unbind(String s) {
+        return getId();
+    }
+
+    @Override
+    public String javascriptUnbind() {
+        return "function(k,v) {return v}";
     }
 }

@@ -39,6 +39,21 @@ public abstract class StoredObject {
         return (List) get(field);
     }
 
+    public String getString(String field, String def) {
+        String value = (String) get(field);
+        return value == null ? def : value;
+    }
+
+    public Integer getInteger(String field, Integer def) {
+        Integer value = (Integer) get(field);
+        return value == null ? def : value;
+    }
+
+    public Boolean getBoolean(String field, Boolean def) {
+        Boolean value = (Boolean) get(field);
+        return value == null ? def : value;
+    }
+
     public Map<String, Object> toMap() {
         Set<String> keys = keySet();
         HashMap<String, Object> map = new HashMap<>(keys.size());

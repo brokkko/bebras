@@ -5,6 +5,6 @@
     <textarea name="@field" placeholder="@placeholder">@form(field).value</textarea>
     <p class="help-inline">
         @if(required) {<small>*</small>}
-        @form(field).errors().mkString(", ")
+        @errors(form, field)
     </p>
 </div>

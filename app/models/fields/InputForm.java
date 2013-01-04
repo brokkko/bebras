@@ -1,7 +1,8 @@
 package models.fields;
 
-import models.Event;
+import models.MongoObject;
 import models.StoredObject;
+import models.fields.validators.Validator;
 import play.api.templates.Html;
 import play.data.DynamicForm;
 import play.i18n.Messages;
@@ -19,7 +20,7 @@ public class InputForm {
 
     private String name;
     private List<InputField> fields;
-    private List<InputValidator> validators;
+    private List<Validator> validators;
 
     public InputForm(String name, StoredObject storedObject) {
         this.name = name;
@@ -31,32 +32,36 @@ public class InputForm {
 
         this.fields = fields;
 
-        ArrayList<InputValidator> validators = new ArrayList<>();
+        ArrayList<Validator> validators = new ArrayList<>();
 
         List validatorsConfig = storedObject.getList("validators");
         if (validatorsConfig != null)
             for (Object validator : validatorsConfig) {
                 StoredObject validatorConfig = (StoredObject) validator;
                 validators.add(
-                        InputValidator.getInstance(validatorConfig.getString("type"), validatorConfig.toMap())
+                        Validator.getInstance(validatorConfig.getString("type"), validatorConfig.toMap())
                 );
             }
         this.validators = validators;
     }
 
-    public void validate(DynamicForm form) {
-        for (InputField field : fields)
-            field.validate(form);
-
-        for (InputValidator validator : validators)
-            validator.validate(form);
-    }
-
     public Html format(DynamicForm form, String submitMessage) {
-        return views.html.fields.form.render(form, Messages.get(submitMessage), fields, controllers.routes.Application.registration(Event.current().getId()));
+        return views.html.fields.form.render(form, Messages.get(submitMessage), fields);
     }
 
     public String getName() {
         return name;
     }
+
+    public void getObject(StoredObject receiver, DynamicForm form) {
+        for (InputField field : fields)
+            field.validate(receiver, form);
+
+        for (Validator validator : validators) {
+            String message = validator.validate(form); //TODO think about global forms validators
+            if (message != null)
+                form.reject(message);
+        }
+    }
+
 }

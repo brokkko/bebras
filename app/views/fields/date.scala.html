@@ -2,26 +2,26 @@
 @import play.data.DynamicForm
 <div class="controls @if(form(field).hasErrors) {error}">
     <label>@title</label>
-    @Messages("date.year") <input type="text" value="@form(field).value" name="@(field)[year]" placeholder="@Messages("date.year.placeholder")">
+    @Messages("date.year") <input type="text" value="@form(field + "[year]").value" name="@(field)[year]" placeholder="@Messages("date.year.placeholder")">
     @Messages("date.month")
     <select name="@(field)[month]">
         <option value="">@Messages("date.month.placeholder")</option>
-        <option value="0">@Messages("date.month.jan")</option>
-        <option value="1">@Messages("date.month.feb")</option>
-        <option value="2">@Messages("date.month.mar")</option>
-        <option value="3">@Messages("date.month.apr")</option>
-        <option value="4">@Messages("date.month.may")</option>
-        <option value="5">@Messages("date.month.jun")</option>
-        <option value="6">@Messages("date.month.jul")</option>
-        <option value="7">@Messages("date.month.aug")</option>
-        <option value="8">@Messages("date.month.sep")</option>
-        <option value="9">@Messages("date.month.oct")</option>
-        <option value="10">@Messages("date.month.nov")</option>
-        <option value="11">@Messages("date.month.dec")</option>
+        <option value="0" @if(form(field + "[month]").value == "0") {selected="selected"}>@Messages("date.month.jan")</option>
+        <option value="1" @if(form(field + "[month]").value == "1") {selected="selected"}>@Messages("date.month.feb")</option>
+        <option value="2" @if(form(field + "[month]").value == "2") {selected="selected"}>@Messages("date.month.mar")</option>
+        <option value="3" @if(form(field + "[month]").value == "3") {selected="selected"}>@Messages("date.month.apr")</option>
+        <option value="4" @if(form(field + "[month]").value == "4") {selected="selected"}>@Messages("date.month.may")</option>
+        <option value="5" @if(form(field + "[month]").value == "5") {selected="selected"}>@Messages("date.month.jun")</option>
+        <option value="6" @if(form(field + "[month]").value == "6") {selected="selected"}>@Messages("date.month.jul")</option>
+        <option value="7" @if(form(field + "[month]").value == "7") {selected="selected"}>@Messages("date.month.aug")</option>
+        <option value="8" @if(form(field + "[month]").value == "8") {selected="selected"}>@Messages("date.month.sep")</option>
+        <option value="9" @if(form(field + "[month]").value == "9") {selected="selected"}>@Messages("date.month.oct")</option>
+        <option value="10" @if(form(field + "[month]").value == "10") {selected="selected"}>@Messages("date.month.nov")</option>
+        <option value="11" @if(form(field + "[month]").value == "11") {selected="selected"}>@Messages("date.month.dec")</option>
     </select>
-    @Messages("date.day") <input type="text" value="@form(field).value" name="@(field)[day]" placeholder="@Messages("date.day.placeholder")">
+    @Messages("date.day") <input type="text" value="@form(field + "[day]").value" name="@(field)[day]" placeholder="@Messages("date.day.placeholder")">
     <p class="help-inline">
         @if(required) {<small>*</small>}
-        @form(field).errors().mkString(", ")
+        @errors(form, field)
     </p>
 </div>

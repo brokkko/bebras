@@ -6,8 +6,8 @@
 GET     /                           controllers.Application.index()
 GET     /init                       controllers.Application.initialize()
 
-GET     /:event/register            controllers.Application.registration(event)
-POST    /:event/register            controllers.Application.doRegistration(event)
+GET     /:event/register            controllers.Application.registration(event:models.Event)
+POST    /:event/register            controllers.Application.doRegistration(event:models.Event)
 
 
 # Map static resources from the /public folder to the /assets URL path

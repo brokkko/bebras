@@ -1,5 +1,5 @@
 {
-    "event_id": "bbtc",
+    "id": "bbtc",
     "title": "Соревнование Английский Бульдог",
     "users": {
         "fields": [
@@ -7,7 +7,10 @@
                 "name": "login",
                 "input": {
                     "type": "string",
-                    "required": true
+                    "required": true,
+                    "validator": {
+                        "type": "login"
+                    }
                 }
             },
             {
@@ -54,7 +57,19 @@
                 "name": "schoolcode",
                 "input": {
                     "type": "string",
-                    "required": true
+                    "required": true,
+                    "validators": [
+                        {
+                            "type": "pattern",
+                            "pattern": "\\d{8}",
+                            "message": "error.msg.schoolcode.wrong_pattern"
+                        },
+                        {
+                            "type": "pattern",
+                            "pattern": ".*",
+                            "message": "error.msg.schoolcode.no_such_school"
+                        }
+                    ]
                 }
             },
             {
