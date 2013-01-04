@@ -36,6 +36,7 @@ form.bbtc.user.schoolcode.placeholder=Введите код школы
 form.bbtc.user.schoolname.title=Полное название школы
 form.bbtc.user.schoolname.placeholder=Введите полное название школы
 
+error.msg.email=Некорректный email
 error.msg.required=Поле должно быть заполнено
 error.msg.date.no_day=Неверно указан день
 error.msg.date.no_month=Неверно указан месяц

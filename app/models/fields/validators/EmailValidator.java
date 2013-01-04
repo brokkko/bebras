@@ -1,5 +1,7 @@
 package models.fields.validators;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.util.Map;
 
 /**
@@ -11,12 +13,20 @@ import java.util.Map;
 public class EmailValidator extends Validator {
     public EmailValidator(Map<String, Object> validationParameters) {
         super(validationParameters);
+        defaultMessage = "error.msg.email";
     }
 
     @Override
     public String validate(Object value) {
-//        InternetAddress internetAdd = new InternetAddress("test@test.com");
-        //or use EmailValidator
-        return null; //TODO implement, use http://mvnrepository.com/artifact/org.apache.commons/commons-email/1.2
+        String email = (String) value;
+        if (email.indexOf('@') < 0)
+            return message();
+
+        try {
+            new InternetAddress(email);
+        } catch (AddressException e) {
+            return message();
+        }
+        return null;
     }
 }
