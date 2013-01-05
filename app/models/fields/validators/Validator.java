@@ -20,7 +20,7 @@ public abstract class Validator {
     @Constraints.Email
     protected final Map<String, Object> validationParameters;
 
-    protected Validator(Map<String, Object> validationParameters) {
+    public Validator(Map<String, Object> validationParameters) {
         this.validationParameters = validationParameters;
     }
 

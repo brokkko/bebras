@@ -122,6 +122,7 @@
     </orderEntry>
     <orderEntry type="library" name="commons-email-1.2" level="project" />
     <orderEntry type="library" name="mail-1.4.5" level="project" />
+    <orderEntry type="library" name="opencsv-2.3" level="project" />
   </component>
 </module>
 

@@ -102,7 +102,6 @@ public class Event implements PathBindable<Event> {
         title = null;
         contests = null;
         usersForm = null;
-        Logger.debug("Event empty constructor called");
     }
 
     @Override

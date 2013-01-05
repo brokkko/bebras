@@ -6,6 +6,7 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import models.Event;
 import models.MongoObject;
+import org.apache.commons.mail.EmailException;
 import play.Play;
 import play.cache.Cache;
 import play.data.DynamicForm;
@@ -86,5 +87,9 @@ public class Application extends Controller {
             out.write(r);
         inR.close();
         return out.toString();
+    }
+
+    public static Result sendEmailTest() throws EmailException {
+        return ok(Email.sendEmailTest("iposov@gmail.com", "test", "test test http://ya.ru"));
     }
 }

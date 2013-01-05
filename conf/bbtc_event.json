@@ -68,9 +68,7 @@
                             "message": "error.msg.schoolcode.wrong_pattern"
                         },
                         {
-                            "type": "pattern",
-                            "pattern": ".*",
-                            "message": "error.msg.schoolcode.no_such_school"
+                            "type": "kenguruSchoolCode"
                         }
                     ]
                 }

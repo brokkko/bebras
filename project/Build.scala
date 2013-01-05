@@ -9,9 +9,10 @@ object ApplicationBuild extends Build {
 
     val appDependencies = Seq(
       // Add your project dependencies here,
-      "org.mongodb" % "mongo-java-driver" % "2.9.2",
-      "org.apache.commons" % "commons-email" % "1.2",
-      "javax.mail" % "mail" % "1.4.5"
+      "org.mongodb" % "mongo-java-driver" % "2.9.2", //mongo db driver
+      "org.apache.commons" % "commons-email" % "1.2", //simple email wrapper
+      "javax.mail" % "mail" % "1.4.5",  //not sure this needed, it may already be in dependencies
+      "net.sf.opencsv" % "opencsv" % "2.3" // CSV reader and writer http://opencsv.sourceforge.net
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).settings(
