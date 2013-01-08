@@ -17,7 +17,7 @@ public class DateInputTemplate extends InputTemplate {
 
     @Override
     public Html format(DynamicForm form, String field, InputTemplateConfig config) {
-        return date.render(form, field, config.isRequired(), config.getTitle());
+        return date.render(form, field);
     }
 
     @Override
@@ -30,7 +30,11 @@ public class DateInputTemplate extends InputTemplate {
         Integer month = str2int(monthS);
         Integer year = str2int(yearS);
 
-        if (day == null && month == null && year == null)
+        if (
+                (dayS == null || dayS.isEmpty()) &&
+                (monthS == null || monthS.isEmpty()) &&
+                (yearS == null || yearS.isEmpty())
+        )
             return new BindResult(null);
 
         List<String> messages = new ArrayList<>();
@@ -44,7 +48,6 @@ public class DateInputTemplate extends InputTemplate {
 
         if (messages.size() > 0)
             return new BindResult(null, messages);
-
 
         @SuppressWarnings("ConstantConditions")
         GregorianCalendar cal = new GregorianCalendar(year, month, day);

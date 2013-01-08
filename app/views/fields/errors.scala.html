@@ -1,3 +1,0 @@
-@(form:DynamicForm, field:String)
-@import play.data.DynamicForm
-@form(field).errors().map { e => @e.message}.mkString(", ")

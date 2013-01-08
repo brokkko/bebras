@@ -1,10 +1,3 @@
-@(form:DynamicForm, field:String, required:Boolean, title:String, placeholder:String)
+@(form:DynamicForm, field:String, placeholder:String)
 @import play.data.DynamicForm
-<div class="controls">
-    <label>@title</label>
-    <textarea name="@field" placeholder="@placeholder">@form(field).value</textarea>
-    <p class="help-inline">
-        @if(required) {<small>*</small>}
-        @errors(form, field)
-    </p>
-</div>
+<textarea class='input-multiline' name="@field" placeholder="@placeholder">@form(field).value</textarea>

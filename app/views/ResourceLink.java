@@ -12,14 +12,14 @@ import play.Play;
 public class ResourceLink {
 
     public static final ResourceLink JQUERY = new ResourceLink(
-            "js",
             "jquery-1.8.3.min",
-            "ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"
+            "js",
+            "//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"
     );
 
     public static final ResourceLink RESET = new ResourceLink(
-            "css",
             "reset",
+            "css",
             null
     );
 
@@ -29,24 +29,39 @@ public class ResourceLink {
     private static String localize(String type, String localUrl) {
         switch (type) {
             case "js":
-                return "javascripts/" + localUrl + ".js";
+                localUrl = "javascripts/" + localUrl;
+                break;
             case "css":
-                return "stylesheets/" + localUrl + ".css";
+                localUrl = "stylesheets/" + localUrl;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown resource link type '" + type + "'");
         }
-        throw new IllegalArgumentException("Unknown resource link type '" + type + "'");
+
+        if (localUrl.endsWith("." + type))
+            return localUrl;
+        else
+            return localUrl + "." + type;
     }
 
-    public ResourceLink(String type, String localUrl, String externalUrl) {
-        this(localize(type, localUrl), externalUrl);
+    public ResourceLink(String localUrl, String type, String externalUrl) {
+        this.localUrl = localize(type, localUrl);
+        this.externalUrl = externalUrl;
     }
 
     public ResourceLink(String localUrl) {
-        this.localUrl = localUrl;
+        this(localUrl, determineType(localUrl));
     }
 
-    public ResourceLink(String localUrl, String externalUrl) {
-        this.localUrl = localUrl;
-        this.externalUrl = externalUrl;
+    private static String determineType(String url) {
+        int point = url.lastIndexOf('.');
+        if (point == -1)
+            return "";
+        return url.substring(point + 1);
+    }
+
+    public ResourceLink(String localUrl, String type) {
+        this(localUrl, type, null);
     }
 
     public String apply() {

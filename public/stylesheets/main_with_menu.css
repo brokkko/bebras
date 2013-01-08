@@ -1,0 +1,62 @@
+h1 {
+    font-size: 2em;
+    margin: 0.5em 0;
+}
+
+p {
+    padding-bottom: 1em;
+}
+
+p.warning {
+    color: #d22100;
+}
+
+header {
+    /*background-color: #01a1de;*/
+    background: url(../images/header01.png);
+    border-bottom: 2px #00008b solid;
+    font-size: 2em;
+    color: #fff0b2;
+    padding: 6px;
+    text-align: center;
+    font-family: "Arial", serif;
+    font-weight: 600;
+    text-shadow: 2px 2px 2px #00008b;
+}
+
+nav {
+    float: left;
+    line-height: 1.5;
+    padding: 10px 0 32010px;
+    width: 200px;
+    margin: 0 0 -32000px;
+    border-right: 2px solid #f5972d;
+    background: url(../images/nav01.png) repeat;
+}
+
+nav img {
+    display: block;
+    margin: 0 auto;
+}
+
+nav a {
+    display: block;
+    margin: 0.5em;
+    line-height: 1;
+}
+
+div.content {
+    margin: 1em 1em 1em 216px;
+}
+
+footer {
+    text-align: center;
+    font-size: 0.75em;
+    color: white;
+    background-color: #01a1de;
+    padding: 2px;
+}
+
+.nav-contents {
+    overflow: hidden;
+}

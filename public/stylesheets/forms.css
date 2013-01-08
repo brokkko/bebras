@@ -1,0 +1,121 @@
+form.basic-form input,
+form.basic-form select {
+    font-size: inherit;
+}
+
+/*All the form*/
+form.basic-form {
+    /*position: relative;*/
+    line-height: 2.4;
+    margin: 0 0 1em 4em;
+}
+
+form.basic-form input {
+    border: 2px #01a1de solid;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+form.basic-form select {
+    border: 2px #01a1de solid;
+    border-radius: 4px;
+    padding: 4px;
+    background-color: #ffffff;
+}
+
+/*One input field*/
+form.basic-form .controls {
+    display: block;
+}
+
+/*input field Label*/
+form.basic-form label {
+    display: inline-block;
+    width: 10em;
+    vertical-align: middle;
+    line-height: 1.2;
+    margin-right: 16px;
+}
+
+/*input field controls*/
+form.basic-form .form-field-input {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20em;
+}
+
+/*input field errors */
+form.basic-form span.help-inline {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20em;
+    margin-left: 1em;
+    color: #f0342a;
+    line-height: 1.2;
+}
+
+/*required field*/
+form.basic-form small {
+    color: #f0342a;
+}
+
+/*form actions*/
+form.basic-form div.form-actions {
+    width: 30em;
+    text-align: center;
+    margin-top: 0.5em;
+}
+
+/*text input field*/
+form.basic-form .input-text {
+    float: right;
+    width: 20em;
+}
+
+/*date input field*/
+form.basic-form .date-input-field {
+    position: relative;
+    height: 2.2em;
+}
+
+form.basic-form .date-input-field span {
+    position: absolute;
+    top: 0;
+    right: 17em;
+}
+
+form.basic-form .date-input-field input {
+    position: absolute;
+    top: 0;
+    right: 0em;
+}
+
+form.basic-form .date-input-field select {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+form.basic-form .date-input-field input {
+    width: 6em;
+}
+
+form.basic-form .date-input-field select {
+    width: 16em;
+}
+
+form.basic-form input[type="submit"] {
+    color: #ffffff;
+    font-size: 1.5em;
+    border: 1px solid #00008b;
+    /*border: 1px solid #01a1de;*/
+    padding: 4px 8px;
+    background-color: #01a1de;
+    /*background: #900 url(../images/bt01.png) repeat-x 50%;*/
+    text-shadow: 1px 1px 2px #00008b;
+    border-radius: 4px;
+}
+
+form.basic-form input[type="submit"]:hover {
+    color: #fff0b6;
+}

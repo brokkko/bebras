@@ -17,7 +17,7 @@ public class MultilineInputTemplate extends InputTemplate {
 
     @Override
     public Html format(DynamicForm form, String field, InputTemplateConfig config) {
-        return multiline.render(form, field, config.isRequired(), config.getTitle(), config.getPlaceholder());
+        return multiline.render(form, field, config.getPlaceholder());
     }
 
     @Override

@@ -1,0 +1,22 @@
+@(title: String)(css:scala.List[views.ResourceLink], js:scala.List[views.ResourceLink])(menu:scala.List[views.MenuItem])(content: Html)
+@import views.ResourceLink
+@import scala.List
+@main(title)(new ResourceLink("main_with_menu.css") :: css, js) {
+    <header>
+        @Event.current.getTitle
+    </header>
+    <div class="nav-contents">
+    <nav>
+        <img src="@routes.Assets.at("images/dog.png")">
+        @for(menu_item <- menu) {
+            <a href="@menu_item.getLink">@menu_item.getTitle</a>
+        }
+    </nav>
+    <div class="content">
+        @content
+    </div>
+    </div>
+    <footer>
+        Разработано в <a href="http://ipo.spb.ru">АНО «КИО»</a>
+    </footer>
+}

@@ -14,7 +14,7 @@ public class StringInputTemplate extends InputTemplate {
 
     @Override
     public Html format(DynamicForm form, String field, InputTemplateConfig config) {
-        return text.render("input", form, field, config.isRequired(), config.getTitle(), config.getPlaceholder());
+        return text.render("input", form, field, config.getPlaceholder());
     }
 
     @Override

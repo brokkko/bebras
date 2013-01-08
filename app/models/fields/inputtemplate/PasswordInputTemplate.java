@@ -13,7 +13,7 @@ import views.html.fields.text;
 public class PasswordInputTemplate extends InputTemplate {
     @Override
     public Html format(DynamicForm form, String field, InputTemplateConfig config) {
-        return text.render("password", form, field, config.isRequired(), config.getTitle(), config.getPlaceholder());
+        return text.render("password", form, field, config.getPlaceholder());
     }
 
     @Override

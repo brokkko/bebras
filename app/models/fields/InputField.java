@@ -113,4 +113,7 @@ public class InputField {
         receiver.put(name, value);
     }
 
+    public InputTemplateConfig getInputConfiguration() {
+        return inputConfiguration;
+    }
 }
