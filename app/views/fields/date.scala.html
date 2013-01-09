@@ -1,11 +1,12 @@
 @(form:DynamicForm, field: String)
 @import play.data.DynamicForm
 
+<div class='date-input-fields'>
 <div class='date-input-field'>
     <span>@Messages("date.year")</span>
     <input type="text" value="@form(field + "[year]").value" name="@(field)[year]" placeholder="@Messages("date.year.placeholder")">
 </div>
-<div class='date-input-field'><span>@Messages("date.month")</span><select name="@(field)[month]">
+<div class='date-input-field date-input-month'><span>@Messages("date.month")</span><select name="@(field)[month]">
     <option value="">@Messages("date.month.placeholder")</option>
     <option value="0" @if(form(field + "[month]").value == "0") {selected="selected"}>@Messages("date.month.jan")</option>
     <option value="1" @if(form(field + "[month]").value == "1") {selected="selected"}>@Messages("date.month.feb")</option>
@@ -21,5 +22,7 @@
     <option value="11" @if(form(field + "[month]").value == "11") {selected="selected"}>@Messages("date.month.dec")</option>
 </select></div>
 <div class='date-input-field'>
-    <span>@Messages("date.day")</span> <input type="text" value="@form(field + "[day]").value" name="@(field)[day]" placeholder="@Messages("date.day.placeholder")">
+    <span>@Messages("date.day")</span>
+    <input type="text" value="@form(field + "[day]").value" name="@(field)[day]" placeholder="@Messages("date.day.placeholder")">
+</div>
 </div>

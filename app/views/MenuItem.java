@@ -1,6 +1,8 @@
 package views;
 
+import play.Logger;
 import play.mvc.Call;
+import play.mvc.Http;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,10 +14,19 @@ public class MenuItem {
 
     private String title;
     private Call link;
+    private boolean current;
 
     public MenuItem(String title, Call link) {
         this.title = title;
         this.link = link;
+
+        if (link == null)
+            return;
+
+        Logger.debug("request = " + Http.Context.current().request().path());
+        Logger.debug("link = " + link.url());
+
+        current = Http.Context.current().request().path().equals(link.url()); //TODO make sure this works in all situations
     }
 
     public String getTitle() {
@@ -24,5 +35,9 @@ public class MenuItem {
 
     public Call getLink() {
         return link;
+    }
+
+    public boolean isCurrent() {
+        return current;
     }
 }

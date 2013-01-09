@@ -1,4 +1,4 @@
-@(title: String)(css:scala.List[views.ResourceLink], js:scala.List[views.ResourceLink])(menu:scala.List[views.MenuItem])(content: Html)
+@(title: String)(css:scala.List[views.ResourceLink], js:scala.List[views.ResourceLink])(content: Html)
 @import views.ResourceLink
 @import scala.List
 @main(title)(new ResourceLink("main_with_menu.css") :: css, js) {
@@ -8,8 +8,12 @@
     <div class="nav-contents">
     <nav>
         <img src="@routes.Assets.at("images/dog.png")">
-        @for(menu_item <- menu) {
-            <a href="@menu_item.getLink">@menu_item.getTitle</a>
+        @for(menu_item <- views.Menu.current) {
+            @if(menu_item.isCurrent) {
+                <span class='menu-item'>@menu_item.getTitle</span>
+            } else {
+                <a class='menu-item' href="@menu_item.getLink">@menu_item.getTitle</a>
+            }
         }
     </nav>
     <div class="content">

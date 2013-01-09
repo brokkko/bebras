@@ -68,11 +68,17 @@ public class User {
         User user = (User) contextArgs.get("user");
         if (user == null) {
             String username = Http.Context.current().request().username();
+            if (username == null)
+                return null;
             user = getInstance(username, false);
             contextArgs.put("user", user);
         }
 
         return user;
+    }
+
+    public static boolean isAuthorized() {
+        return current() != null;
     }
 
     public static User getInstance(String username, boolean byLogin) {

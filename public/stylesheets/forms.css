@@ -7,7 +7,9 @@ form.basic-form select {
 form.basic-form {
     /*position: relative;*/
     line-height: 2.4;
-    margin: 0 0 1em 4em;
+    margin: 0 auto 1em auto;
+    display: block;
+    width: 56em;
 }
 
 form.basic-form input {
@@ -26,6 +28,8 @@ form.basic-form select {
 /*One input field*/
 form.basic-form .controls {
     display: block;
+    padding: 0 8px;
+    margin: 4px 0;
 }
 
 /*input field Label*/
@@ -50,13 +54,13 @@ form.basic-form span.help-inline {
     vertical-align: middle;
     width: 20em;
     margin-left: 1em;
-    color: #f0342a;
+    color: #d22100;
     line-height: 1.2;
 }
 
 /*required field*/
 form.basic-form small {
-    color: #f0342a;
+    color: #d22100;
 }
 
 /*form actions*/
@@ -73,36 +77,38 @@ form.basic-form .input-text {
 }
 
 /*date input field*/
+form.basic-form .date-input-fields {
+    /*float: right;*/
+    text-align: right;
+    margin: 6px 0;
+}
+
 form.basic-form .date-input-field {
-    position: relative;
-    height: 2.2em;
+    /*display: inline-block;*/
+    float: right;
+    width: 4.4em;
+    line-height: 1.2;
+    padding-bottom: 4px;
+}
+
+form.basic-form .date-input-field.date-input-month {
+    width: 11.2em;
 }
 
 form.basic-form .date-input-field span {
-    position: absolute;
-    top: 0;
-    right: 17em;
+    display: block;
+    text-align: center;
 }
 
 form.basic-form .date-input-field input {
-    position: absolute;
-    top: 0;
-    right: 0em;
+    width: 3.2em;
 }
 
 form.basic-form .date-input-field select {
-    position: absolute;
-    top: 0;
-    right: 0;
+    width: 11em;
 }
 
-form.basic-form .date-input-field input {
-    width: 6em;
-}
-
-form.basic-form .date-input-field select {
-    width: 16em;
-}
+/*Submit button*/
 
 form.basic-form input[type="submit"] {
     color: #ffffff;
@@ -118,4 +124,8 @@ form.basic-form input[type="submit"] {
 
 form.basic-form input[type="submit"]:hover {
     color: #fff0b6;
+}
+
+form.basic-form .error {
+    background-color: #ffd5bf;
 }
