@@ -52,4 +52,7 @@ public class Email {
         return email.send();
     }
 
+    public static void sendRegistrationConfirmationEmail(String email, String login, String password, String registrationUUID) {
+        //TODO implement
+    }
 }

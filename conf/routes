@@ -8,7 +8,7 @@ GET     /init                       controllers.Application.initialize()
 
 GET     /:event/register            controllers.Registration.registration(event:models.Event)
 POST    /:event/register            controllers.Registration.doRegistration(event:models.Event)
-GET     /:event/registered          controllers.Registration.waitForEmail(event:models.Event)
+GET     /:event/registered/:uuid    controllers.Registration.waitForEmail(event:models.Event, uuid)
 
 # debug
 

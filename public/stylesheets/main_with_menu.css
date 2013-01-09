@@ -51,8 +51,8 @@ nav img {
 
 div.content {
     /*margin: 1em 1em 1em 216px;*/
-    margin: 0 0 0 200px;
-    padding: 1em;
+    margin: 0 0 -32000px 200px;
+    padding: 1em 1em 32010px;
     background-color: white;
 }
 

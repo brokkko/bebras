@@ -24,6 +24,14 @@ import java.util.Map;
  */
 public class User {
 
+    public static final String FIELD_OID = "_id";
+    public static final String FIELD_LOGIN = "login";
+    public static final String FIELD_REGISTRATION_UUID = "_registration_uuid";
+    public static final String FIELD_CONFIRMATION_UUID = "_confirmation_uuid";
+    public static final String FIELD_EMAIL = "email";
+    public static final String FIELD_PASS_HASH= "passhash";
+    public static final String FIELD_EVENT= "event_id";
+
     public StoredObject storedObject;
 
     public User(StoredObject storedObject) {
@@ -35,18 +43,18 @@ public class User {
     }
 
     public String getLogin() {
-        return storedObject.getString("login");
+        return storedObject.getString(FIELD_LOGIN);
     }
 
     public String getEmail() {
-        return storedObject.getString("email");
+        return storedObject.getString(FIELD_EMAIL);
     }
 
     public boolean testPassword(String password) {
-        return passwordHash(password).equals(storedObject.getString("passHash"));
+        return passwordHash(password).equals(storedObject.getString(FIELD_PASS_HASH));
     }
 
-    private String passwordHash(String password) {
+    public static String passwordHash(String password) {
         //TODO understand this code
         //http://stackoverflow.com/questions/2860943/suggestions-for-library-to-hash-passwords-in-java
         try {
@@ -70,7 +78,7 @@ public class User {
             String username = Http.Context.current().request().username();
             if (username == null)
                 return null;
-            user = getInstance(username, false);
+            user = getInstance(FIELD_OID, username);
             contextArgs.put("user", user);
         }
 
@@ -81,20 +89,21 @@ public class User {
         return current() != null;
     }
 
-    public static User getInstance(String username, boolean byLogin) {
+    public static User getInstance(String field, String value) {
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
-        DBObject query = new BasicDBObject("event_id", Event.current().getOid());
+        DBObject query = new BasicDBObject(FIELD_EVENT, Event.current().getOid());
 
-        if (byLogin)
-            query.put("login", username);
-        else
-            query.put("_id", new ObjectId(username));
+        query.put(field, value);
 
         DBObject userObject = usersCollection.findOne(query);
         if (userObject == null)
             return null;
         else
             return new User(new MongoObject(usersCollection.getName(), userObject));
+    }
+
+    public static String generatePassword() {
+        return "qwerty"; //TODO implement
     }
 }

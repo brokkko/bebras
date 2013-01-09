@@ -6,7 +6,7 @@ form.basic-form select {
 /*All the form*/
 form.basic-form {
     /*position: relative;*/
-    line-height: 2.4;
+    line-height: 2;
     margin: 0 auto 1em auto;
     display: block;
     width: 56em;
@@ -15,13 +15,13 @@ form.basic-form {
 form.basic-form input {
     border: 2px #01a1de solid;
     border-radius: 4px;
-    padding: 4px;
+    padding: 2px 4px;
 }
 
 form.basic-form select {
     border: 2px #01a1de solid;
     border-radius: 4px;
-    padding: 4px;
+    padding: 2px 4px;
     background-color: #ffffff;
 }
 

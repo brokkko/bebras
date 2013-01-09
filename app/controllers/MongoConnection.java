@@ -20,34 +20,49 @@ import java.util.concurrent.Callable;
  */
 public class MongoConnection {
 
+    public static final String COLLECTION_NAME_CONFIG = "config";
+    public static final String COLLECTION_NAME_USERS = "users";
+    public static final String COLLECTION_NAME_EVENTS = "events";
+
+    private static final String COLLECTION_NAME_ANSWERS_PREFIX = "answers-";
+
     public static DBCollection getConfigCollection() {
-        return getCollection("config");
+        return getCollection(COLLECTION_NAME_CONFIG);
     }
 
     public static DBCollection getAnswersCollection(String eventId) {
-        return getCollection("answers-" + eventId);
+        return getCollection(COLLECTION_NAME_ANSWERS_PREFIX + eventId);
     }
 
     public static DBCollection getUsersCollection() {
-        return getCollection("users");
+        return getCollection(COLLECTION_NAME_USERS);
     }
 
     public static DBCollection getEventsCollection() {
-        return getCollection("events");
+        return getCollection(COLLECTION_NAME_EVENTS);
     }
 
     public static DBCollection getCollection(String contestId) {
         String dbname = Play.application().configuration().getString("mongodb.db");
         DB answersDB = getMongo().getDB(dbname);
 
-//        boolean needCreateIndexes = ! answersDB.collectionExists(contestId);
-//
-//        if (needCreateIndexes) {
-//            collection.createIndex(new BasicDBObject("userId", 1));
-//            collection.createIndex(new BasicDBObject("problemId", 1));
-//        }
+        DBCollection collection = answersDB.getCollection(contestId);
+        boolean needCreateIndexes = ! answersDB.collectionExists(contestId);
 
-        return answersDB.getCollection(contestId);
+        if (needCreateIndexes)
+            createIndexes(collection);
+
+        return collection;
+    }
+
+    private static void createIndexes(DBCollection collection) {
+        switch (collection.getName()) {
+            case COLLECTION_NAME_USERS:
+                collection.createIndex(new BasicDBObject("registration_uuid", 1));
+                collection.createIndex(new BasicDBObject("confirmation_uuid", 1));
+                collection.createIndex(new BasicDBObject("event_id", 1));
+                break;
+        }
     }
 
     private static Mongo getMongo() {

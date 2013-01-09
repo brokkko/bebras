@@ -22,7 +22,7 @@ public class LoginValidator extends Validator {
     public String validate(Object value) {
         String login = (String)value;
 
-        User user = User.getInstance(login, true);
+        User user = User.getInstance(User.FIELD_LOGIN, login);
 
         return user == null ? null : message();
     }

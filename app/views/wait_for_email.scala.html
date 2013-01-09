@@ -1,12 +1,9 @@
-@(form:DynamicForm)
+@(email:String)
 @import views.ResourceLink
 @import views.MenuItem
 @import play.data.DynamicForm
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List()) {
-    <h1>Регистрация участника</h1>
-    <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
-    После заполнения анкеты вы получите письмо с паролем, поэтому
-    убедитесь, что вы правильно указали email.
-    @Event.current.getUsersForm.format(form, "form_submit.bbtc.user")
+@main_with_menu(Event.current.getTitle)(List(), List()) {
+    <h1>На ваш адрес @email выслано письмо с дальнейшими инструкциями</h1>
+    <p>Письмо может идти несколько минут. Если письмо не доходит, проверьте ящик со спамом.
 }
