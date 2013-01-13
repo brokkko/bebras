@@ -4,7 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import models.fields.InputForm;
+import models.forms.InputForm;
 import play.Logger;
 import play.cache.Cache;
 import play.mvc.Http;
@@ -22,15 +22,13 @@ import java.util.concurrent.Callable;
  */
 public class Event implements PathBindable<Event> {
 
-    private final Object oid;
     private final String id;
     private final String title;
     private final List<Contest> contests;
     private final InputForm usersForm;
 
     private Event(StoredObject storedObject) {
-        this.oid = storedObject.get("_id");
-        this.id = storedObject.getString("id");
+        this.id = storedObject.getString("_id");
         this.title = storedObject.getString("title");
 
         this.contests = new ArrayList<>();
@@ -67,15 +65,11 @@ public class Event implements PathBindable<Event> {
 
     private static Event createEventById(String eventId) throws Exception {
         DBCollection eventsCollection = MongoConnection.getEventsCollection();
-        DBObject eventObject = eventsCollection.findOne(new BasicDBObject("id", eventId));
+        DBObject eventObject = eventsCollection.findOne(new BasicDBObject("_id", eventId));
         if (eventObject == null)
             throw new Exception("No such collection");
         else
             return new Event(new MongoObject(eventsCollection.getName(), eventObject));
-    }
-
-    public Object getOid() {
-        return oid;
     }
 
     public String getId() {
@@ -97,7 +91,6 @@ public class Event implements PathBindable<Event> {
     //event binding
 
     public Event() {
-        oid = null;
         id = null;
         title = null;
         contests = null;

@@ -4,7 +4,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import org.bson.types.ObjectId;
 import play.Play;
 import play.mvc.Http;
 
@@ -92,7 +91,7 @@ public class User {
     public static User getInstance(String field, String value) {
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
-        DBObject query = new BasicDBObject(FIELD_EVENT, Event.current().getOid());
+        DBObject query = new BasicDBObject(FIELD_EVENT, Event.current().getId());
 
         query.put(field, value);
 

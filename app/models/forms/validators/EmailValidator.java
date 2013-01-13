@@ -1,4 +1,4 @@
-package models.fields.validators;
+package models.forms.validators;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;

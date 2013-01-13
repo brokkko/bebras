@@ -1,7 +1,6 @@
-package models.fields.validators;
+package models.forms.validators;
 
 import models.User;
-import play.i18n.Messages;
 
 import java.util.Map;
 

@@ -1,15 +1,14 @@
-package models.fields;
+package models.forms;
 
 import models.StoredObject;
-import models.fields.inputtemplate.InputTemplate;
-import models.fields.inputtemplate.InputTemplateConfig;
-import models.fields.validators.Validator;
+import models.forms.inputtemplate.InputTemplate;
+import models.forms.inputtemplate.InputTemplateConfig;
+import models.forms.validators.Validator;
 import play.api.templates.Html;
 import play.data.DynamicForm;
 import play.i18n.Messages;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,22 +26,6 @@ public class InputField {
     private final InputTemplateConfig inputConfiguration;
 
     private final List<Validator> validators;
-
-    public InputField(InputForm form, String name, InputTemplate inputTemplate, InputTemplateConfig inputConfiguration, List<Validator> validators) {
-        this.form = form;
-        this.name = name;
-        this.inputTemplate = inputTemplate;
-        this.inputConfiguration = inputConfiguration;
-        this.validators = validators;
-    }
-
-    public InputField(InputForm form, InputTemplate inputTemplate, String name, InputTemplateConfig inputConfiguration, Validator... validators) {
-        this.form = form;
-        this.name = name;
-        this.inputTemplate = inputTemplate;
-        this.inputConfiguration = inputConfiguration;
-        this.validators = Arrays.asList(validators);
-    }
 
     public InputForm getForm() {
         return form;
@@ -115,5 +98,9 @@ public class InputField {
 
     public InputTemplateConfig getInputConfiguration() {
         return inputConfiguration;
+    }
+
+    public InputTemplate getInputTemplate() {
+        return inputTemplate;
     }
 }

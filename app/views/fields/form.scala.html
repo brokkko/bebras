@@ -1,11 +1,17 @@
-@(form: DynamicForm, submit_text:String, fields:List[models.fields.InputField])
-@import models.fields.inputtemplate.InputTemplate
+@(form: DynamicForm, action:Call, submit_text:String, fields:List[models.forms.InputField])
+@import models.forms.inputtemplate.InputTemplate
 @import play.data.DynamicForm
-<form class="basic-form" action="@controllers.routes.Registration.registration(Event.current())" method="POST">
-    <fieldset>
-    @if(form("id").value != null) {
-    <input type="hidden" value="@form("id").value" name="id">
+@import play.mvc.Call
+<form class="basic-form" action="@action" method="POST">
+    @if(form.globalErrors().size > 0) {
+        <span class="help-global">@form.globalErrors().map { e => @e.message}.mkString(", ")</span>
     }
+    <fieldset>
+    @*
+    @if(form("id").value != null) {
+    <input type="hidden" value="@form("_id").value" name="id">
+    }
+    *@
     @for(field <- fields) {
         <div class="controls @if(form(field.getName).hasErrors) {error}">
             <label>@field.getInputConfiguration.getTitle @if(field.getInputConfiguration.isRequired) {<small>*</small>}</label>

@@ -23,9 +23,6 @@ public class MenuItem {
         if (link == null)
             return;
 
-        Logger.debug("request = " + Http.Context.current().request().path());
-        Logger.debug("link = " + link.url());
-
         current = Http.Context.current().request().path().equals(link.url()); //TODO make sure this works in all situations
     }
 

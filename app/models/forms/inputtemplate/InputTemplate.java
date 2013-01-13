@@ -1,6 +1,5 @@
-package models.fields.inputtemplate;
+package models.forms.inputtemplate;
 
-import models.fields.validators.Validator;
 import play.api.templates.Html;
 import play.data.DynamicForm;
 

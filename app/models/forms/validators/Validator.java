@@ -1,4 +1,4 @@
-package models.fields.validators;
+package models.forms.validators;
 
 import play.data.validation.Constraints;
 import play.i18n.Messages;

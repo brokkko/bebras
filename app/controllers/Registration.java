@@ -1,11 +1,14 @@
 package controllers;
 
-import models.Event;
-import models.MongoObject;
-import models.User;
+import models.*;
+import models.forms.InputForm;
+import org.apache.commons.mail.EmailException;
+import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
+import views.html.error;
+import views.html.login;
 import views.html.register;
 
 import java.util.UUID;
@@ -48,12 +51,19 @@ public class Registration extends Controller {
 
         String email = user.getString(User.FIELD_EMAIL);
         String login = user.getString(User.FIELD_LOGIN);
+        String name = user.getString("name");
+        String patronymic = user.getString("patronymic");
 
-        Email.sendRegistrationConfirmationEmail(email, login, password, registrationUUID); //TODO process fail
+        try {
+            Email.sendRegistrationConfirmationEmail(name, patronymic, email, login, password, confirmationUUID);
+        } catch (EmailException e) {
+            Logger.error("Failed to send email", e);
+            return internalServerError("Failed to send email");
+        }
 
         user.put(User.FIELD_REGISTRATION_UUID, registrationUUID);
         user.put(User.FIELD_CONFIRMATION_UUID, confirmationUUID);
-        user.put(User.FIELD_EVENT, event.getOid());
+        user.put(User.FIELD_EVENT, event.getId());
         user.put(User.FIELD_PASS_HASH, User.passwordHash(password));
 
         user.store();
@@ -72,5 +82,45 @@ public class Registration extends Controller {
         String email = user.getEmail();
 
         return ok(views.html.wait_for_email.render(email));
+    }
+
+    public static Result confirmRegistration(Event event, String uuid) {
+        Event.setCurrent(event);
+
+        User user = User.getInstance(User.FIELD_CONFIRMATION_UUID, uuid);
+
+        if (user == null)
+            return ok(error.render("page.registration.already_confirmed", null));
+
+        user.getStoredObject().put(User.FIELD_REGISTRATION_UUID, null);
+        user.getStoredObject().put(User.FIELD_CONFIRMATION_UUID, null);
+
+        user.storedObject.store();
+
+        DynamicForm emptyForm = new DynamicForm();
+        return ok(login.render(emptyForm, "page.registration.confirmed"));
+    }
+
+    public static Result login(Event event) {
+        Event.setCurrent(event);
+
+        DynamicForm emptyForm = new DynamicForm();
+        return ok(login.render(emptyForm, null));
+    }
+
+    public static Result doLogin(Event event) {
+        Event.setCurrent(event);
+
+        DynamicForm form = new DynamicForm();
+        form = form.bindFromRequest();
+
+        InputForm loginForm = LoginForm.getInstance();
+        StoredObject credentials = new MemoryStoredObject();
+        loginForm.getObject(credentials, form);
+
+        if (form.hasErrors())
+            return ok(login.render(form, null));
+
+        return null;
     }
 }

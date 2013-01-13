@@ -1,4 +1,4 @@
-package models.fields.inputtemplate;
+package models.forms.inputtemplate;
 
 import play.api.templates.Html;
 import play.data.DynamicForm;

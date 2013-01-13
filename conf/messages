@@ -17,7 +17,7 @@ date.month.oct=Октябрь
 date.month.nov=Ноябрь
 date.month.dec=Декабрь
 
-form_submit.bbtc.user=Зарегистрироваться
+form.bbtc.user.submit=Зарегистрироваться
 form.bbtc.user.login.title=Логин
 form.bbtc.user.login.placeholder=Введите логин
 form.bbtc.user.name.title=Имя
@@ -36,8 +36,16 @@ form.bbtc.user.schoolcode.placeholder=Введите код школы
 form.bbtc.user.schoolname.title=Полное название школы
 form.bbtc.user.schoolname.placeholder=Введите полное название школы
 
+form.bbtc.login.submit=Войти
+form.bbtc.login.login.title=Имя пользователя
+form.bbtc.login.login.placeholder=Введите имя пользователя
+form.bbtc.login.password.title=Пароль
+form.bbtc.login.password.placeholder=Введите пароль
+
+
 error.msg.kenguru_school_code=Такой код школы не зарегистрирован
 error.msg.email=Некорректный email
+error.msg.failed_to_authenticate=Неверно указано имя пользователя или пароль
 error.msg.required=Поле должно быть заполнено
 error.msg.date.no_day=Неверно указан день
 error.msg.date.no_month=Неверно указан месяц
@@ -46,3 +54,11 @@ error.msg.date.not_exists=Такой даты не существует
 error.msg.login=Такое имя пользователя уже зарегистрировано
 error.msg.schoolcode.wrong_pattern=Номер школы должен состоять из 8 цифр
 error.msg.schoolcode.no_such_school=Этого номера нет в базе
+
+error.window.title=Ошибка
+
+page.registration.already_confirmed=Регистрация уже подтверждена
+page.registration.confirmed=Регистрация успешно подтверждена
+
+mail.registration.subject=Подтверждение регистрации. {0}
+mail.registration.body=Здравствуйте, {0} {1}!\n\nВы зарегистрировали этот email для участия в {2}. Если это не так, проигнорируйте это письмо.\n\nДля подтверждения регистраици перейдите по ссылке {3}.\n\nДля входа на сайт используйте свои учетные данные:\n\nлогин: {4}\nпароль: {5}\n\nНе отвечайте на это пиьсмо.\n\n--\nС уважением,\n    {2}

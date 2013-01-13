@@ -1,13 +1,11 @@
-package models.fields.validators;
+package models.forms.validators;
 
 import au.com.bytecode.opencsv.CSVReader;
 import play.Logger;
 import play.cache.Cache;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.*;
 import java.util.concurrent.Callable;
 

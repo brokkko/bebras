@@ -1,29 +1,26 @@
-package models.fields.inputtemplate;
+package models.forms.inputtemplate;
 
 import play.api.templates.Html;
 import play.data.DynamicForm;
-import views.html.fields.multiline;
-
-import java.util.HashMap;
-import java.util.Map;
+import views.html.fields.text;
 
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
  * Date: 02.01.13
- * Time: 17:25
+ * Time: 17:24
  */
-public class MultilineInputTemplate extends InputTemplate {
+public class StringInputTemplate extends InputTemplate {
 
     @Override
     public Html format(DynamicForm form, String field, InputTemplateConfig config) {
-        return multiline.render(form, field, config.getPlaceholder());
+        return text.render("input", form, field, config.getPlaceholder());
     }
 
     @Override
     public BindResult getObject(DynamicForm form, String field) {
         String value = form.field(field).value();
-        if (value.equals(""))
+        if (value != null && value.equals(""))
             value = null;
         return new BindResult(value);
     }

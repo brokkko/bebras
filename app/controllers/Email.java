@@ -1,11 +1,13 @@
 package controllers;
 
+import models.Event;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 import play.Configuration;
-import play.Logger;
 import play.Play;
-import play.mvc.Result;
+import play.i18n.Messages;
+import play.mvc.Call;
+import play.mvc.Http;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +17,7 @@ import play.mvc.Result;
  */
 public class Email {
 
-    public static String sendEmailTest(String to, String subject, String message) throws EmailException {
+    private static String sendEmail(String to, String subject, String message) throws EmailException {
         Configuration cfg = Play.application().configuration().getConfig("mail");
 
         SimpleEmail email = new SimpleEmail();
@@ -52,7 +54,14 @@ public class Email {
         return email.send();
     }
 
-    public static void sendRegistrationConfirmationEmail(String email, String login, String password, String registrationUUID) {
-        //TODO implement
+    public static void sendRegistrationConfirmationEmail(String name, String patronymic, String email, String login, String password, String registrationUUID) throws EmailException {
+        String registrationLink = routes.Registration.confirmRegistration(Event.current(), registrationUUID)
+                .absoluteURL(Http.Context.current().request());
+        String title = Event.current().getTitle();
+        sendEmail(
+                email,
+                Messages.get("mail.registration.subject", title),
+                Messages.get("mail.registration.body", name, patronymic, title, registrationLink, login, password)
+        );
     }
 }

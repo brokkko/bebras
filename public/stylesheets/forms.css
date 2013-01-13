@@ -28,7 +28,7 @@ form.basic-form select {
 /*One input field*/
 form.basic-form .controls {
     display: block;
-    padding: 0 8px;
+    /*padding: 0 8px;*/
     margin: 4px 0;
 }
 
@@ -56,6 +56,10 @@ form.basic-form span.help-inline {
     margin-left: 1em;
     color: #d22100;
     line-height: 1.2;
+}
+
+form.basic-form span.help-global {
+    color: #d22100;
 }
 
 /*required field*/

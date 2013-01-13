@@ -1,7 +1,7 @@
-package models.fields.inputtemplate;
+package models.forms.inputtemplate;
 
 import models.Event;
-import models.fields.InputField;
+import models.forms.InputField;
 import play.i18n.Messages;
 
 import java.util.Map;
