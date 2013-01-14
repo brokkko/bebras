@@ -10,18 +10,18 @@ import java.util.Map;
  * Date: 04.01.13
  * Time: 16:32
  */
-public class LoginValidator extends Validator {
+public class UserFieldValidator extends Validator {
+    //TODO make the same for other fields
 
-    public LoginValidator(Map<String, Object> validationParameters) {
+    public UserFieldValidator(Map<String, Object> validationParameters) {
         super(validationParameters);
-        defaultMessage = "error.msg.login";
     }
 
     @Override
     public String validate(Object value) {
         String login = (String)value;
 
-        User user = User.getInstance(User.FIELD_LOGIN, login);
+        User user = User.getInstance((String) validationParameters.get("field"), login);
 
         return user == null ? null : message();
     }

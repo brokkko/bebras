@@ -3,7 +3,6 @@ package models.forms;
 import models.Event;
 import models.MemoryStoredObject;
 import models.StoredObject;
-import models.forms.inputtemplate.InputTemplate;
 import models.forms.validators.Validator;
 import play.api.templates.Html;
 import play.data.DynamicForm;
@@ -71,9 +70,9 @@ public class InputForm {
         return name;
     }
 
-    public void getObject(StoredObject receiver, DynamicForm form) {
+    public void validate(DynamicForm form) {
         for (InputField field : fields.values())
-            field.validate(receiver, form);
+            field.validate(form);
 
         if (form.hasErrors())
             return; //don't validate if there are errors already
@@ -84,6 +83,17 @@ public class InputForm {
             if (message != null)
                 form.reject(message);
         }
+    }
+
+    public void fillObject(StoredObject receiver, DynamicForm form) {
+        for (InputField field : fields.values())
+            field.fillObject(receiver, form);
+    }
+
+    public StoredObject getObject(DynamicForm form) {
+        MemoryStoredObject result = new MemoryStoredObject();
+        fillObject(result, form);
+        return result;
     }
 
     public InputField getField(String name) {
@@ -106,8 +116,7 @@ public class InputForm {
         }
 
         public Object get(String field) {
-            InputTemplate.BindResult bindResult = getField(field).getInputTemplate().getObject(form, field);
-            return bindResult.getValue();
+            return getField(field).getValue(form);
         }
     }
 

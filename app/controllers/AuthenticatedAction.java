@@ -1,6 +1,7 @@
 package controllers;
 
 import models.User;
+import play.Logger;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -14,9 +15,11 @@ import play.mvc.Result;
 public class AuthenticatedAction extends Action<Authenticated> {
     @Override
     public Result call(Http.Context ctx) throws Throwable {
+        String event = getEvent(ctx);
+
         String userName = ctx.session().get("user");
 
-        Result loginRedirect = redirect(routes.Application.index());
+        Result loginRedirect = redirect(routes.Registration.registration(null));
 
         if (userName == null)
             return loginRedirect; //TODO redirect to login
@@ -29,5 +32,11 @@ public class AuthenticatedAction extends Action<Authenticated> {
 
 
         return delegate.call(ctx);
+    }
+
+    private String getEvent(Http.Context ctx) {
+        String path = ctx.request().path();
+        Logger.debug(path);
+        return "";
     }
 }

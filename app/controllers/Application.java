@@ -8,15 +8,9 @@ import play.Play;
 import play.cache.Cache;
 import play.mvc.*;
 
-import views.html.*;
-
 import java.io.*;
 
 public class Application extends Controller {
-
-    public static Result index() {
-        return ok(index.render("Your new application is ready."));
-    }
 
     public static Result initialize() throws IOException {
         DBCollection configCollection = MongoConnection.getConfigCollection();

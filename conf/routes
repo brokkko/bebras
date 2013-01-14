@@ -3,7 +3,6 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index()
 GET     /init                       controllers.Application.initialize()
 
 GET     /:event/register            controllers.Registration.registration(event:models.Event)
@@ -12,6 +11,7 @@ GET     /:event/registered/:uuid    controllers.Registration.waitForEmail(event:
 GET     /:event/confirm/:uuid       controllers.Registration.confirmRegistration(event:models.Event, uuid)
 GET     /:event/login               controllers.Registration.login(event:models.Event)
 POST    /:event/login               controllers.Registration.doLogin(event:models.Event)
+GET     /:event/remind              controllers.Registration.passwordRemind(event:models.Event)
 
 # debug
 

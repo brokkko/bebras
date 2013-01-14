@@ -6,7 +6,6 @@ import org.apache.commons.mail.SimpleEmail;
 import play.Configuration;
 import play.Play;
 import play.i18n.Messages;
-import play.mvc.Call;
 import play.mvc.Http;
 
 /**
@@ -29,7 +28,7 @@ public class Email {
             email.setSSL(true);
 
         Boolean needTLS = cfg.getBoolean("tls");
-        if (needTLS != null && needSSL)
+        if (needTLS != null && needTLS)
             email.setTLS(true);
 
         String login = cfg.getString("login");
@@ -48,6 +47,7 @@ public class Email {
         else
             email.setFrom(from, fromName);
 
+        email.setCharset("UTF8");
         email.setSubject(subject);
         email.setMsg(message);
 
@@ -61,7 +61,11 @@ public class Email {
         sendEmail(
                 email,
                 Messages.get("mail.registration.subject", title),
-                Messages.get("mail.registration.body", name, patronymic, title, registrationLink, login, password)
+                createLineBreaks(Messages.get("mail.registration.body", name, patronymic, title, registrationLink, login, password))
         );
+    }
+
+    private static String createLineBreaks(String line) {
+        return line.replaceAll("\\\\n", "\n");
     }
 }

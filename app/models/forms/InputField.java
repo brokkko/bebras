@@ -69,7 +69,7 @@ public class InputField {
         return inputTemplate.format(form, name, inputConfiguration);
     }
 
-    public void validate(StoredObject receiver, DynamicForm form) {
+    public void validate(DynamicForm form) {
         InputTemplate.BindResult bindResult = inputTemplate.getObject(form, name);
         if (bindResult.hasErrors()) {
             for (String message : bindResult.getMessages())
@@ -92,8 +92,17 @@ public class InputField {
                 break; //TODO to think, may be sometimes we need to validate all
             }
         }
+    }
 
+    public void fillObject(StoredObject receiver, DynamicForm form) {
+        InputTemplate.BindResult bindResult = inputTemplate.getObject(form, name);
+        Object value = bindResult.getValue();
         receiver.put(name, value);
+    }
+
+    public Object getValue(DynamicForm form) {
+        InputTemplate.BindResult bindResult = inputTemplate.getObject(form, name);
+        return bindResult.getValue();
     }
 
     public InputTemplateConfig getInputConfiguration() {

@@ -7,7 +7,6 @@ import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.error;
 import views.html.login;
 import views.html.register;
 
@@ -90,7 +89,7 @@ public class Registration extends Controller {
         User user = User.getInstance(User.FIELD_CONFIRMATION_UUID, uuid);
 
         if (user == null)
-            return ok(error.render("page.registration.already_confirmed", null));
+            return ok(login.render(new DynamicForm(), "page.registration.already_confirmed"));
 
         user.getStoredObject().put(User.FIELD_REGISTRATION_UUID, null);
         user.getStoredObject().put(User.FIELD_CONFIRMATION_UUID, null);
@@ -114,7 +113,7 @@ public class Registration extends Controller {
         DynamicForm form = new DynamicForm();
         form = form.bindFromRequest();
 
-        InputForm loginForm = LoginForm.getInstance();
+        InputForm loginForm = Forms.getLoginForm();
         StoredObject credentials = new MemoryStoredObject();
         loginForm.getObject(credentials, form);
 
@@ -122,5 +121,11 @@ public class Registration extends Controller {
             return ok(login.render(form, null));
 
         return null;
+    }
+
+    public static Result passwordRemind(Event event) {
+        Event.setCurrent(event);
+
+
     }
 }

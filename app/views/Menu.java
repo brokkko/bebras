@@ -20,12 +20,13 @@ public class Menu {
         List<MenuItem> menu = new ArrayList<>();
 
         if (User.isAuthorized()) {
-            menu.add(new MenuItem("Личные данные", null));
             menu.add(new MenuItem("Соревнование", null));
+            menu.add(new MenuItem("Личные данные", null));
+            menu.add(new MenuItem("Выход", null));
         } else {
-            menu.add(new MenuItem("Вход", null));
+            menu.add(new MenuItem("Вход", routes.Registration.login(Event.current())));
             menu.add(new MenuItem("Регистрация", routes.Registration.registration(Event.current())));
-            menu.add(new MenuItem("Восстановление пароля", null));
+            menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(Event.current())));
         }
 
         menu.add(new MenuItem("Тренировочное соревнование", null));

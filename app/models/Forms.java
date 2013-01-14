@@ -8,9 +8,9 @@ import models.forms.InputForm;
  * Date: 12.01.13
  * Time: 19:45
  */
-public class LoginForm {
+public class Forms {
 
-    public static InputForm form = new InputForm("login",
+    public static InputForm loginForm = new InputForm("login",
             new MemoryStoredObject(
                     "fields",
                     MemoryStoredObject.listify(
@@ -36,7 +36,27 @@ public class LoginForm {
             )
     );
 
-    public static InputForm getInstance() {
-        return form;
+    public static InputForm passwordRemindForm = new InputForm("remind",
+            new MemoryStoredObject(
+                    "fields",
+                    MemoryStoredObject.listify(
+                            MemoryStoredObject.mapify(
+                                    "name", "login_or_email",
+                                    "input",
+                                    MemoryStoredObject.mapify(
+                                            "type", "string",
+                                            "required", true
+                                    )
+                            )
+                    )
+            )
+    );
+
+    public static InputForm getLoginForm() {
+        return loginForm;
+    }
+
+    public static InputForm getPasswordRemindForm() {
+        return passwordRemindForm;
     }
 }
