@@ -3,11 +3,13 @@
 @import play.data.DynamicForm
 @import scala.List
 @import play.i18n.Messages
+@import models.Forms
+@import models.Event
 @main_with_menu(Event.current().getTitle)(List(new ResourceLink("forms.css")), List()) {
     <h1>@models.Event.current.getTitle</h1>
     @if(additionalMessage != null) {
         <p class="warning">@Messages.get(additionalMessage)
     }
     <p>Введите свои учетные данные
-    @Forms.getInstance.format(form, routes.Registration.login(models.Event.current))
+    @Forms.getLoginForm.format(form, routes.Registration.login(Event.currentId))
 }

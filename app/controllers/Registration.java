@@ -1,14 +1,19 @@
 package controllers;
 
+import controllers.actions.LoadEvent;
 import models.*;
 import models.forms.InputForm;
+import models.forms.validators.AuthenticatorValidator;
 import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.data.DynamicForm;
+import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.login;
 import views.html.register;
+import views.html.remind;
+import views.html.wait_for_email;
 
 import java.util.UUID;
 
@@ -18,12 +23,12 @@ import java.util.UUID;
  * Date: 09.01.13
  * Time: 16:39
  */
+
+@LoadEvent
 public class Registration extends Controller {
 
-    public static Result registration(Event event) {
+    public static Result registration(String eventId) {
         //TODO use form.errorsAsJson() to ajax validate form
-
-        Event.setCurrent(event);
 
         DynamicForm form = new DynamicForm();
         form = form.bindFromRequest();
@@ -32,17 +37,18 @@ public class Registration extends Controller {
         //TODO it is (almost) impossible to set breakpoint if there is a link to template
     }
 
-    public static Result doRegistration(Event event) {
-        Event.setCurrent(event);
-
+    public static Result doRegistration(String eventId) {
         DynamicForm form = new DynamicForm();
         form = form.bindFromRequest();
+        InputForm registrationForm = Event.current().getUsersForm();
 
-        MongoObject user = new MongoObject(MongoConnection.COLLECTION_NAME_USERS);
-        event.getUsersForm().getObject(user, form);
+        InputForm.FilledInputForm filledForm = registrationForm.validate(form);
 
         if (form.hasErrors())
             return ok(register.render(form));
+
+        MongoObject user = new MongoObject(MongoConnection.COLLECTION_NAME_USERS);
+        filledForm.fillObject(user);
 
         String registrationUUID = UUID.randomUUID().toString();
         String confirmationUUID = UUID.randomUUID().toString();
@@ -50,8 +56,8 @@ public class Registration extends Controller {
 
         String email = user.getString(User.FIELD_EMAIL);
         String login = user.getString(User.FIELD_LOGIN);
-        String name = user.getString("name");
-        String patronymic = user.getString("patronymic");
+        String name = user.getString(User.FIELD_NAME);
+        String patronymic = user.getString(User.FIELD_PATRONYMIC);
 
         try {
             Email.sendRegistrationConfirmationEmail(name, patronymic, email, login, password, confirmationUUID);
@@ -62,70 +68,138 @@ public class Registration extends Controller {
 
         user.put(User.FIELD_REGISTRATION_UUID, registrationUUID);
         user.put(User.FIELD_CONFIRMATION_UUID, confirmationUUID);
-        user.put(User.FIELD_EVENT, event.getId());
+        user.put(User.FIELD_EVENT, eventId);
         user.put(User.FIELD_PASS_HASH, User.passwordHash(password));
 
         user.store();
 
-        return redirect(routes.Registration.waitForEmail(Event.current(), registrationUUID));
+        return redirect(routes.Registration.waitForEmail(eventId, registrationUUID, false));
     }
 
-    public static Result waitForEmail(Event event, String uuid) {
-        Event.setCurrent(event);
-
+    public static Result waitForEmail(String eventId, String uuid, boolean passwordRecovery) {
         User user = User.getInstance(User.FIELD_REGISTRATION_UUID, uuid);
 
         if (user == null)
             return badRequest("no such registration");
 
-        String email = user.getEmail();
+        boolean isEmail = ! passwordRecovery || user.getStoredObject().getBoolean(User.FIELD_RESTORE_FOR_EMAIL, true);
 
-        return ok(views.html.wait_for_email.render(email));
+        return ok(wait_for_email.render(
+                isEmail, isEmail ? user.getEmail() : user.getLogin()
+        ));
     }
 
-    public static Result confirmRegistration(Event event, String uuid) {
-        Event.setCurrent(event);
-
+    public static Result confirmRegistration(String eventId, String uuid, boolean passwordRecovery) {
         User user = User.getInstance(User.FIELD_CONFIRMATION_UUID, uuid);
 
         if (user == null)
-            return ok(login.render(new DynamicForm(), "page.registration.already_confirmed"));
+            return ok(login.render(new DynamicForm(), passwordRecovery ? "page.recovery.already_recovered" : "page.registration.already_confirmed"));
 
-        user.getStoredObject().put(User.FIELD_REGISTRATION_UUID, null);
-        user.getStoredObject().put(User.FIELD_CONFIRMATION_UUID, null);
+        StoredObject userObject = user.getStoredObject();
+        userObject.put(User.FIELD_REGISTRATION_UUID, null);
+        userObject.put(User.FIELD_CONFIRMATION_UUID, null);
+        userObject.put(User.FIELD_CONFIRMED, true);
+
+        if (passwordRecovery)
+            userObject.put(
+                    User.FIELD_PASS_HASH,
+                    userObject.get(User.FIELD_NEW_RECOVERY_PASSWORD)
+            );
 
         user.storedObject.store();
 
         DynamicForm emptyForm = new DynamicForm();
-        return ok(login.render(emptyForm, "page.registration.confirmed"));
+        return ok(login.render(emptyForm, passwordRecovery ? "page.registration.password_recovered" : "page.registration.confirmed"));
     }
 
-    public static Result login(Event event) {
-        Event.setCurrent(event);
-
+    public static Result login(String eventId) {
         DynamicForm emptyForm = new DynamicForm();
         return ok(login.render(emptyForm, null));
     }
 
-    public static Result doLogin(Event event) {
-        Event.setCurrent(event);
-
+    public static Result doLogin(String eventId) {
         DynamicForm form = new DynamicForm();
         form = form.bindFromRequest();
 
         InputForm loginForm = Forms.getLoginForm();
-        StoredObject credentials = new MemoryStoredObject();
-        loginForm.getObject(credentials, form);
+        InputForm.FilledInputForm filledForm = loginForm.validate(form);
 
         if (form.hasErrors())
             return ok(login.render(form, null));
 
-        return null;
+        User user = (User) filledForm.getValidationData(AuthenticatorValidator.VALIDATED_USER);
+
+        session(User.getUsernameSessionKey(), user.getLogin());
+
+        return redirect(routes.UserInfo.contestsList(eventId));
     }
 
-    public static Result passwordRemind(Event event) {
-        Event.setCurrent(event);
+    public static Result passwordRemind(String eventId) {
+        return ok(remind.render(new DynamicForm()));
+    }
 
+    public static Result doPasswordRemind(String eventId) {
+        DynamicForm form = new DynamicForm();
 
+        form = form.bindFromRequest();
+
+        InputForm remindForm = Forms.getPasswordRemindForm();
+        InputForm.FilledInputForm filledForm = remindForm.validate(form);
+
+        if (form.hasErrors())
+            return ok(remind.render(form));
+
+        //let's understand what is it, email or login
+
+        String emailOrLogin = (String) filledForm.get(Forms.PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN);
+
+        boolean isEmail = emailOrLogin.indexOf('@') >= 0;
+
+        User user = User.getInstance(isEmail ? User.FIELD_EMAIL : User.FIELD_LOGIN, emailOrLogin);
+
+        if (user == null) {
+            String error_message = isEmail ? "password_remind.wrong_email" : "password_remind.wrong_login";
+            form.reject(Messages.get(error_message));
+            return ok(remind.render(form));
+        }
+
+        String newPassword = User.generatePassword();
+
+        String recoveryUUID = (String) user.getStoredObject().get(User.FIELD_REGISTRATION_UUID);
+        String confirmationUUID = (String) user.getStoredObject().get(User.FIELD_REGISTRATION_UUID);
+
+        if (recoveryUUID == null)
+            recoveryUUID = UUID.randomUUID().toString();
+        if (confirmationUUID == null)
+            confirmationUUID = UUID.randomUUID().toString();
+
+        try {
+            Email.sendPasswordRestoreEmail(
+                    (String) user.getStoredObject().get(User.FIELD_NAME),
+                    (String) user.getStoredObject().get(User.FIELD_PATRONYMIC),
+                    user.getEmail(),
+                    user.getLogin(),
+                    newPassword,
+                    confirmationUUID
+            );
+        } catch (EmailException e) {
+            Logger.error("Failed to send email", e);
+            return internalServerError("Failed to send email");
+        }
+
+        user.getStoredObject().put(User.FIELD_CONFIRMATION_UUID, confirmationUUID);
+        user.getStoredObject().put(User.FIELD_REGISTRATION_UUID, recoveryUUID);
+        user.getStoredObject().put(User.FIELD_RESTORE_FOR_EMAIL, isEmail);
+        user.getStoredObject().put(User.FIELD_NEW_RECOVERY_PASSWORD, User.passwordHash(newPassword));
+
+        user.getStoredObject().store();
+
+        return redirect(routes.Registration.waitForEmail(eventId, recoveryUUID, true));
+    }
+
+    public static Result logout(String eventId) {
+        session().clear();
+
+        return redirect(routes.Registration.login(eventId));
     }
 }

@@ -42,7 +42,12 @@ form.bbtc.login.login.placeholder=Введите имя пользователя
 form.bbtc.login.password.title=Пароль
 form.bbtc.login.password.placeholder=Введите пароль
 
+form.bbtc.remind.email_or_login.title=Имя пользователя или email
+form.bbtc.remind.email_or_login.placeholder=Введите имя пользователя или email
+form.bbtc.remind.submit=Восстановить
 
+
+error.msg.login.wrong_pattern=Имя пользователя может содержать только латинские буквы, цифры, знак - и подчеркивание _
 error.msg.kenguru_school_code=Такой код школы не зарегистрирован
 error.msg.email=Некорректный email
 error.msg.email_duplicate=Такой email уже зарегистрирован. Попробуйте восстановить пароль.
@@ -58,8 +63,19 @@ error.msg.schoolcode.no_such_school=Этого номера нет в базе
 
 error.window.title=Ошибка
 
-page.registration.already_confirmed=Регистрация уже подтверждена
+page.registration.already_confirmed=Подтверждение регистрации недействительно
 page.registration.confirmed=Регистрация успешно подтверждена
+page.registration.password_recovered=Пароль успешно заменен на новый
+page.recovery.already_recovered=Подтверждение восстановления пароля не действительно
 
 mail.registration.subject=Подтверждение регистрации. {0}
 mail.registration.body=Здравствуйте, {0} {1}!\n\nВы зарегистрировали этот email для участия в {2}. Если это не так, проигнорируйте это письмо.\n\nДля подтверждения регистрации перейдите по ссылке {3}.\n\nДля входа на сайт используйте свои учетные данные:\n\nлогин: {4}\nпароль: {5}\n\nНе отвечайте на это пиьсмо.\n\n--\nС уважением,\n    {2}
+
+mail.password_remind.subject=Восстановление пароля. {0}
+mail.password_remind.body=Здравствуйте, {0} {1}!\n\nВы заказали восстановление пароля для участния в {2}. Если это не так, проигнорируйте это письмо.\n\nВаши новые учетные данные:\n\nлогин: {4}\nпароль: {5}\n\nЧтобы новые учетные данные вступили в силу, перейдите по ссылке {3}.\n\nНе отвечайте на это пиьсмо.\n\n--\nС уважением,\n    {2}
+
+
+actions.unknown_event=Неизвестное событие
+
+password_remind.wrong_login=Пользователя с таким именем не зарегистрировано
+password_remind.wrong_email=Пользователя с таким email не зарегистрировано

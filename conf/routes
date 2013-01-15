@@ -5,16 +5,21 @@
 # Home page
 GET     /init                       controllers.Application.initialize()
 
-GET     /:event/register            controllers.Registration.registration(event:models.Event)
-POST    /:event/register            controllers.Registration.doRegistration(event:models.Event)
-GET     /:event/registered/:uuid    controllers.Registration.waitForEmail(event:models.Event, uuid)
-GET     /:event/confirm/:uuid       controllers.Registration.confirmRegistration(event:models.Event, uuid)
-GET     /:event/login               controllers.Registration.login(event:models.Event)
-POST    /:event/login               controllers.Registration.doLogin(event:models.Event)
-GET     /:event/remind              controllers.Registration.passwordRemind(event:models.Event)
+GET     /:event/register            controllers.Registration.registration(event)
+POST    /:event/register            controllers.Registration.doRegistration(event)
+GET     /:event/registered/:uuid    controllers.Registration.waitForEmail(event, uuid, passwordRecovery:Boolean=false)
+GET     /:event/recovered/:uuid     controllers.Registration.waitForEmail(event, uuid, passwordRecovery:Boolean=true)
+GET     /:event/confirm/:uuid       controllers.Registration.confirmRegistration(event, uuid, passwordRecovery:Boolean=false)
+GET     /:event/recover/:uuid       controllers.Registration.confirmRegistration(event, uuid, passwordRecovery:Boolean=true)
+GET     /:event/login               controllers.Registration.login(event)
+POST    /:event/login               controllers.Registration.doLogin(event)
+GET     /:event/remind              controllers.Registration.passwordRemind(event)
+POST    /:event/remind              controllers.Registration.doPasswordRemind(event)
+GET     /:event/logout              controllers.Registration.logout(event)
 
-# debug
-
+#user info
+GET     /:event/user_info           controllers.UserInfo.info(event)
+GET     /:event/contests            controllers.UserInfo.contestsList(event)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

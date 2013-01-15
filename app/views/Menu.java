@@ -19,17 +19,20 @@ public class Menu {
     public static List<MenuItem> current() {
         List<MenuItem> menu = new ArrayList<>();
 
+        String eventId = Event.currentId();
+
         if (User.isAuthorized()) {
-            menu.add(new MenuItem("Соревнование", null));
-            menu.add(new MenuItem("Личные данные", null));
-            menu.add(new MenuItem("Выход", null));
+            menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
+            menu.add(new MenuItem("Личные данные", routes.UserInfo.info(eventId)));
+            menu.add(new MenuItem("Выход", routes.Registration.logout(eventId)));
         } else {
-            menu.add(new MenuItem("Вход", routes.Registration.login(Event.current())));
-            menu.add(new MenuItem("Регистрация", routes.Registration.registration(Event.current())));
-            menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(Event.current())));
+            menu.add(new MenuItem("Вход", routes.Registration.login(eventId)));
+            menu.add(new MenuItem("Регистрация", routes.Registration.registration(eventId)));
+            menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(eventId)));
         }
 
-        menu.add(new MenuItem("Тренировочное соревнование", null));
+        //TODO show only if this is defined in Event
+//        menu.add(new MenuItem("Тренировочное соревнование", null));
 
         return menu;
     }

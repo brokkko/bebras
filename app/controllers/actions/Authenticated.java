@@ -1,4 +1,4 @@
-package controllers;
+package controllers.actions;
 
 import play.mvc.With;
 
@@ -13,8 +13,9 @@ import java.lang.annotation.Target;
  * Date: 03.01.13
  * Time: 19:33
  */
-@With(NeedEventAction.class)
+@With(AuthenticatedAction.class)
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NeedEvent {
+public @interface Authenticated {
+    public boolean load() default true;
 }

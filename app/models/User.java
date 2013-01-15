@@ -23,13 +23,19 @@ import java.util.Map;
  */
 public class User {
 
-    public static final String FIELD_OID = "_id";
     public static final String FIELD_LOGIN = "login";
+    public static final String FIELD_NAME = "name";
+    public static final String FIELD_PATRONYMIC = "patronymic";
     public static final String FIELD_REGISTRATION_UUID = "_registration_uuid";
     public static final String FIELD_CONFIRMATION_UUID = "_confirmation_uuid";
     public static final String FIELD_EMAIL = "email";
-    public static final String FIELD_PASS_HASH= "passhash";
-    public static final String FIELD_EVENT= "event_id";
+    public static final String FIELD_PASS_HASH = "passhash";
+    public static final String FIELD_EVENT = "event_id";
+    public static final String FIELD_CONFIRMED = "cfrmd";
+    public static final String FIELD_RESTORE_FOR_EMAIL = "_rstr_for_mail";
+    public static final String FIELD_NEW_RECOVERY_PASSWORD = "_rec_pswd";
+
+    public static final PasswordGenerator passwordGenerator = new PasswordGenerator();
 
     public StoredObject storedObject;
 
@@ -77,7 +83,7 @@ public class User {
             String username = Http.Context.current().request().username();
             if (username == null)
                 return null;
-            user = getInstance(FIELD_OID, username);
+            user = getInstance(FIELD_LOGIN, username);
             contextArgs.put("user", user);
         }
 
@@ -103,6 +109,10 @@ public class User {
     }
 
     public static String generatePassword() {
-        return "qwerty"; //TODO implement
+        return passwordGenerator.generate(6) + passwordGenerator.generateNumber(2);
+    }
+
+    public static String getUsernameSessionKey() {
+        return "user-" + Event.currentId();
     }
 }

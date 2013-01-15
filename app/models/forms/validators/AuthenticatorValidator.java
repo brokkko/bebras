@@ -2,7 +2,6 @@ package models.forms.validators;
 
 import models.User;
 import models.forms.InputForm;
-import play.data.DynamicForm;
 
 import java.util.Map;
 
@@ -13,6 +12,9 @@ import java.util.Map;
  * Time: 4:06
  */
 public class AuthenticatorValidator extends Validator {
+
+    public static String VALIDATED_USER = "user";
+
     public AuthenticatorValidator(Map<String, Object> validationParameters) {
         super(validationParameters);
         defaultMessage = "error.msg.failed_to_authenticate";
@@ -31,6 +33,8 @@ public class AuthenticatorValidator extends Validator {
 
         if (user == null)
             return message();
+
+        form.putValidationData(VALIDATED_USER, user);
 
         return null;
     }

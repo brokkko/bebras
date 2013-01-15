@@ -8,7 +8,6 @@ import models.forms.InputForm;
 import play.Logger;
 import play.cache.Cache;
 import play.mvc.Http;
-import play.mvc.PathBindable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,12 @@ import java.util.concurrent.Callable;
  * Date: 01.01.13
  * Time: 13:34
  */
-public class Event implements PathBindable<Event> {
+public class Event {
+
+    public static final Event ERROR_EVENT = new Event(new MemoryStoredObject(
+            "_id", "__no_event",
+            "title", "Unknown event" //here is no HTTP context to use Messages
+    ));
 
     private final String id;
     private final String title;
@@ -38,7 +42,11 @@ public class Event implements PathBindable<Event> {
                 contests.add(new Contest((StoredObject) contestInfo));
         }
 
-        usersForm = new InputForm("user", storedObject.getObject("users"));
+        StoredObject users = storedObject.getObject("users");
+        if (users != null)
+            usersForm = new InputForm("user", users);
+        else
+            usersForm = null;
     }
 
     public static Event getInstance(final String eventId) {
@@ -55,12 +63,38 @@ public class Event implements PathBindable<Event> {
         }
     }
 
-    public static Event current() {
-        return (Event) Http.Context.current().args.get("event");
+    private static Event current(Http.Context ctx) {
+        Event event = (Event) ctx.args.get("event");
+
+        if (event == null) {
+            //need to parse path because https://groups.google.com/forum/?fromgroups=#!topic/play-framework/sNFeqmd-mBQ
+            String path = ctx.request().path();
+            int firstSlash = path.indexOf('/');
+            int secondSlash = path.indexOf('/', firstSlash + 1);
+            if (firstSlash >= 0 && secondSlash >= 0)
+                event = getInstance(path.substring(firstSlash + 1, secondSlash));
+
+            if (event == null)
+                event = ERROR_EVENT;
+
+            ctx.args.put("event", event);
+        }
+
+        return event;
     }
 
-    public static void setCurrent(Event event) {
-        Http.Context.current().args.put("event", event); //TODO find out how to bind with an event composition
+    public static String currentId(Http.Context ctx) {
+        Event current = current(ctx);
+        return current == null ? null : current.getId();
+    }
+
+    public static Event current() {
+        return current(Http.Context.current());
+    }
+
+    public static String currentId() {
+        Event current = current();
+        return current == null ? null : current.getId();
     }
 
     private static Event createEventById(String eventId) throws Exception {
@@ -88,30 +122,4 @@ public class Event implements PathBindable<Event> {
         return usersForm;
     }
 
-    //event binding
-
-    public Event() {
-        id = null;
-        title = null;
-        contests = null;
-        usersForm = null;
-    }
-
-    @Override
-    public Event bind(String key, String path) {
-        Event event = getInstance(path);
-        if (event == null)
-            throw new IllegalArgumentException("failed to bind"); //TODO how to properly report a binding error?
-        return event;
-    }
-
-    @Override
-    public String unbind(String s) {
-        return getId();
-    }
-
-    @Override
-    public String javascriptUnbind() {
-        return "function(k,v) {return v}";
-    }
 }

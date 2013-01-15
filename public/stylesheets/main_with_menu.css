@@ -43,6 +43,7 @@ nav {
     width: 200px;
     margin: 0 0 -32000px;
     border-right: 2px solid #f5972d;
+    /*background-color: #feeca5;*/
     background: url(../images/nav01.png) repeat;
 }
 

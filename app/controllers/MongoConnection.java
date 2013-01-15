@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
+import models.User;
 import play.Configuration;
 import play.Logger;
 import play.Play;
@@ -58,9 +59,10 @@ public class MongoConnection {
     private static void createIndexes(DBCollection collection) {
         switch (collection.getName()) {
             case COLLECTION_NAME_USERS:
-                collection.createIndex(new BasicDBObject("registration_uuid", 1));
-                collection.createIndex(new BasicDBObject("confirmation_uuid", 1));
-                collection.createIndex(new BasicDBObject("event_id", 1));
+                collection.createIndex(new BasicDBObject(User.FIELD_LOGIN, 1));
+                collection.createIndex(new BasicDBObject(User.FIELD_CONFIRMATION_UUID, 1));
+                collection.createIndex(new BasicDBObject(User.FIELD_REGISTRATION_UUID, 1));
+                collection.createIndex(new BasicDBObject(User.FIELD_EVENT, 1));
                 break;
         }
     }

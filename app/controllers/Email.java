@@ -54,14 +54,25 @@ public class Email {
         return email.send();
     }
 
-    public static void sendRegistrationConfirmationEmail(String name, String patronymic, String email, String login, String password, String registrationUUID) throws EmailException {
-        String registrationLink = routes.Registration.confirmRegistration(Event.current(), registrationUUID)
+    public static void sendRegistrationConfirmationEmail(String name, String patronymic, String email, String login, String password, String confirmationUUID) throws EmailException {
+        String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, false)
                 .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();
         sendEmail(
                 email,
                 Messages.get("mail.registration.subject", title),
                 createLineBreaks(Messages.get("mail.registration.body", name, patronymic, title, registrationLink, login, password))
+        );
+    }
+
+    public static void sendPasswordRestoreEmail(String name, String patronymic, String email, String login, String password, String confirmationUUID) throws EmailException {
+        String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, true)
+                .absoluteURL(Http.Context.current().request());
+        String title = Event.current().getTitle();
+        sendEmail(
+                email,
+                Messages.get("mail.password_remind.subject", title),
+                createLineBreaks(Messages.get("mail.password_remind.body", name, patronymic, title, registrationLink, login, password))
         );
     }
 

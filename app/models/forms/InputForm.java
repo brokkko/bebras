@@ -9,9 +9,7 @@ import play.data.DynamicForm;
 import play.i18n.Messages;
 import play.mvc.Call;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -70,12 +68,12 @@ public class InputForm {
         return name;
     }
 
-    public void validate(DynamicForm form) {
+    public FilledInputForm validate(DynamicForm form) {
         for (InputField field : fields.values())
             field.validate(form);
 
         if (form.hasErrors())
-            return; //don't validate if there are errors already
+            return null;
 
         FilledInputForm filledForm = new FilledInputForm(form);
         for (Validator validator : validators) {
@@ -83,17 +81,8 @@ public class InputForm {
             if (message != null)
                 form.reject(message);
         }
-    }
 
-    public void fillObject(StoredObject receiver, DynamicForm form) {
-        for (InputField field : fields.values())
-            field.fillObject(receiver, form);
-    }
-
-    public StoredObject getObject(DynamicForm form) {
-        MemoryStoredObject result = new MemoryStoredObject();
-        fillObject(result, form);
-        return result;
+        return filledForm;
     }
 
     public InputField getField(String name) {
@@ -102,6 +91,7 @@ public class InputForm {
 
     public class FilledInputForm {
         private DynamicForm form;
+        private Map<String, Object> validatorsData = null;
 
         public FilledInputForm(DynamicForm form) {
             this.form = form;
@@ -117,6 +107,32 @@ public class InputForm {
 
         public Object get(String field) {
             return getField(field).getValue(form);
+        }
+
+        public void putValidationData(String field, Object value) {
+            if (validatorsData == null)
+                validatorsData = new HashMap<>();
+
+            validatorsData.put(field, value);
+        }
+
+        public Object getValidationData(String field) {
+            return validatorsData == null ? null : validatorsData.get(field);
+        }
+
+        public boolean hasErrors() {
+            return form.hasErrors();
+        }
+
+        public void fillObject(StoredObject receiver) {
+            for (InputField field : fields.values())
+                field.fillObject(receiver, form);
+        }
+
+        public StoredObject getObject() {
+            MemoryStoredObject result = new MemoryStoredObject();
+            fillObject(result);
+            return result;
         }
     }
 

@@ -10,12 +10,17 @@ import models.forms.InputForm;
  */
 public class Forms {
 
+    public static String LOGIN_FORM_LOGIN = "login";
+    public static String LOGIN_FORM_PASSWORD = "password";
+
+    public static String PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN = "email_or_login";
+
     public static InputForm loginForm = new InputForm("login",
             new MemoryStoredObject(
                     "fields",
                     MemoryStoredObject.listify(
                             MemoryStoredObject.mapify(
-                                    "name", "login",
+                                    "name", LOGIN_FORM_LOGIN,
                                     "input",
                                     MemoryStoredObject.mapify(
                                             "type", "string",
@@ -23,7 +28,7 @@ public class Forms {
                                     )
                             ),
                             MemoryStoredObject.mapify(
-                                    "name", "password",
+                                    "name", LOGIN_FORM_PASSWORD,
                                     "input",
                                     MemoryStoredObject.mapify(
                                             "type", "password",
@@ -41,7 +46,7 @@ public class Forms {
                     "fields",
                     MemoryStoredObject.listify(
                             MemoryStoredObject.mapify(
-                                    "name", "login_or_email",
+                                    "name", PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN,
                                     "input",
                                     MemoryStoredObject.mapify(
                                             "type", "string",

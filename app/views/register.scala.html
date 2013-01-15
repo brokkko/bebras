@@ -8,5 +8,5 @@
     <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
     После заполнения анкеты вы получите письмо с паролем, поэтому
     убедитесь, что вы правильно указали email.
-    @Event.current.getUsersForm.format(form, controllers.routes.Registration.registration(Event.current()))
+    @Event.current.getUsersForm.format(form, controllers.routes.Registration.registration(Event.currentId))
 }
