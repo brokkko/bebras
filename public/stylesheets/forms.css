@@ -6,7 +6,6 @@ form.basic-form select {
 /*All the form*/
 form.basic-form {
     /*position: relative;*/
-    line-height: 2;
     margin: 0 auto 1em auto;
     display: block;
     width: 56em;
@@ -28,16 +27,24 @@ form.basic-form select {
 /*One input field*/
 form.basic-form .controls {
     display: block;
-    padding: 0 4px;
-    margin: 4px 0;
+    padding: 1px 4px;
+    margin: 0 0 4px 0;
+    /*line-height: 1.2;*/
 }
+
+/*form.basic-form .controls:nth-child(odd) {*/
+    /*background: #F0F0F0;*/
+/*}*/
+
+/*form.basic-form .controls:nth-child(even) {*/
+    /*background: #F8F8F8;*/
+/*}*/
 
 /*input field Label*/
 form.basic-form label {
     display: inline-block;
     width: 10em;
     vertical-align: middle;
-    line-height: 1.2;
     margin-right: 16px;
 }
 
@@ -55,7 +62,7 @@ form.basic-form span.help-inline {
     width: 20em;
     margin-left: 1em;
     color: #d22100;
-    line-height: 1.2;
+    /*line-height: 1.2;*/
 }
 
 form.basic-form span.help-global {
@@ -92,7 +99,7 @@ form.basic-form .date-input-field {
     /*display: inline-block;*/
     float: right;
     width: 4.4em;
-    line-height: 1.2;
+    /*line-height: 1.2;*/
     padding-bottom: 4px;
 }
 
@@ -111,6 +118,17 @@ form.basic-form .date-input-field input {
 
 form.basic-form .date-input-field select {
     width: 11em;
+}
+
+/*Boolean input field*/
+.input-checkbox {
+    width: 1.2em;
+    height: 1.2em;
+    border: 2px #01a1de solid;
+    border-radius: 4px;
+    background-color: #FFFFFF;
+    float: left;
+    margin-right: 0.5em;
 }
 
 /*Submit button*/

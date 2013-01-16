@@ -23,20 +23,19 @@ public abstract class InputTemplate {
                 return new MultilineInputTemplate();
             case "date":
                 return new DateInputTemplate();
+            case "boolean":
+                return new BooleanInputTemplate();
         }
         throw new IllegalArgumentException("Unknown input template type '" + type + "'");
         //TODO error in template for @form(field).errors().map { e => @e.message }
     }
 
-    protected DynamicForm setFormField(DynamicForm form, String field, String value) {
-//        TODO is there an easier way?
-//        Map<String, String> map = new HashMap<>();
-//        map.put(field, (String)value);
-//
-//        return form.bind(map);
-
+    protected void setFormField(DynamicForm form, String field, String value) {
         form.data().put("data[" + field + "]", value);
-        return form;
+    }
+
+    protected void removeFormField(DynamicForm form, String field) {
+        form.data().remove("data[" + field + "]");
     }
 
     public class BindResult {

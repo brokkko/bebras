@@ -36,6 +36,8 @@ form.bbtc.user.schoolcode.title=Код школы
 form.bbtc.user.schoolcode.placeholder=Введите код школы
 form.bbtc.user.schoolname.title=Полное название школы
 form.bbtc.user.schoolname.placeholder=Введите полное название школы
+form.bbtc.user.personal_data.title=Согласен на обработку данных
+form.bbtc.user.contest_rules.title=Согласен с правилами
 
 form.bbtc.login.submit=Войти
 form.bbtc.login.login.title=Имя пользователя
@@ -46,7 +48,6 @@ form.bbtc.login.password.placeholder=Введите пароль
 form.bbtc.remind.email_or_login.title=Имя пользователя или email
 form.bbtc.remind.email_or_login.placeholder=Введите имя пользователя или email
 form.bbtc.remind.submit=Восстановить
-
 
 error.msg.login.wrong_pattern=Имя пользователя может содержать только латинские буквы, цифры, знак - и подчеркивание _
 error.msg.kenguru_school_code=Такой код школы не зарегистрирован
@@ -82,3 +83,6 @@ password_remind.wrong_login=Пользователя с таким именем 
 password_remind.wrong_email=Пользователя с таким email не зарегистрировано
 
 button.undo=Отменить
+
+hint.personal_data=<a target="blank" href="http://ru.wikisource.org/wiki/%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%B7%D0%B0%D0%BA%D0%BE%D0%BD_%D0%BE%D1%82_27.07.2006_%E2%84%96_152-%D0%A4%D0%97">Федеральный закон «О персональных данных»</a>
+hint.contest_rules=<a target="blank" href="#">Правила соревнования</a>

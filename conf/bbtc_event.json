@@ -92,6 +92,22 @@
                     "type": "string",
                     "required": true
                 }
+            },
+            {
+                "name": "personal_data",
+                "input": {
+                    "type": "boolean",
+                    "required": true,
+                    "html": "hint.personal_data"
+                }
+            },
+            {
+                "name": "contest_rules",
+                "input": {
+                    "type": "boolean",
+                    "required": true,
+                    "html": "hint.contest_rules"
+                }
             }
         ],
         "validators": []

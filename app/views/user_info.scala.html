@@ -12,5 +12,5 @@
         <p class="warning">@Messages.get(message)</p>
     }
 
-    @Event.current.getEditUserForm.format(form, routes.UserInfo.doChangeInfo(Event.currentId), true)
+    @Event.current.getEditUserForm.formatWithUndo(form, routes.UserInfo.doChangeInfo(Event.currentId))
 }

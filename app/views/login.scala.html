@@ -8,8 +8,8 @@
 @main_with_menu(Event.current().getTitle)(List(new ResourceLink("forms.css")), List()) {
     <h1>@models.Event.current.getTitle</h1>
     @if(additionalMessage != null) {
-        <p class="warning">@Messages.get(additionalMessage)
+        <p class="warning">@Messages.get(additionalMessage)</p>
     }
-    <p>Введите свои учетные данные
+    <p>Введите свои учетные данные</p>
     @Forms.getLoginForm.format(form, routes.Registration.login(Event.currentId))
 }

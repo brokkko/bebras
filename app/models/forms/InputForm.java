@@ -64,10 +64,14 @@ public class InputForm {
     }
 
     public Html format(DynamicForm form, Call call) {
-        return format(form, call, false);
+        return formatExtended(form, call, false);
     }
 
-    public Html format(DynamicForm form, Call call, boolean needUndo) {
+    public Html formatWithUndo(DynamicForm form, Call call) {
+        return formatExtended(form, call, true);
+    }
+
+    private Html formatExtended(DynamicForm form, Call call, boolean needUndo) {
         String msgKey = "form." + Event.current().getId() + "." + getName() + ".submit";
 
         List<InputField> fieldsToRender = new ArrayList<>(fields.values());
