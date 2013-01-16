@@ -20,20 +20,24 @@ import java.util.*;
 public class InputForm {
 
     private String name;
+    private String messagesName;
     private LinkedHashMap<String, InputField> fields;
     private List<Validator> validators;
 
-    public InputForm(String name, String jsonDescription) {
-        this(name, new MemoryStoredObject(jsonDescription));
-    }
-
-    public InputForm(String name, StoredObject storedObject) {
+    public InputForm(String name, StoredObject storedObject, String... invisibleFields) {
         this.name = name;
+
+        List<String> invisibleFieldsList = Arrays.asList(invisibleFields);
 
         LinkedHashMap<String, InputField> fields = new LinkedHashMap<>();
 
         for (Object field : storedObject.getList("fields")) {
-            InputField inputField = new InputField(this, (StoredObject) field);
+            StoredObject fieldObject = (StoredObject) field;
+
+            if (invisibleFieldsList.contains(fieldObject.getString("name")))
+                continue;
+
+            InputField inputField = new InputField(this, fieldObject);
             fields.put(inputField.getName(), inputField);
         }
 
@@ -60,8 +64,15 @@ public class InputForm {
     }
 
     public Html format(DynamicForm form, Call call) {
+        return format(form, call, false);
+    }
+
+    public Html format(DynamicForm form, Call call, boolean needUndo) {
         String msgKey = "form." + Event.current().getId() + "." + getName() + ".submit";
-        return views.html.fields.form.render(form, call, Messages.get(msgKey), new ArrayList<>(fields.values()));
+
+        List<InputField> fieldsToRender = new ArrayList<>(fields.values());
+
+        return views.html.fields.form.render(form, call, Messages.get(msgKey), fieldsToRender, needUndo);
     }
 
     public String getName() {
@@ -89,20 +100,20 @@ public class InputForm {
         return fields.get(name);
     }
 
+    public String getMessagesName() {
+        return messagesName == null ? name : messagesName;
+    }
+
+    public void setMessagesName(String messagesName) {
+        this.messagesName = messagesName;
+    }
+
     public class FilledInputForm {
         private DynamicForm form;
         private Map<String, Object> validatorsData = null;
 
         public FilledInputForm(DynamicForm form) {
             this.form = form;
-        }
-
-        public DynamicForm getForm() {
-            return form;
-        }
-
-        public InputForm getInputForm() {
-            return InputForm.this;
         }
 
         public Object get(String field) {
@@ -120,10 +131,6 @@ public class InputForm {
             return validatorsData == null ? null : validatorsData.get(field);
         }
 
-        public boolean hasErrors() {
-            return form.hasErrors();
-        }
-
         public void fillObject(StoredObject receiver) {
             for (InputField field : fields.values())
                 field.fillObject(receiver, form);
@@ -134,6 +141,11 @@ public class InputForm {
             fillObject(result);
             return result;
         }
+    }
+
+    public void fillForm(DynamicForm form, StoredObject source) {
+        for (InputField field : fields.values())
+            field.fillForm(form, source);
     }
 
 }

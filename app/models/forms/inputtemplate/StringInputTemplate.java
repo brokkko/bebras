@@ -26,7 +26,7 @@ public class StringInputTemplate extends InputTemplate {
     }
 
     @Override
-    public DynamicForm fillForm(DynamicForm form, String field, Object value) {
-        return setFormField(form, field, value);
+    public void fillForm(DynamicForm form, String field, Object value) {
+        setFormField(form, field, (String) value);
     }
 }

@@ -115,7 +115,7 @@ form.basic-form .date-input-field select {
 
 /*Submit button*/
 
-form.basic-form input[type="submit"] {
+form.basic-form .form-button {
     color: #ffffff;
     font-size: 1.5em;
     border: 1px solid #00008b;
@@ -125,10 +125,12 @@ form.basic-form input[type="submit"] {
     /*background: #900 url(../images/bt01.png) repeat-x 50%;*/
     text-shadow: 1px 1px 2px #00008b;
     border-radius: 4px;
+    text-decoration: none;
 }
 
-form.basic-form input[type="submit"]:hover {
-    color: #fff0b6;
+form.basic-form .form-button:hover {
+    color: /*#f5972d*/ #ffe380;
+    cursor: pointer;
 }
 
 form.basic-form .error {

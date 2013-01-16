@@ -28,11 +28,15 @@ public abstract class InputTemplate {
         //TODO error in template for @form(field).errors().map { e => @e.message }
     }
 
-    protected DynamicForm setFormField(DynamicForm form, String field, Object value) {
-        //TODO is there an easier way?
-        Map<String, String> map = new HashMap<>();
-        map.put(field, (String)value);
-        return form.bind(map);
+    protected DynamicForm setFormField(DynamicForm form, String field, String value) {
+//        TODO is there an easier way?
+//        Map<String, String> map = new HashMap<>();
+//        map.put(field, (String)value);
+//
+//        return form.bind(map);
+
+        form.data().put("data[" + field + "]", value);
+        return form;
     }
 
     public class BindResult {
@@ -69,6 +73,6 @@ public abstract class InputTemplate {
 
     public abstract BindResult getObject(DynamicForm form, String field);
 
-    public abstract DynamicForm fillForm(DynamicForm form, String field, Object value);
+    public abstract void fillForm(DynamicForm form, String field, Object value);
 
 }

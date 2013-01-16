@@ -19,6 +19,7 @@ GET     /:event/logout              controllers.Registration.logout(event)
 
 #user info
 GET     /:event/user_info           controllers.UserInfo.info(event)
+POST    /:event/user_info           controllers.UserInfo.doChangeInfo(event)
 GET     /:event/contests            controllers.UserInfo.contestsList(event)
 
 # Map static resources from the /public folder to the /assets URL path

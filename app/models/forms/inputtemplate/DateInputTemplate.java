@@ -63,16 +63,16 @@ public class DateInputTemplate extends InputTemplate {
     }
 
     @Override
-    public DynamicForm fillForm(DynamicForm form, String field, Object value) {
-        Map<String, String> result = new HashMap<>();
+    public void fillForm(DynamicForm form, String field, Object value) {
+        if (value == null)
+            return;
+
         GregorianCalendar date = new GregorianCalendar();
         date.setTime((Date) value);
 
-        result.put(field + "[day]", "" + date.get(GregorianCalendar.DAY_OF_MONTH));
-        result.put(field + "[month]", "" + date.get(GregorianCalendar.MONTH));
-        result.put(field + "[year]", "" + date.get(GregorianCalendar.YEAR));
-
-        return form.bind(result);
+        setFormField(form, field + "[day]", "" + date.get(GregorianCalendar.DAY_OF_MONTH));
+        setFormField(form, field + "[month]", "" + date.get(GregorianCalendar.MONTH));
+        setFormField(form, field + "[year]", "" + date.get(GregorianCalendar.YEAR));
     }
 
     private Integer str2int(String value) {

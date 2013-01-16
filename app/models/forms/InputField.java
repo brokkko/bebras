@@ -109,7 +109,7 @@ public class InputField {
         return inputConfiguration;
     }
 
-    public InputTemplate getInputTemplate() {
-        return inputTemplate;
+    public void fillForm(DynamicForm form, StoredObject object) {
+        inputTemplate.fillForm(form, name, object.get(name));
     }
 }

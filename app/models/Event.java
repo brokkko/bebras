@@ -30,6 +30,7 @@ public class Event {
     private final String title;
     private final List<Contest> contests;
     private final InputForm usersForm;
+    private final InputForm editUserForm;
 
     private Event(StoredObject storedObject) {
         this.id = storedObject.getString("_id");
@@ -43,10 +44,14 @@ public class Event {
         }
 
         StoredObject users = storedObject.getObject("users");
-        if (users != null)
+        if (users != null) {
             usersForm = new InputForm("user", users);
-        else
+            editUserForm = new InputForm("user_edit", users, "login", "email");
+            editUserForm.setMessagesName("user"); //TODO invent something better
+        } else {
             usersForm = null;
+            editUserForm = null;
+        }
     }
 
     public static Event getInstance(final String eventId) {
@@ -120,6 +125,10 @@ public class Event {
 
     public InputForm getUsersForm() {
         return usersForm;
+    }
+
+    public InputForm getEditUserForm() {
+        return editUserForm;
     }
 
 }

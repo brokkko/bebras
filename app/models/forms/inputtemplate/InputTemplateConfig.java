@@ -31,7 +31,7 @@ public class InputTemplateConfig {
                     return false;
                 case "title":
                 case "placeholder":
-                    return Messages.get("form." + Event.current().getId() + "." + field.getForm().getName() + "." + field.getName() + "." + key);
+                    return Messages.get("form." + Event.current().getId() + "." + field.getForm().getMessagesName() + "." + field.getName() + "." + key);
             }
 
         return value;

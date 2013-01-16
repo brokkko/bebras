@@ -1,7 +1,8 @@
-@(form: DynamicForm, action:Call, submit_text:String, fields:List[models.forms.InputField])
+@(form: DynamicForm, action:Call, submit_text:String, fields:List[models.forms.InputField], need_undo:Boolean)
 @import models.forms.inputtemplate.InputTemplate
 @import play.data.DynamicForm
 @import play.mvc.Call
+@import play.mvc.Http
 <form class="basic-form" action="@action" method="POST">
     @if(form.globalErrors().size > 0) {
         <span class="help-global">@form.globalErrors().map { e => @e.message}.mkString(", ")</span>
@@ -23,6 +24,9 @@
     }
     </fieldset>
     <div class="form-actions">
-        <input type="submit" value="@submit_text" class="btn btn-primary">
+        <input type="submit" value="@submit_text" class="form-button">
+        @if(need_undo) {
+            <a href="@Http.Context.current().request.uri" class="form-button">@Messages("button.undo")</a>
+        }
     </div>
 </form>
