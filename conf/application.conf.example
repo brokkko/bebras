@@ -45,6 +45,7 @@ application.langs="en"
 # Logger
 # ~~~~~
 # You can also configure logback (http://logback.qos.ch/), by providing a logger.xml file in the conf directory .
+# levels: TRACE DEBUG INFO WARN ERROR
 
 # Root logger:
 logger.root=ERROR
@@ -55,3 +56,24 @@ logger.play=INFO
 # Logger provided to your application:
 logger.application=DEBUG
 
+mongodb.db=bbtc
+mongodb.host=localhost
+mongodb.port=27017
+
+resources.local=false
+
+# mail.host=localhost
+# mail.port=25
+# mail.from="test@iposov.mail.narod.ru"
+# mail.from_name=Ilya Posov
+
+mail.host=smtp.yandex.ru
+mail.port=465
+mail.ssl=true
+mail.tls=true
+mail.login="test@iposov.mail.narod.ru"
+mail.password=asdfasdfzxcvzxcv
+mail.from="test@iposov.mail.narod.ru"
+mail.from_name=Ilya Posov
+
+salt=12c1b734df23fabc371cd5a8331ef49a #exactly 16 bytes in HEX needed

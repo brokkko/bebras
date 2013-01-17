@@ -46,12 +46,16 @@ public class Event {
         StoredObject users = storedObject.getObject("users");
         if (users != null) {
             usersForm = new InputForm("user", users);
-            editUserForm = new InputForm("user_edit", users, "login", "email");
+            editUserForm = new InputForm("user_edit", users, "login", "email", "personal_data", "contest_rules"); //TODO get this info from somewhere else
+            //TODO don't save personal_data and contest_rules to the user object
             editUserForm.setMessagesName("user"); //TODO invent something better
         } else {
             usersForm = null;
             editUserForm = null;
         }
+
+        //TODO enters site before confirmation
+        //TODO choose where to go if authorized
     }
 
     public static Event getInstance(final String eventId) {

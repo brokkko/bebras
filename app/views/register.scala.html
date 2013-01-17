@@ -3,7 +3,7 @@
 @import views.MenuItem
 @import play.data.DynamicForm
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List()) {
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) {
     <h1>Регистрация участника</h1>
     <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
     После заполнения анкеты вы получите письмо с паролем, поэтому

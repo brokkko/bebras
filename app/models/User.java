@@ -84,6 +84,7 @@ public class User {
             if (username == null)
                 return null;
             user = getInstance(FIELD_LOGIN, username);
+
             contextArgs.put("user", user);
         }
 
