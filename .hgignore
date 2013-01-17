@@ -11,3 +11,4 @@
 ^.classpath/
 ^.project/
 ^/RUNNING_PID$
+^conf/application.conf$
