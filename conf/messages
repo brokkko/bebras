@@ -36,6 +36,8 @@ form.bbtc.user.schoolcode.title=Код школы
 form.bbtc.user.schoolcode.placeholder=Введите код школы
 form.bbtc.user.schoolname.title=Полное наименование школы
 form.bbtc.user.schoolname.placeholder=Введите полное наименование школы
+form.bbtc.user.schooladdr.title=Почтовый адрес школы
+form.bbtc.user.schooladdr.placeholder=(Это поле будет улучшено)
 form.bbtc.user.personal_data.title=Согласен на обработку данных
 form.bbtc.user.contest_rules.title=Согласен с правилами
 
