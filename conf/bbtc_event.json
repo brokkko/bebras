@@ -94,6 +94,13 @@
                 }
             },
             {
+                "name": "schooladdr",
+                "input": {
+                    "type": "string",
+                    "required": true
+                }
+            },
+            {
                 "name": "personal_data",
                 "input": {
                     "type": "boolean",

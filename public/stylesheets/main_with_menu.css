@@ -1,29 +1,24 @@
-h1 {
+/* text on page */
+.content h1 {
     font-size: 2em;
     margin: 0.5em 0;
 }
 
-p {
+.content p {
     padding-bottom: 1em;
 }
 
-html, body {
-    height: 100%;
-
-    background: url(../images/header01.png);
-}
-
-/*.nav-contents {*/
-    /*position: relative;*/
-/*}*/
-
-p.warning {
+.content p.warning {
     color: #d22100;
 }
 
+/* two columns layout */
+html, body {
+    height: 100%;
+}
+
 header {
-    /*background-color: #01a1de;*/
-    background: url(../images/header01.png);
+    background: #01a1de url(../images/header01.png);
     border-bottom: 2px #00008b solid;
     font-size: 2em;
     color: #fff0b2;
@@ -32,57 +27,75 @@ header {
     font-family: "Arial", serif;
     font-weight: 600;
     text-shadow: 2px 2px 2px #00008b;
-
     height: 34px; /*2em + 2px*/
 }
 
 nav {
     float: left;
-    line-height: 1.5;
-    padding: 10px 0 32010px;
     width: 200px;
+
+    padding: 10px 0 32010px;
     margin: 0 0 -32000px;
-    border-right: 2px solid #f5972d;
-    /*background-color: #feeca5;*/
-    background: url(../images/nav01.png) repeat;
+
+    line-height: 1.5;
 }
 
-nav img {
-    display: block;
-    margin: 0 auto 1em;
+.wrapper {
+    background: #feeca5 url(../images/nav01.png) repeat;
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin-bottom: -32px; /*the same as footer height + 2px border + 2 x 2px padding*/
+    overflow:hidden;
 }
 
-div.content {
-    /*margin: 1em 1em 1em 216px;*/
+.content {
     margin: 0 0 -32000px 200px;
     padding: 1em 1em 32010px;
     background-color: white;
+    border-left: 2px solid #f5972d;
 }
 
 footer {
     text-align: center;
     font-size: 0.75em;
     color: white;
-    /*background-color: #01a1de;*/
     padding: 2px;
 
-    /*background: url(../images/header01.png);*/
+    background: #01a1de url(../images/header01.png);
     border-top: 2px #00008b solid;
 
     position: relative;
-    /*height: 14px; *//*0.75 * 16em + 2px*/
-
-    /*position: absolute;*/
-    /*bottom: 0;*/
-    /*width: 100%;*/
+    height: 26px; /*0.75 em + 0.75 em */
 }
+
+.push {
+    height: 32px; /* the same as for footer + 2px border + 2 x 2px padding*/
+}
+
+/* footer content */
 
 .developed-in-kio {
     float: right;
     position: absolute;
-    top: 0.5em;
+    top: 8px;
     right: 0;
     margin-right: 1em;
+}
+
+.developed-in-kio a {
+    color: white;
+}
+
+.developed-in-kio a:hover {
+    text-decoration: none;
+}
+
+/* navigation content */
+
+nav img {
+    display: block;
+    margin: 0 auto 1em;
 }
 
 .nav-contents {
