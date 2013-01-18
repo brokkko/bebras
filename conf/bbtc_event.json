@@ -96,24 +96,21 @@
             {
                 "name": "schooladdr",
                 "input": {
-                    "type": "string",
-                    "required": true
+                    "type": "address"
                 }
             },
             {
                 "name": "personal_data",
                 "input": {
                     "type": "boolean",
-                    "required": true,
-                    "html": "hint.personal_data"
+                    "required": true
                 }
             },
             {
                 "name": "contest_rules",
                 "input": {
                     "type": "boolean",
-                    "required": true,
-                    "html": "hint.contest_rules"
+                    "required": true
                 }
             }
         ],
