@@ -27,6 +27,8 @@ public class InputField {
 
     private final List<Validator> validators;
 
+//    private final Html hint;
+//
     public InputForm getForm() {
         return form;
     }

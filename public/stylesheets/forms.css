@@ -3,71 +3,52 @@ form.basic-form select {
     font-size: inherit;
 }
 
-/*All the form*/
-form.basic-form {
-    /*position: relative;*/
-    margin: 0 auto 1em auto;
-    display: block;
-    width: 56em;
+.basic-form {
+    margin-left: 4em;
 }
 
-form.basic-form input {
-    border: 2px #01a1de solid;
-    border-radius: 4px;
-    padding: 2px 4px;
+.basic-form .controls {
+    /*border: 1px solid #AAA;*/
+    border-top-width: 0;
+
+    /*overflow: auto; *//* http://www.quirksmode.org/css/clearing.html */
+    /*width: 100%;*/
+    position: relative;
 }
 
-form.basic-form select {
-    border: 2px #01a1de solid;
-    border-radius: 4px;
-    padding: 2px 4px;
-    background-color: #ffffff;
+.basic-form .controls.error {
+    background-color: #ffd5bf;
+    margin: 2px 0;
 }
 
-/*One input field*/
-form.basic-form .controls {
-    display: block;
-    padding: 1px 4px;
-    margin: 0 0 4px 0;
-    /*line-height: 1.2;*/
-}
-
-/*form.basic-form .controls:nth-child(odd) {*/
-    /*background: #F0F0F0;*/
-/*}*/
-
-/*form.basic-form .controls:nth-child(even) {*/
-    /*background: #F8F8F8;*/
-/*}*/
-
-/*input field Label*/
-form.basic-form label {
-    display: inline-block;
-    width: 10em;
-    vertical-align: middle;
-    margin-right: 16px;
-}
-
-/*input field controls*/
-form.basic-form .form-field-input {
-    display: inline-block;
-    vertical-align: middle;
-    width: 20em;
-}
-
-/*input field errors */
-form.basic-form span.help-inline {
-    display: inline-block;
-    vertical-align: middle;
-    width: 20em;
-    margin-left: 1em;
+.basic-form .error-inline {
     color: #d22100;
-    /*line-height: 1.2;*/
+    margin-top: 4px;
+    /*margin-left: 336px;*/
+    padding: 4px;
+    clear: both;
 }
 
-form.basic-form span.help-global {
-    color: #d22100;
-    padding: 0 4px;
+.basic-form .error-inline-empty {
+    clear: both;
+}
+
+.basic-form .controls:nth-child(1) {
+    /*border-top-width: 1px;*/
+}
+
+.basic-form .controls label {
+    display: block;
+    margin-left: 336px;
+    height:100%;
+    padding-top: 0.7em;
+}
+
+.basic-form .form-field-input {
+    padding: 4px;
+    width: 320px;
+    float: left;
+    clear: left;
 }
 
 /*required field*/
@@ -75,63 +56,96 @@ form.basic-form small {
     color: #d22100;
 }
 
-/*form actions*/
-form.basic-form div.form-actions {
-    width: 30em;
-    text-align: center;
-    margin-top: 0.5em;
-}
-
-/*text input field*/
+/* text input */
 form.basic-form .input-text {
-    float: right;
-    width: 20em;
+    border: 2px #01a1de solid;
+    border-radius: 4px;
+    padding: 2px 4px;
+    width: 308px; /*320 - 2 * padding - 2 * border*/
 }
 
-/*date input field*/
-form.basic-form .date-input-fields {
-    /*float: right;*/
-    text-align: right;
-    margin: 6px 0;
+form.basic-form .input-checkbox {
+    border: 2px #01a1de solid;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    margin-left: 151px;
+}
+
+/* date input */
+form.basic-form .date-input-forms span {
+    float: left;
+    height: 1em;
+    margin-top: 8px;
+}
+
+form.basic-form .date-input-month span {
+    margin-top: 10px;
+}
+
+form.basic-form .date-input-forms input {
+    width: 200px;
+    float: right;
+    border: 2px #01a1de solid;
+    border-radius: 4px;
+    padding: 2px 4px;
+}
+
+form.basic-form .date-input-forms select {
+    width: 200px;
+    float: right;
+    border: 2px #01a1de solid;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: 4px 0;
+    background-color: white;
+
+    box-sizing:content-box;
+    -ms-box-sizing:content-box;
+    -moz-box-sizing:content-box;
+    -webkit-box-sizing:content-box;
+}
+
+form.basic-form .date-input-forms .grayed {
+    color: #888;
 }
 
 form.basic-form .date-input-field {
-    /*display: inline-block;*/
+    overflow: auto;
+}
+
+/* address input */
+
+form.basic-form .addr-input-field span {
+    float: left;
+    height: 1em;
+    margin-top: 8px;
+}
+
+form.basic-form .addr-input-field input {
+    width: 100px;
     float: right;
-    width: 4.4em;
-    /*line-height: 1.2;*/
-    padding-bottom: 4px;
-}
-
-form.basic-form .date-input-field.date-input-month {
-    width: 11.2em;
-}
-
-form.basic-form .date-input-field span {
-    display: block;
-    text-align: center;
-}
-
-form.basic-form .date-input-field input {
-    width: 3.2em;
-}
-
-form.basic-form .date-input-field select {
-    width: 11em;
-}
-
-/*Boolean input field*/
-.input-checkbox {
-    width: 1.2em;
-    height: 1.2em;
     border: 2px #01a1de solid;
     border-radius: 4px;
-    background-color: #FFFFFF;
-    float: left;
-    margin-right: 0.5em;
+    padding: 2px 4px;
+    margin: 2px 0;
 }
 
-/*Submit button*/
+form.basic-form .addr-input-field.city input,
+form.basic-form .addr-input-field.street input {
+    width: 200px;
+}
+
+form.basic-form .addr-input-field {
+    overflow: auto;
+}
+
+/* submit buttons */
+
+.form-actions {
+    width: 320px;
+    text-align: center;
+}
 
 form.basic-form .form-button {
     color: #ffffff;
@@ -139,6 +153,7 @@ form.basic-form .form-button {
     border: 1px solid #00008b;
     /*border: 1px solid #01a1de;*/
     padding: 4px 8px;
+    margin: 4px;
     background-color: #01a1de;
     /*background: #900 url(../images/bt01.png) repeat-x 50%;*/
     text-shadow: 1px 1px 2px #00008b;

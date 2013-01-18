@@ -25,9 +25,10 @@ public abstract class InputTemplate {
                 return new DateInputTemplate();
             case "boolean":
                 return new BooleanInputTemplate();
+            case "address":
+                return new AddressInputTemplate();
         }
         throw new IllegalArgumentException("Unknown input template type '" + type + "'");
-        //TODO error in template for @form(field).errors().map { e => @e.message }
     }
 
     protected void setFormField(DynamicForm form, String field, String value) {

@@ -1,0 +1,20 @@
+@(form:DynamicForm, field: String)
+@import play.data.DynamicForm
+<fieldset>
+    <div class='addr-input-field index'>
+        <span>@Messages("addr.index")</span>
+        <input type="text" value="@form(field + "[index]").value" name="@(field)[index]" placeholder="@Messages("addr.index.placeholder")">
+    </div>
+    <div class='addr-input-field city'>
+        <span>@Messages("addr.city")</span>
+        <input type="text" value="@form(field + "[city]").value" name="@(field)[city]" placeholder="@Messages("addr.city.placeholder")">
+    </div>
+    <div class='addr-input-field street'>
+        <span>@Messages("addr.street")</span>
+        <input type="text" value="@form(field + "[street]").value" name="@(field)[street]" placeholder="@Messages("addr.street.placeholder")">
+    </div>
+    <div class='addr-input-field house'>
+        <span>@Messages("addr.house")</span>
+        <input type="text" value="@form(field + "[house]").value" name="@(field)[house]" placeholder="@Messages("addr.house.placeholder")">
+    </div>
+</fieldset>

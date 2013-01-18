@@ -15,11 +15,16 @@
     *@
     @for(field <- fields) {
         <div class="controls @if(form(field.getName).hasErrors) {error}">
-            <label>@field.getInputConfiguration.getTitle @if(field.getInputConfiguration.isRequired) {<small>*</small>}</label>
             <div class='form-field-input'>
                 @field.format(form)
             </div>
-            <span class="help-inline">@form(field.getName).errors().map { e => @e.message}.mkString(", ")</span>
+            <label>@field.getInputConfiguration.getTitle @if(field.getInputConfiguration.isRequired) {<small>*</small>}</label>
+            @*@if(field.getHint != null) {<span class="help-inline">field.getHint</span>}*@
+            @if(form(field.getName).errors().size() > 0) {
+            <div class="error-inline">@form(field.getName).errors().map { e => @e.message}.mkString(", ")</div>
+            } else {
+            <div class="error-inline-empty"></div>
+            }
         </div>
     }
     </fieldset>

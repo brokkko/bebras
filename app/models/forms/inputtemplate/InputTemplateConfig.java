@@ -2,6 +2,7 @@ package models.forms.inputtemplate;
 
 import models.Event;
 import models.forms.InputField;
+import play.api.templates.Html;
 import play.i18n.Messages;
 
 import java.util.Map;
@@ -31,7 +32,11 @@ public class InputTemplateConfig {
                     return false;
                 case "title":
                 case "placeholder":
-                    return Messages.get("form." + Event.current().getId() + "." + field.getForm().getMessagesName() + "." + field.getName() + "." + key);
+                    String msg = Messages.get("form." + Event.current().getId() + "." + field.getForm().getMessagesName() + "." + field.getName() + "." + key);
+                    if (key.equals("title"))
+                        return new Html(msg);
+                    else
+                        return msg;
             }
 
         return value;
@@ -41,8 +46,8 @@ public class InputTemplateConfig {
         return (Boolean) get("required");
     }
 
-    public String getTitle() {
-        return (String) get("title");
+    public Html getTitle() {
+        return (Html) get("title");
     }
 
     public String getPlaceholder() {
