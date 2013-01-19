@@ -5,7 +5,7 @@
 @import play.mvc.Http
 <form class="basic-form" action="@action" method="POST">
     @if(form.globalErrors().size > 0) {
-        <span class="help-global">@form.globalErrors().map { e => @e.message}.mkString(", ")</span>
+        <span class="error-global">@form.globalErrors().map { e => @e.message}.mkString(", ")</span>
     }
     <fieldset>
     @*
@@ -15,23 +15,22 @@
     *@
     @for(field <- fields) {
         <div class="controls @if(form(field.getName).hasErrors) {error}">
+            <label>@field.getInputConfiguration.getTitle @if(field.getInputConfiguration.isRequired) {<small>*</small>}</label>
+            @if(form(field.getName).errors().size() > 0) {
+                <div class="error-inline">@form(field.getName).errors().map { e => @e.message}.mkString(", ")</div>
+            }
             <div class='form-field-input'>
                 @field.format(form)
             </div>
-            <label>@field.getInputConfiguration.getTitle @if(field.getInputConfiguration.isRequired) {<small>*</small>}</label>
-            @*@if(field.getHint != null) {<span class="help-inline">field.getHint</span>}*@
-            @if(form(field.getName).errors().size() > 0) {
-            <div class="error-inline">@form(field.getName).errors().map { e => @e.message}.mkString(", ")</div>
-            } else {
             <div class="error-inline-empty"></div>
-            }
+            @*@if(field.getHint != null) {<span class="help-inline">field.getHint</span>}*@
         </div>
     }
     </fieldset>
     <div class="form-actions">
         <input type="submit" value="@submit_text" class="form-button">
         @if(need_undo) {
-            <a href="@Http.Context.current().request.uri" class="form-button">@Messages("button.undo")</a>
+            <input type="button" class="form-button form-undo" value="@Messages("button.undo")">
         }
     </div>
 </form>

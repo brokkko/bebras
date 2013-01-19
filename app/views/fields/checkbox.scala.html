@@ -2,5 +2,5 @@
 @import play.data.DynamicForm
 <input class='input-checkbox' type="checkbox" value="1" name="@field" @if(form(field).value == "1") { checked="checked" }>
 @if(html != null) {
-    @html
+    <span class="checkbox-hint">@html</span>
 }
