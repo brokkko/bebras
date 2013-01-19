@@ -63,6 +63,7 @@ form.bbtc.remind.submit=Восстановить
 error.msg.login.wrong_pattern=Логин может содержать только латинские буквы, цифры, знак - и подчеркивание _
 error.msg.kenguru_school_code=Такой код школы не зарегистрирован
 error.msg.email=Некорректный email
+error.msg.phone=Введенные данные не похожи на номер телефона
 error.msg.email_duplicate=Такой email уже зарегистрирован. Попробуйте восстановить пароль.
 error.msg.failed_to_authenticate=Неверно указан логин или пароль
 error.msg.required=Поле должно быть заполнено
@@ -78,6 +79,9 @@ error.msg.addr.no_house=Не указан номер дома
 error.msg.login=Такой логин уже зарегистрирован. Выберите себе другой логин
 error.msg.schoolcode.wrong_pattern=Номер школы должен состоять из 8 цифр
 error.msg.schoolcode.no_such_school=Этого номера нет в базе
+error.msg.birthday.too.young=Для участия в соревновании необходимо быть старше 18 лет
+error.msg.birthday.too.old=Для участия в соревновании необходимо быть младше 100 лет
+error.msg.birthday.need.born=Для участия в соревновании необходимо родиться
 
 error.window.title=Ошибка
 

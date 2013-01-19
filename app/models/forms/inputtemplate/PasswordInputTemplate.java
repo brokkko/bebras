@@ -26,6 +26,6 @@ public class PasswordInputTemplate extends InputTemplate {
 
     @Override
     public void fillForm(DynamicForm form, String field, Object value) {
-        setFormField(form, field, ""); //no password
+        removeFormField(form, field); //no password is ever filled
     }
 }

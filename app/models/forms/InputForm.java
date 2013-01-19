@@ -92,7 +92,7 @@ public class InputForm {
 
         FilledInputForm filledForm = new FilledInputForm(form);
         for (Validator validator : validators) {
-            String message = validator.validate(filledForm);
+            @SuppressWarnings("unchecked") String message = validator.validate(filledForm);
             if (message != null)
                 form.reject(message);
         }

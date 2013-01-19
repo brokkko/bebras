@@ -64,8 +64,12 @@ public class DateInputTemplate extends InputTemplate {
 
     @Override
     public void fillForm(DynamicForm form, String field, Object value) {
-        if (value == null)
+        if (value == null) {
+            removeFormField(form, field + "[day]");
+            removeFormField(form, field + "[month]");
+            removeFormField(form, field + "[year]");
             return;
+        }
 
         GregorianCalendar date = new GregorianCalendar();
         date.setTime((Date) value);

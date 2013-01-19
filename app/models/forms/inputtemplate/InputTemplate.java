@@ -31,11 +31,11 @@ public abstract class InputTemplate {
         throw new IllegalArgumentException("Unknown input template type '" + type + "'");
     }
 
-    protected void setFormField(DynamicForm form, String field, String value) {
+    public static void setFormField(DynamicForm form, String field, String value) {
         form.data().put("data[" + field + "]", value);
     }
 
-    protected void removeFormField(DynamicForm form, String field) {
+    public static void removeFormField(DynamicForm form, String field) {
         form.data().remove("data[" + field + "]");
     }
 
@@ -76,3 +76,4 @@ public abstract class InputTemplate {
     public abstract void fillForm(DynamicForm form, String field, Object value);
 
 }
+

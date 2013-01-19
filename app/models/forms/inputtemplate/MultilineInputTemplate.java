@@ -27,6 +27,9 @@ public class MultilineInputTemplate extends InputTemplate {
 
     @Override
     public void fillForm(DynamicForm form, String field, Object value) {
-        setFormField(form, field, (String) value);
+        if (value == null)
+            removeFormField(form, field);
+        else
+            setFormField(form, field, (String) value);
     }
 }

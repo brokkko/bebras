@@ -55,8 +55,13 @@ public class AddressInputTemplate extends InputTemplate {
 
     @Override
     public void fillForm(DynamicForm form, String field, Object value) {
-        if (value == null)
+        if (value == null) {
+            removeFormField(form, field + "[index]");
+            removeFormField(form, field + "[city]");
+            removeFormField(form, field + "[street]");
+            removeFormField(form, field + "[house]");
             return;
+        }
 
         @SuppressWarnings("unchecked")
         Address addr = smthToAddress(value);
