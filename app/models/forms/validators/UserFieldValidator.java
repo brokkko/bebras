@@ -10,7 +10,7 @@ import java.util.Map;
  * Date: 04.01.13
  * Time: 16:32
  */
-public class UserFieldValidator extends Validator {
+public class UserFieldValidator extends Validator<String> {
     //TODO make the same for other fields
 
     public UserFieldValidator(Map<String, Object> validationParameters) {
@@ -18,9 +18,7 @@ public class UserFieldValidator extends Validator {
     }
 
     @Override
-    public String validate(Object value) {
-        String login = (String)value;
-
+    public String validate(String login) {
         User user = User.getInstance((String) validationParameters.get("field"), login);
 
         return user == null ? null : message();

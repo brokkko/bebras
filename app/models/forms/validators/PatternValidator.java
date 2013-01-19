@@ -8,16 +8,16 @@ import java.util.Map;
  * Date: 02.01.13
  * Time: 17:44
  */
-public class PatternValidator extends Validator {
+public class PatternValidator extends Validator<String> {
 
     public PatternValidator(Map<String, Object> validationParameters) {
         super(validationParameters);
     }
 
     @Override
-    public String validate(Object value) {
+    public String validate(String value) {
         String pattern = (String) validationParameters.get("pattern");
-        if (! ((String) value).matches(pattern))
+        if (! value.matches(pattern))
             return message();
         return null;
     }

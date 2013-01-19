@@ -43,13 +43,33 @@
             {
                 "name": "birthday",
                 "input": {
-                    "type": "date"
+                    "type": "date",
+                    "validators": [
+                        {
+                            "type": "date",
+                            "comparison": "<= now + 0 Y",
+                            "message": "error.msg.birthday.need.born"
+                        },
+                        {
+                            "type": "date",
+                            "comparison": "<= now - 18 Y",
+                            "message": "error.msg.birthday.too.young"
+                        },
+                        {
+                            "type": "date",
+                            "comparison": ">= now - 100 Y",
+                            "message": "error.msg.birthday.too.old"
+                        }
+                    ]
                 }
             },
             {
                 "name": "phone",
                 "input": {
-                    "type": "string"
+                    "type": "string",
+                    "validator": {
+                        "type": "phone"
+                    }
                 }
             },
             {
@@ -103,14 +123,16 @@
                 "name": "personal_data",
                 "input": {
                     "type": "boolean",
-                    "required": true
+                    "required": true,
+                    "html": "hint.personal_data"
                 }
             },
             {
                 "name": "contest_rules",
                 "input": {
                     "type": "boolean",
-                    "required": true
+                    "required": true,
+                    "html": "hint.contest_rules"
                 }
             }
         ],

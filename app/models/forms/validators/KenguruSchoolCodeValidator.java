@@ -15,7 +15,7 @@ import java.util.concurrent.Callable;
  * Date: 05.01.13
  * Time: 22:58
  */
-public class KenguruSchoolCodeValidator extends Validator {
+public class KenguruSchoolCodeValidator extends Validator<String> {
 
     public KenguruSchoolCodeValidator(Map<String, Object> validationParameters) {
         super(validationParameters);
@@ -23,9 +23,7 @@ public class KenguruSchoolCodeValidator extends Validator {
     }
 
     @Override
-    public String validate(Object value) {
-        String code = (String) value;
-
+    public String validate(String code) {
         if (getSchoolCodes().contains(code))
             return null;
         else

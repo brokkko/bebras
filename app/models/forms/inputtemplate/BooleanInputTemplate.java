@@ -27,7 +27,7 @@ public class BooleanInputTemplate extends InputTemplate {
 
     @Override
     public void fillForm(DynamicForm form, String field, Object value) {
-        if (value != null && (Boolean)value)
+        if (value != null && (Boolean) value)
             setFormField(form, field, "1");
         else
             removeFormField(form, field);

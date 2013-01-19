@@ -10,15 +10,14 @@ import java.util.Map;
  * Date: 02.01.13
  * Time: 17:57
  */
-public class EmailValidator extends Validator {
+public class EmailValidator extends Validator<String> {
     public EmailValidator(Map<String, Object> validationParameters) {
         super(validationParameters);
         defaultMessage = "error.msg.email";
     }
 
     @Override
-    public String validate(Object value) {
-        String email = (String) value;
+    public String validate(String email) {
         if (email.indexOf('@') < 0)
             return message();
 

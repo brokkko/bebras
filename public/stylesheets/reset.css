@@ -51,3 +51,12 @@ body {
     font-size:16px;
     font-family: "tahoma", "arial", "verdana", sans-serif, "Lucida Sans", sans-serif;
 }
+
+noscript {
+    display: block;
+    background-color: #ff6666;
+    color: white;
+    padding: 4px;
+    font-size: 1.4em;
+    border: 4px red solid;
+}

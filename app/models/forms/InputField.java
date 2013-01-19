@@ -87,8 +87,11 @@ public class InputField {
             return;
         }
 
+        if (value == null) //don't validate field if it is empty and is not required
+            return;
+
         for (Validator validator : validators) {
-            String message = validator.validate(value);
+            @SuppressWarnings("unchecked") String message = validator.validate(value);
             if (message != null) {
                 form.reject("data[" + name + "]", message);
                 break; //TODO to think, may be sometimes we need to validate all
@@ -112,6 +115,7 @@ public class InputField {
     }
 
     public void fillForm(DynamicForm form, StoredObject object) {
-        inputTemplate.fillForm(form, name, object.get(name));
+        Object value = object.get(name);
+        inputTemplate.fillForm(form, name, value);
     }
 }

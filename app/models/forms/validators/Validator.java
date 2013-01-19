@@ -13,7 +13,7 @@ import java.util.Map;
  * Date: 01.01.13
  * Time: 21:33
  */
-public abstract class Validator {
+public abstract class Validator<T> {
 
     protected String defaultMessage;
 
@@ -60,5 +60,5 @@ public abstract class Validator {
         return type.substring(0, 1).toUpperCase() + type.substring(1);
     }
 
-    public abstract String validate(Object value);
+    public abstract String validate(T value);
 }
