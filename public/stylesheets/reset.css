@@ -52,7 +52,7 @@ body {
     font-family: "tahoma", "arial", "verdana", sans-serif, "Lucida Sans", sans-serif;
 }
 
-noscript {
+noscript, .noscript {
     display: block;
     background-color: #ff6666;
     color: white;

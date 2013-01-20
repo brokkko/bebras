@@ -10,10 +10,7 @@ import play.data.DynamicForm;
 import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.login;
-import views.html.register;
-import views.html.remind;
-import views.html.wait_for_email;
+import views.html.*;
 
 import java.util.UUID;
 
@@ -80,7 +77,7 @@ public class Registration extends Controller {
         User user = User.getInstance(User.FIELD_REGISTRATION_UUID, uuid);
 
         if (user == null)
-            return badRequest("no such registration");
+            return redirect(routes.Registration.login(eventId));
 
         boolean isEmail = ! passwordRecovery || user.getStoredObject().getBoolean(User.FIELD_RESTORE_FOR_EMAIL, true);
 
