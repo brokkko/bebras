@@ -153,7 +153,7 @@ public class Registration extends Controller {
 
         String emailOrLogin = (String) filledForm.get(Forms.PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN);
 
-        boolean isEmail = emailOrLogin.indexOf('@') >= 0;
+        boolean isEmail = emailOrLogin.contains("@");
 
         User user = User.getInstance(isEmail ? User.FIELD_EMAIL : User.FIELD_LOGIN, emailOrLogin);
 
@@ -166,7 +166,7 @@ public class Registration extends Controller {
         String newPassword = User.generatePassword();
 
         String recoveryUUID = (String) user.getStoredObject().get(User.FIELD_REGISTRATION_UUID);
-        String confirmationUUID = (String) user.getStoredObject().get(User.FIELD_REGISTRATION_UUID);
+        String confirmationUUID = (String) user.getStoredObject().get(User.FIELD_CONFIRMATION_UUID);
 
         if (recoveryUUID == null)
             recoveryUUID = UUID.randomUUID().toString();
