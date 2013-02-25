@@ -8,6 +8,7 @@ import java.util.HashMap;
  * Date: 18.01.13
  * Time: 19:27
  */
+//TODO classes such as Address should be easily created without so many code
 public class Address extends HashMap<String, String> {
 
     public static final String INDEX = "index";

@@ -4,6 +4,9 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
+import models.store.MongoObject;
+import models.store.StoredObject;
+import models.store.StoredObjectDelegate;
 import play.Play;
 import play.mvc.Http;
 
@@ -21,7 +24,7 @@ import java.util.Map;
  * Date: 31.12.12
  * Time: 1:44
  */
-public class User {
+public class User extends StoredObjectDelegate {
 
     public static final String FIELD_LOGIN = "login";
     public static final String FIELD_NAME = "name";
@@ -37,26 +40,20 @@ public class User {
 
     public static final PasswordGenerator passwordGenerator = new PasswordGenerator();
 
-    public StoredObject storedObject;
-
     public User(StoredObject storedObject) {
-        this.storedObject = storedObject;
-    }
-
-    public StoredObject getStoredObject() {
-        return storedObject;
+        super(storedObject);
     }
 
     public String getLogin() {
-        return storedObject.getString(FIELD_LOGIN);
+        return getString(FIELD_LOGIN);
     }
 
     public String getEmail() {
-        return storedObject.getString(FIELD_EMAIL);
+        return getString(FIELD_EMAIL);
     }
 
     public boolean testPassword(String password) {
-        return passwordHash(password).equals(storedObject.getString(FIELD_PASS_HASH));
+        return passwordHash(password).equals(getString(FIELD_PASS_HASH));
     }
 
     public static String passwordHash(String password) {

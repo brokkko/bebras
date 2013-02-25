@@ -1,6 +1,7 @@
 package models;
 
 import models.forms.InputForm;
+import models.store.MemoryStoredObject;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,4 +1,4 @@
-package models;
+package models.store;
 
 import java.util.*;
 

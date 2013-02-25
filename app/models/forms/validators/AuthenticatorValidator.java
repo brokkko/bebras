@@ -29,7 +29,7 @@ public class AuthenticatorValidator extends Validator<InputForm.FilledInputForm>
         User user = User.getInstance(User.FIELD_LOGIN, login);
         if (user != null) {
             boolean wrongPassword = ! user.testPassword(password);
-            Boolean confirmed = (Boolean) user.getStoredObject().get(User.FIELD_CONFIRMED);
+            Boolean confirmed = (Boolean) user.get(User.FIELD_CONFIRMED);
 
             if (wrongPassword || confirmed == null || ! confirmed)
                 user = null;

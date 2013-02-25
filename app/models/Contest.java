@@ -1,5 +1,7 @@
 package models;
 
+import models.store.StoredObject;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ilya

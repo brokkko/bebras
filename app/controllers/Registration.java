@@ -4,6 +4,8 @@ import controllers.actions.LoadEvent;
 import models.*;
 import models.forms.InputForm;
 import models.forms.validators.AuthenticatorValidator;
+import models.store.MongoObject;
+import models.store.StoredObject;
 import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.data.DynamicForm;
@@ -79,7 +81,7 @@ public class Registration extends Controller {
         if (user == null)
             return redirect(routes.Registration.login(eventId));
 
-        boolean isEmail = ! passwordRecovery || user.getStoredObject().getBoolean(User.FIELD_RESTORE_FOR_EMAIL, true);
+        boolean isEmail = ! passwordRecovery || user.getBoolean(User.FIELD_RESTORE_FOR_EMAIL, true);
 
         return ok(wait_for_email.render(
                 isEmail, isEmail ? user.getEmail() : user.getLogin()
@@ -92,15 +94,14 @@ public class Registration extends Controller {
         if (user == null)
             return ok(login.render(new DynamicForm(), passwordRecovery ? "page.recovery.already_recovered" : "page.registration.already_confirmed"));
 
-        StoredObject userObject = user.getStoredObject();
-        userObject.put(User.FIELD_REGISTRATION_UUID, null);
-        userObject.put(User.FIELD_CONFIRMATION_UUID, null);
-        userObject.put(User.FIELD_CONFIRMED, true);
+        user.put(User.FIELD_REGISTRATION_UUID, null);
+        user.put(User.FIELD_CONFIRMATION_UUID, null);
+        user.put(User.FIELD_CONFIRMED, true);
 
         if (passwordRecovery)
-            userObject.put(
+            user.put(
                     User.FIELD_PASS_HASH,
-                    userObject.get(User.FIELD_NEW_RECOVERY_PASSWORD)
+                    user.get(User.FIELD_NEW_RECOVERY_PASSWORD)
             );
 
         user.storedObject.store();
@@ -162,8 +163,8 @@ public class Registration extends Controller {
 
         String newPassword = User.generatePassword();
 
-        String recoveryUUID = (String) user.getStoredObject().get(User.FIELD_REGISTRATION_UUID);
-        String confirmationUUID = (String) user.getStoredObject().get(User.FIELD_CONFIRMATION_UUID);
+        String recoveryUUID = (String) user.get(User.FIELD_REGISTRATION_UUID);
+        String confirmationUUID = (String) user.get(User.FIELD_CONFIRMATION_UUID);
 
         if (recoveryUUID == null)
             recoveryUUID = UUID.randomUUID().toString();
@@ -172,8 +173,8 @@ public class Registration extends Controller {
 
         try {
             Email.sendPasswordRestoreEmail(
-                    (String) user.getStoredObject().get(User.FIELD_NAME),
-                    (String) user.getStoredObject().get(User.FIELD_PATRONYMIC),
+                    user.getString(User.FIELD_NAME),
+                    user.getString(User.FIELD_PATRONYMIC),
                     user.getEmail(),
                     user.getLogin(),
                     newPassword,
@@ -184,12 +185,12 @@ public class Registration extends Controller {
             return internalServerError("Failed to send email");
         }
 
-        user.getStoredObject().put(User.FIELD_CONFIRMATION_UUID, confirmationUUID);
-        user.getStoredObject().put(User.FIELD_REGISTRATION_UUID, recoveryUUID);
-        user.getStoredObject().put(User.FIELD_RESTORE_FOR_EMAIL, isEmail);
-        user.getStoredObject().put(User.FIELD_NEW_RECOVERY_PASSWORD, User.passwordHash(newPassword));
+        user.put(User.FIELD_CONFIRMATION_UUID, confirmationUUID);
+        user.put(User.FIELD_REGISTRATION_UUID, recoveryUUID);
+        user.put(User.FIELD_RESTORE_FOR_EMAIL, isEmail);
+        user.put(User.FIELD_NEW_RECOVERY_PASSWORD, User.passwordHash(newPassword));
 
-        user.getStoredObject().store();
+        user.store();
 
         return redirect(routes.Registration.waitForEmail(eventId, recoveryUUID, true));
     }

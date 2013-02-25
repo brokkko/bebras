@@ -1,7 +1,7 @@
 package models.forms.inputtemplate;
 
 import models.Address;
-import models.StoredObject;
+import models.store.StoredObject;
 import play.api.templates.Html;
 import play.data.DynamicForm;
 import play.i18n.Messages;

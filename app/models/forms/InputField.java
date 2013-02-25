@@ -1,6 +1,6 @@
 package models.forms;
 
-import models.StoredObject;
+import models.store.StoredObject;
 import models.forms.inputtemplate.InputTemplate;
 import models.forms.inputtemplate.InputTemplateConfig;
 import models.forms.validators.Validator;

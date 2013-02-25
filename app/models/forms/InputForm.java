@@ -1,8 +1,8 @@
 package models.forms;
 
 import models.Event;
-import models.MemoryStoredObject;
-import models.StoredObject;
+import models.store.MemoryStoredObject;
+import models.store.StoredObject;
 import models.forms.validators.Validator;
 import play.api.templates.Html;
 import play.data.DynamicForm;
