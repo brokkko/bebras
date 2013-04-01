@@ -105,4 +105,4 @@ password_remind.wrong_email=Пользователя с таким email не з
 button.undo=Отменить
 
 hint.personal_data=В соответствии с требованиями статьи 9 Федерального закона от 27.07.06 «О персональных данных» № 152-ФЗ
-hint.contest_rules=<a target="blank" href="#">Правила соревнования</a>
+hint.contest_rules=<a target="blank" href="/assets/BBTC_regulations_0513.pdf">Правила соревнования</a>
