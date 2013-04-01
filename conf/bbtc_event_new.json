@@ -1,0 +1,117 @@
+{
+    "_id": "bbtc",
+    "title": "Соревнование “British Bulldog”",
+    "users": {
+        "fields": [
+            {
+                "name": "login",
+                "type": "string",
+                "required": true,
+                "validators": [{
+                    "type": "userField",
+                    "message": "error.msg.login",
+                    "field": "login"
+                }, {
+                    "type": "pattern",
+                    "pattern": "[-a-zA-Z0-9_]+",
+                    "message": "error.msg.login.wrong_pattern"
+                }]
+            },
+            {
+                "name": "surname",
+                "type": "string",
+                "required": true
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "required": true
+            },
+            {
+                "name": "patronymic",
+                "type": "string",
+                "required": true
+            },
+            {
+                "name": "birthday",
+                "type": "date",
+                "validators": [
+                    {
+                        "type": "date",
+                        "comparison": "<= now + 0 Y",
+                        "message": "error.msg.birthday.need.born"
+                    },
+                    {
+                        "type": "date",
+                        "comparison": "<= now - 18 Y",
+                        "message": "error.msg.birthday.too.young"
+                    },
+                    {
+                        "type": "date",
+                        "comparison": ">= now - 100 Y",
+                        "message": "error.msg.birthday.too.old"
+                    }
+                ]
+            },
+            {
+                "name": "phone",
+                "type": "string",
+                "validator": {
+                    "type": "phone"
+                }
+            },
+            {
+                "name": "email",
+                "type": "string",
+                "required": true,
+                "validators": [
+                    {
+                        "type": "email"
+                    },
+                    {
+                        "type": "userField",
+                        "message": "error.msg.email_duplicate",
+                        "field": "email"
+                    }
+                ]
+            },
+            {
+                "name": "schoolcode",
+                "type": "string",
+                "required": true,
+                "validators": [
+                    {
+                        "type": "pattern",
+                        "pattern": "\\d{8}",
+                        "message": "error.msg.schoolcode.wrong_pattern"
+                    },
+                    {
+                        "type": "kenguruSchoolCode"
+                    }
+                ]
+            },
+            {
+                "name": "schoolname",
+                "type": "string",
+                "required": true
+            },
+            {
+                "name": "schooladdr",
+                "type": "address"
+            },
+            {
+                "name": "personal_data",
+                "type": "boolean",
+                "required": true,
+                "hint": "hint.personal_data"
+            },
+            {
+                "name": "contest_rules",
+                "type": "boolean",
+                "required": true,
+                "hint": "hint.contest_rules"
+            }
+        ],
+        "validators": []
+    }
+}
