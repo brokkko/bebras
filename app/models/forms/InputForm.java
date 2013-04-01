@@ -9,7 +9,10 @@ import play.data.DynamicForm;
 import play.i18n.Messages;
 import play.mvc.Call;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

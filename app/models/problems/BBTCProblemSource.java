@@ -1,14 +1,16 @@
 package models.problems;
 
 import au.com.bytecode.opencsv.CSVReader;
+import models.checkers.Checker;
+import models.store.MemoryStoredObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,12 +32,20 @@ public class BBTCProblemSource implements ProblemsSource {
             String id = nextLine[1] + "." + nextLine[2] + "." + nextLine[3];
             String type = nextLine[4];
             String question = nextLine[5];
-            String[] answers = new String[Integer.parseInt(type)];
-            System.arraycopy(nextLine, 6, answers, 0, answers.length);
+            int answersCount = Integer.parseInt(type);
+            String[] answers = new String[answersCount];
+            System.arraycopy(nextLine, 6, answers, 0, answersCount);
             String correctAnswer = nextLine[11];
             String solution = nextLine[12];
 
+            Problem problem = new Problem();
+            problem.put(Problem.CHECKER, "compare");
+            problem.put(Problem.STATEMENT, question);
+            problem.put("answers", Arrays.asList(answers));
+            problem.put("correct", correctAnswer);
+            problem.put(Problem.SOLUTION, solution);
 
+            problems.put(id, problem);
         }
     }
 

@@ -124,7 +124,7 @@
                 "input": {
                     "type": "boolean",
                     "required": true,
-                    "html": "hint.personal_data"
+                    "hint": "hint.personal_data"
                 }
             },
             {
@@ -132,7 +132,7 @@
                 "input": {
                     "type": "boolean",
                     "required": true,
-                    "html": "hint.contest_rules"
+                    "hint": "hint.contest_rules"
                 }
             }
         ],

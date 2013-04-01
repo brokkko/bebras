@@ -30,7 +30,7 @@ public class MongoObject extends StoredObject {
 
     @Override
     public Object get(String field) {
-        return wrap(object.get(field));
+        return object.get(field);
     }
 
     @Override
@@ -46,19 +46,5 @@ public class MongoObject extends StoredObject {
     @Override
     public Set<String> keySet() {
         return object.keySet();
-    }
-
-    private static Object wrap(Object object) {
-        if (object instanceof List) {
-            ArrayList<Object> result = new ArrayList<>();
-            for (Object o : (List) object)
-                result.add(wrap(o));
-            return result;
-        }
-
-        if (object instanceof DBObject)
-            return new MongoObject(null, (DBObject) object);
-
-        return object;
     }
 }

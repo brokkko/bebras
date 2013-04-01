@@ -15,7 +15,7 @@
     *@
     @for(field <- fields) {
         <div class="controls @if(form(field.getName).hasErrors) {error}">
-            <label>@field.getInputConfiguration.getTitle @if(field.getInputConfiguration.isRequired) {<small>*</small>}</label>
+            <label>@Html(field.getInputConfiguration.getTitle) @if(field.getInputConfiguration.isRequired) {<small>*</small>}</label>
             @if(form(field.getName).errors().size() > 0) {
                 <div class="error-inline">@form(field.getName).errors().map { e => @e.message}.mkString(", ")</div>
             }

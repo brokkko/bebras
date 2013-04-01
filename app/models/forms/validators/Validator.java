@@ -1,5 +1,6 @@
 package models.forms.validators;
 
+import models.newmodel.Deserializer;
 import play.data.validation.Constraints;
 import play.i18n.Messages;
 

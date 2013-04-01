@@ -13,9 +13,9 @@ import play.i18n.Messages;
 public class BooleanInputTemplate extends InputTemplate {
     @Override
     public Html format(DynamicForm form, String field, InputTemplateConfig config) {
-        String htmlContent = (String) config.get("html");
-        Html html = htmlContent == null ? null : new Html(Messages.get(htmlContent));
-        return views.html.fields.checkbox.render(form, field, html);
+        String hintContent = (String) config.get("hint");
+        String hint = Messages.get(hintContent);
+        return views.html.fields.checkbox.render(form, field, hint);
     }
 
     @Override

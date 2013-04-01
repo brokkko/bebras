@@ -22,7 +22,7 @@ public class MemoryStoredObject extends StoredObject {
 
     @Override
     public Object get(String field) {
-        return wrap(map.get(field));
+        return map.get(field);
     }
 
     @Override
@@ -54,20 +54,5 @@ public class MemoryStoredObject extends StoredObject {
 
     public static List<Object> listify(Object... values) {
         return Arrays.asList(values);
-    }
-
-    //TODO code duplication with the wrap() method of MongoObject. Move wrapper to the StoredObject abstract class
-    private static Object wrap(Object object) {
-        if (object instanceof List) {
-            ArrayList<Object> result = new ArrayList<>();
-            for (Object o : (List) object)
-                result.add(wrap(o));
-            return result;
-        }
-
-        if (object instanceof Map)
-            return new MemoryStoredObject((Map<String, Object>) object);
-
-        return object;
     }
 }

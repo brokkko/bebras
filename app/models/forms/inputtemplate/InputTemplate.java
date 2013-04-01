@@ -32,6 +32,7 @@ public abstract class InputTemplate {
     }
 
     public static void setFormField(DynamicForm form, String field, String value) {
+        form.data().put(field, value);
         form.data().put("data[" + field + "]", value);
     }
 
@@ -76,4 +77,3 @@ public abstract class InputTemplate {
     public abstract void fillForm(DynamicForm form, String field, Object value);
 
 }
-

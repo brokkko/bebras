@@ -17,7 +17,6 @@ public class Application extends Controller {
         if (configCollection.findOne() != null && !Play.isDev())
             return badRequest("Site is already initialized");
 //            return notFound();
-//        TODO bug - wrong indent after comments
 
         //TODO this is a temporary initialization, move it somewhere else
 

@@ -104,7 +104,7 @@ public class Registration extends Controller {
                     user.get(User.FIELD_NEW_RECOVERY_PASSWORD)
             );
 
-        user.storedObject.store();
+        user.store();
 
         DynamicForm emptyForm = new DynamicForm();
         return ok(login.render(emptyForm, passwordRecovery ? "page.registration.password_recovered" : "page.registration.confirmed"));

@@ -32,11 +32,7 @@ public class InputTemplateConfig {
                     return false;
                 case "title":
                 case "placeholder":
-                    String msg = Messages.get("form." + Event.current().getId() + "." + field.getForm().getMessagesName() + "." + field.getName() + "." + key);
-                    if (key.equals("title"))
-                        return new Html(msg);
-                    else
-                        return msg;
+                    return Messages.get("form." + Event.current().getId() + "." + field.getForm().getMessagesName() + "." + field.getName() + "." + key);
             }
 
         return value;
@@ -46,8 +42,8 @@ public class InputTemplateConfig {
         return (Boolean) get("required");
     }
 
-    public Html getTitle() {
-        return (Html) get("title");
+    public String getTitle() {
+        return (String) get("title");
     }
 
     public String getPlaceholder() {
