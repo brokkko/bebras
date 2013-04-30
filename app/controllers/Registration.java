@@ -6,7 +6,6 @@ import models.newmodel.*;
 import models.newmodel.validators.AuthenticatorValidator;
 import org.apache.commons.mail.EmailException;
 import play.Logger;
-import play.data.DynamicForm;
 import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -31,7 +30,6 @@ public class Registration extends Controller {
         form.bindFromRequest();
 
         return ok(register.render(form));
-        //TODO it is (almost) impossible to set breakpoint if there is a link to template
     }
 
     public static Result doRegistration(String eventId) {

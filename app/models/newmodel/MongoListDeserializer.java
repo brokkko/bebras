@@ -44,11 +44,13 @@ public class MongoListDeserializer implements ListDeserializer {
 
     @Override
     public Deserializer getDeserializer() {
-        return new MongoDeserializer((DBObject) objects.get(position++));
+        DBObject object = (DBObject) objects.get(position++);
+        return object == null ? null : new MongoDeserializer(object);
     }
 
     @Override
     public ListDeserializer getListDeserializer() {
-        return new MongoListDeserializer((BasicDBList) objects.get(position++));
+        BasicDBList objects = (BasicDBList) this.objects.get(position++);
+        return objects == null ? null : new MongoListDeserializer(objects);
     }
 }

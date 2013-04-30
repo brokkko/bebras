@@ -4,9 +4,7 @@ import models.newmodel.InputField;
 import models.newmodel.RawForm;
 import play.api.templates.Html;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +18,12 @@ public abstract class InputTemplate { //Object -> String fields, String fields -
     public static final Map<String, InputTemplate> registeredTemplates = new HashMap<>();
 
     static {
-        //TODO implement
+        registeredTemplates.put("boolean", new BooleanInputTemplate());
+        registeredTemplates.put("string", new StringInputTemplate());
+        registeredTemplates.put("date", new DateInputTemplate());
+        registeredTemplates.put("address", new AddressInputTemplate());
+        registeredTemplates.put("password", new PasswordInputTemplate());
+        registeredTemplates.put("multiline", new MultilineInputTemplate());
     }
 
     public static InputTemplate getInstance(String name) {

@@ -118,7 +118,8 @@ public class FormDeserializer implements Deserializer, ListDeserializer {
     @Override
     public FormDeserializer getDeserializer(String field) {
         //noinspection unchecked
-        return new FormDeserializer((Map<String, Object>) values.get(field));
+        Map<String, Object> map = (Map<String, Object>) values.get(field);
+        return map == null ? null : new FormDeserializer(map);
     }
 
     @Override

@@ -41,12 +41,14 @@ public class MongoDeserializer implements Deserializer {
 
     @Override
     public Deserializer getDeserializer(String field) {
-        return new MongoDeserializer((DBObject) object.get(field));
+        DBObject object = (DBObject) this.object.get(field);
+        return object == null ? null : new MongoDeserializer(object);
     }
 
     @Override
     public ListDeserializer getListDeserializer(String field) {
-        return new MongoListDeserializer((BasicDBList) object.get(field));
+        BasicDBList objects = (BasicDBList) object.get(field);
+        return objects == null ? null : new MongoListDeserializer(objects);
     }
 
     @Override

@@ -51,12 +51,14 @@ public class MemoryListDeserializer implements ListDeserializer {
     @Override
     public Deserializer getDeserializer() {
         //noinspection unchecked
-        return new MemoryDeserializer((Map<String, Object>) getObject());
+        Map<String, Object> object = (Map<String, Object>) getObject();
+        return object == null ? null : new MemoryDeserializer(object);
     }
 
     @Override
     public ListDeserializer getListDeserializer() {
         //noinspection unchecked
-        return new MemoryListDeserializer((List<Object>) getObject());
+        List<Object> object = (List<Object>) getObject();
+        return object == null ? null : new MemoryListDeserializer(object);
     }
 }

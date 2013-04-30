@@ -45,13 +45,15 @@ public class MemoryDeserializer implements Deserializer {
     @Override
     public Deserializer getDeserializer(String field) {
         //noinspection unchecked
-        return new MemoryDeserializer((Map<String, Object>) getObject(field));
+        Map<String, Object> map = (Map<String, Object>) getObject(field);
+        return map == null ? null : new MemoryDeserializer(map);
     }
 
     @Override
     public ListDeserializer getListDeserializer(String field) {
         //noinspection unchecked
-        return new MemoryListDeserializer((List<Object>) getObject(field));
+        List<Object> list = (List<Object>) getObject(field);
+        return list == null ? null : new MemoryListDeserializer(list);
     }
 
     @Override
