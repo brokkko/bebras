@@ -2,10 +2,8 @@ package controllers;
 
 import controllers.actions.LoadEvent;
 import models.*;
-import models.forms.InputForm;
-import models.forms.validators.AuthenticatorValidator;
-import models.store.MongoObject;
-import models.store.StoredObject;
+import models.newmodel.*;
+import models.newmodel.validators.AuthenticatorValidator;
 import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.data.DynamicForm;
@@ -29,25 +27,23 @@ public class Registration extends Controller {
     public static Result registration(String eventId) {
         //TODO use form.errorsAsJson() to ajax validate form
 
-        DynamicForm form = new DynamicForm();
-        form = form.bindFromRequest();
+        RawForm form = new RawForm();
+        form.bindFromRequest();
 
         return ok(register.render(form));
         //TODO it is (almost) impossible to set breakpoint if there is a link to template
     }
 
     public static Result doRegistration(String eventId) {
-        DynamicForm form = new DynamicForm();
-        form = form.bindFromRequest();
         InputForm registrationForm = Event.current().getUsersForm();
 
-        InputForm.FilledInputForm filledForm = registrationForm.validate(form);
+        FormDeserializer formDeserializer = new FormDeserializer(registrationForm);
+        RawForm rawForm = formDeserializer.getRawForm();
 
-        if (form.hasErrors())
-            return ok(register.render(form));
+        if (rawForm.hasErrors())
+            return ok(register.render(rawForm));
 
-        MongoObject user = new MongoObject(MongoConnection.COLLECTION_NAME_USERS);
-        filledForm.fillObject(user);
+        User user = User.deserialize(formDeserializer);
 
         String registrationUUID = UUID.randomUUID().toString();
         String confirmationUUID = UUID.randomUUID().toString();
@@ -81,7 +77,8 @@ public class Registration extends Controller {
         if (user == null)
             return redirect(routes.Registration.login(eventId));
 
-        boolean isEmail = ! passwordRecovery || user.getBoolean(User.FIELD_RESTORE_FOR_EMAIL, true);
+        Boolean restoreForEmail = (Boolean) user.get(User.FIELD_RESTORE_FOR_EMAIL);
+        boolean isEmail = ! passwordRecovery || restoreForEmail == null || restoreForEmail;
 
         return ok(wait_for_email.render(
                 isEmail, isEmail ? user.getEmail() : user.getLogin()
@@ -92,7 +89,7 @@ public class Registration extends Controller {
         User user = User.getInstance(User.FIELD_CONFIRMATION_UUID, uuid);
 
         if (user == null)
-            return ok(login.render(new DynamicForm(), passwordRecovery ? "page.recovery.already_recovered" : "page.registration.already_confirmed"));
+            return ok(login.render(new RawForm(), passwordRecovery ? "page.recovery.already_recovered" : "page.registration.already_confirmed"));
 
         user.put(User.FIELD_REGISTRATION_UUID, null);
         user.put(User.FIELD_CONFIRMATION_UUID, null);
@@ -106,26 +103,23 @@ public class Registration extends Controller {
 
         user.store();
 
-        DynamicForm emptyForm = new DynamicForm();
-        return ok(login.render(emptyForm, passwordRecovery ? "page.registration.password_recovered" : "page.registration.confirmed"));
+        return ok(login.render(new RawForm(), passwordRecovery ? "page.registration.password_recovered" : "page.registration.confirmed"));
     }
 
     public static Result login(String eventId) {
-        DynamicForm emptyForm = new DynamicForm();
-        return ok(login.render(emptyForm, null));
+        return ok(login.render(new RawForm(), null));
     }
 
     public static Result doLogin(String eventId) {
-        DynamicForm form = new DynamicForm();
-        form = form.bindFromRequest();
-
         InputForm loginForm = Forms.getLoginForm();
-        InputForm.FilledInputForm filledForm = loginForm.validate(form);
+        FormDeserializer formDeserializer = new FormDeserializer(loginForm);
+
+        RawForm form = formDeserializer.getRawForm();
 
         if (form.hasErrors())
             return ok(login.render(form, null));
 
-        User user = (User) filledForm.getValidationData(AuthenticatorValidator.VALIDATED_USER);
+        User user = (User) formDeserializer.getValidationData(AuthenticatorValidator.VALIDATED_USER);
 
         session(User.getUsernameSessionKey(), user.getLogin());
 
@@ -133,23 +127,20 @@ public class Registration extends Controller {
     }
 
     public static Result passwordRemind(String eventId) {
-        return ok(remind.render(new DynamicForm()));
+        return ok(remind.render(new RawForm()));
     }
 
     public static Result doPasswordRemind(String eventId) {
-        DynamicForm form = new DynamicForm();
-
-        form = form.bindFromRequest();
-
         InputForm remindForm = Forms.getPasswordRemindForm();
-        InputForm.FilledInputForm filledForm = remindForm.validate(form);
+        FormDeserializer formDeserializer = new FormDeserializer(remindForm);
+        RawForm form = formDeserializer.getRawForm();
 
         if (form.hasErrors())
             return ok(remind.render(form));
 
         //let's understand what is it, email or login
 
-        String emailOrLogin = (String) filledForm.get(Forms.PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN);
+        String emailOrLogin = formDeserializer.getString(Forms.PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN);
 
         boolean isEmail = emailOrLogin.contains("@");
 

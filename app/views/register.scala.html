@@ -1,7 +1,6 @@
-@(form:DynamicForm)
+@(form:models.newmodel.RawForm)
+@import models.newmodel.RawForm
 @import views.ResourceLink
-@import views.MenuItem
-@import play.data.DynamicForm
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) {
     <h1>Регистрация участника</h1>

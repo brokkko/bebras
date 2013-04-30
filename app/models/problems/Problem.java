@@ -1,10 +1,7 @@
 package models.problems;
 
 import models.checkers.Checker;
-import models.store.MemoryStoredObject;
-import models.store.StoredObject;
-import models.store.StoredObjectDelegate;
-import play.api.templates.Html;
+import models.newmodel.MemoryDeserializer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,14 +9,14 @@ import play.api.templates.Html;
  * Date: 25.01.13
  * Time: 11:09
  */
-public class Problem extends StoredObjectDelegate {
+public class Problem {
 
     public static final String STATEMENT = "statement";
     public static final String SOLUTION = "solution";
     public static final String CHECKER = "checker";
 
-    public Problem() {
-        super(new MemoryStoredObject());
+    /*public Problem() {
+        super(new MemoryDeserializer());
     }
 
     public Problem(StoredObject storedObject) {
@@ -44,6 +41,6 @@ public class Problem extends StoredObjectDelegate {
 
     public Problem generate(long userId) {
         return this;
-    }
+    }*/
 
 }

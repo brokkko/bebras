@@ -1,6 +1,8 @@
 package models;
 
-import java.util.HashMap;
+import models.newmodel.Deserializer;
+import models.newmodel.Serializable;
+import models.newmodel.Serializer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -8,51 +10,66 @@ import java.util.HashMap;
  * Date: 18.01.13
  * Time: 19:27
  */
-//TODO classes such as Address should be easily created without so many code
-public class Address extends HashMap<String, String> {
+public class Address implements Serializable {
 
-    public static final String INDEX = "index";
-    public static final String CITY = "city";
-    public static final String STREET = "street";
-    public static final String HOUSE = "house";
+    private String index;
+    private String city;
+    private String street;
+    private String house;
 
     public Address(String index, String city, String street, String house) {
-        setIndex(index);
-        setCity(city);
-        setStreet(street);
-        setHouse(house);
+        this.index = index;
+        this.city = city;
+        this.street = street;
+        this.house = house;
     }
 
     public String getIndex() {
-        return get(INDEX);
+        return index;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
     }
 
     public String getCity() {
-        return get(CITY);
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getStreet() {
-        return get(STREET);
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
     }
 
     public String getHouse() {
-        return get(HOUSE);
+        return house;
     }
 
-    public void setIndex(String value) {
-        put(INDEX, value);
+    public void setHouse(String house) {
+        this.house = house;
     }
 
-    public void setCity(String value) {
-        put(CITY, value);
+    @Override
+    public void store(Serializer serializer) {
+        serializer.write("index", index);
+        serializer.write("city", city);
+        serializer.write("street", street);
+        serializer.write("house", house);
     }
 
-    public void setStreet(String value) {
-        put(STREET, value);
+    public static Address deserialize(Deserializer deserializer) {
+        return new Address(
+                deserializer.getString("index"),
+                deserializer.getString("city"),
+                deserializer.getString("street"),
+                deserializer.getString("house")
+        );
     }
-
-    public void setHouse(String value) {
-        put(HOUSE, value);
-    }
-
 }

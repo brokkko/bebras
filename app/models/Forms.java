@@ -1,7 +1,7 @@
 package models;
 
-import models.forms.InputForm;
-import models.store.MemoryStoredObject;
+import models.newmodel.InputForm;
+import models.newmodel.MemoryDeserializer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,46 +13,40 @@ public class Forms {
 
     public static String LOGIN_FORM_LOGIN = "login";
     public static String LOGIN_FORM_PASSWORD = "password";
-
     public static String PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN = "email_or_login";
 
-    public static InputForm loginForm = new InputForm("login",
-            new MemoryStoredObject(
+    @SuppressWarnings("unchecked")
+    public static InputForm loginForm = InputForm.deserialize("login",
+            new MemoryDeserializer(
                     "fields",
-                    MemoryStoredObject.listify(
-                            MemoryStoredObject.mapify(
+                    Utils.listify(
+                            Utils.mapify(
                                     "name", LOGIN_FORM_LOGIN,
-                                    "input",
-                                    MemoryStoredObject.mapify(
-                                            "type", "string",
-                                            "required", true
-                                    )
+                                    "type", "string",
+                                    "required", true
                             ),
-                            MemoryStoredObject.mapify(
+                            Utils.mapify(
                                     "name", LOGIN_FORM_PASSWORD,
-                                    "input",
-                                    MemoryStoredObject.mapify(
-                                            "type", "password",
-                                            "required", true
-                                    )
+                                    "type", "password",
+                                    "required", true
                             )
                     ),
-                    "validator",
-                    MemoryStoredObject.mapify("type", "authenticator")
+                    "validators",
+                    Utils.listify(
+                        Utils.mapify("type", "authenticator")
+                    )
             )
     );
 
-    public static InputForm passwordRemindForm = new InputForm("remind",
-            new MemoryStoredObject(
+    @SuppressWarnings("unchecked")
+    public static InputForm passwordRemindForm = InputForm.deserialize("remind",
+            new MemoryDeserializer(
                     "fields",
-                    MemoryStoredObject.listify(
-                            MemoryStoredObject.mapify(
+                    Utils.listify(
+                            Utils.mapify(
                                     "name", PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN,
-                                    "input",
-                                    MemoryStoredObject.mapify(
-                                            "type", "string",
-                                            "required", true
-                                    )
+                                    "type", "string",
+                                    "required", true
                             )
                     )
             )

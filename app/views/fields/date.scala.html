@@ -1,28 +1,28 @@
-@(form:DynamicForm, field: String)
-@import play.data.DynamicForm
+@(form:models.newmodel.RawForm, field: String)
+@import models.newmodel.RawForm
 
 <fieldset class='date-input-forms'>
 <div class='date-input-field'>
     <span>@Messages("date.year")</span>
-    <input type="text" value="@form(field + "[year]").value" name="@(field)[year]" placeholder="@Messages("date.year.placeholder")">
+    <input type="text" value="@form.get(field, "year")" name="@RawForm.postfixField(field, "year")" placeholder="@Messages("date.year.placeholder")">
 </div>
 <div class='date-input-field date-input-month'><span>@Messages("date.month")</span><select name="@(field)[month]">
     <option value="" class="grayed">@Messages("date.month.placeholder")</option>
-    <option value="0" @if(form(field + "[month]").value == "0") {selected="selected"}>@Messages("date.month.jan")</option>
-    <option value="1" @if(form(field + "[month]").value == "1") {selected="selected"}>@Messages("date.month.feb")</option>
-    <option value="2" @if(form(field + "[month]").value == "2") {selected="selected"}>@Messages("date.month.mar")</option>
-    <option value="3" @if(form(field + "[month]").value == "3") {selected="selected"}>@Messages("date.month.apr")</option>
-    <option value="4" @if(form(field + "[month]").value == "4") {selected="selected"}>@Messages("date.month.may")</option>
-    <option value="5" @if(form(field + "[month]").value == "5") {selected="selected"}>@Messages("date.month.jun")</option>
-    <option value="6" @if(form(field + "[month]").value == "6") {selected="selected"}>@Messages("date.month.jul")</option>
-    <option value="7" @if(form(field + "[month]").value == "7") {selected="selected"}>@Messages("date.month.aug")</option>
-    <option value="8" @if(form(field + "[month]").value == "8") {selected="selected"}>@Messages("date.month.sep")</option>
-    <option value="9" @if(form(field + "[month]").value == "9") {selected="selected"}>@Messages("date.month.oct")</option>
-    <option value="10" @if(form(field + "[month]").value == "10") {selected="selected"}>@Messages("date.month.nov")</option>
-    <option value="11" @if(form(field + "[month]").value == "11") {selected="selected"}>@Messages("date.month.dec")</option>
+    <option value="0" @if(form.get(field, "month") == "0") {selected="selected"}>@Messages("date.month.jan")</option>
+    <option value="1" @if(form.get(field, "month") == "1") {selected="selected"}>@Messages("date.month.feb")</option>
+    <option value="2" @if(form.get(field, "month") == "2") {selected="selected"}>@Messages("date.month.mar")</option>
+    <option value="3" @if(form.get(field, "month") == "3") {selected="selected"}>@Messages("date.month.apr")</option>
+    <option value="4" @if(form.get(field, "month") == "4") {selected="selected"}>@Messages("date.month.may")</option>
+    <option value="5" @if(form.get(field, "month") == "5") {selected="selected"}>@Messages("date.month.jun")</option>
+    <option value="6" @if(form.get(field, "month") == "6") {selected="selected"}>@Messages("date.month.jul")</option>
+    <option value="7" @if(form.get(field, "month") == "7") {selected="selected"}>@Messages("date.month.aug")</option>
+    <option value="8" @if(form.get(field, "month") == "8") {selected="selected"}>@Messages("date.month.sep")</option>
+    <option value="9" @if(form.get(field, "month") == "9") {selected="selected"}>@Messages("date.month.oct")</option>
+    <option value="10" @if(form.get(field, "month") == "10") {selected="selected"}>@Messages("date.month.nov")</option>
+    <option value="11" @if(form.get(field, "month") == "11") {selected="selected"}>@Messages("date.month.dec")</option>
 </select></div>
 <div class='date-input-field'>
     <span>@Messages("date.day")</span>
-    <input type="text" value="@form(field + "[day]").value" name="@(field)[day]" placeholder="@Messages("date.day.placeholder")">
+    <input type="text" value="@form.get(field, "day")" name="@RawForm.postfixField(field, "day")" placeholder="@Messages("date.day.placeholder")">
 </div>
 </fieldset>

@@ -1,13 +1,10 @@
 package models.problems;
 
 import au.com.bytecode.opencsv.CSVReader;
-import models.checkers.Checker;
-import models.store.MemoryStoredObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,11 +36,13 @@ public class BBTCProblemSource implements ProblemsSource {
             String solution = nextLine[12];
 
             Problem problem = new Problem();
-            problem.put(Problem.CHECKER, "compare");
+            /*problem.put(Problem.CHECKER, "compare");
             problem.put(Problem.STATEMENT, question);
             problem.put("answers", Arrays.asList(answers));
             problem.put("correct", correctAnswer);
             problem.put(Problem.SOLUTION, solution);
+            todo implement
+            */
 
             problems.put(id, problem);
         }

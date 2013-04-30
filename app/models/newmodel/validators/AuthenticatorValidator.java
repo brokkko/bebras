@@ -1,9 +1,8 @@
-package models.forms.validators;
+package models.newmodel.validators;
 
 import models.User;
-import models.forms.InputForm;
-
-import java.util.Map;
+import models.newmodel.Deserializer;
+import models.newmodel.FormDeserializer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,20 +10,19 @@ import java.util.Map;
  * Date: 13.01.13
  * Time: 4:06
  */
-public class AuthenticatorValidator extends Validator<InputForm.FilledInputForm> {
+public class AuthenticatorValidator extends Validator<FormDeserializer> {
 
     public static String VALIDATED_USER = "user";
 
-    public AuthenticatorValidator(Map<String, Object> validationParameters) {
-        super(validationParameters);
+    public AuthenticatorValidator(Deserializer deserializer) {
         defaultMessage = "error.msg.failed_to_authenticate";
     }
 
     @Override
-    public String validate(InputForm.FilledInputForm form) {
+    public String validate(FormDeserializer form) {
 
-        String login = (String) form.get("login"); //they are required, so we sure that we can get this info
-        String password = (String) form.get("password");
+        String login = form.getString("login"); //they are required, so we sure that we can get this info
+        String password = form.getString("password");
 
         User user = User.getInstance(User.FIELD_LOGIN, login);
         if (user != null) {
@@ -36,7 +34,7 @@ public class AuthenticatorValidator extends Validator<InputForm.FilledInputForm>
         }
 
         if (user == null)
-            return message();
+            return getMessage();
 
         form.putValidationData(VALIDATED_USER, user);
 

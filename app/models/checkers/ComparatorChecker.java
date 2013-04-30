@@ -1,7 +1,6 @@
 package models.checkers;
 
 import models.problems.Problem;
-import models.store.StoredObject;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +14,7 @@ public class ComparatorChecker extends Checker {
     public static final String RIGHT_ANSWER = "right_answer";
     public static final String RESULT = "res";
 
-    @Override
+/*    @Override
     public void check(StoredObject submission, Problem problem, StoredObject resultsReceiver) {
         String userAnswer = submission.getString(SUBMITTED_ANSWER);
 
@@ -29,5 +28,5 @@ public class ComparatorChecker extends Checker {
         boolean correct = rightAnswer.equals(userAnswer);
 
         resultsReceiver.put(RESULT, correct ? 1 : -1);
-    }
+    }*/
 }

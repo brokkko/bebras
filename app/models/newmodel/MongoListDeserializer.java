@@ -38,6 +38,11 @@ public class MongoListDeserializer implements ListDeserializer {
     }
 
     @Override
+    public Object getObject() {
+        return objects.get(position);
+    }
+
+    @Override
     public Deserializer getDeserializer() {
         return new MongoDeserializer((DBObject) objects.get(position++));
     }

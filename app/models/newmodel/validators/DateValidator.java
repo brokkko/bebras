@@ -1,8 +1,9 @@
-package models.forms.validators;
+package models.newmodel.validators;
+
+import models.newmodel.Deserializer;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,13 +15,14 @@ import java.util.regex.Pattern;
  */
 public class DateValidator extends Validator<Date> {
 
-    public DateValidator(Map<String, Object> validationParameters) {
-        super(validationParameters);
+    private final String comparison;
+
+    public DateValidator(Deserializer deserializer) {
+        comparison = deserializer.getString("comparison");
     }
 
     @Override
     public String validate(Date date) {
-        String comparison = (String) validationParameters.get("comparison");
 
         Pattern pattern = Pattern.compile("(<|<=|>|>=|=)\\s*now\\s*(\\+|\\-)\\s*(\\d+)\\s*([YMwdhms])");
 
@@ -28,7 +30,7 @@ public class DateValidator extends Validator<Date> {
         if (! matcher.matches())
             throw new IllegalArgumentException("Comparison specification syntax error");
 
-        String comparisionType = matcher.group(1);
+        String comparisonType = matcher.group(1);
         String additionSign = matcher.group(2);
         String amountS = matcher.group(3);
         String dimension = matcher.group(4);
@@ -72,7 +74,7 @@ public class DateValidator extends Validator<Date> {
         Date compareToDate = compareTo.getTime();
 
         boolean ok = false;
-        switch (comparisionType) {
+        switch (comparisonType) {
             case ">":
                 ok = date.compareTo(compareToDate) > 0;
                 break;
@@ -90,6 +92,6 @@ public class DateValidator extends Validator<Date> {
                 break;
         }
 
-        return ok ? null : message();
+        return ok ? null : getMessage();
     }
 }

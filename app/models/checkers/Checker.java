@@ -1,7 +1,6 @@
 package models.checkers;
 
 import models.problems.Problem;
-import models.store.StoredObject;
 import play.Logger;
 import play.cache.Cache;
 
@@ -15,7 +14,7 @@ import java.util.concurrent.Callable;
  */
 public abstract class Checker {
 
-    public abstract void check(StoredObject submission, Problem problem, StoredObject resultsReceiver);
+//    public abstract void check(StoredObject submission, Problem problem, StoredObject resultsReceiver);
 
     public static Checker getInstance(final String type) {
 

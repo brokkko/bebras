@@ -25,7 +25,7 @@ public class MongoDeserializer implements Deserializer {
     }
 
     @Override
-    public boolean getBoolean(String field) {
+    public Boolean getBoolean(String field) {
         return (Boolean) object.get(field);
     }
 

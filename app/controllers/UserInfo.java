@@ -4,8 +4,10 @@ import controllers.actions.Authenticated;
 import controllers.actions.LoadEvent;
 import models.Event;
 import models.User;
-import models.forms.InputForm;
-import play.data.DynamicForm;
+import models.newmodel.FormDeserializer;
+import models.newmodel.FormSerializer;
+import models.newmodel.InputForm;
+import models.newmodel.RawForm;
 import play.mvc.Controller;
 
 import play.mvc.Result;
@@ -20,35 +22,34 @@ import play.mvc.Result;
 @Authenticated
 public class UserInfo extends Controller {
 
-    public static Result contestsList(String eventId) {
+    public static Result contestsList(String eventId) { //TODO use event id
         return ok(views.html.contests_list.render());
     }
 
-    public static Result info(String eventId) {
+    public static Result info(String eventId) { //TODO use event idC
         User user = User.current();
-        DynamicForm userForm = new DynamicForm();
-        Event.current().getEditUserForm().fillForm(userForm, user);
+
+        FormSerializer formSerializer = new FormSerializer(Event.current().getEditUserForm());
+        user.store(formSerializer);
 
         return ok(views.html.user_info.render(
-                userForm,
+                formSerializer.getRawForm(),
                 flash("user_info_change_msg") != null ? "page.user_info.info_changed" : null
         ));
     }
 
     public static Result doChangeInfo(String eventId) {
-        User user = User.current();
-
-        DynamicForm form = new DynamicForm();
-        form = form.bindFromRequest();
         InputForm registrationForm = Event.current().getEditUserForm();
 
-        InputForm.FilledInputForm filledForm = registrationForm.validate(form);
+        FormDeserializer formDeserializer = new FormDeserializer(registrationForm);
+
+        RawForm form = formDeserializer.getRawForm();
 
         if (form.hasErrors())
             return ok(views.html.user_info.render(form, null));
 
-        filledForm.fillObject(user);
-
+        User user = User.current();
+        user.update(formDeserializer);
         user.store();
 
         flash("user_info_change_msg", "1");

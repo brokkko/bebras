@@ -1,6 +1,6 @@
-package models.forms.validators;
+package models.newmodel.validators;
 
-import java.util.Map;
+import models.newmodel.Deserializer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,15 +10,16 @@ import java.util.Map;
  */
 public class PatternValidator extends Validator<String> {
 
-    public PatternValidator(Map<String, Object> validationParameters) {
-        super(validationParameters);
+    private final String pattern;
+
+    public PatternValidator(Deserializer deserializer) {
+        pattern = deserializer.getString("pattern");
     }
 
     @Override
     public String validate(String value) {
-        String pattern = (String) validationParameters.get("pattern");
         if (! value.matches(pattern))
-            return message();
+            return getMessage();
         return null;
     }
 }

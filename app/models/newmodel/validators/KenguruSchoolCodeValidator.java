@@ -1,6 +1,7 @@
-package models.forms.validators;
+package models.newmodel.validators;
 
 import au.com.bytecode.opencsv.CSVReader;
+import models.newmodel.Deserializer;
 import play.Logger;
 import play.cache.Cache;
 
@@ -17,8 +18,7 @@ import java.util.concurrent.Callable;
  */
 public class KenguruSchoolCodeValidator extends Validator<String> {
 
-    public KenguruSchoolCodeValidator(Map<String, Object> validationParameters) {
-        super(validationParameters);
+    public KenguruSchoolCodeValidator(Deserializer deserializer) {
         defaultMessage = "error.msg.kenguru_school_code";
     }
 
@@ -27,7 +27,7 @@ public class KenguruSchoolCodeValidator extends Validator<String> {
         if (getSchoolCodes().contains(code))
             return null;
         else
-            return message();
+            return getMessage();
     }
 
     public Set<String> getSchoolCodes() {

@@ -1,7 +1,5 @@
 package models;
 
-import models.store.StoredObject;
-
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
@@ -10,6 +8,6 @@ import models.store.StoredObject;
  */
 public class Contest {
 
-    public Contest(StoredObject storedObject) {
+    public Contest() { //TODO implement
     }
 }

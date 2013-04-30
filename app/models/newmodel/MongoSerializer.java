@@ -1,7 +1,9 @@
 package models.newmodel;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import controllers.MongoConnection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,7 +13,15 @@ import com.mongodb.DBObject;
  */
 public class MongoSerializer implements Serializer {
 
-    private DBObject object = new BasicDBObject();
+    private final DBObject object;
+
+    public MongoSerializer() {
+        object = new BasicDBObject();
+    }
+
+    public MongoSerializer(DBObject object) {
+        this.object = object;
+    }
 
     @Override
     public void write(String field, Object value) {
@@ -34,5 +44,9 @@ public class MongoSerializer implements Serializer {
 
     public DBObject getObject() {
         return object;
+    }
+
+    public void store(DBCollection collection) {
+        collection.save(object);
     }
 }

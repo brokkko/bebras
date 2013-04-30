@@ -16,6 +16,8 @@ public interface ListDeserializer {
 
     String getString();
 
+    Object getObject();
+
     Deserializer getDeserializer();
 
     ListDeserializer getListDeserializer();

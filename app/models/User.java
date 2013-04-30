@@ -4,9 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import models.store.MongoObject;
-import models.store.StoredObject;
-import models.store.StoredObjectDelegate;
+import models.newmodel.*;
 import play.Play;
 import play.mvc.Http;
 
@@ -16,6 +14,7 @@ import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,7 +23,7 @@ import java.util.Map;
  * Date: 31.12.12
  * Time: 1:44
  */
-public class User extends StoredObjectDelegate {
+public class User implements Serializable {
 
     public static final String FIELD_LOGIN = "login";
     public static final String FIELD_NAME = "name";
@@ -40,8 +39,32 @@ public class User extends StoredObjectDelegate {
 
     public static final PasswordGenerator passwordGenerator = new PasswordGenerator();
 
-    public User(StoredObject storedObject) {
-        super(storedObject);
+    private Map<String, Object> map = new HashMap<>();
+
+    public User() {
+    }
+
+    public void update(Deserializer deserializer) {
+        for (String field : deserializer.fieldSet())
+            map.put(field, deserializer.getObject(field));
+    }
+
+    public static User deserialize(Deserializer deserializer) {
+        User user = new User();
+        user.update(deserializer);
+        return user;
+    }
+
+    public Object get(String field) {
+        return map.get(field);
+    }
+
+    public String getString(String field) {
+        return (String) map.get(field);
+    }
+
+    public void put(String field, Object value) {
+        map.put(field, value);
     }
 
     public String getLogin() {
@@ -103,7 +126,7 @@ public class User extends StoredObjectDelegate {
         if (userObject == null)
             return null;
         else
-            return new User(new MongoObject(usersCollection.getName(), userObject));
+            return User.deserialize(new MongoDeserializer(userObject));
     }
 
     public static String generatePassword() {
@@ -112,5 +135,17 @@ public class User extends StoredObjectDelegate {
 
     public static String getUsernameSessionKey() {
         return "user-" + Event.currentId();
+    }
+
+    @Override
+    public void store(Serializer serializer) {
+        for (Map.Entry<String, Object> field2value : map.entrySet())
+            serializer.write(field2value.getKey(), field2value.getValue());
+    }
+
+    public void store() {
+        MongoSerializer mongoSerializer = new MongoSerializer();
+        store(mongoSerializer);
+        mongoSerializer.store(MongoConnection.getUsersCollection());
     }
 }

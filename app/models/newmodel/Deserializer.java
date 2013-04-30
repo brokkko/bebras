@@ -12,7 +12,7 @@ public interface Deserializer {
 
     int getInt(String field);
 
-    boolean getBoolean(String field);
+    Boolean getBoolean(String field);
 
     String getString(String field);
 
