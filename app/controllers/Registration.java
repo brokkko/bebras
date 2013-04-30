@@ -2,8 +2,9 @@ package controllers;
 
 import controllers.actions.LoadEvent;
 import models.*;
-import models.newmodel.*;
-import models.newmodel.validators.AuthenticatorValidator;
+import models.forms.*;
+import models.forms.validators.AuthenticatorValidator;
+import models.serialization.FormDeserializer;
 import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.i18n.Messages;

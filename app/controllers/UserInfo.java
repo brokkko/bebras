@@ -4,10 +4,10 @@ import controllers.actions.Authenticated;
 import controllers.actions.LoadEvent;
 import models.Event;
 import models.User;
-import models.newmodel.FormDeserializer;
-import models.newmodel.FormSerializer;
-import models.newmodel.InputForm;
-import models.newmodel.RawForm;
+import models.serialization.FormDeserializer;
+import models.serialization.FormSerializer;
+import models.forms.InputForm;
+import models.forms.RawForm;
 import play.mvc.Controller;
 
 import play.mvc.Result;

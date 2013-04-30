@@ -1,8 +1,8 @@
 package models;
 
-import models.newmodel.Deserializer;
-import models.newmodel.Serializable;
-import models.newmodel.Serializer;
+import models.serialization.Deserializer;
+import models.serialization.Serializable;
+import models.serialization.Serializer;
 
 /**
  * Created with IntelliJ IDEA.

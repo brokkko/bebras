@@ -1,7 +1,7 @@
 package models;
 
-import models.newmodel.InputForm;
-import models.newmodel.MemoryDeserializer;
+import models.forms.InputForm;
+import models.serialization.MemoryDeserializer;
 
 /**
  * Created with IntelliJ IDEA.

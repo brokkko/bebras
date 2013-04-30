@@ -4,7 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import models.newmodel.*;
+import models.serialization.*;
 import play.Play;
 import play.mvc.Http;
 

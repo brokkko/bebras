@@ -1,6 +1,6 @@
-@(form:models.newmodel.InputForm, rawForm:models.newmodel.RawForm, action:Call, submit_text:String, need_undo:Boolean)
-@import models.newmodel.InputForm
-@import models.newmodel.RawForm
+@(form:models.forms.InputForm, rawForm:models.forms.RawForm, action:Call, submit_text:String, need_undo:Boolean)
+@import models.forms.InputForm
+@import models.forms.RawForm
 @import play.mvc.Call
 @import scala.collection.JavaConversions._
 <form class="basic-form" action="@action" method="POST">

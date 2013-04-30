@@ -1,8 +1,5 @@
 package models.problems;
 
-import models.checkers.Checker;
-import models.newmodel.MemoryDeserializer;
-
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
