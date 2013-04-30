@@ -5,135 +5,115 @@
         "fields": [
             {
                 "name": "login",
-                "input": {
-                    "type": "string",
-                    "required": true,
-                    "validators": [{
-                        "type": "userField",
-                        "message": "error.msg.login",
-                        "field": "login"
-                    }, {
-                        "type": "pattern",
-                        "pattern": "[-a-zA-Z0-9_]+",
-                        "message": "error.msg.login.wrong_pattern"
-                    }]
-                }
+                "type": "string",
+                "required": true,
+                "skip_for_edit": true,
+                "validators": [{
+                    "type": "userField",
+                    "message": "error.msg.login",
+                    "field": "login"
+                }, {
+                    "type": "pattern",
+                    "pattern": "[-a-zA-Z0-9_]+",
+                    "message": "error.msg.login.wrong_pattern"
+                }]
             },
             {
                 "name": "surname",
-                "input": {
-                    "type": "string",
-                    "required": true
-                }
+                "type": "string",
+                "required": true
             },
             {
                 "name": "name",
-                "input": {
-                    "type": "string",
-                    "required": true
-                }
+                "type": "string",
+                "required": true
             },
             {
                 "name": "patronymic",
-                "input": {
-                    "type": "string",
-                    "required": true
-                }
+                "type": "string",
+                "required": true
             },
             {
                 "name": "birthday",
-                "input": {
-                    "type": "date",
-                    "validators": [
-                        {
-                            "type": "date",
-                            "comparison": "<= now + 0 Y",
-                            "message": "error.msg.birthday.need.born"
-                        },
-                        {
-                            "type": "date",
-                            "comparison": "<= now - 18 Y",
-                            "message": "error.msg.birthday.too.young"
-                        },
-                        {
-                            "type": "date",
-                            "comparison": ">= now - 100 Y",
-                            "message": "error.msg.birthday.too.old"
-                        }
-                    ]
-                }
+                "type": "date",
+                "validators": [
+                    {
+                        "type": "date",
+                        "comparison": "<= now + 0 Y",
+                        "message": "error.msg.birthday.need.born"
+                    },
+                    {
+                        "type": "date",
+                        "comparison": "<= now - 18 Y",
+                        "message": "error.msg.birthday.too.young"
+                    },
+                    {
+                        "type": "date",
+                        "comparison": ">= now - 100 Y",
+                        "message": "error.msg.birthday.too.old"
+                    }
+                ]
             },
             {
                 "name": "phone",
-                "input": {
-                    "type": "string",
-                    "validator": {
-                        "type": "phone"
-                    }
+                "type": "string",
+                "validator": {
+                    "type": "phone"
                 }
             },
             {
                 "name": "email",
-                "input": {
-                    "type": "string",
-                    "required": true,
-                    "validators": [
-                        {
-                            "type": "email"
-                        },
-                        {
-                            "type": "userField",
-                            "message": "error.msg.email_duplicate",
-                            "field": "email"
-                        }
-                    ]
-                }
+                "type": "string",
+                "required": true,
+                "skip_for_edit": true,
+                "validators": [
+                    {
+                        "type": "email"
+                    },
+                    {
+                        "type": "userField",
+                        "message": "error.msg.email_duplicate",
+                        "field": "email"
+                    }
+                ]
             },
             {
                 "name": "schoolcode",
-                "input": {
-                    "type": "string",
-                    "required": true,
-                    "validators": [
-                        {
-                            "type": "pattern",
-                            "pattern": "\\d{8}",
-                            "message": "error.msg.schoolcode.wrong_pattern"
-                        },
-                        {
-                            "type": "kenguruSchoolCode"
-                        }
-                    ]
-                }
+                "type": "string",
+                "required": true,
+                "validators": [
+                    {
+                        "type": "pattern",
+                        "pattern": "\\d{8}",
+                        "message": "error.msg.schoolcode.wrong_pattern"
+                    },
+                    {
+                        "type": "kenguruSchoolCode"
+                    }
+                ]
             },
             {
                 "name": "schoolname",
-                "input": {
-                    "type": "string",
-                    "required": true
-                }
+                "type": "string",
+                "required": true
             },
             {
                 "name": "schooladdr",
-                "input": {
-                    "type": "address"
-                }
+                "type": "address"
             },
             {
                 "name": "personal_data",
-                "input": {
-                    "type": "boolean",
-                    "required": true,
-                    "hint": "hint.personal_data"
-                }
+                "type": "boolean",
+                "required": true,
+                "hint": "hint.personal_data",
+                "store": false
             },
             {
                 "name": "contest_rules",
-                "input": {
-                    "type": "boolean",
-                    "required": true,
-                    "hint": "hint.contest_rules"
-                }
+                "type": "boolean",
+                "required": true,
+                "hint": "hint.contest_rules",
+                "store": false
             }
         ],
         "validators": []

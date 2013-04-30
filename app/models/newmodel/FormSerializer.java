@@ -40,6 +40,8 @@ public class FormSerializer implements Serializer, ListSerializer {
         InputField inputField = form.getField(field);
         if (inputField == null) //don't serialize values that are not in the specification
             return;
+        if (!inputField.getBooleanConfig("store", true)) //TODO this is not DRY, "store", true is already written in Event
+            return;
 
         InputTemplate inputTemplate = inputField.getInputTemplate();
         inputTemplate.write(inputField.getName(), value, rawForm);
@@ -86,10 +88,10 @@ public class FormSerializer implements Serializer, ListSerializer {
     // private methods
 
     private String prefixField(String field) {
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
 
         for (String prefix : prefixes)
-            res.append(prefix).append(InputField.FIELDS_SEPARATOR);
+            res.append(prefix).append(InputField.FIELDS_SEPARATOR_REGEX);
 
         res.append(field);
 

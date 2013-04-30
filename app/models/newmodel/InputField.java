@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class InputField {
 
-    public static final String FIELDS_SEPARATOR = "|";
+    public static final String FIELDS_SEPARATOR_REGEX = "/|/g";
 
     private String name;
     private String messagesPrefix;
@@ -40,14 +40,14 @@ public class InputField {
     }
 
     public String[] getNamePrefixes() {
-        String[] elements = name.split(FIELDS_SEPARATOR);
+        String[] elements = name.split(FIELDS_SEPARATOR_REGEX);
         String[] prefixes = new String[elements.length - 1];
         System.arraycopy(elements, 0, prefixes, 0, elements.length - 1);
         return prefixes;
     }
 
     public String getLastName() {
-        String[] elements = name.split(FIELDS_SEPARATOR);
+        String[] elements = name.split(FIELDS_SEPARATOR_REGEX);
         return elements[elements.length - 1];
     }
 
@@ -57,6 +57,10 @@ public class InputField {
 
     public Html format(RawForm form) {
         return inputTemplate.format(form, this);
+    }
+
+    public List<? extends Validator> getValidators() {
+        return validators;
     }
 
     public static InputField deserialize(String messagesPrefix, Deserializer deserializer) {
@@ -97,6 +101,11 @@ public class InputField {
 
     public Object getConfig(String name) {
         return additionalConfiguration.get(name);
+    }
+
+    public boolean getBooleanConfig(String name, boolean defaultValue) {
+        Boolean value = (Boolean) getConfig(name);
+        return value == null ? defaultValue : value;
     }
 
     public String getConfigFromMessages(String key) {

@@ -26,7 +26,7 @@ public class Application extends Controller {
         bbtcCollection.remove(new BasicDBObject());
 
         //bbtc event object
-        DBObject bbtcObject = (DBObject) JSON.parse(getResourceAsString("/bbtc_event_new.json"));
+        DBObject bbtcObject = (DBObject) JSON.parse(getResourceAsString("/bbtc_event.json"));
         bbtcCollection.save(bbtcObject);
 
         //clear Cache

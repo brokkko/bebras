@@ -4,10 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import models.newmodel.Deserializer;
-import models.newmodel.InputForm;
-import models.newmodel.MemoryDeserializer;
-import models.newmodel.MongoDeserializer;
+import models.newmodel.*;
 import play.Logger;
 import play.cache.Cache;
 import play.mvc.Http;
@@ -48,9 +45,12 @@ public class Event {
         Deserializer usersDeserializer = deserializer.getDeserializer("users");
         if (usersDeserializer != null) {
             usersForm = InputForm.deserialize("user", usersDeserializer);
-            //TODO don't use fields "login", "email", "personal_data", "contest_rules", get this info from somewhere else
-            editUserForm = InputForm.deserialize("user_edit", usersDeserializer);
-            //TODO don't save personal_data and contest_rules to the user object
+            editUserForm = InputForm.deserialize("user", usersDeserializer, new InputForm.FieldFilter() {
+                @Override
+                public boolean accept(InputField field) {
+                    return ! field.getBooleanConfig("skip_for_edit", false) && field.getBooleanConfig("store", true);
+                }
+            });
         } else {
             usersForm = null;
             editUserForm = null;

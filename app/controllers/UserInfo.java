@@ -26,7 +26,7 @@ public class UserInfo extends Controller {
         return ok(views.html.contests_list.render());
     }
 
-    public static Result info(String eventId) { //TODO use event idC
+    public static Result info(String eventId) { //TODO use event id
         User user = User.current();
 
         FormSerializer formSerializer = new FormSerializer(Event.current().getEditUserForm());

@@ -1,8 +1,8 @@
 package models.newmodel;
 
-import models.User;
 import models.newmodel.inputtemplate.InputTemplate;
 import models.newmodel.validators.Validator;
+import play.i18n.Messages;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,8 +52,11 @@ public class FormDeserializer implements Deserializer, ListDeserializer {
             deserializeField(inputField);
 
         //noinspection unchecked
-        for (Validator<FormDeserializer> validator : inputForm.getValidators())
-            validator.validate(this);
+        for (Validator<FormDeserializer> validator : inputForm.getValidators()) {
+            String error = validator.validate(this);
+            if (error != null)
+                rawForm.reject(error);
+        }
     }
 
     private void deserializeField(InputField inputField) {
@@ -73,7 +76,20 @@ public class FormDeserializer implements Deserializer, ListDeserializer {
             values = (Map<String, Object>) values.get(prefix);
 
         InputTemplate inputTemplate = inputField.getInputTemplate();
-        Object value = inputTemplate.read(inputField.getName(), rawForm);
+        Object value = inputTemplate.read(fieldName, rawForm);
+
+        //validate field
+        if (value != null)
+            for (Validator<Object> validator : inputField.getValidators()) {
+                String error = validator.validate(value);
+                if (error != null)
+                    rawForm.reject(fieldName, error);
+            }
+        else if (inputField.isRequired())
+            rawForm.reject(fieldName, Messages.get("error.msg.required"));
+
+        if (rawForm.hasFieldErrors(fieldName))
+            value = null;
 
         if (value != null)
             values.put(fieldName, value);

@@ -58,42 +58,52 @@ public class InputForm {
     }
     */
 
-    public static InputForm deserialize(String messagesName, Deserializer deserializer) {
+    public static InputForm deserialize(String name, Deserializer deserializer) {
+        return deserialize(name, deserializer, null);
+    }
+
+    public static InputForm deserialize(String name, Deserializer deserializer, FieldFilter fieldFilter) {
         List<InputField> fields = new ArrayList<>();
 
         ListDeserializer fieldsDeserializer = deserializer.getListDeserializer("fields");
 
         while (fieldsDeserializer.hasMore()) {
             Deserializer inputFieldDeserializer = fieldsDeserializer.getDeserializer();
-            fields.add(InputField.deserialize(messagesName, inputFieldDeserializer));
+
+            InputField inputField = InputField.deserialize(name, inputFieldDeserializer);
+
+            if (fieldFilter == null || fieldFilter.accept(inputField))
+                fields.add(inputField);
         }
 
         List<Validator> validators = new ArrayList<>();
 
         ListDeserializer validatorsList = deserializer.getListDeserializer("validators");
-        while (validatorsList.hasMore()) {
-            Validator validator = Validator.deserialize(validatorsList.getDeserializer());
-            validators.add(validator);
-        }
+        if (validatorsList != null)
+            while (validatorsList.hasMore()) {
+                Validator validator = Validator.deserialize(validatorsList.getDeserializer());
+                validators.add(validator);
+            }
 
-        return new InputForm(messagesName, fields, validators);
+        return new InputForm(name, fields, validators);
     }
 
     public Html format(RawForm form, Call call) {
-        return formatExtended(form, call, false);
+        return formatExtended(form, call, false, null);
     }
 
-    public Html formatWithUndo(RawForm form, Call call) {
-        return formatExtended(form, call, true);
-    }
+    public Html formatExtended(RawForm form, Call call, boolean needUndo, String submitText) {
+        if (submitText == null)
+            submitText = "form." + Event.current().getId() + "." + getName() + ".submit";
 
-    private Html formatExtended(RawForm form, Call call, boolean needUndo) {
-        String msgKey = "form." + Event.current().getId() + "." + getName() + ".submit";
-
-        return views.html.fields.form.render(this, form, call, Messages.get(msgKey), needUndo);
+        return views.html.fields.form.render(this, form, call, Messages.get(submitText), needUndo);
     }
 
     public List<Validator> getValidators() {
         return validators;
+    }
+
+    public static interface FieldFilter {
+        boolean accept(InputField field);
     }
 }

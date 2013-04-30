@@ -65,7 +65,7 @@ public class DateInputTemplate extends InputTemplate {
         try {
             return cal.getTime();
         } catch (IllegalArgumentException e) {
-            form.reject(Messages.get("error.msg.date.not_exists"));
+            form.reject(field, Messages.get("error.msg.date.not_exists"));
             return null;
         }
     }
