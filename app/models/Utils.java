@@ -1,5 +1,6 @@
 package models;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -9,6 +10,8 @@ import java.util.*;
  * Time: 14:46
  */
 public class Utils {
+
+    public static final SimpleDateFormat contestDateFormat = new SimpleDateFormat("d MMMM YYYY, HH:mm");
 
     public static <K, V> Map<K, V> mapify(Object... values) {
         Map<K, V> map = new HashMap<>();
@@ -52,6 +55,10 @@ public class Utils {
                     Integer.parseInt(items[4]),
                     Integer.parseInt(items[5])
             ).getTime();
+    }
+
+    public static String formatContestDate(Date date) {
+        return contestDateFormat.format(date);
     }
 
 }

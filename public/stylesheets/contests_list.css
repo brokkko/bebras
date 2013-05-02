@@ -2,19 +2,19 @@
     /*border-radius: 1em;*/
     background-color: #e0f1ff;
     padding: 0.5em 1em;
-    margin: 1em;
+    margin: 0.4em 1em;
     color: #00008b;
     line-height: 1.2;
 }
 
 .contest-description .info {
     float: left;
-    width: 50%;
+    width: 40%;
 }
 
 .contest-description .description {
     display: block;
-    margin-left: 50%;
+    margin-left: 40%;
 }
 
 .contest-description .info .title {
@@ -48,7 +48,7 @@
 }
 
 p.time {
-    padding-bottom: 0;
+    padding-bottom: 0.2em;
     vertical-align: middle;
 }
 

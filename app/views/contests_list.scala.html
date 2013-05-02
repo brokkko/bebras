@@ -11,10 +11,10 @@
     @for(contest <- Event.current.getContests) {
         <div class='contest-description'>
             <div class='info'>
-                <p class='header big-title'>@contest.getName</p>
-                <p><span class='title'>Начало:</span> <span class='data'>@contest.getStart</span></p>
-                <p><span class='title'>Окончание:</span> <span class='data'>@contest.getFinish</span></p>
-                <p><span class='title'>Результаты:</span> <span class='data'>@contest.getResults</span></p>
+                <p class='header big-title'><a href="">@contest.getName</a></p>
+                <p><span class='title'>Начало:</span> <span class='data'>@models.Utils.formatContestDate(contest.getStart)</span></p>
+                <p><span class='title'>Окончание:</span> <span class='data'>@models.Utils.formatContestDate(contest.getFinish)</span></p>
+                <p><span class='title'>Результаты:</span> <span class='data'>@models.Utils.formatContestDate(contest.getResults)</span></p>
                 <p><span class='title'>Минут на прохождение:</span> <span class='data'>@contest.getDuration</span></p>
             </div>
             <div class='description'>
