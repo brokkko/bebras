@@ -1,9 +1,6 @@
 package models;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,6 +25,33 @@ public class Utils {
 
     public static <T> List<T> listify(T... values) {
         return Arrays.asList(values);
+    }
+
+    public static Date parseSimpleTime(String time) {
+        if (time == null)
+            return null;
+        if (time.trim().isEmpty())
+            return null;
+
+        String[] items = time.split("[^0-9]+");
+
+        if (items.length == 5)
+            return new GregorianCalendar(
+                    Integer.parseInt(items[0]),
+                    Integer.parseInt(items[1]) - 1,
+                    Integer.parseInt(items[2]),
+                    Integer.parseInt(items[3]),
+                    Integer.parseInt(items[4])
+            ).getTime();
+        else
+            return new GregorianCalendar(
+                    Integer.parseInt(items[0]),
+                    Integer.parseInt(items[1]) - 1,
+                    Integer.parseInt(items[2]),
+                    Integer.parseInt(items[3]),
+                    Integer.parseInt(items[4]),
+                    Integer.parseInt(items[5])
+            ).getTime();
     }
 
 }

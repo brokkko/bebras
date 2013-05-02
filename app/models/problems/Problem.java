@@ -1,43 +1,25 @@
 package models.problems;
 
+import models.serialization.Deserializer;
+import models.serialization.Serializer;
+import play.api.templates.Html;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
  * Date: 25.01.13
  * Time: 11:09
  */
-public class Problem {
+public interface Problem {
 
-    public static final String STATEMENT = "statement";
-    public static final String SOLUTION = "solution";
-    public static final String CHECKER = "checker";
+    Html formatStatement();
 
-    /*public Problem() {
-        super(new MemoryDeserializer());
-    }
+    Html formatStatementWithSolution();
 
-    public Problem(StoredObject storedObject) {
-        super(storedObject);
-    }
+    String getJsLink();
 
-    public String getStatement() {
-        return (String) get(STATEMENT);
-    }
+    String getCssLink();
 
-    public String getSolution() {
-        return (String) get(SOLUTION);
-    }
-
-    public Checker getChecker() {
-        return Checker.getInstance(getString(CHECKER));
-    }
-
-    public Problem generate() {
-        return generate(0);
-    }
-
-    public Problem generate(long userId) {
-        return this;
-    }*/
+    void check(Deserializer submission, Serializer resultsReceiver);
 
 }

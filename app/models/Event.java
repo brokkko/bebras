@@ -6,12 +6,14 @@ import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import models.forms.*;
 import models.serialization.Deserializer;
+import models.serialization.ListDeserializer;
 import models.serialization.MemoryDeserializer;
 import models.serialization.MongoDeserializer;
 import play.Logger;
 import play.cache.Cache;
 import play.mvc.Http;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -58,6 +60,16 @@ public class Event {
             usersForm = null;
             editUserForm = null;
         }
+
+        //deserialize contests
+        ListDeserializer contestsDeserializer = deserializer.getListDeserializer("contests");
+        contests = new ArrayList<>();
+
+        if (contestsDeserializer != null)
+            while (contestsDeserializer.hasMore()) {
+                Deserializer contestDeserializer = contestsDeserializer.getDeserializer();
+                contests.add(Contest.deserialize(contestDeserializer));
+            }
 
         //TODO enters site before confirmation
         //TODO choose where to go if authorized

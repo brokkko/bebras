@@ -22,5 +22,10 @@ GET     /:event/user_info           controllers.UserInfo.info(event)
 POST    /:event/user_info           controllers.UserInfo.doChangeInfo(event)
 GET     /:event/contests            controllers.UserInfo.contestsList(event)
 
+#debug
+#TODO: 1) create controller intention, 2) TODO highlight. 3) Create method intention shows up even if there is no controller 4) autoimport play.mvc.Result
+#TODO report. comment in the normal line is not highlighted as an error, but it does not work
+GET     /debug/:action              controllers.Debug.debug(action)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
