@@ -198,8 +198,8 @@ public class User implements Serializable {
     public int getContestStatus(Contest contest) {
         if (contestIsGoing(contest))
             return 1; //going
-//        if (contest.contestFinished() && !participatedInContest(contest.getId()))
-//            return 2; //finished but not participated
+        if (contest.contestFinished() && !participatedInContest(contest.getId()))
+            return 2; //finished but not participated
         if (contest.resultsAvailable() && contest.contestFinished())
             return 3; //results available
         if (contest.contestFinished())

@@ -9,6 +9,7 @@ import models.problems.problemblock.ProblemBlock;
 import models.problems.problemblock.RandomProblemsBlock;
 import models.serialization.Deserializer;
 import models.serialization.ListDeserializer;
+import play.mvc.Http;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -140,4 +141,28 @@ public class Contest {
         return results.before(start);
     }
 
+    public static Contest current() {
+        return current(Http.Context.current());
+    }
+
+    private static Contest current(Http.Context ctx) {
+        Contest contest = (Contest) ctx.args.get("contest");
+
+        if (contest == null) {
+            //need to parse path because https://groups.google.com/forum/?fromgroups=#!topic/play-framework/sNFeqmd-mBQ
+            String path = ctx.request().path();
+            int firstSlash = path.indexOf('/');
+            int secondSlash = path.indexOf('/', firstSlash + 1);
+            int thirdSlash = path.indexOf('/', secondSlash + 1);
+            if (secondSlash >= 0 && thirdSlash >= 0)
+                contest = Event.current().getContestById(path.substring(secondSlash + 1, thirdSlash));
+
+            if (contest == null)
+                return null;
+
+            ctx.args.put("contest", contest);
+        }
+
+        return contest;
+    }
 }

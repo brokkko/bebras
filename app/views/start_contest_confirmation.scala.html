@@ -1,0 +1,18 @@
+@()
+@import views.ResourceLink
+@import models.Contest
+@import models.Event
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css")), List()) {
+    <h1>Подтвердите, что собираетесь начать</h1>
+    <p class='warning'>После начала соревнования начнется отсчет времени.
+    @if(Contest.current().isUnlimitedTime) {
+        Время на ответы не ограничено.
+    } else {
+        Минут на решение отведено: @Contest.current().getDuration
+    }
+    </p>
+    <p class='contest-select'>
+        <a href='@routes.Contests.contest(Event.current.getId, Contest.current.getId)'>Начать</a>
+    </p>
+}

@@ -18,11 +18,14 @@
                     case 1 => {
                         соревнование идет!
                     }
+                    case 2 => {
+                        соревнование окончено
+                    }
                     case 3 => {
                         доступны результаты
                     }
                     case 4 => {
-                        подведение итогов
+                        соревнование пройдено
                     }
                     case 5 => {
                         вы можете начать соревнование
@@ -44,7 +47,7 @@
                 <p class='big-title'><span class='title'>Минут на прохождение:</span>
                     <span class='data'>
                     @if(contest.isUnlimitedTime) {
-                        негораничено
+                        неограничено
                     } else {
                         @contest.getDuration
                     }
@@ -52,7 +55,7 @@
                 </p>
                 <p class='contest-select'>
                 @User.current().getContestStatus(contest) match {
-                case 1 | 3 | 4 => {
+                case 1 | 2 | 3 | 4 => {
                 <a href='@routes.Contests.contest(Event.current.getId, contest.getId)'>Перейти</a>
                 }
                 case 5 => {
