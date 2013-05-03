@@ -1,5 +1,7 @@
 package models;
 
+import com.mongodb.DBCollection;
+import controllers.MongoConnection;
 import models.problems.Problem;
 import models.problems.problemblock.FolderBlock;
 import models.problems.problemblock.OneProblemBlock;
@@ -20,6 +22,11 @@ import java.util.List;
  */
 public class Contest {
 
+    public static final String CONTEST_COLLECTION_NAME_PREFIX = "contest-";
+
+    private Event event;
+
+    private String id;
     private String name;
     private String description;
 
@@ -32,7 +39,10 @@ public class Contest {
     private List<Integer> pageSizes;
     private List<ProblemBlock> problemBlocks;
 
-    public Contest(Deserializer deserializer) {
+    public Contest(Event event, Deserializer deserializer) {
+        this.event = event;
+
+        id = deserializer.getString("id");
         name = deserializer.getString("name");
         description = deserializer.getString("description");
 
@@ -74,8 +84,8 @@ public class Contest {
         return problems;
     }
 
-    public static Contest deserialize(Deserializer deserializer) {
-        return new Contest(deserializer);
+    public static Contest deserialize(Event event, Deserializer deserializer) {
+        return new Contest(event, deserializer);
     }
 
     public String getName() {
@@ -101,4 +111,33 @@ public class Contest {
     public int getDuration() {
         return duration;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public DBCollection getCollection() {
+        return MongoConnection.getCollection(CONTEST_COLLECTION_NAME_PREFIX + event.getId() + "-" + id);
+    }
+
+    public boolean contestStarted() {
+        return start.before(new Date());
+    }
+
+    public boolean contestFinished() {
+        return finish.before(new Date());
+    }
+
+    public boolean resultsAvailable() {
+        return results.before(new Date());
+    }
+
+    public boolean isUnlimitedTime() {
+        return duration == 0;
+    }
+
+    public boolean resultsAvailableImmediately() {
+        return results.before(start);
+    }
+
 }

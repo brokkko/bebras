@@ -1,3 +1,4 @@
+import models.problems.ProblemSource;
 import models.problems.RootProblemSource;
 import models.problems.bbtc.BBTCProblemSource;
 import play.Application;
@@ -11,6 +12,7 @@ import play.mvc.Result;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,12 +26,6 @@ public class Global extends GlobalSettings {
     public void onStart(Application app) {
         //TODO move problem sources mount to configuration
         //TODO allow uploading of files to mount
-        RootProblemSource rootProblemSource = RootProblemSource.instance;
-        try {
-            rootProblemSource.mount("bbtc 2013", new BBTCProblemSource("/problems/bbtc-trial.csv"));
-        } catch (IOException e) {
-            Logger.error("Failed to mount BBTC 2013 problems", e);
-        }
     }
 
     @Override

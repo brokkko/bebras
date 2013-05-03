@@ -49,9 +49,12 @@ public class BBTCProblem implements Problem {
         if (answer == null)
             return;
 
-        int userAnswer = stringAnswer2number(answer);
-
-        resultsReceiver.write("result", userAnswer == correctAnswer ? 0 : 1);
+        if (answer.isEmpty())
+            resultsReceiver.write("result", 0);
+        else {
+            int userAnswer = stringAnswer2number(answer);
+            resultsReceiver.write("result", userAnswer == correctAnswer ? -1 : 1);
+        }
     }
 
     private static int stringAnswer2number(String answer) {

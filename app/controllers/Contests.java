@@ -15,11 +15,11 @@ import play.mvc.Result;
 @Authenticated
 public class Contests extends Controller {
 
-    public static Result startContest(String eventId, int contestIndex) {
+    public static Result startContest(String eventId, String contestId) {
         return TODO;
     }
 
-    public static Result contest(String eventId, int contestIndex) {
+    public static Result contest(String eventId, String contestId) {
         return TODO;
     }
 

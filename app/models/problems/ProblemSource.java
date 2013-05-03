@@ -1,7 +1,6 @@
 package models.problems;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,7 +46,7 @@ public abstract class ProblemSource {
         for (String f : folders) {
             ProblemSource nextSource = getSubsource(f);
             if (nextSource == null) {
-                nextSource = new MountProblemSource();
+                nextSource = new InmemoryProblemSource();
                 currentSource.mount(f, nextSource);
             }
             currentSource = nextSource;

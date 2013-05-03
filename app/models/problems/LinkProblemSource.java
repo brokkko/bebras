@@ -38,6 +38,6 @@ public class LinkProblemSource extends ProblemSource {
     }
 
     private ProblemSource loadSource() {
-        return RootProblemSource.instance.getSubsource(link);
+        return RootProblemSource.getInstance().getSubsource(link);
     }
 }

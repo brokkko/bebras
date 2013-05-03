@@ -20,6 +20,6 @@ public interface Problem {
 
     String getCssLink();
 
-    void check(Deserializer submission, Serializer resultsReceiver);
+    void check(Deserializer answer, Serializer resultsReceiver);
 
 }

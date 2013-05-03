@@ -13,8 +13,7 @@ import play.Logger;
 import play.cache.Cache;
 import play.mvc.Http;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -32,7 +31,7 @@ public class Event {
 
     private String id;
     private String title;
-    private List<Contest> contests;
+    private LinkedHashMap<String, Contest> contests;
     private InputForm usersForm;
     private InputForm editUserForm;
 
@@ -63,12 +62,13 @@ public class Event {
 
         //deserialize contests
         ListDeserializer contestsDeserializer = deserializer.getListDeserializer("contests");
-        contests = new ArrayList<>();
+        contests = new LinkedHashMap<>();
 
         if (contestsDeserializer != null)
             while (contestsDeserializer.hasMore()) {
                 Deserializer contestDeserializer = contestsDeserializer.getDeserializer();
-                contests.add(Contest.deserialize(contestDeserializer));
+                Contest contest = Contest.deserialize(this, contestDeserializer);
+                contests.put(contest.getId(), contest);
             }
 
         //TODO enters site before confirmation
@@ -140,8 +140,12 @@ public class Event {
         return title;
     }
 
-    public List<Contest> getContests() {
-        return contests;
+    public Contest getContestById(String id) {
+        return contests.get(id);
+    }
+
+    public Collection<Contest> getContests() {
+        return contests.values();
     }
 
     public InputForm getUsersForm() {

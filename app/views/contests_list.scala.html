@@ -1,5 +1,6 @@
 @()
 @import models.Event
+@import models.User
 @import scala.List
 @import views.ResourceLink
 @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css")), List()) {
@@ -11,11 +12,55 @@
     @for(contest <- Event.current.getContests) {
         <div class='contest-description'>
             <div class='info'>
-                <p class='header big-title'><a href="">@contest.getName</a></p>
+                <p class='header big-title'>@contest.getName</p>
+                <p class='big-title'><span class='title'>Статус:</span> <span class='data important'>
+                    @User.current().getContestStatus(contest) match {
+                    case 1 => {
+                        соревнование идет!
+                    }
+                    case 3 => {
+                        доступны результаты
+                    }
+                    case 4 => {
+                        подведение итогов
+                    }
+                    case 5 => {
+                        вы можете начать соревнование
+                    }
+                    case 6 => {
+                        соревнование еще не началось
+                    }
+                    }
+                </span></p>
                 <p><span class='title'>Начало:</span> <span class='data'>@models.Utils.formatContestDate(contest.getStart)</span></p>
                 <p><span class='title'>Окончание:</span> <span class='data'>@models.Utils.formatContestDate(contest.getFinish)</span></p>
-                <p><span class='title'>Результаты:</span> <span class='data'>@models.Utils.formatContestDate(contest.getResults)</span></p>
-                <p><span class='title'>Минут на прохождение:</span> <span class='data'>@contest.getDuration</span></p>
+                <p><span class='title'>Результаты:</span> <span class='data'>
+                    @if(contest.resultsAvailableImmediately) {
+                        доступны сразу
+                    } else {
+                        @models.Utils.formatContestDate(contest.getResults)
+                    }
+                </span></p>
+                <p class='big-title'><span class='title'>Минут на прохождение:</span>
+                    <span class='data'>
+                    @if(contest.isUnlimitedTime) {
+                        негораничено
+                    } else {
+                        @contest.getDuration
+                    }
+                    </span>
+                </p>
+                <p class='contest-select'>
+                @User.current().getContestStatus(contest) match {
+                case 1 | 3 | 4 => {
+                <a href='@routes.Contests.contest(Event.current.getId, contest.getId)'>Перейти</a>
+                }
+                case 5 => {
+                <a href='@routes.Contests.startContest(Event.current.getId, contest.getId)'>Начать</a>
+                }
+                case 6 => {}
+                }
+                </p>
             </div>
             <div class='description'>
                 <p class='description-title big-title'>Описание</p>

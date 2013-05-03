@@ -8,7 +8,7 @@ import java.util.*;
  * Date: 25.01.13
  * Time: 14:09
  */
-public class MountProblemSource extends ProblemSource {
+public class InmemoryProblemSource extends ProblemSource {
 
     protected final Map<String, ProblemSource> sources = new HashMap<>();
     protected final Map<String, Problem> problems = new HashMap<>();

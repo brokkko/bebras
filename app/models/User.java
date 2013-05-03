@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,16 +38,32 @@ public class User implements Serializable {
     public static final String FIELD_RESTORE_FOR_EMAIL = "_rstr_for_mail";
     public static final String FIELD_NEW_RECOVERY_PASSWORD = "_rec_pswd";
 
+    public static final String FIELD_STARTED_CONTESTS = "_contests";
+
     public static final PasswordGenerator passwordGenerator = new PasswordGenerator();
 
     private Map<String, Object> map = new HashMap<>();
+    private Map<String, Date> contest2dateStart = new HashMap<>();
 
     public User() {
     }
 
     public void update(Deserializer deserializer) {
-        for (String field : deserializer.fieldSet())
-            map.put(field, deserializer.getObject(field));
+        for (String field : deserializer.fieldSet()) {
+            if (field.equals(FIELD_STARTED_CONTESTS))
+                loadContests(deserializer.getDeserializer(FIELD_STARTED_CONTESTS));
+            else {
+                Object fieldValue = deserializer.getObject(field);
+                map.put(field, fieldValue);
+            }
+        }
+    }
+
+    private void loadContests(Deserializer deserializer) {
+        for (String contestId : deserializer.fieldSet()) {
+            Date dateStart = (Date) deserializer.getObject(contestId);
+            contest2dateStart.put(contestId, dateStart);
+        }
     }
 
     public static User deserialize(Deserializer deserializer) {
@@ -115,7 +132,7 @@ public class User implements Serializable {
         return current() != null;
     }
 
-    public static User getInstance(String field, String value) {
+    public static User getInstance(String field, Object value) {
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
         DBObject query = new BasicDBObject(FIELD_EVENT, Event.current().getId());
@@ -137,10 +154,18 @@ public class User implements Serializable {
         return "user-" + Event.currentId();
     }
 
+    public String getId() {
+        return map.get("_id").toString();
+    }
+
     @Override
     public void store(Serializer serializer) {
         for (Map.Entry<String, Object> field2value : map.entrySet())
             serializer.write(field2value.getKey(), field2value.getValue());
+
+        Serializer contestStartSerializer = serializer.getSerializer(FIELD_STARTED_CONTESTS);
+        for (Map.Entry<String, Date> id2date : contest2dateStart.entrySet())
+            contestStartSerializer.write(id2date.getKey(), id2date.getValue());
     }
 
     public void store() {
@@ -148,4 +173,40 @@ public class User implements Serializable {
         store(mongoSerializer);
         mongoSerializer.store(MongoConnection.getUsersCollection());
     }
+
+    public Date contestStartTime(String contestId) {
+        return contest2dateStart.get(contestId);
+    }
+
+    public boolean participatedInContest(String contestId) {
+        return contestStartTime(contestId) != null;
+    }
+
+    public boolean contestIsGoing(Contest contest) {
+        Date start = contestStartTime(contest.getId());
+
+        if (start == null)
+            return false;
+
+        //noinspection SimplifiableIfStatement
+        if (contest.isUnlimitedTime())
+            return true;
+
+        return System.currentTimeMillis() - start.getTime() < contest.getDuration() * 1000 * 60;
+    }
+
+    public int getContestStatus(Contest contest) {
+        if (contestIsGoing(contest))
+            return 1; //going
+//        if (contest.contestFinished() && !participatedInContest(contest.getId()))
+//            return 2; //finished but not participated
+        if (contest.resultsAvailable() && contest.contestFinished())
+            return 3; //results available
+        if (contest.contestFinished())
+            return 4; //finished but still waiting results
+        if (contest.contestStarted())
+            return 5; //still may participate
+        return 6; //still not started;
+    }
+
 }

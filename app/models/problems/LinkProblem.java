@@ -44,6 +44,6 @@ public class LinkProblem implements Problem {
     }
 
     private Problem loadProblem() {
-        return RootProblemSource.instance.get(link);
+        return RootProblemSource.getInstance().get(link);
     }
 }

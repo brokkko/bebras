@@ -1,12 +1,10 @@
 package models.problems.bbtc;
 
 import au.com.bytecode.opencsv.CSVReader;
-import models.problems.MountProblemSource;
+import models.problems.InmemoryProblemSource;
 import models.problems.ProblemSource;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,12 +12,27 @@ import java.io.InputStreamReader;
  * Date: 25.01.13
  * Time: 14:19
  */
-public class BBTCProblemSource extends MountProblemSource {
+public class BBTCProblemSource extends InmemoryProblemSource {
 
-    public BBTCProblemSource(String resource) throws IOException {
-        InputStream resourceStream = BBTCProblemSource.class.getResourceAsStream(resource);
-        InputStreamReader resourceReader = new InputStreamReader(resourceStream, "UTF8");
+    public void update(File file) throws IOException {
+        try (
+                InputStream resourceStream = new FileInputStream(file);
+                InputStreamReader resourceReader = new InputStreamReader(resourceStream, "UTF8")
+        ) {
+            dataReader(resourceReader);
+        }
+    }
 
+    public void update(String resource) throws IOException {
+        try (
+                InputStream resourceStream = BBTCProblemSource.class.getResourceAsStream(resource);
+                InputStreamReader resourceReader = new InputStreamReader(resourceStream, "UTF8")
+        ) {
+            dataReader(resourceReader);
+        }
+    }
+
+    private void dataReader(InputStreamReader resourceReader) throws IOException {
         CSVReader problemsReader = new CSVReader(resourceReader, ',', '"', 1);
         String [] nextLine;
         while ((nextLine = problemsReader.readNext()) != null) {
