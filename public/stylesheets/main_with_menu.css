@@ -133,3 +133,7 @@ nav .menu-item, nav .menu-item:visited {
 nav a:hover {
     color: blue;
 }
+
+.hidden {
+    display: none;
+}

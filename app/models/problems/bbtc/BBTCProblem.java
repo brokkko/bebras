@@ -34,12 +34,12 @@ public class BBTCProblem implements Problem {
 
     @Override
     public String getJsLink() {
-        return "bbtc.problems";
+        return "bbtc.problem";
     }
 
     @Override
     public String getCssLink() {
-        return "bbtc.problems";
+        return "bbtc.problem";
     }
 
     @Override

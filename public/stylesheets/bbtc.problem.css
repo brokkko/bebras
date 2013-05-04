@@ -55,8 +55,9 @@
     color: #000;
     text-align: center;
     background-color: #FFF;
-    padding-top: 2px;
-    padding-left: 1px;
+    /*padding-top: 2px;*/
+    /*padding-left: 1px;*/
+    padding: 1px 0;
     cursor: pointer;
     display: inline-block;
     float: left;
@@ -66,12 +67,13 @@
 .task-answer-selector.active {
     background-color: #79F;
     color: #FFF;
-    cursor: default;
+    cursor: pointer;
 }
 
-.task-answer-selector.over {
+.task-answer-selector:hover {
     background-color: #BCF;
     color: #FFF;
+    cursor: pointer;
 }
 
 /*right and wrong answers*/

@@ -37,16 +37,20 @@ public class Contests extends Controller {
         List<ResourceLink> cssLinksList = getCssLinks(pagedUserProblems);
         List<ResourceLink> jsLinksList = getJsLinks(pagedUserProblems);
 
-
         List<Answer> answersForContest = user.getAnswersForContest(Contest.current());
 
         Map<Problem, Answer> problem2answer = new HashMap<>();
+        Map<Problem, Integer> problem2index = new HashMap<>();
         int index = 0;
         for (List<Problem> page : pagedUserProblems)
-            for (Problem problem : page)
-                problem2answer.put(problem, answersForContest.get(index++));
+            for (Problem problem : page) {
+                problem2answer.put(problem, answersForContest.get(index));
+                problem2index.put(problem, index);
 
-        return ok(views.html.contest.render(pagedUserProblems, problem2answer, cssLinksList, jsLinksList));
+                index++;
+            }
+
+        return ok(views.html.contest.render(pagedUserProblems, problem2index, problem2answer, cssLinksList, jsLinksList));
     }
 
     private static List<ResourceLink> getJsLinks(List<List<Problem>> pagedUserProblems) {
