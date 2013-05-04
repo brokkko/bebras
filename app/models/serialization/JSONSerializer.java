@@ -20,7 +20,9 @@ public class JSONSerializer implements Serializer {
 
     @Override
     public void write(String field, Object value) {
-        if (value instanceof JsonNode)
+        if (value == null)
+            node.put(field, (String) null);
+        else if (value instanceof JsonNode)
             node.put(field, (JsonNode) value);
         else if (value instanceof Integer)
             node.put(field, (Integer) value);

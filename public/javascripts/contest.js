@@ -1,5 +1,4 @@
-var problems_count;
-var problems_info = []; //{type -> "", initial_answer -> {}}
+var contest_info; //{type -> "", ans -> {}}
 
 var solutions_loaders_registry = {};
 
@@ -46,17 +45,37 @@ function register_solution_loader(problem_type, loader) {
         current_page = page;
     }
 
+    function get_problems_count() {
+        return contest_info.problems.length;
+    }
 
+    function get_problem_div(pid) {
+        return $($('.problem').get(pid));
+    }
+
+    function load_solution(pid, answer) {
+        var type = contest_info.problems[pid].type;
+        solutions_loaders_registry[type](get_problem_div(pid), answer);
+    }
+
+    function load_all_user_answers() {
+        for (var i = 0; i < get_problems_count(); i++) {
+            var answer = contest_info.problems[i].ans;
+            if (answer != null)
+                load_solution(i, answer);
+        }
+    }
 
     $(function() {
         pages_count = $('.page').length;
-        problems_count = $('.problem').length;
 
         $('.page-selector').click(page_selector_click);
         $('.page-back').click(function(){select_page(current_page - 1);});
-        $('.page-forward').click(function(){
-            select_page(current_page + 1);
-        });
+        $('.page-forward').click(function(){select_page(current_page + 1);});
+
+        contest_info = $.parseJSON($('.contest-info').text());
+
+        load_all_user_answers();
     });
 
 })();

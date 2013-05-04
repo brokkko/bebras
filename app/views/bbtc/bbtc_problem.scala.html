@@ -2,6 +2,7 @@
 @import scala.List
 @import models.problems.bbtc.BBTCProblem
 <div class='statement'>
+<span class='problem-info hidden'>@answers.length</span>
 <span class='problem-index'>@(index + 1).</span> @Html(statement)
 </div>
 <div class='answers'>
@@ -19,6 +20,7 @@
             case 12 => {w4}
         }'>
             <div class='task-answer-selector@if(answer == null){ active}'>
+            <span class='aid hidden'>@if(answer == null){-1}else{@ind}</span>
             @if(answer == null) {
                     &nbsp;
             } else {

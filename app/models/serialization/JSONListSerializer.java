@@ -20,6 +20,8 @@ public class JSONListSerializer implements ListSerializer {
 
     @Override
     public void write(Object value) {
+        if (value == null)
+            node.add((String)null);
         if (value instanceof JsonNode)
             node.add((JsonNode) value);
         else if (value instanceof Integer)

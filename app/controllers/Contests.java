@@ -51,6 +51,9 @@ public class Contests extends Controller {
             for (Problem problem : page) {
                 Serializer problemInfoSerializer = problemsInfoSerializer.getSerializer();
                 Answer answer = answersForContest.get(index);
+
+//                final int finalIndex = index; answer = new Answer(){{put("a", finalIndex % 4 - 1);}};
+
                 if (answer == null)
                     problemInfoSerializer.write("ans", null);
                 else

@@ -44,15 +44,14 @@ public class BBTCProblem implements Problem {
 
     @Override
     public void check(Deserializer submission, Serializer resultsReceiver) {
-        String answer = submission.getString("a");
+        Integer answer = submission.getInt("a");
         if (answer == null)
             return;
 
-        if (answer.isEmpty())
+        if (answer < 0)
             resultsReceiver.write("result", 0);
         else {
-            int userAnswer = stringAnswer2number(answer);
-            resultsReceiver.write("result", userAnswer == correctAnswer ? -1 : 1);
+            resultsReceiver.write("result", answer == correctAnswer ? 1 : -1);
         }
     }
 
