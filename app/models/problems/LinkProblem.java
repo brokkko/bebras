@@ -19,8 +19,8 @@ public class LinkProblem implements Problem {
     }
 
     @Override
-    public Html format(boolean showSolutions) {
-        return loadProblem().format(showSolutions);
+    public Html format(Answer userAnswer, boolean showSolutions) {
+        return loadProblem().format(userAnswer, showSolutions);
     }
 
     @Override

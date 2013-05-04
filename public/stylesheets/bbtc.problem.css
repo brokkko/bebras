@@ -1,0 +1,96 @@
+/*problem*/
+
+.problem {
+    background-color: #e0f1ff;
+    padding: 1em 1em 0.4em;
+    margin-bottom: 0.5em;
+    overflow: hidden;
+}
+
+.answer {
+    float: left;
+    margin-bottom: 4px;
+}
+
+.answer-text {
+    display: block;
+    margin-left: 28px;
+    margin-right: 8px;
+    margin-top: 4px;
+}
+
+.w2 {
+    width: 50%;
+}
+
+.w3 {
+    width: 33%;
+}
+
+.w4 {
+    width: 25%;
+}
+
+.w5 {
+    width: 33%;
+}
+
+.statement {
+    margin-bottom: 1em;
+}
+
+.problem .footer {
+    clear: both;
+}
+
+/*answer selector*/
+
+.task-answer-selector {
+    width: 18px;
+    /*height: 20px;*/
+    border: solid 2px #36F;
+    font-size: 1em;
+    /*font-weight: bold;*/
+    font-family: Arial, sans-serif;
+    color: #000;
+    text-align: center;
+    background-color: #FFF;
+    padding-top: 2px;
+    padding-left: 1px;
+    cursor: pointer;
+    display: inline-block;
+    float: left;
+    margin-right: 2px;
+}
+
+.task-answer-selector.active {
+    background-color: #79F;
+    color: #FFF;
+    cursor: default;
+}
+
+.task-answer-selector.over {
+    background-color: #BCF;
+    color: #FFF;
+}
+
+/*right and wrong answers*/
+
+.answer-right {
+    border-color: #33bb33;
+}
+
+.answer-user-right {
+    background-color: #47ff47;
+    color: #000;
+}
+
+.answer-user-wrong {
+    background-color: #ff6666;
+    border-color: #ff3344;
+}
+
+/*answers decoration*/
+.no-answer {
+    color: #888;
+}

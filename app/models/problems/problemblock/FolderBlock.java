@@ -1,5 +1,6 @@
 package models.problems.problemblock;
 
+import models.problems.ConfiguredProblem;
 import models.problems.LinkProblemSource;
 import models.problems.Problem;
 import models.problems.ProblemSource;
@@ -21,12 +22,12 @@ public class FolderBlock extends ProblemBlock {
     private ProblemSource problemSource;
 
     @Override
-    public List<ProblemWithLink> getProblems(String userId) {
+    public List<ConfiguredProblem> getProblems(String userId) {
         List<String> list = problemSource.list();
-        List<ProblemWithLink> problems = new ArrayList<>(list.size());
+        List<ConfiguredProblem> problems = new ArrayList<>(list.size());
 
         for (String id : list)
-            problems.add(new ProblemWithLink(link + '/' + id, problemSource.get(id)));
+            problems.add(new ConfiguredProblem(link + '/' + id, problemSource.get(id)));
 
         return problems;
     }

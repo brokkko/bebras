@@ -1,6 +1,7 @@
 package models;
 
 import com.mongodb.*;
+import models.problems.Answer;
 import models.problems.ConfiguredProblem;
 import models.serialization.*;
 import java.util.*;
@@ -35,15 +36,15 @@ public class Submission implements Serializable {
     private long localTime; /* time in milliseconds from the beginning*/
     private Date serverTime;
     private String problemId;
-    private Map<String, Object> answer;
+    private Answer answer;
 
-    public static Submission getSubmissionForUser(Contest contest, String userId, int problemId, AnswerOrdering answerOrdering, TimeType timeType) {
+    public static Submission getSubmissionForUser(Contest contest, String userId, String problemId, AnswerOrdering answerOrdering, TimeType timeType) {
         DBCollection collection = contest.getCollection();
 
         BasicDBObject query = new BasicDBObject();
         query.put(USER_FIELD, userId);
 
-        if (problemId >= 0)
+        if (problemId != null)
             query.put(PROBLEM_ID_FIELD, problemId);
 
         try (DBCursor cursor = collection.find(query).sort(
@@ -59,7 +60,7 @@ public class Submission implements Serializable {
         }
     }
 
-    public Submission(Contest contest, String userId, long localTime, Date serverTime, String problemId, Map<String, Object> answer) {
+    public Submission(Contest contest, String userId, long localTime, Date serverTime, String problemId, Answer answer) {
         this.contest = contest;
         this.userId = userId;
         this.localTime = localTime;
@@ -76,7 +77,7 @@ public class Submission implements Serializable {
         serverTime = (Date) deserializer.getObject(SERVER_TIME_FIELD);
         problemId = deserializer.getString(PROBLEM_ID_FIELD);
 
-        answer = new HashMap<>();
+        answer = new Answer();
         for (String field : deserializer.getDeserializer(ANSWER_FIELD).fieldSet())
             answer.put(field, deserializer.getObject(field));
 
@@ -143,7 +144,7 @@ public class Submission implements Serializable {
         return problemId;
     }
 
-    public Map<String, Object> getAnswer() {
+    public Answer getAnswer() {
         return answer;
     }
 

@@ -1,5 +1,6 @@
 package models.problems.bbtc;
 
+import models.problems.Answer;
 import models.problems.Problem;
 import models.serialization.Deserializer;
 import models.serialization.Serializer;
@@ -27,7 +28,7 @@ public class BBTCProblem implements Problem {
     }
 
     @Override
-    public Html format(boolean showSolutions) {
+    public Html format(Answer userAnswer, boolean showSolutions) {
         return views.html.bbtc.bbtc_problem.render(showSolutions, question, Arrays.asList(answers));
     }
 
@@ -55,7 +56,13 @@ public class BBTCProblem implements Problem {
         }
     }
 
-    private static int stringAnswer2number(String answer) {
+    public static int stringAnswer2number(String answer) {
         return answer.charAt(0) - 'A';
+    }
+
+    public static String numberAnswer2string(int answer) {
+        if (answer < 0)
+            return "";
+        return String.valueOf((char)('A' + answer));
     }
 }

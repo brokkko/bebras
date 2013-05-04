@@ -12,7 +12,7 @@ import play.api.templates.Html;
  */
 public interface Problem {
 
-    Html format(boolean showSolutions);
+    Html format(Answer userAnswer, boolean showSolutions);
 
     String getJsLink();
 

@@ -4,6 +4,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
+import models.problems.Answer;
+import models.problems.ConfiguredProblem;
 import models.serialization.*;
 import play.Play;
 import play.mvc.Http;
@@ -14,9 +16,7 @@ import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -219,6 +219,26 @@ public class User implements Serializable {
         if (contest.contestStarted())
             return 5; //still may participate
         return 6; //still not started;
+    }
+
+    /**
+     * @param contest a contest to get results from
+     * @return a list with user answers
+     */
+    public List<Answer> getAnswersForContest(Contest contest) {
+        List<Answer> pid2ans = new ArrayList<>();
+
+        String uid = getId();
+        List<ConfiguredProblem> configuredUserProblems = contest.getConfiguredUserProblems(uid);
+
+        for (ConfiguredProblem configuredUserProblem : configuredUserProblems) {
+            String link = configuredUserProblem.getLink();
+            Submission submission = Submission.getSubmissionForUser(contest, uid, link, Submission.AnswerOrdering.LAST, Submission.TimeType.LOCAL);
+
+            pid2ans.add(submission == null ? null : submission.getAnswer());
+        }
+
+        return pid2ans;
     }
 
 }

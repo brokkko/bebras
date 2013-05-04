@@ -1,13 +1,36 @@
 @(showSolutions:Boolean, statement:String, answers:List[String])
 @import scala.List
-
+@import models.problems.bbtc.BBTCProblem
 <div class='statement'>
 @Html(statement)
 </div>
 <div class='answers'>
-    @for(answer <- answers) {
-        <div class='answer'>
-            @Html(answer)
+    @for((answer, ind) <- (answers ++ List(null)).zipWithIndex) {
+        <div class='answer @(answers.size + 1) match {
+            case 2 => {w2}
+            case 3 => {w3}
+            case 4 => {w4}
+            case 5 => {w5}
+            case 6 => {w3}
+            case 7 => {w4}
+            case 9 => {w3}
+            case 10 => {w5}
+            case 11 => {w4}
+            case 12 => {w4}
+        }'>
+            <div class='task-answer-selector'>
+            @if(answer == null) {
+                    &nbsp;
+            } else {
+                @BBTCProblem.numberAnswer2string(ind)
+            }
+            </div>
+            @if(answer == null) {
+                <div class='answer-text no-answer'>без ответа</div>
+            } else {
+                <div class='answer-text'>@Html(answer)</div>
+            }
         </div>
     }
 </div>
+<div class='footer'></div>

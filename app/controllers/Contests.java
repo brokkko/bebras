@@ -6,15 +6,13 @@ import controllers.actions.LoadEvent;
 import controllers.package$;
 import models.Contest;
 import models.User;
+import models.problems.Answer;
 import models.problems.Problem;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.ResourceLink;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,24 +34,45 @@ public class Contests extends Controller {
 
         List<List<Problem>> pagedUserProblems = Contest.current().getPagedUserProblems(user.getId());
 
-        Set<String> cssLinks = new HashSet<>();
+        List<ResourceLink> cssLinksList = getCssLinks(pagedUserProblems);
+        List<ResourceLink> jsLinksList = getJsLinks(pagedUserProblems);
+
+
+        List<Answer> answersForContest = user.getAnswersForContest(Contest.current());
+
+        Map<Problem, Answer> problem2answer = new HashMap<>();
+        int index = 0;
+        for (List<Problem> page : pagedUserProblems)
+            for (Problem problem : page)
+                problem2answer.put(problem, answersForContest.get(index++));
+
+        return ok(views.html.contest.render(pagedUserProblems, problem2answer, cssLinksList, jsLinksList));
+    }
+
+    private static List<ResourceLink> getJsLinks(List<List<Problem>> pagedUserProblems) {
         Set<String> jsLinks = new HashSet<>();
 
         for (List<Problem> page : pagedUserProblems)
-            for (Problem problem : page) {
-                cssLinks.add(problem.getCssLink());
+            for (Problem problem : page)
                 jsLinks.add(problem.getJsLink());
-            }
-        
-        List<ResourceLink> cssLinksList = new ArrayList<>();
-        for (String cssLink : cssLinks)
-            cssLinksList.add(new ResourceLink(cssLink, "css"));
 
         List<ResourceLink> jsLinksList = new ArrayList<>();
         for (String jsLink : jsLinks)
             jsLinksList.add(new ResourceLink(jsLink, "js"));
+        return jsLinksList;
+    }
 
-        return ok(views.html.contest.render(pagedUserProblems, cssLinksList, jsLinksList));
+    private static List<ResourceLink> getCssLinks(List<List<Problem>> pagedUserProblems) {
+        Set<String> cssLinks = new HashSet<>();
+
+        for (List<Problem> page : pagedUserProblems)
+            for (Problem problem : page)
+                cssLinks.add(problem.getCssLink());
+
+        List<ResourceLink> cssLinksList = new ArrayList<>();
+        for (String cssLink : cssLinks)
+            cssLinksList.add(new ResourceLink(cssLink, "css"));
+        return cssLinksList;
     }
 
 }

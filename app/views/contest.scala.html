@@ -1,4 +1,4 @@
-@(pagedUserProblems:List[List[models.problems.Problem]], problemsCss:List[views.ResourceLink], problemsJs:List[views.ResourceLink])
+@(pagedUserProblems:List[List[models.problems.Problem]], problem2answer:Map[models.problems.Problem, models.problems.Answer], problemsCss:List[views.ResourceLink], problemsJs:List[views.ResourceLink])
 @import models.Contest
 @import models.Event
 @import models.User
@@ -9,7 +9,7 @@
         <div class='page'>
         @for(problem <- page) {
             <div class='problem'>
-                @problem.format(User.current.getContestStatus(Contest.current) == 2)
+                @problem.format(problem2answer(problem), User.current.getContestStatus(Contest.current) == 2)
             </div>
         }
         </div>

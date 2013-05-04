@@ -5,6 +5,7 @@
     margin: 0.4em 1em;
     color: #00008b;
     line-height: 1.2;
+    overflow: hidden;
 }
 
 .contest-description .info {
