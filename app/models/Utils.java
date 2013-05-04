@@ -1,5 +1,7 @@
 package models;
 
+import models.serialization.Serializer;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -59,6 +61,11 @@ public class Utils {
 
     public static String formatContestDate(Date date) {
         return contestDateFormat.format(date);
+    }
+
+    public static void writeMapToSerializer(Map<String, Object> map, Serializer serializer) {
+        for (Map.Entry<String, Object> key2val : map.entrySet())
+            serializer.write(key2val.getKey(), key2val.getValue());
     }
 
 }

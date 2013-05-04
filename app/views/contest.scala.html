@@ -1,10 +1,11 @@
-@(pagedUserProblems:List[List[models.problems.Problem]], problem2index:Map[models.problems.Problem, Integer], problem2answer:Map[models.problems.Problem, models.problems.Answer], problemsCss:List[views.ResourceLink], problemsJs:List[views.ResourceLink])
+@(pagedUserProblems:List[List[models.problems.Problem]], problem2index:Map[models.problems.Problem, Integer], jsonContestInfo:String, problemsCss:List[views.ResourceLink], problemsJs:List[views.ResourceLink])
 @import models.Contest
 @import models.Event
 @import models.User
 @import scala.List
 @import views.ResourceLink
 @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contest.css")) ++ problemsCss, List(new ResourceLink("contest.js")) ++ problemsJs) {
+    <div class='contest-info hidden'>@Html(jsonContestInfo)</div>
     <div class='contest-results hidden'></div>
     @format_pages_top(pagedUserProblems.length, "dont-move-down")
     @format_pages_bottom()
@@ -12,8 +13,7 @@
         <div class='page@if(pageIndex > 0){ hidden}'>
         @for(problem <- page) {
             <div class='problem'><span class='hidden pid'>@problem2index(problem)</span>
-                <div class='problem-header'>@(problem2index(problem) + 1).</div>
-                @problem.format(problem2answer(problem), User.current.getContestStatus(Contest.current) == 2)
+                @problem.format(problem2index(problem), User.current.getContestStatus(Contest.current) == 2)
             </div>
         }
         </div>

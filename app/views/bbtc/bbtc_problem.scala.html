@@ -1,8 +1,8 @@
-@(showSolutions:Boolean, statement:String, answers:List[String])
+@(index:Int, showSolutions:Boolean, statement:String, answers:List[String])
 @import scala.List
 @import models.problems.bbtc.BBTCProblem
 <div class='statement'>
-@Html(statement)
+<span class='problem-index'>@(index + 1).</span> @Html(statement)
 </div>
 <div class='answers'>
     @for((answer, ind) <- (answers ++ List(null)).zipWithIndex) {

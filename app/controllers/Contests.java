@@ -3,11 +3,14 @@ package controllers;
 import controllers.actions.Authenticated;
 import controllers.actions.LoadContest;
 import controllers.actions.LoadEvent;
-import controllers.package$;
 import models.Contest;
 import models.User;
+import models.Utils;
 import models.problems.Answer;
 import models.problems.Problem;
+import models.serialization.JSONSerializer;
+import models.serialization.ListSerializer;
+import models.serialization.Serializer;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.ResourceLink;
@@ -39,18 +42,27 @@ public class Contests extends Controller {
 
         List<Answer> answersForContest = user.getAnswersForContest(Contest.current());
 
-        Map<Problem, Answer> problem2answer = new HashMap<>();
+        JSONSerializer contestInfoSerializer = new JSONSerializer();
+        ListSerializer problemsInfoSerializer = contestInfoSerializer.getListSerializer("problems");
+
         Map<Problem, Integer> problem2index = new HashMap<>();
         int index = 0;
         for (List<Problem> page : pagedUserProblems)
             for (Problem problem : page) {
-                problem2answer.put(problem, answersForContest.get(index));
+                Serializer problemInfoSerializer = problemsInfoSerializer.getSerializer();
+                Answer answer = answersForContest.get(index);
+                if (answer == null)
+                    problemInfoSerializer.write("ans", null);
+                else
+                    Utils.writeMapToSerializer(answer, problemInfoSerializer.getSerializer("ans"));
+                problemInfoSerializer.write("type", problem.getType());
+
                 problem2index.put(problem, index);
 
                 index++;
             }
 
-        return ok(views.html.contest.render(pagedUserProblems, problem2index, problem2answer, cssLinksList, jsLinksList));
+        return ok(views.html.contest.render(pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
     }
 
     private static List<ResourceLink> getJsLinks(List<List<Problem>> pagedUserProblems) {

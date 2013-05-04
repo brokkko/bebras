@@ -19,8 +19,8 @@ public class LinkProblem implements Problem {
     }
 
     @Override
-    public Html format(Answer userAnswer, boolean showSolutions) {
-        return loadProblem().format(userAnswer, showSolutions);
+    public Html format(int index, boolean showSolutions) {
+        return loadProblem().format(index, showSolutions);
     }
 
     @Override
@@ -36,6 +36,11 @@ public class LinkProblem implements Problem {
     @Override
     public void check(Deserializer submission, Serializer resultsReceiver) {
         loadProblem().check(submission, resultsReceiver);
+    }
+
+    @Override
+    public String getType() {
+        return loadProblem().getType();
     }
 
     private Problem loadProblem() {

@@ -1,3 +1,12 @@
+var problems_count;
+var problems_info = []; //{type -> "", initial_answer -> {}}
+
+var solutions_loaders_registry = {};
+
+function register_solution_loader(problem_type, loader) {
+    solutions_loaders_registry[problem_type] = loader;
+}
+
 (function () {
 
     var current_page = 0;
@@ -37,8 +46,11 @@
         current_page = page;
     }
 
+
+
     $(function() {
         pages_count = $('.page').length;
+        problems_count = $('.problem').length;
 
         $('.page-selector').click(page_selector_click);
         $('.page-back').click(function(){select_page(current_page - 1);});

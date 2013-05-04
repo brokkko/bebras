@@ -43,6 +43,10 @@
     clear: both;
 }
 
+.problem-index {
+    font-weight: bold;
+}
+
 /*answer selector*/
 
 .task-answer-selector {

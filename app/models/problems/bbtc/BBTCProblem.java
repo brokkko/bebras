@@ -28,8 +28,8 @@ public class BBTCProblem implements Problem {
     }
 
     @Override
-    public Html format(Answer userAnswer, boolean showSolutions) {
-        return views.html.bbtc.bbtc_problem.render(showSolutions, question, Arrays.asList(answers));
+    public Html format(int index, boolean showSolutions) {
+        return views.html.bbtc.bbtc_problem.render(index, showSolutions, question, Arrays.asList(answers));
     }
 
     @Override
@@ -54,6 +54,11 @@ public class BBTCProblem implements Problem {
             int userAnswer = stringAnswer2number(answer);
             resultsReceiver.write("result", userAnswer == correctAnswer ? -1 : 1);
         }
+    }
+
+    @Override
+    public String getType() {
+        return "bbtc";
     }
 
     public static int stringAnswer2number(String answer) {

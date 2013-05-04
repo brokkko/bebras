@@ -12,12 +12,14 @@ import play.api.templates.Html;
  */
 public interface Problem {
 
-    Html format(Answer userAnswer, boolean showSolutions);
+    Html format(int index, boolean showSolutions);
 
+    //TODO remove js and css links, use type instead
     String getJsLink();
 
     String getCssLink();
 
     void check(Deserializer answer, Serializer resultsReceiver);
 
+    String getType();
 }

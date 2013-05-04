@@ -12,6 +12,15 @@
     box-shadow: 1px 1px 1px #834E1B;
     color: #00008b;
     cursor: pointer;
+
+    /*don't allow to select*/
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 
 .page-button:hover {
@@ -26,9 +35,4 @@
 
 .dont-move-down {
     margin-top: 0;
-}
-
-.problem-header {
-    font-weight: bold;
-    margin-bottom: 0.5em;
 }
