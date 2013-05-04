@@ -2,6 +2,7 @@ package models;
 
 import com.mongodb.DBCollection;
 import controllers.MongoConnection;
+import models.problems.ConfiguredProblem;
 import models.problems.Problem;
 import models.problems.problemblock.FolderBlock;
 import models.problems.problemblock.OneProblemBlock;
@@ -12,6 +13,7 @@ import models.serialization.ListDeserializer;
 import play.mvc.Http;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -73,16 +75,6 @@ public class Contest {
                     break;
                 }
         }
-    }
-
-    public List<Problem> getUserProblems(String userId) {
-        List<Problem> problems = new ArrayList<>();
-
-        for (ProblemBlock problemBlock : problemBlocks)
-            for (Problem problem : problemBlock.getProblems(userId))
-                problems.add(problem);
-
-        return problems;
     }
 
     public static Contest deserialize(Event event, Deserializer deserializer) {
@@ -165,4 +157,52 @@ public class Contest {
 
         return contest;
     }
+
+    public List<Problem> getUserProblems(String userId) {
+        List<Problem> problems = new ArrayList<>();
+
+        for (ProblemBlock problemBlock : problemBlocks)
+            for (ConfiguredProblem problem : problemBlock.getProblems(userId))
+                problems.add(problem.getProblem());
+
+        return problems;
+    }
+
+    public List<ConfiguredProblem> getConfiguredUserProblems(String userId) {
+        List<ConfiguredProblem> problems = new ArrayList<>();
+
+        for (ProblemBlock problemBlock : problemBlocks)
+            problems.addAll(problemBlock.getProblems(userId));
+
+        return problems;
+    }
+
+    public List<List<Problem>> getPagedUserProblems(String userId) {
+        List<List<Problem>> pages = new ArrayList<>();
+        List<Problem> userProblems = getUserProblems(userId);
+
+        int pageIndex = 0;
+        int index = 0;
+        while (true) {
+            int block = pageSizes.get(pageIndex++);
+            if (pageIndex >= pageSizes.size())
+                pageIndex = 0;
+
+            int indexesLeft = userProblems.size() - index;
+
+            if (indexesLeft == 0)
+                break;
+
+            block = Math.min(block, indexesLeft);
+            int nextIndex = index + block;
+            List<Problem> aPage = new ArrayList<>(block);
+            for (; index < nextIndex; index++)
+                aPage.add(userProblems.get(index));
+
+            pages.add(aPage);
+        }
+
+        return pages;
+    }
+
 }

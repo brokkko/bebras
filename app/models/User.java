@@ -43,7 +43,7 @@ public class User implements Serializable {
     public static final PasswordGenerator passwordGenerator = new PasswordGenerator();
 
     private Map<String, Object> map = new HashMap<>();
-    private Map<String, Date> contest2dateStart = new HashMap<>();
+    private Map<String, ContestInfoForUser> contest2info = new HashMap<>();
 
     public User() {
     }
@@ -60,10 +60,11 @@ public class User implements Serializable {
     }
 
     private void loadContests(Deserializer deserializer) {
-        for (String contestId : deserializer.fieldSet()) {
-            Date dateStart = (Date) deserializer.getObject(contestId);
-            contest2dateStart.put(contestId, dateStart);
-        }
+        for (String contestId : deserializer.fieldSet())
+            contest2info.put(
+                    contestId,
+                    new ContestInfoForUser(deserializer.getDeserializer(contestId))
+            );
     }
 
     public static User deserialize(Deserializer deserializer) {
@@ -164,7 +165,7 @@ public class User implements Serializable {
             serializer.write(field2value.getKey(), field2value.getValue());
 
         Serializer contestStartSerializer = serializer.getSerializer(FIELD_STARTED_CONTESTS);
-        for (Map.Entry<String, Date> id2date : contest2dateStart.entrySet())
+        for (Map.Entry<String, ContestInfoForUser> id2date : contest2info.entrySet())
             contestStartSerializer.write(id2date.getKey(), id2date.getValue());
     }
 
@@ -175,7 +176,13 @@ public class User implements Serializable {
     }
 
     public Date contestStartTime(String contestId) {
-        return contest2dateStart.get(contestId);
+        ContestInfoForUser contestInfo = contest2info.get(contestId);
+        return contestInfo == null ? null : contestInfo.getStarted();
+    }
+
+    public Date contestFinishTime(String contestId) {
+        ContestInfoForUser contestInfo = contest2info.get(contestId);
+        return contestInfo == null ? null : contestInfo.getFinished();
     }
 
     public boolean participatedInContest(String contestId) {
@@ -188,6 +195,11 @@ public class User implements Serializable {
         if (start == null)
             return false;
 
+        Date finished = contestFinishTime(contest.getId());
+
+        if (finished != null)
+            return true;
+
         //noinspection SimplifiableIfStatement
         if (contest.isUnlimitedTime())
             return true;
@@ -198,10 +210,10 @@ public class User implements Serializable {
     public int getContestStatus(Contest contest) {
         if (contestIsGoing(contest))
             return 1; //going
-        if (contest.contestFinished() && !participatedInContest(contest.getId()))
-            return 2; //finished but not participated
         if (contest.resultsAvailable() && contest.contestFinished())
-            return 3; //results available
+            return 2; //results available
+        if (contest.contestFinished() && !participatedInContest(contest.getId()))
+            return 3; //finished but not participated
         if (contest.contestFinished())
             return 4; //finished but still waiting results
         if (contest.contestStarted())

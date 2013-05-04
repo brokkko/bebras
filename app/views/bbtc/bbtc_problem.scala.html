@@ -1,0 +1,13 @@
+@(showSolutions:Boolean, statement:String, answers:List[String])
+@import scala.List
+
+<div class='statement'>
+@Html(statement)
+</div>
+<div class='answers'>
+    @for(answer <- answers) {
+        <div class='answer'>
+            @Html(answer)
+        </div>
+    }
+</div>

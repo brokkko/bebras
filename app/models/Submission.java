@@ -1,6 +1,7 @@
 package models;
 
 import com.mongodb.*;
+import models.problems.ConfiguredProblem;
 import models.serialization.*;
 import java.util.*;
 
@@ -78,6 +79,29 @@ public class Submission implements Serializable {
         answer = new HashMap<>();
         for (String field : deserializer.getDeserializer(ANSWER_FIELD).fieldSet())
             answer.put(field, deserializer.getObject(field));
+
+        populateAbsentData();
+    }
+
+    private void populateAbsentData() {
+        User user = User.current();
+
+        if (userId == null)
+            userId = user.getId();
+        if (serverTime == null)
+            serverTime = new Date();
+
+        if (problemId == null)
+            throw new IllegalArgumentException("submission without problem id");
+
+        if (!problemId.startsWith("/")) {
+            int pid = Integer.parseInt(problemId);
+            Contest contest = Contest.current();
+            ConfiguredProblem problem = contest.getConfiguredUserProblems(userId).get(pid);
+
+            problemId = problem.getLink();
+        }
+
     }
 
     @Override

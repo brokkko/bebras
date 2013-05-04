@@ -1,6 +1,6 @@
 package models.problems.problemblock;
 
-import models.problems.Problem;
+import models.problems.ConfiguredProblem;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -26,7 +26,7 @@ public abstract class ProblemBlock { //TODO implement Serializable
         return matches;
     }
 
-    public abstract List<Problem> getProblems(String userId);
+    public abstract List<ConfiguredProblem> getProblems(String userId);
 
     protected abstract Pattern getConfigurationPattern();
 

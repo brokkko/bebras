@@ -12,9 +12,7 @@ import play.api.templates.Html;
  */
 public interface Problem {
 
-    Html formatStatement();
-
-    Html formatStatementWithSolution();
+    Html format(boolean showSolutions);
 
     String getJsLink();
 

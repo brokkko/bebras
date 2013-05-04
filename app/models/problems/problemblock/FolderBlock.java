@@ -17,15 +17,16 @@ import java.util.regex.Pattern;
  */
 public class FolderBlock extends ProblemBlock {
 
+    private String link;
     private ProblemSource problemSource;
 
     @Override
-    public List<Problem> getProblems(String userId) {
+    public List<ProblemWithLink> getProblems(String userId) {
         List<String> list = problemSource.list();
-        List<Problem> problems = new ArrayList<>(list.size());
+        List<ProblemWithLink> problems = new ArrayList<>(list.size());
 
         for (String id : list)
-            problems.add(problemSource.get(id));
+            problems.add(new ProblemWithLink(link + '/' + id, problemSource.get(id)));
 
         return problems;
     }
@@ -37,6 +38,7 @@ public class FolderBlock extends ProblemBlock {
 
     @Override
     protected void configure(Matcher matcher) {
-        problemSource = new LinkProblemSource(matcher.group(1));
+        link = matcher.group(1);
+        problemSource = new LinkProblemSource(link);
     }
 }

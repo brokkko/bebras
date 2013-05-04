@@ -5,6 +5,9 @@ import models.serialization.Deserializer;
 import models.serialization.Serializer;
 import play.api.templates.Html;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
@@ -24,13 +27,8 @@ public class BBTCProblem implements Problem {
     }
 
     @Override
-    public Html formatStatement() {
-        return null; // bbtc.render(question, answers, -1);
-    }
-
-    @Override
-    public Html formatStatementWithSolution() {
-        return null; //bbtc.render(question, answers, correctAnswer);
+    public Html format(boolean showSolutions) {
+        return views.html.bbtc.bbtc_problem.render(showSolutions, question, Arrays.asList(answers));
     }
 
     @Override

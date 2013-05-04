@@ -1,0 +1,17 @@
+@(pagedUserProblems:List[List[models.problems.Problem]], problemsCss:List[views.ResourceLink], problemsJs:List[views.ResourceLink])
+@import models.Contest
+@import models.Event
+@import models.User
+@import scala.List
+@import views.ResourceLink
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("bbtc.problem.css")) ++ problemsCss, List(new ResourceLink("contest.js")) ++ problemsJs) {
+    @for(page <- pagedUserProblems) {
+        <div class='page'>
+        @for(problem <- page) {
+            <div class='problem'>
+                @problem.format(User.current.getContestStatus(Contest.current) == 2)
+            </div>
+        }
+        </div>
+    }
+}

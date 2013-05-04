@@ -1,5 +1,6 @@
 package models.problems.problemblock;
 
+import models.problems.ConfiguredProblem;
 import models.problems.LinkProblem;
 import models.problems.Problem;
 
@@ -16,11 +17,12 @@ import java.util.regex.Pattern;
  */
 public class OneProblemBlock extends ProblemBlock {
 
+    private String link;
     private Problem problem;
 
     @Override
-    public List<Problem> getProblems(String userId) {
-        return Arrays.asList(problem);
+    public List<ConfiguredProblem> getProblems(String userId) {
+        return Arrays.asList(new ConfiguredProblem(link, problem));
     }
 
     @Override
@@ -30,6 +32,7 @@ public class OneProblemBlock extends ProblemBlock {
 
     @Override
     protected void configure(Matcher matcher) {
-        problem = new LinkProblem(matcher.group(1));
+        link = matcher.group(1);
+        problem = new LinkProblem(link);
     }
 }

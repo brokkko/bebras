@@ -1,5 +1,6 @@
 package models.problems.problemblock;
 
+import models.problems.ConfiguredProblem;
 import models.problems.LinkProblemSource;
 import models.problems.Problem;
 import models.problems.ProblemSource;
@@ -16,16 +17,17 @@ import java.util.regex.Pattern;
  */
 public class RandomProblemsBlock extends ProblemBlock {
 
+    private String link;
     private int count;
     private ProblemSource problemSource;
 
     @Override
-    public List<Problem> getProblems(String userId) {
+    public List<ConfiguredProblem> getProblems(String userId) {
         List<String> list = problemSource.list();
-        List<Problem> problems = new ArrayList<>(list.size());
+        List<ConfiguredProblem> problems = new ArrayList<>(list.size());
 
         for (String id : list)
-            problems.add(problemSource.get(id));
+            problems.add(new ConfiguredProblem(link + '/' + id, problemSource.get(id)));
 
         problems = problems.subList(0, count);
 
@@ -43,6 +45,7 @@ public class RandomProblemsBlock extends ProblemBlock {
     @Override
     protected void configure(Matcher matcher) {
         count = Integer.parseInt(matcher.group(1));
-        problemSource = new LinkProblemSource(matcher.group(2));
+        link = matcher.group(2);
+        problemSource = new LinkProblemSource(link);
     }
 }
