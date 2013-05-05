@@ -1,5 +1,6 @@
 package models.serialization;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
@@ -38,7 +39,23 @@ public class JSONDeserializer implements Deserializer {
 
     @Override
     public Object getObject(String field) {
-        return node.get(field);
+        JsonNode jsonNode = node.get(field);
+
+        if (jsonNode == null)
+            return null;
+
+        if (jsonNode.isInt())
+            return jsonNode.getIntValue();
+        if (jsonNode.isBoolean())
+            return jsonNode.getBooleanValue();
+        if (jsonNode.isTextual())
+            return jsonNode.getTextValue();
+
+        if (jsonNode.isLong())
+            return jsonNode.getLongValue();
+        //TODO add other value types that are may be used in a program
+
+        return jsonNode;
     }
 
     @Override

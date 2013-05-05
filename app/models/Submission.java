@@ -74,13 +74,20 @@ public class Submission implements Serializable {
         this.contest = contest;
 
         userId = deserializer.getString(USER_FIELD);
-        localTime = (Long) deserializer.getObject(LOCAL_TIME_FIELD);
         serverTime = (Date) deserializer.getObject(SERVER_TIME_FIELD);
-        problemId = deserializer.getString(PROBLEM_ID_FIELD);
+        problemId = deserializer.getObject(PROBLEM_ID_FIELD).toString();
+
+        //read local time either long or int
+        Object localTimeAsObject = deserializer.getObject(LOCAL_TIME_FIELD);
+        if (localTimeAsObject instanceof Integer)
+            localTime = (Integer) localTimeAsObject;
+        else if (localTimeAsObject instanceof Long)
+            localTime = (Long) localTimeAsObject;
 
         answer = new Answer();
-        for (String field : deserializer.getDeserializer(ANSWER_FIELD).fieldSet())
-            answer.put(field, deserializer.getObject(field));
+        Deserializer answerDeserializer = deserializer.getDeserializer(ANSWER_FIELD);
+        for (String field : answerDeserializer.fieldSet())
+            answer.put(field, answerDeserializer.getObject(field));
 
         populateAbsentData();
     }

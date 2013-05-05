@@ -27,7 +27,7 @@
         var answer_id = +$task_selector.find('.aid').text();
 
         var $problem_div = $task_selector.parents('.problem');
-        var problem_id = +$problem_div.find('.pid').text();
+        var problem_id = get_problem_index($problem_div);
         choose_answer($problem_div, answer_id);
 
         submit_answer(problem_id, {"a": answer_id});

@@ -15,6 +15,7 @@ import models.serialization.JSONSerializer;
 import models.serialization.ListSerializer;
 import models.serialization.Serializer;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
@@ -83,9 +84,13 @@ public class Contests extends Controller {
         contestInfoSerializer.write("passed", LoadContestAction.getRequestTime().getTime() - contestStartTime.getTime());
 
         //return duration
-        contestInfoSerializer.write("duration", contest.isUnlimitedTime() ? 0 : contest.getDuration());
+        contestInfoSerializer.write("duration", contest.isUnlimitedTime() ? 0 : contest.getDurationInMs());
         //return weather user already finished
         contestInfoSerializer.write("finished", user.userParticipatedAndFinished(contest));
+        //write user id (needed to distinguish data in local storage for different users
+        contestInfoSerializer.write("storage_id", eventId + "-" + contestId + "-" + user.getLogin());
+        //write submit url
+        contestInfoSerializer.write("submit_url", routes.Contests.submit(eventId, contestId).toString());
 
         return ok(views.html.contest.render(pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
     }
@@ -99,16 +104,28 @@ public class Contests extends Controller {
             return forbidden();
 
         JsonNode submissionJson = request().body().asJson();
-        if (!(submissionJson instanceof ObjectNode))
+        if (!(submissionJson instanceof ArrayNode))
             return badRequest();
 
-        JSONDeserializer deserializer = new JSONDeserializer((ObjectNode) submissionJson);
-        Submission submission = new Submission(contest, deserializer);
+        //get all submissions
+        List<Submission> submissions = new ArrayList<>();
+        for (JsonNode jsonNode : (ArrayNode) submissionJson) {
+            if (!(jsonNode instanceof ObjectNode))
+                return badRequest();
 
-        if (!contest.isUnlimitedTime() && submission.getLocalTime() > contest.getDurationInMs())
-            return forbidden();
+            JSONDeserializer deserializer = new JSONDeserializer((ObjectNode) jsonNode);
+            Submission submission = new Submission(contest, deserializer);
 
-        submission.store();
+            //skip submissions that are too late
+            if (!contest.isUnlimitedTime() && submission.getLocalTime() > contest.getDurationInMs())
+                continue;
+
+            submissions.add(submission);
+        }
+
+        //store all submissions
+        for (Submission submission : submissions)
+            submission.store();
 
         return ok();
     }
