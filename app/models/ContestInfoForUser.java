@@ -30,8 +30,16 @@ public class ContestInfoForUser implements Serializable {
         return started;
     }
 
+    public void setStarted(Date started) {
+        this.started = started;
+    }
+
     public Date getFinished() {
         return finished;
+    }
+
+    public void setFinished(Date finished) {
+        this.finished = finished;
     }
 
     public Map<String, Object> getFinalResults() {

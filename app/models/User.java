@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
+import controllers.actions.LoadContestAction;
 import models.problems.Answer;
 import models.problems.ConfiguredProblem;
 import models.serialization.*;
@@ -38,7 +39,7 @@ public class User implements Serializable {
     public static final String FIELD_RESTORE_FOR_EMAIL = "_rstr_for_mail";
     public static final String FIELD_NEW_RECOVERY_PASSWORD = "_rec_pswd";
 
-    public static final String FIELD_STARTED_CONTESTS = "_contests";
+    public static final String FIELD_CONTEST_INFO = "_contests";
 
     public static final PasswordGenerator passwordGenerator = new PasswordGenerator();
 
@@ -50,8 +51,8 @@ public class User implements Serializable {
 
     public void update(Deserializer deserializer) {
         for (String field : deserializer.fieldSet()) {
-            if (field.equals(FIELD_STARTED_CONTESTS))
-                loadContests(deserializer.getDeserializer(FIELD_STARTED_CONTESTS));
+            if (field.equals(FIELD_CONTEST_INFO))
+                loadContestsInfo(deserializer.getDeserializer(FIELD_CONTEST_INFO));
             else {
                 Object fieldValue = deserializer.getObject(field);
                 map.put(field, fieldValue);
@@ -59,7 +60,7 @@ public class User implements Serializable {
         }
     }
 
-    private void loadContests(Deserializer deserializer) {
+    private void loadContestsInfo(Deserializer deserializer) {
         for (String contestId : deserializer.fieldSet())
             contest2info.put(
                     contestId,
@@ -164,9 +165,12 @@ public class User implements Serializable {
         for (Map.Entry<String, Object> field2value : map.entrySet())
             serializer.write(field2value.getKey(), field2value.getValue());
 
-        Serializer contestStartSerializer = serializer.getSerializer(FIELD_STARTED_CONTESTS);
-        for (Map.Entry<String, ContestInfoForUser> id2date : contest2info.entrySet())
-            contestStartSerializer.write(id2date.getKey(), id2date.getValue());
+        Serializer contestInfoSerializer = serializer.getSerializer(FIELD_CONTEST_INFO);
+        for (Map.Entry<String, ContestInfoForUser> id2date : contest2info.entrySet()) {
+            String contestId = id2date.getKey();
+            ContestInfoForUser contestInfo = id2date.getValue();
+            contestInfo.store(contestInfoSerializer.getSerializer(contestId));
+        }
     }
 
     public void store() {
@@ -183,6 +187,24 @@ public class User implements Serializable {
     public Date contestFinishTime(String contestId) {
         ContestInfoForUser contestInfo = contest2info.get(contestId);
         return contestInfo == null ? null : contestInfo.getFinished();
+    }
+
+    public ContestInfoForUser getContestInfoCreateIfNeeded(String contestId) {
+        ContestInfoForUser contestInfo = contest2info.get(contestId);
+        if (contestInfo == null) {
+            contestInfo = new ContestInfoForUser();
+            contest2info.put(contestId, contestInfo);
+        }
+
+        return contestInfo;
+    }
+
+    public void setContestStartTime(String contestId, Date requestTime) {
+        getContestInfoCreateIfNeeded(contestId).setStarted(requestTime);
+    }
+
+    public void setContestFinishTime(String contestId, Date requestTime) {
+        getContestInfoCreateIfNeeded(contestId).setFinished(requestTime);
     }
 
     public boolean participatedInContest(String contestId) {
@@ -204,13 +226,31 @@ public class User implements Serializable {
         if (contest.isUnlimitedTime())
             return true;
 
-        return System.currentTimeMillis() - start.getTime() < contest.getDuration() * 1000 * 60;
+        return LoadContestAction.getRequestTime().getTime() - start.getTime() < contest.getDurationInMs();
+    }
+
+    public boolean userParticipatedAndFinished(Contest contest) {
+        Date start = contestStartTime(contest.getId());
+
+        if (start == null)
+            return false;
+
+        Date finished = contestFinishTime(contest.getId());
+
+        if (finished != null)
+            return true;
+
+        //noinspection SimplifiableIfStatement
+        if (contest.isUnlimitedTime())
+            return false;
+
+        return LoadContestAction.getRequestTime().getTime() - start.getTime() >= contest.getDurationInMs();
     }
 
     public int getContestStatus(Contest contest) {
         if (contestIsGoing(contest))
             return 1; //going
-        if (contest.resultsAvailable() && contest.contestFinished())
+        if (contest.resultsAvailable() && userParticipatedAndFinished(contest))
             return 2; //results available
         if (contest.contestFinished() && !participatedInContest(contest.getId()))
             return 3; //finished but not participated
@@ -240,5 +280,4 @@ public class User implements Serializable {
 
         return pid2ans;
     }
-
 }

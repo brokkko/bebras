@@ -2,6 +2,7 @@ package models;
 
 import com.mongodb.DBCollection;
 import controllers.MongoConnection;
+import controllers.actions.LoadContestAction;
 import models.problems.ConfiguredProblem;
 import models.problems.Problem;
 import models.problems.problemblock.FolderBlock;
@@ -13,7 +14,6 @@ import models.serialization.ListDeserializer;
 import play.mvc.Http;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -114,15 +114,15 @@ public class Contest {
     }
 
     public boolean contestStarted() {
-        return start.before(new Date());
+        return start.before(LoadContestAction.getRequestTime());
     }
 
     public boolean contestFinished() {
-        return finish.before(new Date());
+        return finish.before(LoadContestAction.getRequestTime());
     }
 
     public boolean resultsAvailable() {
-        return results.before(new Date());
+        return results.before(LoadContestAction.getRequestTime());
     }
 
     public boolean isUnlimitedTime() {
@@ -205,4 +205,7 @@ public class Contest {
         return pages;
     }
 
+    public long getDurationInMs() {
+        return getDuration() * 60l * 1000l;
+    }
 }
