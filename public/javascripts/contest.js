@@ -6,6 +6,10 @@ function register_solution_loader(problem_type, loader) {
     solutions_loaders_registry[problem_type] = loader;
 }
 
+function submit_answer(problem_id, answer) {
+    console.log("submit " + problem_id + " --> " + answer.a);
+}
+
 (function () {
 
     var current_page = 0;
