@@ -36,12 +36,12 @@ public class BBTCProblemSource extends InmemoryProblemSource {
         CSVReader problemsReader = new CSVReader(resourceReader, ',', '"', 1);
         String [] nextLine;
         while ((nextLine = problemsReader.readNext()) != null) {
-            String type = nextLine[4];
-            String question = nextLine[5];
+            String type = nextLine[5];
+            String question = nextLine[6];
             int answersCount = Integer.parseInt(type);
             String[] answers = new String[answersCount];
-            System.arraycopy(nextLine, 6, answers, 0, answersCount);
-            String correctAnswer = nextLine[11];
+            System.arraycopy(nextLine, 7, answers, 0, answersCount);
+            String correctAnswer = nextLine[12];
 
 //            String number = nextLine[0];
 //            String solution = nextLine[12];
@@ -49,7 +49,7 @@ public class BBTCProblemSource extends InmemoryProblemSource {
             ProblemSource source = getSubsourceOrCreate(nextLine[1]).getSubsourceOrCreate(nextLine[2]);
             BBTCProblem problem = new BBTCProblem(question, answers, correctAnswer);
 
-            source.put(nextLine[3], problem);
+            source.put(nextLine[4], problem);
         }
     }
 }

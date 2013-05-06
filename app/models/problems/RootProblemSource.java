@@ -21,10 +21,6 @@ public class RootProblemSource extends InmemoryProblemSource {
     public static final String ROOT_PROBLEM_SOURCE_CACHE_NAME = "root-problem-source";
 
     public static RootProblemSource getInstance() {
-        // (X * Tt - Y)t * X
-        // (T * Xt - Yt) * X
-        // Xt * (X * Tt - Y)
-
         try {
             return Cache.getOrElse(ROOT_PROBLEM_SOURCE_CACHE_NAME, new Callable<RootProblemSource>() {
                 @Override

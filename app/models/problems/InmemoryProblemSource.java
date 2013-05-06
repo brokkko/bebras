@@ -10,8 +10,8 @@ import java.util.*;
  */
 public class InmemoryProblemSource extends ProblemSource {
 
-    protected final Map<String, ProblemSource> sources = new HashMap<>();
-    protected final Map<String, Problem> problems = new HashMap<>();
+    protected final Map<String, ProblemSource> sources = new LinkedHashMap<>();
+    protected final Map<String, Problem> problems = new LinkedHashMap<>();
 
     @Override
     public void mount(String root, ProblemSource source) {
