@@ -69,9 +69,9 @@ public class Utils {
     }
 
     public static String scoresWord(int scores) {
-        scores = Math.abs(scores);
-        int a = scores / 10 % 10;
-        int b = scores % 10;
+        int s = Math.abs(scores);
+        int a = s / 10 % 10;
+        int b = s % 10;
 
         String word = "баллов";
 
