@@ -41,6 +41,7 @@ public class RootProblemSource extends InmemoryProblemSource {
     private static void loadAllProblems(RootProblemSource rps) throws IOException {
         BBTCProblemSource bbtc = new BBTCProblemSource();
 
+        /*
         File problemsFolder = new File(Play.application().configuration().getString("resources.folder"));
 
         //load bbtc-*.csv problems
@@ -53,6 +54,9 @@ public class RootProblemSource extends InmemoryProblemSource {
 
         for (File problemsFile : problemsFiles)
             bbtc.update(problemsFile);
+        */
+
+        bbtc.update("/problems/bbtc-all.csv");
 
         rps.mount("bbtc", bbtc);
     }
