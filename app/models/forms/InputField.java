@@ -113,8 +113,13 @@ public class InputField {
     public String getConfigFromMessages(String key) {
         String title = (String) additionalConfiguration.get(key);
         if (title == null)
-            return Messages.get("form." + Event.current().getId() + "." + messagesPrefix + "." + name + "." + key); //TODO get messages name ??
+            return Messages.get("form." + dirtyHackSubs(Event.current().getId()) + "." + messagesPrefix + "." + name + "." + key); //TODO get messages name ??
         return title;
+    }
+
+    //TODO get rid of the hack
+    public static String dirtyHackSubs(String id) {
+        return id.replace('-', '_');
     }
 
     public String getTitle() {

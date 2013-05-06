@@ -96,7 +96,7 @@ public class InputForm {
 
     public Html formatExtended(RawForm form, Call call, boolean needUndo, String submitText) {
         if (submitText == null)
-            submitText = "form." + Event.current().getId() + "." + getName() + ".submit";
+            submitText = "form." + InputField.dirtyHackSubs(Event.current().getId()) + "." + getName() + ".submit";
 
         return views.html.fields.form.render(this, form, call, Messages.get(submitText), needUndo);
     }

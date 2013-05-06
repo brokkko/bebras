@@ -28,9 +28,14 @@ public class Application extends Controller {
         //bbtc event object
         DBObject bbtcObject = (DBObject) JSON.parse(getResourceAsString("/bbtc_event.json"));
         bbtcCollection.save(bbtcObject);
-
         //clear Cache
         Cache.set("event-bbtc", null, 1);
+
+        //bbtc test event object
+        DBObject bbtcTestObject = (DBObject) JSON.parse(getResourceAsString("/bbtc_test_event.json"));
+        bbtcCollection.save(bbtcTestObject);
+        //clear Cache
+        Cache.set("event-bbtc-test", null, 1);
 
         //save configuration object to make it not possible to reinit the application
         configCollection.save(new BasicDBObject());

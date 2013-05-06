@@ -1,6 +1,6 @@
 {
-    "_id": "bbtc",
-    "title": "British Bulldog Teachers’ Contest",
+    "_id": "bbtc-test",
+    "title": "Testing of British Bulldog Teachers’ Contest",
     "users": {
         "fields": [
             {
@@ -34,31 +34,13 @@
                 "required": true
             },
             {
-                "name": "birthday",
-                "type": "date",
-                "validators": [
-                    {
-                        "type": "date",
-                        "comparison": "<= now + 0 Y",
-                        "message": "error.msg.birthday.need.born"
-                    },
-                    {
-                        "type": "date",
-                        "comparison": "<= now - 18 Y",
-                        "message": "error.msg.birthday.too.young"
-                    },
-                    {
-                        "type": "date",
-                        "comparison": ">= now - 100 Y",
-                        "message": "error.msg.birthday.too.old"
-                    }
-                ]
-            },
-            {
-                "name": "phone",
+                "name": "codeword",
                 "type": "string",
+                "required": true,
+                "store": false,
                 "validators": [{
-                    "type": "phone"
+                    "type": "codeWord",
+                    "answer": "letmeinplease"
                 }]
             },
             {
@@ -76,44 +58,6 @@
                         "field": "email"
                     }
                 ]
-            },
-            {
-                "name": "schoolcode",
-                "type": "string",
-                "required": true,
-                "validators": [
-                    {
-                        "type": "pattern",
-                        "pattern": "\\d{8}",
-                        "message": "error.msg.schoolcode.wrong_pattern"
-                    },
-                    {
-                        "type": "kenguruSchoolCode"
-                    }
-                ]
-            },
-            {
-                "name": "schoolname",
-                "type": "string",
-                "required": true
-            },
-            {
-                "name": "schooladdr",
-                "type": "address"
-            },
-            {
-                "name": "personal_data",
-                "type": "boolean",
-                "required": true,
-                "hint": "hint.personal_data",
-                "store": false
-            },
-            {
-                "name": "contest_rules",
-                "type": "boolean",
-                "required": true,
-                "hint": "hint.contest_rules",
-                "store": false
             }
         ],
         "validators": []
@@ -144,9 +88,9 @@
             "id" : "express",
             "name" : "Экспресс-тест",
             "description" : "Комплект конкурсного задания участника – 50 вопросов. Вопросы разделены на 10 блоков по 5 вопросов в каждом. Система начисления баллов: неправильный ответ -1 балл, отсутствие ответа 0 баллов, правильный ответ 3 балла.",
-            "start" : "2013-05-15 00:00",
-            "finish" : "2013-05-25 00:00",
-            "results" : "2013-05-16 00:00",
+            "start" : "2013-05-13 00:00",
+            "finish" : "2013-05-20 00:00",
+            "results" : "2013-05-27 00:00",
             "duration" : 10,
             "page sizes": [3],
             "problems" : [],
@@ -159,9 +103,9 @@
             "id" : "hard",
             "name" : "Тест повышенной сложности",
             "description" : "Комплект конкурсного задания участника – 50 вопросов. Вопросы разделены на 10 блоков по 5 вопросов в каждом. Система начисления баллов: неправильный ответ -1 балл, отсутствие ответа = 0 баллов, правильный ответ 5 баллов.",
-            "start" : "2013-05-15 00:00",
-            "finish" : "2013-05-25 00:00",
-            "results" : "2013-05-16 00:00",
+            "start" : "2013-05-13 00:00",
+            "finish" : "2013-05-20 00:00",
+            "results" : "2013-05-27 00:00",
             "duration" : 10,
             "page sizes": [3],
             "problems" : [],
@@ -173,11 +117,57 @@
         {
             "id" : "explore",
             "name" : "Исследовательский тест",
-            "description" : "Комплект конкурсного задания участника – 10 вопросов. Вопросы разделены на 2 блока по 5 вопросов в каждом. Система начисления баллов: неправильный ответ -5 баллов, отсутствие ответа 0 баллов, правильный ответ 20 баллов.",
-            "start" : "2013-05-15 00:00",
-            "finish" : "2013-05-25 00:00",
-            "results" : "2013-05-16 00:00",
+            "description" : "Тестирование. Система начисления баллов: неправильный ответ -5 баллов, отсутствие ответа 0 баллов, правильный ответ 20 баллов.",
+            "start" : "2013-05-13 00:00",
+            "finish" : "2013-05-20 00:00",
+            "results" : "2013-05-27 00:00",
             "duration" : 60,
+            "page sizes": [3],
+            "problems" : [],
+            "grader" : {
+                "right": 20,
+                "wrong": -5
+            }
+        },
+
+        {
+            "id" : "express-test",
+            "name" : "Тестирование. Экспресс-тест, все задания",
+            "description" : "",
+            "start" : "2010-05-13 00:00",
+            "finish" : "2015-05-20 00:00",
+            "results" : "2009-05-27 00:00",
+            "duration" : 0,
+            "page sizes": [3],
+            "problems" : [],
+            "grader" : {
+                "right": 3,
+                "wrong": -1
+            }
+        },
+        {
+            "id" : "hard-test",
+            "name" : "Тестирование. Тест повышенной сложности, все задания",
+            "description" : "Комплект конкурсного задания участника – 50 вопросов. Вопросы разделены на 10 блоков по 5 вопросов в каждом. Система начисления баллов: неправильный ответ -1 балл, отсутствие ответа = 0 баллов, правильный ответ 5 баллов.",
+            "start" : "2010-05-13 00:00",
+            "finish" : "2015-05-20 00:00",
+            "results" : "2009-05-27 00:00",
+            "duration" : 0,
+            "page sizes": [3],
+            "problems" : [],
+            "grader" : {
+                "right": 5,
+                "wrong": -1
+            }
+        },
+        {
+            "id" : "explore-test",
+            "name" : "Тестирование. Исследовательский тест, все задания",
+            "description" : "Комплект конкурсного задания участника – 10 вопросов. Вопросы разделены на 2 блока по 5 вопросов в каждом. Система начисления баллов: неправильный ответ -5 баллов, отсутствие ответа 0 баллов, правильный ответ 20 баллов.",
+            "start" : "2010-05-13 00:00",
+            "finish" : "2015-05-20 00:00",
+            "results" : "2009-05-27 00:00",
+            "duration" : 0,
             "page sizes": [3],
             "problems" : [],
             "grader" : {
