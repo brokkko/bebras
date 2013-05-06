@@ -126,7 +126,7 @@
             "start" : "2012-01-01 00:00",
             "finish" : "2100-01-01 00:00",
             "results" : "2000-01-01 00:00",
-            "duration" : 0,
+            "duration" : 1,
             "page sizes": [3],
             "problems" : [
                 "3 random <- /bbtc/0/1",

@@ -12,7 +12,7 @@ import play.Play;
 public class ResourceLink {
 
     public static final ResourceLink JQUERY = new ResourceLink(
-            "jquery-1.8.3.min",
+            "jquery-1.7.2.min",
             "js",
             "//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"
     );

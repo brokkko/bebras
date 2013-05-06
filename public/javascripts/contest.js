@@ -121,6 +121,8 @@ var submit_answer; //function (problem_id, answer)
                 if (answers_list.length > 0)
                     send_answers_now();
 
+                timer();
+
                 break;
             case "wait":
                 stop_contest(false);
@@ -273,6 +275,29 @@ var submit_answer; //function (problem_id, answer)
 
     function local_storage_key() {
         return "answers-" + contest_info.storage_id;
+    }
+
+    //clock
+    function timer() {
+        var time = new Date().getTime() - start_time;
+
+        var millisecondsLeft = contest_info.duration - time;
+        if (millisecondsLeft <= 0) {
+            stop_contest(false);
+            return;
+        }
+
+        //print time left
+        var seconds = Math.ceil(millisecondsLeft / 1000);
+        var clock_time = $('#time-info');
+        if (seconds > 60) {
+            var min = Math.ceil(seconds / 60);
+            clock_time.text(min + ' мин.');
+        } else {
+            clock_time.text(seconds + ' сек.');
+        }
+
+        setTimeout(timer, 1000);
     }
 
 })();
