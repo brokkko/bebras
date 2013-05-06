@@ -254,7 +254,7 @@ public class User implements Serializable {
             return 2; //results available
         if (contest.contestFinished() && !participatedInContest(contest.getId()))
             return 3; //finished but not participated
-        if (contest.contestFinished())
+        if (userParticipatedAndFinished(contest))
             return 4; //finished but still waiting results
         if (contest.contestStarted())
             return 5; //still may participate
