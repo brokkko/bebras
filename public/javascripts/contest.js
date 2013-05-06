@@ -208,10 +208,10 @@ var submit_answer; //function (problem_id, answer)
             answers_list = eval(list);
     }
 
-    function send_delay(fails) { //TODO make wait longer
-        var delay = fails * 5000;
-        if (delay > 120 * 1000)
-            delay = 120 * 1000; //not greater than two minutes
+    function send_delay(fails) {
+        var delay = fails * 60000;
+        if (delay > 600 * 1000)
+            delay = 600 * 1000; //not greater than two minutes
         return delay;
     }
 

@@ -14,10 +14,13 @@ import models.serialization.Serializer;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Results;
 import views.ResourceLink;
+import views.html.contest;
 
 import java.util.*;
 
@@ -45,12 +48,18 @@ public class Contests extends Controller {
         if (status == 6)
             return forbidden();
 
+        long time = System.currentTimeMillis();
+
+//        Logger.info("[1] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
         List<List<Problem>> pagedUserProblems = contest.getPagedUserProblems(user.getId());
 
         List<ResourceLink> cssLinksList = getCssLinks(pagedUserProblems);
         List<ResourceLink> jsLinksList = getJsLinks(pagedUserProblems);
 
+//        Logger.info("[2] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
         List<Answer> answersForContest = user.getAnswersForContest(contest);
+
+//        Logger.info("[3] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
 
         //fill json info with user answers
         JSONSerializer contestInfoSerializer = new JSONSerializer();
@@ -73,6 +82,8 @@ public class Contests extends Controller {
 
                 index++;
             }
+
+//        Logger.info("[4] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
 
         //return time that passed from the beginning
         Date contestStartTime = user.contestStartTime(contestId);
@@ -102,6 +113,12 @@ public class Contests extends Controller {
         if (status == 3 && contest.resultsAvailable())
             textStatus = "results";
         contestInfoSerializer.write("status", textStatus);
+
+//        Logger.info("[5] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
+
+//        Status ok = ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
+
+//        Logger.info("[6] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
 
         return ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
     }
