@@ -265,7 +265,7 @@ public class User implements Serializable {
      * @param contest a contest to get results from
      * @return a list with user answers
      */
-    public List<Answer> getAnswersForContest(Contest contest) {
+    public List<Answer> getAnswersForContest(Contest contest) { //TODO optimize
         List<Answer> pid2ans = new ArrayList<>();
 
         String uid = getId();
