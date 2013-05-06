@@ -44,9 +44,13 @@
         <h1>Соревнование завершено</h1>
         <p class='warning'>
         @if(Contest.current.resultsAvailableImmediately()) {
-                Результаты доступны: <a href="@routes.Contests.contest(Event.currentId, Contest.current.getId)">просмотреть результаты</a>.
+                Результаты и правильные ответы доступны: <a href="@routes.Contests.contest(Event.currentId, Contest.current.getId)">просмотреть результаты</a>.
         } else {
-                Результаты будут доступны <b>@Utils.formatContestDate(Contest.current.getResults).</b>
+            @if(Contest.current.resultsNotAvailableAtAll) {
+                Результаты и правильные ответы будут доступны позже.
+            } else {
+                Результаты и правильные ответы будут доступны: <b>@Utils.formatContestDate(Contest.current.getResults).</b>
+            }
         }
         </p>
     </div>

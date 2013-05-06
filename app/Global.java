@@ -28,11 +28,11 @@ public class Global extends GlobalSettings {
         //TODO allow uploading of files to mount
     }
 
-    @Override
+    /*@Override
     public Action onRequest(Http.Request request, Method method) {
         Logger.info("Request: " + request + " -> " + request.remoteAddress() + " " + Arrays.toString(request.headers().get("USER-AGENT")));
         return super.onRequest(request, method);
-    }
+    }*/
 
     @Override
     public Result onHandlerNotFound(Http.RequestHeader requestHeader) {
