@@ -140,6 +140,10 @@ public class Contest {
         return results.before(start);
     }
 
+    public boolean resultsNotAvailableAtAll() {
+        return results.getTime() - finish.getTime() > 1000l * 60 * 60 * 24 * 265 * 50; // 50 years
+    }
+
     public static Contest current() {
         return current(Http.Context.current());
     }

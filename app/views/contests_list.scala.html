@@ -37,13 +37,15 @@
                 </span></p>
                 <p><span class='title'>Начало:</span> <span class='data'>@models.Utils.formatContestDate(contest.getStart)</span></p>
                 <p><span class='title'>Окончание:</span> <span class='data'>@models.Utils.formatContestDate(contest.getFinish)</span></p>
-                <p><span class='title'>Результаты:</span> <span class='data'>
-                    @if(contest.resultsAvailableImmediately) {
-                        доступны сразу
-                    } else {
-                        @models.Utils.formatContestDate(contest.getResults)
-                    }
-                </span></p>
+                @if(!contest.resultsNotAvailableAtAll) {
+                    <p><span class='title'>Результаты:</span> <span class='data'>
+                        @if(contest.resultsAvailableImmediately) {
+                            доступны сразу
+                        } else {
+                            @models.Utils.formatContestDate(contest.getResults)
+                        }
+                    </span></p>
+                }
                 <p class='big-title'><span class='title'>Минут на прохождение:</span>
                     <span class='data'>
                     @if(contest.isUnlimitedTime) {
