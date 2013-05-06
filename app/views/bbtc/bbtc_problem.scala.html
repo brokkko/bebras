@@ -1,8 +1,11 @@
-@(index:Int, showSolutions:Boolean, statement:String, answers:List[String])
+@(index:Int, showSolutions:Boolean, statement:String, answers:List[String], rightAnswer:Int)
 @import scala.List
 @import models.problems.bbtc.BBTCProblem
 <div class='statement'>
 <span class='problem-info hidden'>@answers.length</span>
+@if(showSolutions){
+    <span class='right-answer hidden'>@rightAnswer</span>
+}
 <span class='problem-index'>@(index + 1).</span> @Html(statement)
 </div>
 <div class='answers'>

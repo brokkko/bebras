@@ -30,7 +30,7 @@
             <div class='page@if(pageIndex > 0){ hidden}'>
             @for(problem <- page) {
                 <div class='problem'><span class='hidden pid'>@problem2index(problem)</span>
-                    @problem.format(problem2index(problem), User.current.getContestStatus(Contest.current) == 2)
+                    @problem.format(problem2index(problem), status == "results")
                 </div>
             }
             </div>

@@ -62,19 +62,18 @@
     /*padding-top: 2px;*/
     /*padding-left: 1px;*/
     padding: 1px 0;
-    cursor: pointer;
     display: inline-block;
     float: left;
     margin-right: 2px;
+    cursor: default;
 }
 
 .task-answer-selector.active {
     background-color: #79F;
     color: #FFF;
-    cursor: pointer;
 }
 
-.task-answer-selector:hover {
+.task-answer-selector.selectable:hover {
     background-color: #BCF;
     color: #FFF;
     cursor: pointer;
@@ -82,16 +81,16 @@
 
 /*right and wrong answers*/
 
-.answer-right {
+.task-answer-selector.answer-right {
     border-color: #33bb33;
 }
 
-.answer-user-right {
+.task-answer-selector.answer-user-right {
     background-color: #47ff47;
     color: #000;
 }
 
-.answer-user-wrong {
+.task-answer-selector.answer-user-wrong {
     background-color: #ff6666;
     border-color: #ff3344;
 }

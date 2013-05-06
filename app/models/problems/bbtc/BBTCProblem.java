@@ -2,11 +2,9 @@ package models.problems.bbtc;
 
 import models.problems.Answer;
 import models.problems.Problem;
-import models.serialization.Deserializer;
 import models.serialization.Serializer;
 import play.api.templates.Html;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -19,17 +17,17 @@ public class BBTCProblem implements Problem {
 
     private String question;
     private String[] answers;
-    private int correctAnswer;
+    private int rightAnswer;
 
-    public BBTCProblem(String question, String[] answers, String correctAnswer) {
+    public BBTCProblem(String question, String[] answers, String rightAnswer) {
         this.question = question;
         this.answers = answers;
-        this.correctAnswer = stringAnswer2number(correctAnswer);
+        this.rightAnswer = stringAnswer2number(rightAnswer);
     }
 
     @Override
     public Html format(int index, boolean showSolutions) {
-        return views.html.bbtc.bbtc_problem.render(index, showSolutions, question, Arrays.asList(answers));
+        return views.html.bbtc.bbtc_problem.render(index, showSolutions, question, Arrays.asList(answers), rightAnswer);
     }
 
     @Override
@@ -53,7 +51,7 @@ public class BBTCProblem implements Problem {
         if (ans < 0)
             resultsReceiver.write("result", 0);
         else
-            resultsReceiver.write("result", ans == correctAnswer ? 1 : -1);
+            resultsReceiver.write("result", ans == rightAnswer ? 1 : -1);
     }
 
     @Override

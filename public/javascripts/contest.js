@@ -94,8 +94,7 @@ var submit_answer; //function (problem_id, answer)
                     answer = submission.a;
             }
 
-            if (answer != null)
-                load_answer(i, answer);
+            load_answer(i, answer);
         }
     }
 
