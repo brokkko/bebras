@@ -61,6 +61,7 @@ mongodb.host=localhost
 mongodb.port=27017
 
 resources.local=false
+resources.folder=/home/ilya/
 
 # mail.host=localhost
 # mail.port=25

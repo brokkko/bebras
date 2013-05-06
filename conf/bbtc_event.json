@@ -5,137 +5,213 @@
         "fields": [
             {
                 "name": "login",
-                "input": {
-                    "type": "string",
-                    "required": true,
-                    "validators": [{
-                        "type": "userField",
-                        "message": "error.msg.login",
-                        "field": "login"
-                    }, {
-                        "type": "pattern",
-                        "pattern": "[-a-zA-Z0-9_]+",
-                        "message": "error.msg.login.wrong_pattern"
-                    }]
-                }
+                "type": "string",
+                "required": true,
+                "skip_for_edit": true,
+                "validators": [{
+                    "type": "userField",
+                    "message": "error.msg.login",
+                    "field": "login"
+                }, {
+                    "type": "pattern",
+                    "pattern": "[-a-zA-Z0-9_]+",
+                    "message": "error.msg.login.wrong_pattern"
+                }]
             },
             {
                 "name": "surname",
-                "input": {
-                    "type": "string",
-                    "required": true
-                }
+                "type": "string",
+                "required": true
             },
             {
                 "name": "name",
-                "input": {
-                    "type": "string",
-                    "required": true
-                }
+                "type": "string",
+                "required": true
             },
             {
                 "name": "patronymic",
-                "input": {
-                    "type": "string",
-                    "required": true
-                }
+                "type": "string",
+                "required": true
             },
             {
                 "name": "birthday",
-                "input": {
-                    "type": "date",
-                    "validators": [
-                        {
-                            "type": "date",
-                            "comparison": "<= now + 0 Y",
-                            "message": "error.msg.birthday.need.born"
-                        },
-                        {
-                            "type": "date",
-                            "comparison": "<= now - 18 Y",
-                            "message": "error.msg.birthday.too.young"
-                        },
-                        {
-                            "type": "date",
-                            "comparison": ">= now - 100 Y",
-                            "message": "error.msg.birthday.too.old"
-                        }
-                    ]
-                }
+                "type": "date",
+                "validators": [
+                    {
+                        "type": "date",
+                        "comparison": "<= now + 0 Y",
+                        "message": "error.msg.birthday.need.born"
+                    },
+                    {
+                        "type": "date",
+                        "comparison": "<= now - 18 Y",
+                        "message": "error.msg.birthday.too.young"
+                    },
+                    {
+                        "type": "date",
+                        "comparison": ">= now - 100 Y",
+                        "message": "error.msg.birthday.too.old"
+                    }
+                ]
             },
             {
                 "name": "phone",
-                "input": {
-                    "type": "string",
-                    "validator": {
-                        "type": "phone"
-                    }
-                }
+                "type": "string",
+                "validators": [{
+                    "type": "phone"
+                }]
             },
             {
                 "name": "email",
-                "input": {
-                    "type": "string",
-                    "required": true,
-                    "validators": [
-                        {
-                            "type": "email"
-                        },
-                        {
-                            "type": "userField",
-                            "message": "error.msg.email_duplicate",
-                            "field": "email"
-                        }
-                    ]
-                }
+                "type": "string",
+                "required": true,
+                "skip_for_edit": true,
+                "validators": [
+                    {
+                        "type": "email"
+                    },
+                    {
+                        "type": "userField",
+                        "message": "error.msg.email_duplicate",
+                        "field": "email"
+                    }
+                ]
             },
             {
                 "name": "schoolcode",
-                "input": {
-                    "type": "string",
-                    "required": true,
-                    "validators": [
-                        {
-                            "type": "pattern",
-                            "pattern": "\\d{8}",
-                            "message": "error.msg.schoolcode.wrong_pattern"
-                        },
-                        {
-                            "type": "kenguruSchoolCode"
-                        }
-                    ]
-                }
+                "type": "string",
+                "required": true,
+                "validators": [
+                    {
+                        "type": "pattern",
+                        "pattern": "\\d{8}",
+                        "message": "error.msg.schoolcode.wrong_pattern"
+                    },
+                    {
+                        "type": "kenguruSchoolCode"
+                    }
+                ]
             },
             {
                 "name": "schoolname",
-                "input": {
-                    "type": "string",
-                    "required": true
-                }
+                "type": "string",
+                "required": true
             },
             {
                 "name": "schooladdr",
-                "input": {
-                    "type": "address"
-                }
+                "type": "address"
             },
             {
                 "name": "personal_data",
-                "input": {
-                    "type": "boolean",
-                    "required": true,
-                    "html": "hint.personal_data"
-                }
+                "type": "boolean",
+                "required": true,
+                "hint": "hint.personal_data",
+                "store": false
             },
             {
                 "name": "contest_rules",
-                "input": {
-                    "type": "boolean",
-                    "required": true,
-                    "html": "hint.contest_rules"
-                }
+                "type": "boolean",
+                "required": true,
+                "hint": "hint.contest_rules",
+                "store": false
             }
         ],
         "validators": []
-    }
+    },
+    "contests": [
+        {
+            "id" : "training",
+            "name" : "Тренировочное соревнование",
+            "description" : "Это тренировочное соревнование, которое вы можете пройти, чтобы просмотреть, как будет устроено настоящее соревнование. Результаты тренировочного соревнования не учитываются. Комплект конкурсного задания участника – 15 вопросов. Вопросы разделены на 5 блоков по 3 вопроса в каждом. Система начисления баллов: неправильный ответ -1 балл, отсутствие ответа 0 баллов, правильный ответ 3 балла.",
+            "start" : "2012-01-01 00:00",
+            "finish" : "2100-01-01 00:00",
+            "results" : "2000-01-01 00:00",
+            "duration" : 15,
+            "page sizes": [5],
+            "problems" : [
+                "5 random <- /bbtc/0/1",
+                "5 random <- /bbtc/0/2",
+                "5 random <- /bbtc/0/3",
+                "5 random <- /bbtc/0/4",
+                "5 random <- /bbtc/0/5"
+            ],
+            "grader" : {
+                "right": 3,
+                "wrong": -1
+            }
+        },
+        {
+            "id" : "express",
+            "name" : "Экспресс-тест",
+            "description" : "Комплект конкурсного задания участника – 50 вопросов. Система начисления баллов: неправильный ответ -1 балл, отсутствие ответа 0 баллов, правильный ответ 3 балла.",
+            "start" : "2013-05-13 00:00",
+            "finish" : "2013-05-21 00:00",
+            "results" : "2013-05-28 00:00",
+            "duration" : 10,
+            "page sizes": [5],
+            "problems" : [
+                "5 random <- /bbtc/1/1",
+                "5 random <- /bbtc/1/2",
+                "5 random <- /bbtc/1/3",
+                "5 random <- /bbtc/1/4",
+                "5 random <- /bbtc/1/5",
+                "5 random <- /bbtc/1/6",
+                "5 random <- /bbtc/1/7",
+                "5 random <- /bbtc/1/8",
+                "5 random <- /bbtc/1/9",
+                "5 random <- /bbtc/1/10"
+            ],
+            "grader" : {
+                "right": 3,
+                "wrong": -1
+            }
+        },
+        {
+            "id" : "hard",
+            "name" : "Тест повышенной сложности",
+            "description" : "Комплект конкурсного задания участника – 50 вопросов. Система начисления баллов: неправильный ответ -2 балла, отсутствие ответа = 0 баллов, правильный ответ 6 баллов.",
+            "start" : "2013-05-13 00:00",
+            "finish" : "2013-05-21 00:00",
+            "results" : "2013-05-28 00:00",
+            "duration" : 10,
+            "page sizes": [5],
+            "problems" : [
+                "5 random <- /bbtc/2/1",
+                "5 random <- /bbtc/2/2",
+                "5 random <- /bbtc/2/3",
+                "5 random <- /bbtc/2/4",
+                "5 random <- /bbtc/2/5",
+                "5 random <- /bbtc/2/6",
+                "5 random <- /bbtc/2/7",
+                "5 random <- /bbtc/2/8",
+                "5 random <- /bbtc/2/9",
+                "5 random <- /bbtc/2/10"
+            ],
+            "grader" : {
+                "right": 6,
+                "wrong": -2
+            }
+        },
+        {
+            "id" : "explore",
+            "name" : "Исследовательский тест",
+            "description" : "Комплект конкурсного задания участника – 10 вопросов. Система начисления баллов: неправильный ответ -5 баллов, отсутствие ответа 0 баллов, правильный ответ 15 баллов.",
+            "start" : "2013-05-13 00:00",
+            "finish" : "2013-05-21 00:00",
+            "results" : "2013-05-28 00:00",
+            "duration" : 60,
+            "page sizes": [5],
+            "problems" : [
+                "2 random <- /bbtc/3/1",
+                "2 random <- /bbtc/3/2",
+                "2 random <- /bbtc/3/3",
+                "2 random <- /bbtc/3/4",
+                "2 random <- /bbtc/3/5"
+            ],
+            "grader" : {
+                "right": 15,
+                "wrong": -5
+            }
+        }
+    ]
 }

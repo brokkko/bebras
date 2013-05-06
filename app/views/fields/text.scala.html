@@ -1,3 +1,3 @@
-@(typ:String)(form:DynamicForm, field: String, placeholder:String)
-@import play.data.DynamicForm
-<input class='input-text' type="@typ" value="@form(field).value" name="@field" placeholder="@placeholder">
+@(typ:String)(form:models.forms.RawForm, field: String, placeholder:String)
+@import models.forms.RawForm
+<input class='input-text' type="@typ" value="@form.get(field)" name="@field" placeholder="@placeholder">

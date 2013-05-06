@@ -4,6 +4,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
+import models.Contest;
+import models.Submission;
 import models.User;
 import play.Configuration;
 import play.Logger;
@@ -24,6 +26,8 @@ public class MongoConnection {
     public static final String COLLECTION_NAME_CONFIG = "config";
     public static final String COLLECTION_NAME_USERS = "users";
     public static final String COLLECTION_NAME_EVENTS = "events";
+    public static final String COLLECTION_NAME_PROBLEM_DIRS = "categories";
+    public static final String COLLECTION_NAME_PROBLEMS = "problems";
 
     private static final String COLLECTION_NAME_ANSWERS_PREFIX = "answers-";
 
@@ -41,6 +45,14 @@ public class MongoConnection {
 
     public static DBCollection getEventsCollection() {
         return getCollection(COLLECTION_NAME_EVENTS);
+    }
+
+    public static DBCollection getProblemDirsCollection() {
+        return getCollection(COLLECTION_NAME_PROBLEM_DIRS);
+    }
+
+    public static DBCollection getProblemsCollection() {
+        return getCollection(COLLECTION_NAME_PROBLEMS);
     }
 
     public static DBCollection getCollection(String contestId) {
@@ -64,6 +76,12 @@ public class MongoConnection {
                 collection.createIndex(new BasicDBObject(User.FIELD_REGISTRATION_UUID, 1));
                 collection.createIndex(new BasicDBObject(User.FIELD_EVENT, 1));
                 break;
+        }
+
+        if (collection.getName().startsWith(Contest.CONTEST_COLLECTION_NAME_PREFIX)) {
+            collection.createIndex(new BasicDBObject(Submission.USER_FIELD, 1));
+            collection.createIndex(new BasicDBObject(Submission.SERVER_TIME_FIELD, 1));
+            collection.createIndex(new BasicDBObject(Submission.LOCAL_TIME_FIELD, 1));
         }
     }
 

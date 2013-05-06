@@ -1,7 +1,8 @@
 package models.forms.inputtemplate;
 
+import models.forms.InputField;
+import models.forms.RawForm;
 import play.api.templates.Html;
-import play.data.DynamicForm;
 import views.html.fields.multiline;
 
 /**
@@ -13,23 +14,22 @@ import views.html.fields.multiline;
 public class MultilineInputTemplate extends InputTemplate {
 
     @Override
-    public Html format(DynamicForm form, String field, InputTemplateConfig config) {
-        return multiline.render(form, field, config.getPlaceholder());
+    public Html format(RawForm form, InputField inputField) {
+        return multiline.render(form, inputField.getName(), inputField.getPlaceholder());
     }
 
     @Override
-    public BindResult getObject(DynamicForm form, String field) {
-        String value = form.field(field).value();
-        if (value != null && value.equals(""))
-            value = null;
-        return new BindResult(value);
-    }
-
-    @Override
-    public void fillForm(DynamicForm form, String field, Object value) {
+    public void write(String field, Object value, RawForm rawForm) {
         if (value == null)
-            removeFormField(form, field);
+            rawForm.remove(field);
         else
-            setFormField(form, field, (String) value);
+            rawForm.put(field, value);
+    }
+
+    @Override
+    public Object read(String field, RawForm form) {
+        if (form.isEmptyValue(field))
+            return null;
+        return form.get(field);
     }
 }

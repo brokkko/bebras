@@ -1,8 +1,9 @@
 package models.forms.validators;
 
+import models.serialization.Deserializer;
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,20 +12,19 @@ import java.util.Map;
  * Time: 17:57
  */
 public class EmailValidator extends Validator<String> {
-    public EmailValidator(Map<String, Object> validationParameters) {
-        super(validationParameters);
+    public EmailValidator(Deserializer deserializer) {
         defaultMessage = "error.msg.email";
     }
 
     @Override
     public String validate(String email) {
         if (email.indexOf('@') < 0)
-            return message();
+            return getMessage();
 
         try {
             new InternetAddress(email);
         } catch (AddressException e) {
-            return message();
+            return getMessage();
         }
         return null;
     }

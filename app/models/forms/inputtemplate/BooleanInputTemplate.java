@@ -1,7 +1,8 @@
 package models.forms.inputtemplate;
 
+import models.forms.InputField;
+import models.forms.RawForm;
 import play.api.templates.Html;
-import play.data.DynamicForm;
 import play.i18n.Messages;
 
 /**
@@ -11,25 +12,25 @@ import play.i18n.Messages;
  * Time: 13:49
  */
 public class BooleanInputTemplate extends InputTemplate {
+
     @Override
-    public Html format(DynamicForm form, String field, InputTemplateConfig config) {
-        String htmlContent = (String) config.get("html");
-        Html html = htmlContent == null ? null : new Html(Messages.get(htmlContent));
-        return views.html.fields.checkbox.render(form, field, html);
+    public Html format(RawForm form, InputField inputField) {
+        String hintContent = (String) inputField.getConfig("hint");
+        String hint = Messages.get(hintContent);
+        return views.html.fields.checkbox.render(form, inputField.getName(), hint);
     }
 
     @Override
-    public BindResult getObject(DynamicForm form, String field) {
-        String value = form.field(field).value();
-        boolean result = value != null && value.equals("1");
-        return new BindResult(result ? true : null);
-    }
-
-    @Override
-    public void fillForm(DynamicForm form, String field, Object value) {
+    public void write(String field, Object value, RawForm rawForm) {
         if (value != null && (Boolean) value)
-            setFormField(form, field, "1");
+            rawForm.put(field, "1");
         else
-            removeFormField(form, field);
+            rawForm.remove(field);
+    }
+
+    @Override
+    public Object read(String field, RawForm form) {
+        String value = form.get(field);
+        return "1".equals(value) ? true : null;
     }
 }

@@ -8,6 +8,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 
+import java.util.Date;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
@@ -35,7 +37,13 @@ public class AuthenticatedAction extends Action<Authenticated> {
             if (User.current() == null) //call to current loads user. And also test if there is such user
                 return loginRedirect;
 
+        ctx.args.put("request time", new Date());
+
         return delegate.call(ctx);
+    }
+
+    public static Date getRequestTime() {
+        return (Date) Http.Context.current().args.get("request time");
     }
 
 }

@@ -26,8 +26,9 @@ addr.street.placeholder=ул. пр. пер. ...
 addr.house=Номер дома, корпуса
 addr.house.placeholder=№ дома
 
+form.user.submit=Изменить
+
 form.bbtc.user.submit=Зарегистрироваться
-form.bbtc.user_edit.submit=Изменить
 form.bbtc.user.login.title=Логин
 form.bbtc.user.login.placeholder=Введите логин
 form.bbtc.user.name.title=Имя
@@ -63,6 +64,7 @@ form.bbtc.remind.submit=Восстановить
 error.msg.login.wrong_pattern=Логин может содержать только латинские буквы, цифры, знак - и подчеркивание _
 error.msg.kenguru_school_code=Такой код школы не зарегистрирован
 error.msg.email=Некорректный email
+error.msg.code_word=Неверное кодовое слово
 error.msg.phone=Введенные данные не похожи на номер телефона
 error.msg.email_duplicate=Такой email уже зарегистрирован. Попробуйте восстановить пароль.
 error.msg.failed_to_authenticate=Неверно указан логин или пароль
@@ -98,6 +100,7 @@ mail.password_remind.subject=Восстановление пароля. {0}
 mail.password_remind.body=Здравствуйте, {0} {1}!\n\nВы заказали восстановление пароля для участния в: {2}. Если это не так, проигнорируйте это письмо.\n\nВаши новые учетные данные:\n\nлогин: {4}\nпароль: {5}\n\nЧтобы новые учетные данные вступили в силу, перейдите по ссылке {3}.\n\nНе отвечайте на это письмо.\n\n--\nС уважением,\n    {2}
 
 actions.unknown_event=Неизвестное событие
+actions.unknown_contest=Неизвестное соревнование
 
 password_remind.wrong_login=Пользователя с таким именем не зарегистрировано
 password_remind.wrong_email=Пользователя с таким email не зарегистрировано
@@ -106,3 +109,36 @@ button.undo=Отменить
 
 hint.personal_data=В соответствии с требованиями статьи 9 Федерального закона от 27.07.06 «О персональных данных» № 152-ФЗ
 hint.contest_rules=<a target="blank" href="/assets/BBTC_regulations_0513.pdf">Правила соревнования</a>
+
+#a lot of duplication:
+
+form.bbtc_test.user.submit=Зарегистрироваться
+form.bbtc_test.user.login.title=Логин
+form.bbtc_test.user.login.placeholder=Введите логин
+form.bbtc_test.user.name.title=Имя
+form.bbtc_test.user.name.placeholder=Введите имя
+form.bbtc_test.user.surname.title=Фамилия
+form.bbtc_test.user.surname.placeholder=Введите фамилию
+form.bbtc_test.user.patronymic.title=Отчество
+form.bbtc_test.user.patronymic.placeholder=Введите отчество
+form.bbtc_test.user.birthday.title=Дата рождения
+form.bbtc_test.user.phone.title=Телефон
+form.bbtc_test.user.phone.placeholder=Введите телефон
+form.bbtc_test.user.email.title=email
+form.bbtc_test.user.email.placeholder=Введите email
+form.bbtc_test.user.schoolcode.title=Код школы
+form.bbtc_test.user.schoolcode.placeholder=Введите код школы
+form.bbtc_test.user.schoolname.title=Полное наименование школы
+form.bbtc_test.user.schoolname.placeholder=Введите полное наименование школы
+form.bbtc_test.user.codeword.title=Пароль тестировщика
+form.bbtc_test.user.codeword.placeholder=Введите пароль
+
+form.bbtc_test.login.submit=Войти
+form.bbtc_test.login.login.title=Логин
+form.bbtc_test.login.login.placeholder=Введите логин
+form.bbtc_test.login.password.title=Пароль
+form.bbtc_test.login.password.placeholder=Введите пароль
+
+form.bbtc_test.remind.email_or_login.title=Логин или email
+form.bbtc_test.remind.email_or_login.placeholder=Введите логин или email
+form.bbtc_test.remind.submit=Восстановить

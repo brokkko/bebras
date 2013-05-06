@@ -1,79 +1,38 @@
 package models.forms.inputtemplate;
 
+import models.forms.InputField;
+import models.forms.RawForm;
 import play.api.templates.Html;
-import play.data.DynamicForm;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
- * Date: 01.01.13
- * Time: 21:31
+ * Date: 20.03.13
+ * Time: 23:42
  */
-public abstract class InputTemplate {
+public abstract class InputTemplate { //Object -> String fields, String fields -> Object
 
-    public static InputTemplate getInstance(String type) {
-        switch (type) {
-            case "string":
-                return new StringInputTemplate();
-            case "password":
-                return new PasswordInputTemplate();
-            case "multiline":
-                return new MultilineInputTemplate();
-            case "date":
-                return new DateInputTemplate();
-            case "boolean":
-                return new BooleanInputTemplate();
-            case "address":
-                return new AddressInputTemplate();
-        }
-        throw new IllegalArgumentException("Unknown input template type '" + type + "'");
+    public static final Map<String, InputTemplate> registeredTemplates = new HashMap<>();
+
+    static {
+        registeredTemplates.put("boolean", new BooleanInputTemplate());
+        registeredTemplates.put("string", new StringInputTemplate());
+        registeredTemplates.put("date", new DateInputTemplate());
+        registeredTemplates.put("address", new AddressInputTemplate());
+        registeredTemplates.put("password", new PasswordInputTemplate());
+        registeredTemplates.put("multiline", new MultilineInputTemplate());
     }
 
-    public static void setFormField(DynamicForm form, String field, String value) {
-        form.data().put("data[" + field + "]", value);
+    public static InputTemplate getInstance(String name) {
+        return registeredTemplates.get(name);
     }
 
-    public static void removeFormField(DynamicForm form, String field) {
-        form.data().remove("data[" + field + "]");
-    }
+    public abstract Html format(RawForm form, InputField inputField);
 
-    public class BindResult {
-        private Object value;
-        private List<String> messages;
+    public abstract void write(String field, Object value, RawForm rawForm);
 
-        protected BindResult(Object value, List<String> messages) {
-            this.value = value;
-            this.messages = messages;
-        }
-
-        protected BindResult(Object value, String... messages) {
-            this.value = value;
-            if (messages.length == 0)
-                this.messages = null;
-            else
-                this.messages = Arrays.asList(messages);
-        }
-
-        public Object getValue() {
-            return value;
-        }
-
-        public List<String> getMessages() {
-            return messages;
-        }
-
-        public boolean hasErrors() {
-            return messages != null && messages.size() > 0;
-        }
-    }
-
-    public abstract Html format(DynamicForm form, String field, InputTemplateConfig config);
-
-    public abstract BindResult getObject(DynamicForm form, String field);
-
-    public abstract void fillForm(DynamicForm form, String field, Object value);
-
+    public abstract Object read(String field, RawForm form);
 }
-

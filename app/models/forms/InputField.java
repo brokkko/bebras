@@ -1,121 +1,132 @@
 package models.forms;
 
-import models.StoredObject;
+import models.Event;
 import models.forms.inputtemplate.InputTemplate;
-import models.forms.inputtemplate.InputTemplateConfig;
 import models.forms.validators.Validator;
+import models.serialization.Deserializer;
+import models.serialization.ListDeserializer;
 import play.api.templates.Html;
-import play.data.DynamicForm;
 import play.i18n.Messages;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
- * Date: 31.12.12
- * Time: 1:52
+ * Date: 20.03.13
+ * Time: 22:49
  */
 public class InputField {
 
-    private final InputForm form;
-    private final String name;
+    public static final String FIELDS_SEPARATOR_REGEX = "/|/g";
 
-    private final InputTemplate inputTemplate;
-    private final InputTemplateConfig inputConfiguration;
+    private String name;
+    private String messagesPrefix;
+    private InputTemplate inputTemplate;
+    private Map<String, Object> additionalConfiguration;
+    private List<Validator> validators;
 
-    private final List<Validator> validators;
-
-//    private final Html hint;
-//
-    public InputForm getForm() {
-        return form;
+    public InputField(String name, String messagesPrefix, InputTemplate inputTemplate, Map<String, Object> additionalConfiguration, List<Validator> validators) {
+        this.name = name;
+        this.inputTemplate = inputTemplate;
+        this.additionalConfiguration = additionalConfiguration;
+        this.validators = validators;
+        this.messagesPrefix = messagesPrefix;
     }
 
     public String getName() {
         return name;
     }
 
-    public InputField(InputForm form, StoredObject storedObject) {
-        this.form = form;
-        this.name = storedObject.getString("name");
-
-        //get input method
-        StoredObject inputConfig = storedObject.getObject("input");
-        this.inputTemplate = InputTemplate.getInstance(inputConfig.getString("type"));
-
-        //get input template arguments
-        this.inputConfiguration = new InputTemplateConfig(inputConfig.toMap(), this);
-
-        //get validators
-        ArrayList<Validator> validators = new ArrayList<>();
-
-        List validatorsConfig = inputConfig.getList("validators");
-        if (validatorsConfig != null)
-            for (Object validator : validatorsConfig) {
-                StoredObject validatorConfig = (StoredObject) validator;
-                validators.add(Validator.getInstance(validatorConfig.getString("type"), validatorConfig.toMap()));
-            }
-        else {
-            StoredObject validatorConfig = inputConfig.getObject("validator");
-            if (validatorConfig != null)
-                //TODO this is a small code duplication
-                validators.add(Validator.getInstance(validatorConfig.getString("type"), validatorConfig.toMap()));
-        }
-
-        this.validators = validators;
+    public String[] getNamePrefixes() {
+        String[] elements = name.split(FIELDS_SEPARATOR_REGEX);
+        String[] prefixes = new String[elements.length - 1];
+        System.arraycopy(elements, 0, prefixes, 0, elements.length - 1);
+        return prefixes;
     }
 
-    public Html format(DynamicForm form) {
-        return inputTemplate.format(form, name, inputConfiguration);
+    public String getLastName() {
+        String[] elements = name.split(FIELDS_SEPARATOR_REGEX);
+        return elements[elements.length - 1];
     }
 
-    public void validate(DynamicForm form) {
-        InputTemplate.BindResult bindResult = inputTemplate.getObject(form, name);
-        if (bindResult.hasErrors()) {
-            for (String message : bindResult.getMessages())
-                form.reject("data[" + name + "]", message); //TODO why should I write data[] here?
+    public InputTemplate getInputTemplate() {
+        return inputTemplate;
+    }
 
-            return;
-        }
+    public Html format(RawForm form) {
+        return inputTemplate.format(form, this);
+    }
 
-        Object value = bindResult.getValue();
+    public List<? extends Validator> getValidators() {
+        return validators;
+    }
 
-        if (inputConfiguration.isRequired() && value == null) {
-            form.reject("data[" + name + "]", Messages.get("error.msg.required"));
-            return;
-        }
+    public static InputField deserialize(String messagesPrefix, Deserializer deserializer) {
+        String name = null;
+        InputTemplate inputTemplate = null;
+        Map<String, Object> additionalConfiguration = new HashMap<>();
+        List<Validator> validators = new ArrayList<>();
 
-        if (value == null) //don't validate field if it is empty and is not required
-            return;
-
-        for (Validator validator : validators) {
-            @SuppressWarnings("unchecked") String message = validator.validate(value);
-            if (message != null) {
-                form.reject("data[" + name + "]", message);
-                break; //TODO to think, may be sometimes we need to validate all
+        for (String fieldName : deserializer.fieldSet()) {
+            switch (fieldName) {
+                case "name":
+                    name = deserializer.getString(fieldName);
+                    break;
+                case "type":
+                    inputTemplate = InputTemplate.getInstance(deserializer.getString(fieldName));
+                    break;
+                case "validators":
+                    ListDeserializer validatorsDeserializer = deserializer.getListDeserializer(fieldName);
+                    while (validatorsDeserializer.hasMore()) {
+                        Deserializer validatorDeserializer = validatorsDeserializer.getDeserializer();
+                        validators.add(Validator.deserialize(validatorDeserializer));
+                    }
+                    break;
+                default:
+                    additionalConfiguration.put(fieldName, deserializer.getObject(fieldName));
             }
         }
+
+        return new InputField(name, messagesPrefix, inputTemplate, additionalConfiguration, validators);
     }
 
-    public void fillObject(StoredObject receiver, DynamicForm form) {
-        InputTemplate.BindResult bindResult = inputTemplate.getObject(form, name);
-        Object value = bindResult.getValue();
-        receiver.put(name, value);
+    //standard configuration
+
+    public boolean isRequired() {
+        Boolean required = (Boolean) additionalConfiguration.get("required");
+        return required == null ? false : required;
     }
 
-    public Object getValue(DynamicForm form) {
-        InputTemplate.BindResult bindResult = inputTemplate.getObject(form, name);
-        return bindResult.getValue();
+    public Object getConfig(String name) {
+        return additionalConfiguration.get(name);
     }
 
-    public InputTemplateConfig getInputConfiguration() {
-        return inputConfiguration;
+    public boolean getBooleanConfig(String name, boolean defaultValue) {
+        Boolean value = (Boolean) getConfig(name);
+        return value == null ? defaultValue : value;
     }
 
-    public void fillForm(DynamicForm form, StoredObject object) {
-        Object value = object.get(name);
-        inputTemplate.fillForm(form, name, value);
+    public String getConfigFromMessages(String key) {
+        String title = (String) additionalConfiguration.get(key);
+        if (title == null)
+            return Messages.get("form." + dirtyHackSubs(Event.current().getId()) + "." + messagesPrefix + "." + name + "." + key); //TODO get messages name ??
+        return title;
+    }
+
+    //TODO get rid of the hack
+    public static String dirtyHackSubs(String id) {
+        return id.replace('-', '_');
+    }
+
+    public String getTitle() {
+        return getConfigFromMessages("title");
+    }
+
+    public String getPlaceholder() {
+        return getConfigFromMessages("placeholder");
     }
 }

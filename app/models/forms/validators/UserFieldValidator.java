@@ -1,8 +1,7 @@
 package models.forms.validators;
 
 import models.User;
-
-import java.util.Map;
+import models.serialization.Deserializer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,16 +10,17 @@ import java.util.Map;
  * Time: 16:32
  */
 public class UserFieldValidator extends Validator<String> {
-    //TODO make the same for other fields
 
-    public UserFieldValidator(Map<String, Object> validationParameters) {
-        super(validationParameters);
+    private final String field;
+
+    public UserFieldValidator(Deserializer deserializer) {
+        field = deserializer.getString("field");
     }
 
     @Override
     public String validate(String login) {
-        User user = User.getInstance((String) validationParameters.get("field"), login);
+        User user = User.getInstance(field, login);
 
-        return user == null ? null : message();
+        return user == null ? null : getMessage();
     }
 }

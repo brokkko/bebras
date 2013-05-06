@@ -1,7 +1,8 @@
 package models.forms.inputtemplate;
 
+import models.forms.InputField;
+import models.forms.RawForm;
 import play.api.templates.Html;
-import play.data.DynamicForm;
 import views.html.fields.text;
 
 /**
@@ -11,21 +12,21 @@ import views.html.fields.text;
  * Time: 17:25
  */
 public class PasswordInputTemplate extends InputTemplate {
+
     @Override
-    public Html format(DynamicForm form, String field, InputTemplateConfig config) {
-        return text.render("password", form, field, config.getPlaceholder());
+    public Html format(RawForm form, InputField inputField) {
+        return text.render("password", form, inputField.getName(), inputField.getPlaceholder());
     }
 
     @Override
-    public BindResult getObject(DynamicForm form, String field) {
-        String value = form.field(field).value();
-        if (value != null && value.equals(""))
-            value = null;
-        return new BindResult(value);
+    public void write(String field, Object value, RawForm rawForm) {
+        rawForm.remove(field);
     }
 
     @Override
-    public void fillForm(DynamicForm form, String field, Object value) {
-        removeFormField(form, field); //no password is ever filled
+    public Object read(String field, RawForm form) {
+        if (form.isEmptyValue(field))
+            return null;
+        return form.get(field);
     }
 }

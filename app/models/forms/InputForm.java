@@ -1,11 +1,10 @@
 package models.forms;
 
 import models.Event;
-import models.MemoryStoredObject;
-import models.StoredObject;
 import models.forms.validators.Validator;
+import models.serialization.Deserializer;
+import models.serialization.ListDeserializer;
 import play.api.templates.Html;
-import play.data.DynamicForm;
 import play.i18n.Messages;
 import play.mvc.Call;
 
@@ -14,142 +13,99 @@ import java.util.*;
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
- * Date: 01.01.13
- * Time: 22:04
+ * Date: 20.03.13
+ * Time: 14:37
  */
 public class InputForm {
 
     private String name;
-    private String messagesName;
     private LinkedHashMap<String, InputField> fields;
     private List<Validator> validators;
 
-    public InputForm(String name, StoredObject storedObject, String... invisibleFields) {
+    public InputForm(String name, Collection<InputField> fields, List<Validator> validators) {
         this.name = name;
-
-        List<String> invisibleFieldsList = Arrays.asList(invisibleFields);
-
-        LinkedHashMap<String, InputField> fields = new LinkedHashMap<>();
-
-        for (Object field : storedObject.getList("fields")) {
-            StoredObject fieldObject = (StoredObject) field;
-
-            if (invisibleFieldsList.contains(fieldObject.getString("name")))
-                continue;
-
-            InputField inputField = new InputField(this, fieldObject);
-            fields.put(inputField.getName(), inputField);
-        }
-
-        this.fields = fields;
-
-        ArrayList<Validator> validators = new ArrayList<>();
-
-        List validatorsConfig = storedObject.getList("validators");
-        if (validatorsConfig != null)
-            for (Object validator : validatorsConfig) {
-                StoredObject validatorConfig = (StoredObject) validator;
-                validators.add(
-                        Validator.getInstance(validatorConfig.getString("type"), validatorConfig.toMap())
-                );
-            }
-        else {
-            StoredObject validatorConfig = storedObject.getObject("validator");
-            if (validatorConfig != null)
-                validators.add(
-                        Validator.getInstance(validatorConfig.getString("type"), validatorConfig.toMap())
-                );
-        }
         this.validators = validators;
-    }
 
-    public Html format(DynamicForm form, Call call) {
-        return formatExtended(form, call, false);
-    }
-
-    public Html formatWithUndo(DynamicForm form, Call call) {
-        return formatExtended(form, call, true);
-    }
-
-    private Html formatExtended(DynamicForm form, Call call, boolean needUndo) {
-        String msgKey = "form." + Event.current().getId() + "." + getName() + ".submit";
-
-        List<InputField> fieldsToRender = new ArrayList<>(fields.values());
-
-        return views.html.fields.form.render(form, call, Messages.get(msgKey), fieldsToRender, needUndo);
+        this.fields = new LinkedHashMap<>();
+        for (InputField field : fields)
+            this.fields.put(field.getName(), field);
     }
 
     public String getName() {
         return name;
     }
 
-    public FilledInputForm validate(DynamicForm form) {
-        for (InputField field : fields.values())
-            field.validate(form);
+    public InputField getField(String fieldName) {
+        return fields.get(fieldName);
+    }
 
-        if (form.hasErrors())
-            return null;
+    public Collection<? extends InputField> getFields() {
+        return fields.values();
+    }
 
-        FilledInputForm filledForm = new FilledInputForm(form);
+    /*
+    @Override
+    public void store(Serializer serializer) {
+        Serializer fieldsSerializer = serializer.getSerializer("fields");
+        for (Map.Entry<String, InputField> fieldEntry : fields.entrySet()) {
+            Serializer fieldSerializer = fieldsSerializer.getSerializer(fieldEntry.getKey());
+            fieldEntry.getValue().store(fieldSerializer);
+        }
+
+        ListSerializer validatorsSerializer = serializer.getListSerializer("validators");
         for (Validator validator : validators) {
-            @SuppressWarnings("unchecked") String message = validator.validate(filledForm);
-            if (message != null)
-                form.reject(message);
-        }
-
-        return filledForm;
-    }
-
-    public InputField getField(String name) {
-        return fields.get(name);
-    }
-
-    public String getMessagesName() {
-        return messagesName == null ? name : messagesName;
-    }
-
-    public void setMessagesName(String messagesName) {
-        this.messagesName = messagesName;
-    }
-
-    public class FilledInputForm {
-        private DynamicForm form;
-        private Map<String, Object> validatorsData = null;
-
-        public FilledInputForm(DynamicForm form) {
-            this.form = form;
-        }
-
-        public Object get(String field) {
-            return getField(field).getValue(form);
-        }
-
-        public void putValidationData(String field, Object value) {
-            if (validatorsData == null)
-                validatorsData = new HashMap<>();
-
-            validatorsData.put(field, value);
-        }
-
-        public Object getValidationData(String field) {
-            return validatorsData == null ? null : validatorsData.get(field);
-        }
-
-        public void fillObject(StoredObject receiver) {
-            for (InputField field : fields.values())
-                field.fillObject(receiver, form);
-        }
-
-        public StoredObject getObject() {
-            MemoryStoredObject result = new MemoryStoredObject();
-            fillObject(result);
-            return result;
+            Serializer validatorSerializer = validatorsSerializer.getSerializer();
+            validator.store(validatorSerializer);
         }
     }
+    */
 
-    public void fillForm(DynamicForm form, StoredObject source) {
-        for (InputField field : fields.values())
-            field.fillForm(form, source);
+    public static InputForm deserialize(String name, Deserializer deserializer) {
+        return deserialize(name, deserializer, null);
     }
 
+    public static InputForm deserialize(String name, Deserializer deserializer, FieldFilter fieldFilter) {
+        List<InputField> fields = new ArrayList<>();
+
+        ListDeserializer fieldsDeserializer = deserializer.getListDeserializer("fields");
+
+        while (fieldsDeserializer.hasMore()) {
+            Deserializer inputFieldDeserializer = fieldsDeserializer.getDeserializer();
+
+            InputField inputField = InputField.deserialize(name, inputFieldDeserializer);
+
+            if (fieldFilter == null || fieldFilter.accept(inputField))
+                fields.add(inputField);
+        }
+
+        List<Validator> validators = new ArrayList<>();
+
+        ListDeserializer validatorsList = deserializer.getListDeserializer("validators");
+        if (validatorsList != null)
+            while (validatorsList.hasMore()) {
+                Validator validator = Validator.deserialize(validatorsList.getDeserializer());
+                validators.add(validator);
+            }
+
+        return new InputForm(name, fields, validators);
+    }
+
+    public Html format(RawForm form, Call call) {
+        return formatExtended(form, call, false, null);
+    }
+
+    public Html formatExtended(RawForm form, Call call, boolean needUndo, String submitText) {
+        if (submitText == null)
+            submitText = "form." + InputField.dirtyHackSubs(Event.current().getId()) + "." + getName() + ".submit";
+
+        return views.html.fields.form.render(this, form, call, Messages.get(submitText), needUndo);
+    }
+
+    public List<Validator> getValidators() {
+        return validators;
+    }
+
+    public static interface FieldFilter {
+        boolean accept(InputField field);
+    }
 }

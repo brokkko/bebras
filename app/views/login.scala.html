@@ -1,11 +1,11 @@
-@(form:DynamicForm, additionalMessage:String)
+@(form:models.forms.RawForm, additionalMessage:String)
+@import models.forms.RawForm
 @import views.ResourceLink
-@import play.data.DynamicForm
 @import scala.List
 @import play.i18n.Messages
 @import models.Forms
 @import models.Event
-@main_with_menu(Event.current().getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) {
+@main_with_menu(Event.current().getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) { } {
     <h1>@models.Event.current.getTitle</h1>
     @if(additionalMessage != null) {
         <p class="warning">@Messages.get(additionalMessage)</p>

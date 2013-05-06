@@ -1,0 +1,88 @@
+.contest-description {
+    /*border-radius: 1em;*/
+    background-color: #e0f1ff;
+    padding: 0.5em 1em;
+    margin: 0.4em 1em;
+    color: #00008b;
+    line-height: 1.2;
+    overflow: hidden;
+}
+
+.contest-description .info {
+    float: left;
+    width: 40%;
+    /*border-right: 1px solid #00008b;*/
+}
+
+.contest-description .description {
+    display: block;
+    margin-left: 40%;
+    padding-left: 1em;
+}
+
+.contest-description .info .title {
+    width: 100px;
+}
+
+.contest-description .info .data {
+    font-weight: bold;
+}
+
+.contest-description .footer {
+    clear: both;
+}
+
+.contest-description p {
+    padding-top: 0.1em;
+    padding-bottom: 0;
+}
+
+.contest-description .header {
+    font-weight: 800;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.contest-description .big-title {
+    padding-bottom: 0.8em;
+}
+
+.contest-description .important {
+    color: #a51e00;
+}
+
+.contest-description .description-title {
+    font-weight: bold;
+    text-align: center;
+}
+
+p.time {
+    padding-bottom: 0.2em;
+    vertical-align: middle;
+}
+
+p.time iframe {
+    display: inline;
+    margin-bottom: -6px;
+}
+
+.contest-select {
+    text-align: center;
+}
+
+.contest-select a {
+    display: inline-block;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    border: 1px solid black;
+    margin-top: 0.1em;
+    background-color: #01a1de;
+    /*text-shadow: 1px 1px 1px #00008b;*/
+    padding: 0.4em 0.8em;
+    /*border-radius: 3px;*/
+}
+
+.contest-select:visited a {
+    color: #ffffff;
+}
