@@ -3,7 +3,7 @@
 @import models.Contest
 @import models.Event
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css")), List()) {
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css")), List()) { } {
     <h1>Подтвердите, что собираетесь начать</h1>
     <p class='warning'>После начала соревнования начнется отсчет времени.
     @if(Contest.current().isUnlimitedTime) {

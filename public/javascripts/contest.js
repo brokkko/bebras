@@ -14,10 +14,12 @@ var submit_answer; //function (problem_id, answer)
 
     var contest_info = {
         submit_url: null,
+        stop_url: null,
         passed: null,
         duration: null,
         finished: null,
         storage_id: null,
+        status: null,
         problems: []
     }; //{type -> "", ans -> {}}
 
@@ -31,6 +33,17 @@ var submit_answer; //function (problem_id, answer)
         var $this = $(this);
         var clicked_page_index = +$this.find('span').text();
         select_page(clicked_page_index);
+    }
+
+    function animate_substitute($div_to_hide, $div_to_show) {
+        $div_to_hide.animate({
+            opacity: 0
+        }, 200, function () {
+            $div_to_hide.css('opacity', 1).hide();
+            $div_to_show.css('opacity', 0).show().animate({
+                'opacity': 1
+            }, 200);
+        });
     }
 
     function select_page(page) {
@@ -49,14 +62,7 @@ var submit_answer; //function (problem_id, answer)
         var allPages = $('.page');
         var $current_page = $(allPages.get(current_page));
         var $new_page = $(allPages.get(page));
-        $current_page.animate({
-            opacity: 0
-        }, 200, function() {
-            $current_page.css('opacity', 1).hide();
-            $new_page.css('opacity', 0).show().animate({
-                'opacity': 1
-            }, 200);
-        });
+        animate_substitute($current_page, $new_page);
 
         current_page = page;
     }
@@ -101,18 +107,72 @@ var submit_answer; //function (problem_id, answer)
         $('.page-selector').click(page_selector_click);
         $('.page-back').click(function(){select_page(current_page - 1);});
         $('.page-forward').click(function(){select_page(current_page + 1);});
+        $('#stop-contest').click(stop_contest_click);
+        $('#stop-confirmation').click(stop_confirmation_click);
 
         contest_info = $.parseJSON($('.contest-info').text());
 
-        load_list();
+        switch (contest_info.status) {
+            case "going":
+                load_list();
+                load_all_user_answers();
 
-        load_all_user_answers();
+                start_time = new Date().getTime() - contest_info.passed;
 
-        start_time = new Date().getTime() - contest_info.passed;
+                if (answers_list.length > 0)
+                    send_answers_now();
 
-        if (answers_list.length > 0)
-            send_answers_now();
+                break;
+            case "wait":
+                stop_contest(false);
+                break;
+            case "results":
+                $('#contest-time').hide(); //hide all extra time information
+                load_all_user_answers(); //without loading list with local storage answers
+                break;
+        }
     });
+
+    //stopping contest
+
+    var stop_timeout_handler = null;
+
+    function stop_contest_click() {
+        $('#stop-confirmation').show();
+        $('#stop-contest').hide();
+        if (stop_timeout_handler != null)
+            clearTimeout(stop_timeout_handler);
+        stop_timeout_handler = setTimeout(function(){$('#stop-confirmation').hide(); $('#stop-contest').show();}, 10000); //10 seconds
+    }
+
+    function stop_confirmation_click() {
+        stop_contest(true);
+    }
+
+    function stop_contest(send_stop_request) {
+        if (send_stop_request)
+            $.ajax({
+                url: contest_info.stop_url,
+                type: 'POST',
+                dataType: 'json',
+                data: '{}',
+                processData: false,
+                contentType: 'application/json; charset=UTF-8'
+            });
+
+        //don't show contest stop again
+        if (stop_timeout_handler != null)
+            clearTimeout(stop_timeout_handler);
+
+        //modify extra navigation
+        $('#time-status-info').text('Соревнование окончено');
+        $('#time-info').hide();
+        $('#stop-contest').hide();
+        $('#stop-confirmation').hide();
+
+        //show last screen
+        animate_substitute($('#all-problems-in-pages'), $('#contest-finished-info'));
+    }
 
     //sending answers
 
@@ -188,6 +248,9 @@ var submit_answer; //function (problem_id, answer)
     }
 
     function give_answer(problem_id, answer) {
+        if (contest_info.status != "going") //should not occur, but anyway
+            return;
+
         var time = new Date().getTime() - start_time;
 
         var duration = contest_info.duration;
@@ -214,3 +277,5 @@ var submit_answer; //function (problem_id, answer)
     }
 
 })();
+
+//TODO display info about sending problems if there are any

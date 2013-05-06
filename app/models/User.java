@@ -4,7 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import controllers.actions.LoadContestAction;
+import controllers.actions.AuthenticatedAction;
 import models.problems.Answer;
 import models.problems.ConfiguredProblem;
 import models.serialization.*;
@@ -220,13 +220,13 @@ public class User implements Serializable {
         Date finished = contestFinishTime(contest.getId());
 
         if (finished != null)
-            return true;
+            return false;
 
         //noinspection SimplifiableIfStatement
         if (contest.isUnlimitedTime())
             return true;
 
-        return LoadContestAction.getRequestTime().getTime() - start.getTime() < contest.getDurationInMs();
+        return AuthenticatedAction.getRequestTime().getTime() - start.getTime() < contest.getDurationInMs();
     }
 
     public boolean userParticipatedAndFinished(Contest contest) {
@@ -244,7 +244,7 @@ public class User implements Serializable {
         if (contest.isUnlimitedTime())
             return false;
 
-        return LoadContestAction.getRequestTime().getTime() - start.getTime() >= contest.getDurationInMs();
+        return AuthenticatedAction.getRequestTime().getTime() - start.getTime() >= contest.getDurationInMs();
     }
 
     public int getContestStatus(Contest contest) {

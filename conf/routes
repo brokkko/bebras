@@ -26,7 +26,9 @@ GET     /:event/contests            controllers.UserInfo.contestsList(event)
 GET     /:event/:contest/start      controllers.Contests.startContest(event, contest)
 GET     /:event/:contest/go         controllers.Contests.contest(event, contest)
 POST    /:event/:contest/submit     controllers.Contests.submit(event, contest)
-POST    /:event/:contest/results    controllers.Contests.submit(event, contest)
+POST    /:event/:contest/stop       controllers.Contests.stop(event, contest)
+GET     /:event/:contest/cls        controllers.Contests.clearStop(event, contest)
+GET     /:event/:contest/cla        controllers.Contests.clearAll(event, contest)
 
 #debug
 #TODO: 1) create controller intention, 2) TODO highlight. 3) Create method intention shows up even if there is no controller 4) autoimport play.mvc.Result

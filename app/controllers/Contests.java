@@ -1,9 +1,6 @@
 package controllers;
 
-import controllers.actions.Authenticated;
-import controllers.actions.LoadContest;
-import controllers.actions.LoadContestAction;
-import controllers.actions.LoadEvent;
+import controllers.actions.*;
 import models.Contest;
 import models.Submission;
 import models.User;
@@ -44,6 +41,10 @@ public class Contests extends Controller {
 
         Contest contest = Contest.current();
 
+        int status = user.getContestStatus(contest);
+        if (status == 6)
+            return forbidden();
+
         List<List<Problem>> pagedUserProblems = contest.getPagedUserProblems(user.getId());
 
         List<ResourceLink> cssLinksList = getCssLinks(pagedUserProblems);
@@ -51,10 +52,10 @@ public class Contests extends Controller {
 
         List<Answer> answersForContest = user.getAnswersForContest(contest);
 
+        //fill json info with user answers
         JSONSerializer contestInfoSerializer = new JSONSerializer();
         ListSerializer problemsInfoSerializer = contestInfoSerializer.getListSerializer("problems");
 
-        //fill json info with user answers
         Map<Problem, Integer> problem2index = new HashMap<>();
         int index = 0;
         for (List<Problem> page : pagedUserProblems)
@@ -76,12 +77,12 @@ public class Contests extends Controller {
         //return time that passed from the beginning
         Date contestStartTime = user.contestStartTime(contestId);
         if (contestStartTime == null) {
-            contestStartTime = LoadContestAction.getRequestTime();
+            contestStartTime = AuthenticatedAction.getRequestTime();
             user.setContestStartTime(contestId, contestStartTime);
             user.store();
         }
 
-        contestInfoSerializer.write("passed", LoadContestAction.getRequestTime().getTime() - contestStartTime.getTime());
+        contestInfoSerializer.write("passed", AuthenticatedAction.getRequestTime().getTime() - contestStartTime.getTime());
 
         //return duration
         contestInfoSerializer.write("duration", contest.isUnlimitedTime() ? 0 : contest.getDurationInMs());
@@ -89,10 +90,20 @@ public class Contests extends Controller {
         contestInfoSerializer.write("finished", user.userParticipatedAndFinished(contest));
         //write user id (needed to distinguish data in local storage for different users
         contestInfoSerializer.write("storage_id", eventId + "-" + contestId + "-" + user.getLogin());
-        //write submit url
+        //write urls
         contestInfoSerializer.write("submit_url", routes.Contests.submit(eventId, contestId).toString());
+        contestInfoSerializer.write("stop_url", routes.Contests.stop(eventId, contestId).toString());
+        //set status
+        String textStatus = "wait";
+        if (status == 1 || status == 5)
+            textStatus = "going";
+        if (status == 2)
+            textStatus = "results";
+        if (status == 3 && contest.resultsAvailable())
+            textStatus = "results";
+        contestInfoSerializer.write("status", textStatus);
 
-        return ok(views.html.contest.render(pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
+        return ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -130,21 +141,37 @@ public class Contests extends Controller {
         return ok();
     }
 
-    @BodyParser.Of(BodyParser.Json.class)
-    public static Result results(String eventId, String contestId) {
+    public static Result stop(String eventId, String contestId) {
         Contest contest = Contest.current();
         User user = User.current();
 
         int contestStatus = user.getContestStatus(contest);
-        if (contestStatus != 1 && contestStatus != 2 && contestStatus != 3)
+        if (!user.contestIsGoing(contest))
             return forbidden();
 
-        if (contestStatus == 1) {
-            user.setContestFinishTime(contestId, LoadContestAction.getRequestTime());
-            user.store();
-        }
+        user.setContestFinishTime(contestId, AuthenticatedAction.getRequestTime());
+        user.store();
 
-        return ok(); //TODO return contest results
+        return ok();
+    }
+
+    public static Result clearAll(String eventId, String contestId) {
+        User user = User.current();
+        user.setContestStartTime(contestId, null);
+        user.setContestFinishTime(contestId, null);
+        user.store();
+
+        Submission.removeAllAnswersForUser(user.getId(), Contest.current());
+
+        return ok("cleared");
+    }
+
+    public static Result clearStop(String eventId, String contestId) {
+        User user = User.current();
+        user.setContestFinishTime(contestId, null);
+        user.store();
+
+        return ok("cleared");
     }
 
     //TODO this is almost the same as get css links

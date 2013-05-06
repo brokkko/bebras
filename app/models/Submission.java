@@ -1,7 +1,7 @@
 package models;
 
 import com.mongodb.*;
-import controllers.actions.LoadContestAction;
+import controllers.actions.AuthenticatedAction;
 import models.problems.Answer;
 import models.problems.ConfiguredProblem;
 import models.serialization.*;
@@ -98,7 +98,7 @@ public class Submission implements Serializable {
         if (userId == null)
             userId = user.getId();
         if (serverTime == null)
-            serverTime = LoadContestAction.getRequestTime();
+            serverTime = AuthenticatedAction.getRequestTime();
 
         if (problemId == null)
             throw new IllegalArgumentException("submission without problem id");

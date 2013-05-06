@@ -19,7 +19,7 @@ public interface Problem {
 
     String getCssLink();
 
-    void check(Deserializer answer, Serializer resultsReceiver);
+    void check(Answer answer, Serializer resultsReceiver);
 
     String getType();
 }

@@ -43,16 +43,17 @@ public class BBTCProblem implements Problem {
     }
 
     @Override
-    public void check(Deserializer submission, Serializer resultsReceiver) {
-        Integer answer = submission.getInt("a");
-        if (answer == null)
-            return;
-
-        if (answer < 0)
+    public void check(Answer answer, Serializer resultsReceiver) {
+        Integer ans = (Integer) answer.get("a");
+        if (ans == null) {
             resultsReceiver.write("result", 0);
-        else {
-            resultsReceiver.write("result", answer == correctAnswer ? 1 : -1);
+            return;
         }
+
+        if (ans < 0)
+            resultsReceiver.write("result", 0);
+        else
+            resultsReceiver.write("result", ans == correctAnswer ? 1 : -1);
     }
 
     @Override

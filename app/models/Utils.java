@@ -68,4 +68,21 @@ public class Utils {
             serializer.write(key2val.getKey(), key2val.getValue());
     }
 
+    public static String scoresWord(int scores) {
+        scores = Math.abs(scores);
+        int a = scores / 10 % 10;
+        int b = scores % 10;
+
+        String word = "баллов";
+
+        if (a != 1) {
+            if (b == 1)
+                word = "балл";
+            else if (b == 2 || b == 3 || b == 4)
+                word = "балла";
+        }
+
+        return scores + " " + word;
+    }
+
 }

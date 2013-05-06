@@ -34,8 +34,8 @@ public class LinkProblem implements Problem {
     }
 
     @Override
-    public void check(Deserializer submission, Serializer resultsReceiver) {
-        loadProblem().check(submission, resultsReceiver);
+    public void check(Answer answer, Serializer resultsReceiver) {
+        loadProblem().check(answer, resultsReceiver);
     }
 
     @Override

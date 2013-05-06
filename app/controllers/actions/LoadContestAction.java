@@ -23,13 +23,7 @@ public class LoadContestAction extends Action<LoadContest> {
         if (contest == null)
             return ok(views.html.error.render("actions.unknown_contest", null));
 
-        ctx.args.put("request time", new Date());
-
         return delegate.call(ctx);
-    }
-
-    public static Date getRequestTime() {
-        return (Date) Http.Context.current().args.get("request time");
     }
 }
 

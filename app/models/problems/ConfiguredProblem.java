@@ -13,6 +13,9 @@ public class ConfiguredProblem {
     private Problem problem;
 
     public ConfiguredProblem(String link, Problem problem) {
+        if (!link.startsWith("/"))
+            link = '/' + link;
+
         this.link = link;
         this.problem = problem;
     }

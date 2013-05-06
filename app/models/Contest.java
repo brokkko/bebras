@@ -2,7 +2,8 @@ package models;
 
 import com.mongodb.DBCollection;
 import controllers.MongoConnection;
-import controllers.actions.LoadContestAction;
+import controllers.actions.AuthenticatedAction;
+import models.problems.Answer;
 import models.problems.ConfiguredProblem;
 import models.problems.Problem;
 import models.problems.problemblock.FolderBlock;
@@ -10,12 +11,11 @@ import models.problems.problemblock.OneProblemBlock;
 import models.problems.problemblock.ProblemBlock;
 import models.problems.problemblock.RandomProblemsBlock;
 import models.serialization.Deserializer;
+import models.serialization.JSONSerializer;
 import models.serialization.ListDeserializer;
 import play.mvc.Http;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,6 +41,8 @@ public class Contest {
 
     private List<Integer> pageSizes;
     private List<ProblemBlock> problemBlocks;
+
+    private Map<String, Object> grader = new HashMap<>(); //TODO generalize grader
 
     public Contest(Event event, Deserializer deserializer) {
         this.event = event;
@@ -75,6 +77,11 @@ public class Contest {
                     break;
                 }
         }
+
+        //load grader
+        Deserializer graderDeserializer = deserializer.getDeserializer("grader");
+        for (String field : graderDeserializer.fieldSet())
+            grader.put(field, graderDeserializer.getObject(field));
     }
 
     public static Contest deserialize(Event event, Deserializer deserializer) {
@@ -114,15 +121,15 @@ public class Contest {
     }
 
     public boolean contestStarted() {
-        return start.before(LoadContestAction.getRequestTime());
+        return start.before(AuthenticatedAction.getRequestTime());
     }
 
     public boolean contestFinished() {
-        return finish.before(LoadContestAction.getRequestTime());
+        return finish.before(AuthenticatedAction.getRequestTime());
     }
 
     public boolean resultsAvailable() {
-        return results.before(LoadContestAction.getRequestTime());
+        return results.before(AuthenticatedAction.getRequestTime());
     }
 
     public boolean isUnlimitedTime() {
@@ -207,5 +214,44 @@ public class Contest {
 
     public long getDurationInMs() {
         return getDuration() * 60l * 1000l;
+    }
+
+    public ContestResult evaluateUserResults(User user) {
+        List<Answer> answers = user.getAnswersForContest(this);
+        List<Problem> problems = getUserProblems(user.getId());
+
+        int r = 0;
+        int w = 0;
+        int n = 0;
+        int scores = 0;
+
+        int bonus = (Integer) grader.get("right");
+        int discount = (Integer) grader.get("wrong");
+
+        for (int i = 0; i < problems.size(); i++) {
+            Answer answer = answers.get(i);
+            Problem problem = problems.get(i);
+
+            if (answer == null) {
+                n++;
+                continue;
+            }
+
+            JSONSerializer jsonSerializer = new JSONSerializer();
+            problem.check(answer, jsonSerializer);
+            int res = jsonSerializer.getNode().get("result").getIntValue(); //TODO generalize this all
+
+            if (res == 0)
+                n++;
+            else if (res < 0) {
+                w++;
+                scores += discount;
+            } else {
+                r++;
+                scores += bonus;
+            }
+        }
+
+        return new ContestResult(r, w, n, scores, bonus, discount);
     }
 }

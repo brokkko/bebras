@@ -30,7 +30,7 @@ header {
     height: 34px; /*2em + 2px*/
 }
 
-nav {
+.navigation {
     float: left;
     width: 200px;
 
@@ -98,12 +98,12 @@ nav img {
     margin: 0 auto 1em;
 }
 
-.nav-contents {
-    overflow: hidden;
+/*.nav-contents {*/
+    /*overflow: hidden;*/
     /*height: 100%;*/
     /*margin: -48px 0 -18px;*//* as header and footer*/
     /*margin: 0 0 -66px;*//* as header and footer*/
-}
+/*}*/
 
 /*menu items*/
 nav .menu-item {
