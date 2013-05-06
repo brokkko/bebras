@@ -1,11 +1,13 @@
 package models.forms.inputtemplate;
 
+import models.forms.InputField;
+import models.forms.RawForm;
 import play.api.templates.Html;
-import play.data.DynamicForm;
 import play.i18n.Messages;
 import views.html.fields.date;
 
-import java.util.*;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,73 +18,54 @@ import java.util.*;
 public class DateInputTemplate extends InputTemplate {
 
     @Override
-    public Html format(DynamicForm form, String field, InputTemplateConfig config) {
-        return date.render(form, field);
+    public Html format(RawForm form, InputField inputField) {
+        return date.render(form, inputField.getName());
     }
 
     @Override
-    public BindResult getObject(DynamicForm form, String field) {
-        String dayS = form.field(field + "[day]").value();
-        String monthS = form.field(field + "[month]").value();
-        String yearS = form.field(field + "[year]").value();
-
-        Integer day = str2int(dayS);
-        Integer month = str2int(monthS);
-        Integer year = str2int(yearS);
-
-        if (
-                (dayS == null || dayS.isEmpty()) &&
-                (monthS == null || monthS.isEmpty()) &&
-                (yearS == null || yearS.isEmpty())
-        )
-            return new BindResult(null);
-
-        List<String> messages = new ArrayList<>();
-
-        if (day == null)
-            messages.add(Messages.get("error.msg.date.no_day"));
-        if (month == null)
-            messages.add(Messages.get("error.msg.date.no_month"));
-        if (year == null)
-            messages.add(Messages.get("error.msg.date.no_year"));
-
-        if (messages.size() > 0)
-            return new BindResult(null, messages);
-
-        @SuppressWarnings("ConstantConditions")
-        GregorianCalendar cal = new GregorianCalendar(year, month, day);
-        cal.setLenient(false);
-        Date result;
-        try {
-            result = cal.getTime();
-        } catch (IllegalArgumentException e) {
-            return new BindResult(null, Messages.get("error.msg.date.not_exists"));
-        }
-
-        return new BindResult(result);
-    }
-
-    @Override
-    public void fillForm(DynamicForm form, String field, Object value) {
+    public void write(String field, Object value, RawForm rawForm) {
         if (value == null) {
-            removeFormField(form, field + "[day]");
-            removeFormField(form, field + "[month]");
-            removeFormField(form, field + "[year]");
+            rawForm.remove(field, "day");
+            rawForm.remove(field, "month");
+            rawForm.remove(field, "year");
             return;
         }
 
         GregorianCalendar date = new GregorianCalendar();
         date.setTime((Date) value);
 
-        setFormField(form, field + "[day]", "" + date.get(GregorianCalendar.DAY_OF_MONTH));
-        setFormField(form, field + "[month]", "" + date.get(GregorianCalendar.MONTH));
-        setFormField(form, field + "[year]", "" + date.get(GregorianCalendar.YEAR));
+        rawForm.put(field, date.get(GregorianCalendar.DAY_OF_MONTH), "day");
+        rawForm.put(field, date.get(GregorianCalendar.MONTH), "month");
+        rawForm.put(field, date.get(GregorianCalendar.YEAR), "year");
     }
 
-    private Integer str2int(String value) {
+    @Override
+    public Object read(String field, RawForm form) {
+        if (form.isEmptyValue(field, "day") && form.isEmptyValue(field, "month") && form.isEmptyValue(field, "year"))
+            return null;
+
+        int day = form.getAsInt(field, -1, "day");
+        int month = form.getAsInt(field, -1, "month");
+        int year = form.getAsInt(field, -1, "year");
+
+        if (day < 0)
+            form.reject(field, Messages.get("error.msg.date.no_day"));
+        if (month < 0)
+            form.reject(field, Messages.get("error.msg.date.no_month"));
+        if (year < 0)
+            form.reject(field, Messages.get("error.msg.date.no_year"));
+
+        if (form.hasFieldErrors(field))
+            return null;
+
+        @SuppressWarnings("ConstantConditions")
+        GregorianCalendar cal = new GregorianCalendar(year, month, day);
+        cal.setLenient(false);
+
         try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
+            return cal.getTime();
+        } catch (IllegalArgumentException e) {
+            form.reject(field, Messages.get("error.msg.date.not_exists"));
             return null;
         }
     }

@@ -1,6 +1,6 @@
 package models.forms.validators;
 
-import java.util.Map;
+import models.serialization.Deserializer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,8 +10,7 @@ import java.util.Map;
  */
 public class PhoneValidator extends Validator<String> {
 
-    public PhoneValidator(Map<String, Object> validationParameters) {
-        super(validationParameters);
+    public PhoneValidator(Deserializer deserializer) {
         defaultMessage = "error.msg.phone";
     }
 
@@ -26,14 +25,14 @@ public class PhoneValidator extends Validator<String> {
 
         //forbid --
         if (phone.contains("--"))
-            return message();
+            return getMessage();
 
         //remove pair of brackets if there is one
         if (phone.matches("[^\\(\\)]*\\([^\\(\\)]*\\)[^\\(\\)]*"))
             phone = phone.replaceAll("[\\(\\)]", "");
 
         if (! phone.matches("\\d{5,12}"))
-            return message();
+            return getMessage();
 
         return null;
     }

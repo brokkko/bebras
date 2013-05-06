@@ -1,46 +1,37 @@
 package models.forms.validators;
 
-import play.data.validation.Constraints;
+import models.serialization.Deserializer;
 import play.i18n.Messages;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
- * Date: 01.01.13
- * Time: 21:33
+ * Date: 20.03.13
+ * Time: 23:42
  */
 public abstract class Validator<T> {
 
     protected String defaultMessage;
+    private String message;
 
-    @Constraints.Email
-    protected final Map<String, Object> validationParameters;
+    public static Validator deserialize(Deserializer deserializer) {
+        String type = deserializer.getString("type");
 
-    public Validator(Map<String, Object> validationParameters) {
-        this.validationParameters = validationParameters;
-    }
-
-    protected String message(Object... args) {
-        String message = (String) validationParameters.get("message");
-        if (message == null)
-            message = defaultMessage;
-        if (message == null)
-            throw new IllegalArgumentException("No message specified for the validator " + this.getClass().getCanonicalName());
-        return Messages.get(message, args);
-    }
-
-    public static Validator getInstance(String type, Map<String, Object> validationParameters) {
         String className = Validator.class.getPackage().getName() + "." + capitalize(type) + "Validator";
 
         try {
             Class<?> probableValidatorClass = Class.forName(className);
             Class<? extends Validator> validatorClass = probableValidatorClass.asSubclass(Validator.class);
-            Constructor<? extends Validator> constructor = validatorClass.getConstructor(Map.class);
-            return constructor.newInstance(validationParameters);
+            Constructor<? extends Validator> constructor = validatorClass.getConstructor(Deserializer.class);
+
+            String message = deserializer.getString("message");
+
+            Validator validator = constructor.newInstance(deserializer);
+            validator.setMessage(message);
+            return validator;
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("Unknown input validator '" + type + "'");
         } catch (NoSuchMethodException e) {
@@ -60,5 +51,19 @@ public abstract class Validator<T> {
         return type.substring(0, 1).toUpperCase() + type.substring(1);
     }
 
+    protected void setMessage(String message) {
+        this.message = message;
+    }
+
+    protected String getMessage(Object... args) {
+        String result = message;
+        if (result == null)
+            result = defaultMessage;
+        if (result == null)
+            throw new IllegalArgumentException("No message specified for the validator " + this.getClass().getCanonicalName());
+        return Messages.get(result, args);
+    }
+
     public abstract String validate(T value);
+
 }

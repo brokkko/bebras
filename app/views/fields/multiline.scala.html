@@ -1,3 +1,3 @@
-@(form:DynamicForm, field:String, placeholder:String)
-@import play.data.DynamicForm
-<textarea class='input-multiline' name="@field" placeholder="@placeholder">@form(field).value</textarea>
+@(form:models.forms.RawForm, field:String, placeholder:String)
+@import models.forms.RawForm
+<textarea class='input-multiline' name="@field" placeholder="@placeholder">@form.get(field)</textarea>

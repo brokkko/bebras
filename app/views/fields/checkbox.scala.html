@@ -1,6 +1,6 @@
-@(form:DynamicForm, field: String, html:Html)
-@import play.data.DynamicForm
-<input class='input-checkbox' type="checkbox" value="1" name="@field" @if(form(field).value == "1") { checked="checked" }>
-@if(html != null) {
-    <span class="checkbox-hint">@html</span>
+@(form:models.forms.RawForm, field: String, hint:String)
+@import models.forms.RawForm
+<input class='input-checkbox' type="checkbox" value="1" name="@field" @if(form.get(field) == "1") { checked="checked" }>
+@if(hint != null) {
+    <span class="checkbox-hint">@Html(hint)</span>
 }

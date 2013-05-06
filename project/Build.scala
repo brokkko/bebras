@@ -1,13 +1,14 @@
 import sbt._
 import Keys._
-import PlayProject._
+import play.Project._
 
 object ApplicationBuild extends Build {
 
-    val appName         = "bbts.contest"
-    val appVersion      = "1.0-SNAPSHOT"
+    val appName         = "bbtc-contest"
+    val appVersion      = "0.1"
 
     val appDependencies = Seq(
+      javaCore,
       // Add your project dependencies here,
       "org.mongodb" % "mongo-java-driver" % "2.9.2", //mongo db driver
       "org.apache.commons" % "commons-email" % "1.2", //simple email wrapper
@@ -15,7 +16,7 @@ object ApplicationBuild extends Build {
       "net.sf.opencsv" % "opencsv" % "2.3" // CSV reader and writer http://opencsv.sourceforge.net
     )
 
-    val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).settings(
+    val main = play.Project(appName, appVersion, appDependencies).settings(
       // Add your own project settings here      
     )
 

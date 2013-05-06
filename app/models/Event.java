@@ -4,13 +4,16 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import models.forms.InputForm;
+import models.forms.*;
+import models.serialization.Deserializer;
+import models.serialization.ListDeserializer;
+import models.serialization.MemoryDeserializer;
+import models.serialization.MongoDeserializer;
 import play.Logger;
 import play.cache.Cache;
 import play.mvc.Http;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -21,38 +24,52 @@ import java.util.concurrent.Callable;
  */
 public class Event {
 
-    public static final Event ERROR_EVENT = new Event(new MemoryStoredObject(
+    public static final Event ERROR_EVENT = new Event(new MemoryDeserializer(
             "_id", "__no_event",
             "title", "Unknown event" //here is no HTTP context to use Messages
     ));
 
-    private final String id;
-    private final String title;
-    private final List<Contest> contests;
-    private final InputForm usersForm;
-    private final InputForm editUserForm;
+    private String id;
+    private String title;
+    private LinkedHashMap<String, Contest> contests;
+    private InputForm usersForm;
+    private InputForm editUserForm;
 
-    private Event(StoredObject storedObject) {
-        this.id = storedObject.getString("_id");
-        this.title = storedObject.getString("title");
+    private Event(Deserializer deserializer) {
+        this.id = deserializer.getString("_id");
+        this.title = deserializer.getString("title");
 
-        this.contests = new ArrayList<>();
-        List contestsConfig = storedObject.getList("contests");
-        if (contestsConfig != null) {
-            for (Object contestInfo : contestsConfig)
-                contests.add(new Contest((StoredObject) contestInfo));
-        }
+//        this.contests = new ArrayList<>();
+//        List contestsConfig = storedObject.getList("contests");
+//        if (contestsConfig != null) {
+//            for (Object contestInfo : contestsConfig)
+//                contests.add(new Contest((StoredObject) contestInfo));
+//        }
 
-        StoredObject users = storedObject.getObject("users");
-        if (users != null) {
-            usersForm = new InputForm("user", users);
-            editUserForm = new InputForm("user_edit", users, "login", "email", "personal_data", "contest_rules"); //TODO get this info from somewhere else
-            //TODO don't save personal_data and contest_rules to the user object
-            editUserForm.setMessagesName("user"); //TODO invent something better
+        Deserializer usersDeserializer = deserializer.getDeserializer("users");
+        if (usersDeserializer != null) {
+            usersForm = InputForm.deserialize("user", usersDeserializer);
+            editUserForm = InputForm.deserialize("user", usersDeserializer, new InputForm.FieldFilter() {
+                @Override
+                public boolean accept(InputField field) {
+                    return ! field.getBooleanConfig("skip_for_edit", false) && field.getBooleanConfig("store", true);
+                }
+            });
         } else {
             usersForm = null;
             editUserForm = null;
         }
+
+        //deserialize contests
+        ListDeserializer contestsDeserializer = deserializer.getListDeserializer("contests");
+        contests = new LinkedHashMap<>();
+
+        if (contestsDeserializer != null)
+            while (contestsDeserializer.hasMore()) {
+                Deserializer contestDeserializer = contestsDeserializer.getDeserializer();
+                Contest contest = Contest.deserialize(this, contestDeserializer);
+                contests.put(contest.getId(), contest);
+            }
 
         //TODO enters site before confirmation
         //TODO choose where to go if authorized
@@ -112,7 +129,7 @@ public class Event {
         if (eventObject == null)
             throw new Exception("No such collection");
         else
-            return new Event(new MongoObject(eventsCollection.getName(), eventObject));
+            return new Event(new MongoDeserializer(eventObject));
     }
 
     public String getId() {
@@ -123,8 +140,12 @@ public class Event {
         return title;
     }
 
-    public List<Contest> getContests() {
-        return contests;
+    public Contest getContestById(String id) {
+        return contests.get(id);
+    }
+
+    public Collection<Contest> getContests() {
+        return contests.values();
     }
 
     public InputForm getUsersForm() {

@@ -1,16 +1,16 @@
-@(form:DynamicForm, message:String)
-@import play.data.DynamicForm
+@(form:models.forms.RawForm, message:String)
+@import models.forms.RawForm
 @import views.ResourceLink
 @import models.Event
 @import models.Forms
 @import scala.List
 @import play.i18n.Messages
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) {
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) { } {
     <h1>Здесь вы можете посмотреть и изменить свои личные данные</h1>
 
     @if(message != null) {
         <p class="warning">@Messages.get(message)</p>
     }
 
-    @Event.current.getEditUserForm.formatWithUndo(form, routes.UserInfo.doChangeInfo(Event.currentId))
+    @Event.current.getEditUserForm.formatExtended(form, routes.UserInfo.doChangeInfo(Event.currentId), true, "form.user.submit")
 }

@@ -1,11 +1,11 @@
-@(form: DynamicForm, action:Call, submit_text:String, fields:List[models.forms.InputField], need_undo:Boolean)
-@import models.forms.inputtemplate.InputTemplate
-@import play.data.DynamicForm
+@(form:models.forms.InputForm, rawForm:models.forms.RawForm, action:Call, submit_text:String, need_undo:Boolean)
+@import models.forms.InputForm
+@import models.forms.RawForm
 @import play.mvc.Call
-@import play.mvc.Http
+@import scala.collection.JavaConversions._
 <form class="basic-form" action="@action" method="POST">
-    @if(form.globalErrors().size > 0) {
-        <span class="error-global">@form.globalErrors().map { e => @e.message}.mkString(", ")</span>
+    @if(rawForm.hasGlobalErrors) {
+        <span class="error-global">@rawForm.getGlobalErrors().toList.mkString(", ")</span>
     }
     <fieldset>
     @*
@@ -13,14 +13,14 @@
     <input type="hidden" value="@form("_id").value" name="id">
     }
     *@
-    @for(field <- fields) {
-        <div class="controls @if(form(field.getName).hasErrors) {error}">
-            <label>@field.getInputConfiguration.getTitle @if(field.getInputConfiguration.isRequired) {<small>*</small>}</label>
-            @if(form(field.getName).errors().size() > 0) {
-                <div class="error-inline">@form(field.getName).errors().map { e => @e.message}.mkString(", ")</div>
+    @for(field <- form.getFields) {
+        <div class="controls @if(rawForm.hasFieldErrors(field.getName)) {error}">
+            <label>@Html(field.getTitle) @if(field.isRequired) {<small>*</small>}</label>
+            @if(rawForm.hasFieldErrors(field.getName)) {
+                <div class="error-inline">@rawForm.getFieldErrors(field.getName).toList.mkString(", ")</div>
             }
             <div class='form-field-input'>
-                @field.format(form)
+                @field.format(rawForm)
             </div>
             <div class="error-inline-empty"></div>
             @*@if(field.getHint != null) {<span class="help-inline">field.getHint</span>}*@

@@ -1,3 +1,6 @@
+import models.problems.ProblemSource;
+import models.problems.RootProblemSource;
+import models.problems.bbtc.BBTCProblemSource;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
@@ -6,8 +9,10 @@ import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,6 +21,12 @@ import java.util.Arrays;
  * Time: 18:26
  */
 public class Global extends GlobalSettings {
+
+    @Override
+    public void onStart(Application app) {
+        //TODO move problem sources mount to configuration
+        //TODO allow uploading of files to mount
+    }
 
     @Override
     public Action onRequest(Http.Request request, Method method) {

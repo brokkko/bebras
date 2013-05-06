@@ -1,10 +1,10 @@
-@(form:DynamicForm)
-@import play.data.DynamicForm
+@(form:models.forms.RawForm)
+@import models.forms.RawForm
 @import views.ResourceLink
 @import models.Event
 @import models.Forms
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) {
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) { } {
     <h1>Восстановление пароля</h1>
     <p class="warning">Введите свой логин или email, чтобы получить письмо с новым паролем.</p>
     @Forms.getPasswordRemindForm.format(form, routes.Registration.doPasswordRemind(Event.currentId))
