@@ -24,6 +24,9 @@ public class AuthenticatorValidator extends Validator<FormDeserializer> {
         String login = form.getString("login"); //they are required, so we sure that we can get this info
         String password = form.getString("password");
 
+        if (password == null)
+            return getMessage();
+
         User user = User.getInstance(User.FIELD_LOGIN, login);
         if (user != null) {
             boolean wrongPassword = ! user.testPassword(password);

@@ -121,7 +121,8 @@ var submit_answer; //function (problem_id, answer)
                 if (answers_list.length > 0)
                     send_answers_now();
 
-                timer();
+                if (contest_info.duration > 0)
+                    timer();
 
                 break;
             case "wait":
@@ -284,6 +285,7 @@ var submit_answer; //function (problem_id, answer)
         var millisecondsLeft = contest_info.duration - time;
         if (millisecondsLeft <= 0) {
             stop_contest(false);
+            console.log('here');
             return;
         }
 
