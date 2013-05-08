@@ -106,7 +106,7 @@ public class Submission implements Serializable {
         if (!problemId.startsWith("/")) {
             int pid = Integer.parseInt(problemId);
             Contest contest = Contest.current();
-            ConfiguredProblem problem = contest.getConfiguredUserProblems(userId).get(pid);
+            ConfiguredProblem problem = contest.getConfiguredUserProblems(user).get(pid);
 
             problemId = problem.getLink();
         }
