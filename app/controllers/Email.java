@@ -4,9 +4,14 @@ import models.Event;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 import play.Configuration;
+import play.Logger;
 import play.Play;
 import play.i18n.Messages;
 import play.mvc.Http;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import java.util.Arrays;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,6 +51,14 @@ public class Email {
             email.setFrom(from);
         else
             email.setFrom(from, fromName);
+
+        String replyTo = cfg.getString("reply_to");
+        if (replyTo != null)
+            try {
+                email.setReplyTo(Arrays.asList(new InternetAddress(replyTo)));
+            } catch (AddressException e) {
+                Logger.error("Failed to make Internet address out of " + replyTo);
+            }
 
         email.setCharset("UTF8");
         email.setSubject(subject);

@@ -3,6 +3,7 @@ package models.serialization;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import models.Address;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,7 +25,10 @@ public class MongoSerializer implements Serializer {
 
     @Override
     public void write(String field, Object value) {
-        object.put(field, value);
+        if (value instanceof Address) //TODO not necessary address
+            ((Address) value).store(getSerializer(field));
+        else
+            object.put(field, value);
     }
 
     @Override

@@ -41,7 +41,7 @@ public abstract class ProblemSource {
     }
 
     public ProblemSource getSubsourceOrCreate(String folder) {
-        String[] folders = folder.split("///g");
+        String[] folders = folder.split("/");
         ProblemSource currentSource = this;
         for (String f : folders) {
             ProblemSource nextSource = getSubsource(f);
