@@ -1,5 +1,7 @@
 package models.problems.problemblock;
 
+import models.Contest;
+import models.User;
 import models.problems.ConfiguredProblem;
 import models.problems.LinkProblemSource;
 import models.problems.Problem;
@@ -21,8 +23,12 @@ public class RandomProblemsBlock extends ProblemBlock {
     private int count;
     private ProblemSource problemSource;
 
+    public RandomProblemsBlock(Contest contest) {
+        super(contest);
+    }
+
     @Override
-    public List<ConfiguredProblem> getProblems(String userId) {
+    public List<ConfiguredProblem> getProblems(User user) {
         List<String> list = problemSource.list();
         List<ConfiguredProblem> problems = new ArrayList<>(list.size());
 
@@ -31,7 +37,8 @@ public class RandomProblemsBlock extends ProblemBlock {
 
         problems = problems.subList(0, count);
 
-        Random random = new Random(userId.hashCode());
+        Random random = new Random(user.getContestRandSeed(contest.getId()));
+//        Random random = new Random(user.getId().hashCode());
         Collections.shuffle(problems, random);
 
         return problems;

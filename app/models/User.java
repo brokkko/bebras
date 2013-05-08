@@ -55,6 +55,8 @@ public class User implements Serializable {
                 loadContestsInfo(deserializer.getDeserializer(FIELD_CONTEST_INFO));
             else {
                 Object fieldValue = deserializer.getObject(field);
+                if (fieldValue instanceof DBObject)
+                    fieldValue = Address.deserialize(deserializer.getDeserializer(field)); //TODO not necessary address
                 map.put(field, fieldValue);
             }
         }
@@ -162,8 +164,15 @@ public class User implements Serializable {
 
     @Override
     public void store(Serializer serializer) {
-        for (Map.Entry<String, Object> field2value : map.entrySet())
-            serializer.write(field2value.getKey(), field2value.getValue());
+        for (Map.Entry<String, Object> field2value : map.entrySet()) {
+            String field = field2value.getKey();
+            Object value = field2value.getValue();
+
+            if (value instanceof Address) //TODO instance of serializable
+                ((Address) value).store(serializer.getSerializer(field));
+            else
+                serializer.write(field, value);
+        }
 
         Serializer contestInfoSerializer = serializer.getSerializer(FIELD_CONTEST_INFO);
         for (Map.Entry<String, ContestInfoForUser> id2date : contest2info.entrySet()) {
@@ -189,7 +198,26 @@ public class User implements Serializable {
         return contestInfo == null ? null : contestInfo.getFinished();
     }
 
-    public ContestInfoForUser getContestInfoCreateIfNeeded(String contestId) {
+    public long getContestRandSeed(String contestId) {
+        ContestInfoForUser contestInfo = getContestInfoCreateIfNeeded(contestId);
+
+        Long seed = contestInfo.getRandSeed();
+        if (seed == null) {
+            seed = (long) getId().hashCode();
+            contestInfo.setRandSeed(seed);
+            store(); //TODO move all stores to some last moment of request handling
+        }
+
+        return seed;
+    }
+
+    public void generateContestRandSeed(String contestId) {
+        ContestInfoForUser contestInfo = getContestInfoCreateIfNeeded(contestId);
+        contestInfo.setRandSeed(new Random().nextLong());
+        store();
+    }
+
+    private ContestInfoForUser getContestInfoCreateIfNeeded(String contestId) {
         ContestInfoForUser contestInfo = contest2info.get(contestId);
         if (contestInfo == null) {
             contestInfo = new ContestInfoForUser();
@@ -269,7 +297,7 @@ public class User implements Serializable {
         List<Answer> pid2ans = new ArrayList<>();
 
         String uid = getId();
-        List<ConfiguredProblem> configuredUserProblems = contest.getConfiguredUserProblems(uid);
+        List<ConfiguredProblem> configuredUserProblems = contest.getConfiguredUserProblems(this);
 
         for (ConfiguredProblem configuredUserProblem : configuredUserProblems) {
             String link = configuredUserProblem.getLink();

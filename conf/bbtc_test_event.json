@@ -82,7 +82,8 @@
             "grader" : {
                 "right": 3,
                 "wrong": -1
-            }
+            },
+            "allow restart" : true
         },
         {
             "id" : "express",
@@ -108,7 +109,8 @@
             "grader" : {
                 "right": 3,
                 "wrong": -1
-            }
+            },
+            "allow restart" : true
         },
         {
             "id" : "hard",
@@ -134,7 +136,8 @@
             "grader" : {
                 "right": 6,
                 "wrong": -2
-            }
+            },
+            "allow restart" : true
         },
         {
             "id" : "explore",
@@ -155,7 +158,8 @@
             "grader" : {
                 "right": 15,
                 "wrong": -5
-            }
+            },
+            "allow restart" : true
         },
         {
             "id" : "express-test",
@@ -181,7 +185,8 @@
             "grader" : {
                 "right": 3,
                 "wrong": -1
-            }
+            },
+            "allow restart" : true
         },
         {
             "id" : "hard-test",
@@ -207,7 +212,8 @@
             "grader" : {
                 "right": 6,
                 "wrong": -2
-            }
+            },
+            "allow restart" : true
         },
         {
             "id" : "explore-test",
@@ -228,7 +234,8 @@
             "grader" : {
                 "right": 15,
                 "wrong": -5
-            }
+            },
+            "allow restart" : true
         }
     ]
 }

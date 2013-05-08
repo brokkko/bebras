@@ -1,5 +1,7 @@
 package models.problems.problemblock;
 
+import models.Contest;
+import models.User;
 import models.problems.ConfiguredProblem;
 import models.problems.LinkProblem;
 import models.problems.Problem;
@@ -20,8 +22,12 @@ public class OneProblemBlock extends ProblemBlock {
     private String link;
     private Problem problem;
 
+    public OneProblemBlock(Contest contest) {
+        super(contest);
+    }
+
     @Override
-    public List<ConfiguredProblem> getProblems(String userId) {
+    public List<ConfiguredProblem> getProblems(User user) {
         return Arrays.asList(new ConfiguredProblem(link, problem));
     }
 

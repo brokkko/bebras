@@ -38,6 +38,7 @@ public class Contest {
     private Date finish;
     private Date results;
     private int duration;
+    private boolean allowRestart; //TODO make this allowed restarts count
 
     private List<Integer> pageSizes;
     private List<ProblemBlock> problemBlocks;
@@ -57,6 +58,9 @@ public class Contest {
 
         duration = deserializer.getInt("duration");
 
+        Boolean allowRestartValue = deserializer.getBoolean("allow restart");
+        allowRestart = allowRestartValue == null ? false : allowRestartValue;
+
         //read page sizes
 
         ListDeserializer pageSizesDeserializer = deserializer.getListDeserializer("page sizes");
@@ -70,7 +74,7 @@ public class Contest {
         problemBlocks = new ArrayList<>();
         while (problemsDeserializer.hasMore()) {
             String configuration = problemsDeserializer.getString();
-            ProblemBlock[] blocks = {new RandomProblemsBlock(), new FolderBlock(), new OneProblemBlock()};
+            ProblemBlock[] blocks = {new RandomProblemsBlock(this), new FolderBlock(this), new OneProblemBlock(this)};
             for (ProblemBlock block : blocks)
                 if (block.acceptsConfiguration(configuration)) {
                     problemBlocks.add(block);
@@ -114,6 +118,10 @@ public class Contest {
 
     public String getId() {
         return id;
+    }
+
+    public boolean isAllowRestart() {
+        return allowRestart;
     }
 
     public DBCollection getCollection() {
@@ -169,28 +177,28 @@ public class Contest {
         return contest;
     }
 
-    public List<Problem> getUserProblems(String userId) {
+    public List<Problem> getUserProblems(User user) {
         List<Problem> problems = new ArrayList<>();
 
         for (ProblemBlock problemBlock : problemBlocks)
-            for (ConfiguredProblem problem : problemBlock.getProblems(userId))
+            for (ConfiguredProblem problem : problemBlock.getProblems(user))
                 problems.add(problem.getProblem());
 
         return problems;
     }
 
-    public List<ConfiguredProblem> getConfiguredUserProblems(String userId) {
+    public List<ConfiguredProblem> getConfiguredUserProblems(User user) {
         List<ConfiguredProblem> problems = new ArrayList<>();
 
         for (ProblemBlock problemBlock : problemBlocks)
-            problems.addAll(problemBlock.getProblems(userId));
+            problems.addAll(problemBlock.getProblems(user));
 
         return problems;
     }
 
-    public List<List<Problem>> getPagedUserProblems(String userId) {
+    public List<List<Problem>> getPagedUserProblems(User user) {
         List<List<Problem>> pages = new ArrayList<>();
-        List<Problem> userProblems = getUserProblems(userId);
+        List<Problem> userProblems = getUserProblems(user);
 
         int pageIndex = 0;
         int index = 0;
@@ -222,7 +230,7 @@ public class Contest {
 
     public ContestResult evaluateUserResults(User user) {
         List<Answer> answers = user.getAnswersForContest(this);
-        List<Problem> problems = getUserProblems(user.getId());
+        List<Problem> problems = getUserProblems(user);
 
         int r = 0;
         int w = 0;
