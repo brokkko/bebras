@@ -138,7 +138,8 @@
             "grader" : {
                 "right": 3,
                 "wrong": -1
-            }
+            },
+            "allow restart" : true
         },
         {
             "id" : "express",

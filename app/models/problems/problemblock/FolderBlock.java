@@ -1,5 +1,7 @@
 package models.problems.problemblock;
 
+import models.Contest;
+import models.User;
 import models.problems.ConfiguredProblem;
 import models.problems.LinkProblemSource;
 import models.problems.Problem;
@@ -21,8 +23,12 @@ public class FolderBlock extends ProblemBlock {
     private String link;
     private ProblemSource problemSource;
 
+    public FolderBlock(Contest contest) {
+        super(contest);
+    }
+
     @Override
-    public List<ConfiguredProblem> getProblems(String userId) {
+    public List<ConfiguredProblem> getProblems(User user) {
         List<String> list = problemSource.list();
         List<ConfiguredProblem> problems = new ArrayList<>(list.size());
 

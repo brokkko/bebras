@@ -1,5 +1,7 @@
 package models.problems.problemblock;
 
+import models.Contest;
+import models.User;
 import models.problems.ConfiguredProblem;
 
 import java.util.List;
@@ -14,6 +16,12 @@ import java.util.regex.Pattern;
  */
 public abstract class ProblemBlock { //TODO implement Serializable
 
+    protected final Contest contest;
+
+    protected ProblemBlock(Contest contest) {
+        this.contest = contest;
+    }
+
     public boolean acceptsConfiguration(String configuration) {
         if (configuration == null)
             return false;
@@ -26,7 +34,7 @@ public abstract class ProblemBlock { //TODO implement Serializable
         return matches;
     }
 
-    public abstract List<ConfiguredProblem> getProblems(String userId);
+    public abstract List<ConfiguredProblem> getProblems(User user);
 
     protected abstract Pattern getConfigurationPattern();
 

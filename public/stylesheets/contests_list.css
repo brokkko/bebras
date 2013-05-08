@@ -43,8 +43,8 @@
     text-align: center;
 }
 
-.contest-description .big-title {
-    padding-bottom: 0.8em;
+.contest-description .skip {
+    height: 0.8em;
 }
 
 .contest-description .important {
@@ -76,13 +76,21 @@ p.time iframe {
     text-decoration: none;
     font-weight: bold;
     border: 1px solid black;
-    margin-top: 0.1em;
+    margin-top: 0.9em;
     background-color: #01a1de;
     /*text-shadow: 1px 1px 1px #00008b;*/
     padding: 0.4em 0.8em;
     /*border-radius: 3px;*/
 }
 
-.contest-select:visited a {
+.contest-select a:visited {
     color: #ffffff;
+}
+
+.contest-action a, .contest-action a:visited {
+    color: #a51e00;
+}
+
+.invisible-form {
+    display: inline;
 }

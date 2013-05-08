@@ -51,7 +51,7 @@ public class Contests extends Controller {
         long time = System.currentTimeMillis();
 
 //        Logger.info("[1] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
-        List<List<Problem>> pagedUserProblems = contest.getPagedUserProblems(user.getId());
+        List<List<Problem>> pagedUserProblems = contest.getPagedUserProblems(user);
 
         List<ResourceLink> cssLinksList = getCssLinks(pagedUserProblems);
         List<ResourceLink> jsLinksList = getJsLinks(pagedUserProblems);
@@ -172,23 +172,25 @@ public class Contests extends Controller {
         return ok();
     }
 
-    public static Result clearAll(String eventId, String contestId) {
+    public static Result restart(String eventId, String contestId) {
+        Contest contest = Contest.current();
+
+        if (!contest.isAllowRestart())
+            return forbidden();
+
         User user = User.current();
+
+        if (!user.userParticipatedAndFinished(contest))
+            return forbidden();
+
         user.setContestStartTime(contestId, null);
         user.setContestFinishTime(contestId, null);
-        user.store();
+        user.generateContestRandSeed(contestId);
+        user.store(); //TODO This is a duplicated todo about storing user info. Here it is actually stored in generateContestRandSeed
 
-        Submission.removeAllAnswersForUser(user.getId(), Contest.current());
+        Submission.removeAllAnswersForUser(user.getId(), contest);
 
-        return ok("cleared");
-    }
-
-    public static Result clearStop(String eventId, String contestId) {
-        User user = User.current();
-        user.setContestFinishTime(contestId, null);
-        user.store();
-
-        return ok("cleared");
+        return redirect(routes.UserInfo.contestsList(eventId));
     }
 
     //TODO this is almost the same as get css links
