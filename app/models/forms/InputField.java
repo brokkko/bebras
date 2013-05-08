@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class InputField {
 
-    public static final String FIELDS_SEPARATOR_REGEX = "/|/g";
+    public static final String FIELDS_SEPARATOR_REGEX = "\\|";
 
     private String name;
     private String messagesPrefix;

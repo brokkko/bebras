@@ -168,10 +168,7 @@ public class User implements Serializable {
             String field = field2value.getKey();
             Object value = field2value.getValue();
 
-            if (value instanceof Address) //TODO instance of serializable
-                ((Address) value).store(serializer.getSerializer(field));
-            else
-                serializer.write(field, value);
+            serializer.write(field, value);
         }
 
         Serializer contestInfoSerializer = serializer.getSerializer(FIELD_CONTEST_INFO);
