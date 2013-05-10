@@ -144,14 +144,17 @@ public class User implements Serializable {
 
     private static void checkUserActivity(User user) {
         Http.Context context = Http.Context.current();
+        Date requestTime = AuthenticatedAction.getRequestTime();
         UserActivityEntry entry = new UserActivityEntry(
                 user.getId(),
                 context.request().remoteAddress(),
                 context.request().getHeader("User-Agent"),
-                AuthenticatedAction.getRequestTime()
+                requestTime
         );
 
-        if (entry.equals(user.getUserActivityEntry()))
+        UserActivityEntry entryOld = user.getUserActivityEntry();
+
+        if (entry.equals(entryOld) && requestTime.getTime() - entryOld.getDate().getTime() < 30 * 60 * 1000) //30 min hour
             return;
 
         entry.store();
