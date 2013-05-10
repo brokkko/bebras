@@ -33,11 +33,12 @@ public class AuthenticatedAction extends Action<Authenticated> {
 
         ctx.request().setUsername(userName);
 
+        //store request time to determine contest status
+        ctx.args.put("request time", new Date());
+
         if (configuration.load())
             if (User.current() == null) //call to current loads user. And also test if there is such user
                 return loginRedirect;
-
-        ctx.args.put("request time", new Date());
 
         return delegate.call(ctx);
     }
