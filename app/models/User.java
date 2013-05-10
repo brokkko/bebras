@@ -40,24 +40,32 @@ public class User implements Serializable {
     public static final String FIELD_NEW_RECOVERY_PASSWORD = "_rec_pswd";
 
     public static final String FIELD_CONTEST_INFO = "_contests";
+    public static final String FIELD_LAST_USER_ACTIVITY = "_lua";
 
     public static final PasswordGenerator passwordGenerator = new PasswordGenerator();
 
     private Map<String, Object> map = new HashMap<>();
+
     private Map<String, ContestInfoForUser> contest2info = new HashMap<>();
+    private UserActivityEntry userActivityEntry;
 
     public User() {
     }
 
     public void update(Deserializer deserializer) {
         for (String field : deserializer.fieldSet()) {
-            if (field.equals(FIELD_CONTEST_INFO))
-                loadContestsInfo(deserializer.getDeserializer(FIELD_CONTEST_INFO));
-            else {
-                Object fieldValue = deserializer.getObject(field);
-                if (fieldValue instanceof DBObject)
-                    fieldValue = Address.deserialize(deserializer.getDeserializer(field)); //TODO not necessary address
-                map.put(field, fieldValue);
+            switch (field) {
+                case FIELD_CONTEST_INFO:
+                    loadContestsInfo(deserializer.getDeserializer(field));
+                    break;
+                case FIELD_LAST_USER_ACTIVITY:
+                    userActivityEntry = UserActivityEntry.deserialize(deserializer.getDeserializer(field));
+                    break;
+                default:
+                    Object fieldValue = deserializer.getObject(field);
+                    if (fieldValue instanceof DBObject)
+                        fieldValue = Address.deserialize(deserializer.getDeserializer(field)); //TODO not necessary address
+                    map.put(field, fieldValue);
             }
         }
     }
@@ -126,10 +134,29 @@ public class User implements Serializable {
                 return null;
             user = getInstance(FIELD_LOGIN, username);
 
+            checkUserActivity(user);
+
             contextArgs.put("user", user);
         }
 
         return user;
+    }
+
+    private static void checkUserActivity(User user) {
+        Http.Context context = Http.Context.current();
+        UserActivityEntry entry = new UserActivityEntry(
+                user.getId(),
+                context.request().remoteAddress(),
+                context.request().getHeader("User-Agent"),
+                AuthenticatedAction.getRequestTime()
+        );
+
+        if (entry.equals(user.getUserActivityEntry()))
+            return;
+
+        entry.store();
+        user.setUserActivityEntry(entry);
+        user.store(); //TODO think about when to store user
     }
 
     public static boolean isAuthorized() {
@@ -158,8 +185,20 @@ public class User implements Serializable {
         return "user-" + Event.currentId();
     }
 
+    public static String getUserEventActivitySessionKey() {
+        return "ua-" + Event.currentId();
+    }
+
     public String getId() {
         return map.get("_id").toString();
+    }
+
+    public UserActivityEntry getUserActivityEntry() {
+        return userActivityEntry;
+    }
+
+    public void setUserActivityEntry(UserActivityEntry userActivityEntry) {
+        this.userActivityEntry = userActivityEntry;
     }
 
     @Override
@@ -177,6 +216,8 @@ public class User implements Serializable {
             ContestInfoForUser contestInfo = id2date.getValue();
             contestInfo.store(contestInfoSerializer.getSerializer(contestId));
         }
+
+        userActivityEntry.store(serializer.getSerializer(FIELD_LAST_USER_ACTIVITY), false);
     }
 
     public void store() {

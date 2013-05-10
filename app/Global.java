@@ -22,27 +22,29 @@ import java.util.concurrent.Callable;
  */
 public class Global extends GlobalSettings {
 
+    //TODO schedule backup http://stackoverflow.com/questions/9339714/where-is-the-job-support-in-play-2-0
+
     @Override
     public void onStart(Application app) {
         //TODO move problem sources mount to configuration
         //TODO allow uploading of files to mount
     }
 
-    /*@Override
+    @Override
     public Action onRequest(Http.Request request, Method method) {
-        Logger.info("Request: " + request + " -> " + request.remoteAddress() + " " + Arrays.toString(request.headers().get("USER-AGENT")));
+        Logger.info("Request: " + request + " -> " + request.remoteAddress() + " " + Arrays.toString(request.headers().get("User-Agent")));
         return super.onRequest(request, method);
-    }*/
+    }
 
     @Override
     public Result onHandlerNotFound(Http.RequestHeader requestHeader) {
-        Logger.info("Handler not found: " + requestHeader.getHeader("USER-AGENT"));
+        Logger.info("Handler not found: " + requestHeader.getHeader("User-Agent"));
         return super.onHandlerNotFound(requestHeader);
     }
 
     @Override
     public Result onBadRequest(Http.RequestHeader requestHeader, String error) {
-        Logger.info("Bad request: " + requestHeader.getHeader("USER-AGENT") + " -> " + error);
+        Logger.info("Bad request: " + requestHeader.getHeader("User-Agent") + " -> " + error);
         return super.onBadRequest(requestHeader, error);
     }
 }
