@@ -2,11 +2,8 @@ package models.problems;
 
 import models.problems.bbtc.BBTCProblemSource;
 import play.Logger;
-import play.Play;
 import play.cache.Cache;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
@@ -56,7 +53,7 @@ public class RootProblemSource extends InmemoryProblemSource {
             bbtc.update(problemsFile);
         */
 
-        bbtc.update("/problems/bbtc-all.csv");
+        bbtc.update("/problems/bbtc-all-2.csv");
 
         rps.mount("bbtc", bbtc);
     }
