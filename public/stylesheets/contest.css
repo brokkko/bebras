@@ -82,3 +82,13 @@
 #contest-results tr td:nth-child(odd) {
     padding-right: 1em;
 }
+
+/*Текст об отсылке данных на сервер*/
+
+#answer-sending-info-do {
+    color: blue;
+}
+
+#answer-sending-info-ok {
+    color: green;
+}

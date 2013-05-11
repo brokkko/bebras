@@ -128,9 +128,6 @@ public class Contests extends Controller {
         Contest contest = Contest.current();
         User user = User.current();
 
-        if (!user.contestIsGoing(contest))
-            return forbidden();
-
         JsonNode submissionJson = request().body().asJson();
         if (!(submissionJson instanceof ArrayNode))
             return badRequest();
