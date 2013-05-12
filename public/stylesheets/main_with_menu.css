@@ -137,3 +137,13 @@ nav a:hover {
 .hidden {
     display: none;
 }
+
+.notification {
+    color: red;
+    font-size: 1.2em;
+    margin: 0.5em;
+    line-height: 1;
+    background-color: white;
+    padding: 4px;
+    border: 1px solid black;
+}
