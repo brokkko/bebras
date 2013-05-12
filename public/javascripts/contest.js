@@ -128,10 +128,22 @@ var submit_answer; //function (problem_id, answer)
                 break;
             case "wait":
                 stop_contest(false);
+
+                load_list();
+                if (answers_list.length > 0)
+                    send_answers_now();
+
                 break;
             case "results":
                 $('#contest-time').hide(); //hide all extra time information
-                load_all_user_answers(); //without loading list with local storage answers
+
+                load_all_user_answers();
+
+                //test if there were unsent answers
+                load_list();
+                if (answers_list.length > 0)
+                    send_answers_now();
+
                 break;
         }
     });
@@ -225,7 +237,13 @@ var submit_answer; //function (problem_id, answer)
         clear_list();
         sending_timeout_id = null;
         send_fails_count = 0;
-        console.log('send success');
+        console.log('sending success');
+
+        answer_sending_info_show('ok');
+
+        //if we show results then refresh page to display new results from server
+        if (contest_info.status == 'results')
+            window.location = window.location; //TODO refresh
     }
 
     function answers_error() {
@@ -233,7 +251,9 @@ var submit_answer; //function (problem_id, answer)
         undo_timeout();
         var delay = send_delay(send_fails_count);
         sending_timeout_id = setTimeout(send_answers_now, delay);
-        console.log('send failed, delay for ' + delay);
+        console.log('sending failed, delay for ' + delay);
+
+        answer_sending_info_show('fail');
     }
 
     function send_answers_now() {
@@ -248,6 +268,13 @@ var submit_answer; //function (problem_id, answer)
             success: answers_success,
             error: answers_error
         });
+
+        answer_sending_info_show('do');
+    }
+
+    function answer_sending_info_show(id) {
+        $('.answer-sending-info').hide();
+        $('#answer-sending-info-' + id).show();
     }
 
     function give_answer(problem_id, answer) {
@@ -286,7 +313,6 @@ var submit_answer; //function (problem_id, answer)
         var millisecondsLeft = contest_info.duration - time;
         if (millisecondsLeft <= 0) {
             stop_contest(false);
-            console.log('here');
             return;
         }
 
@@ -304,5 +330,3 @@ var submit_answer; //function (problem_id, answer)
     }
 
 })();
-
-//TODO display info about sending problems if there are any
