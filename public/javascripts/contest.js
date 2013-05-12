@@ -313,7 +313,6 @@ var submit_answer; //function (problem_id, answer)
         var millisecondsLeft = contest_info.duration - time;
         if (millisecondsLeft <= 0) {
             stop_contest(false);
-            console.log('here');
             return;
         }
 

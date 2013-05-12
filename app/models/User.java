@@ -216,7 +216,8 @@ public class User implements Serializable {
             contestInfo.store(contestInfoSerializer.getSerializer(contestId));
         }
 
-        userActivityEntry.store(serializer.getSerializer(FIELD_LAST_USER_ACTIVITY), false);
+        if (userActivityEntry != null) //it is null if this is not an authorized page, e.g. a registration page
+            userActivityEntry.store(serializer.getSerializer(FIELD_LAST_USER_ACTIVITY), false);
     }
 
     public void store() {
