@@ -67,7 +67,7 @@ error.msg.email=Некорректный email
 error.msg.code_word=Неверное кодовое слово
 error.msg.phone=Введенные данные не похожи на номер телефона
 error.msg.email_duplicate=Такой email уже зарегистрирован. Попробуйте восстановить пароль.
-error.msg.failed_to_authenticate=Неверно указан логин или пароль
+error.msg.failed_to_authenticate=Неверно указан логин или пароль. Если вы уверены, что логин и пароль правильные, <a href="/bbtc/remind">восстановите пароль</a>.
 error.msg.required=Поле должно быть заполнено
 error.msg.date.no_day=Неверно указан день
 error.msg.date.no_month=Неверно указан месяц

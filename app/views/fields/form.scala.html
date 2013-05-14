@@ -5,7 +5,7 @@
 @import scala.collection.JavaConversions._
 <form class="basic-form" action="@action" method="POST">
     @if(rawForm.hasGlobalErrors) {
-        <span class="error-global">@rawForm.getGlobalErrors().toList.mkString(", ")</span>
+        <span class="error-global">@Html(rawForm.getGlobalErrors().toList.mkString(", "))</span>
     }
     <fieldset>
     @*
