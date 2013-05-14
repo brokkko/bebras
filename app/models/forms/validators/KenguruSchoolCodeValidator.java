@@ -46,7 +46,7 @@ public class KenguruSchoolCodeValidator extends Validator<String> {
     private Set<String> readSchoolCodes() throws IOException {
         CSVReader in = new CSVReader(
                 new InputStreamReader(
-                        KenguruSchoolCodeValidator.class.getResourceAsStream("/SCHOOLS.txt"), "windows-1251"
+                        KenguruSchoolCodeValidator.class.getResourceAsStream("/schools-2.txt"), "windows-1251"
                 ),
                 ';', '"', 1
         );
