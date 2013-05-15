@@ -38,6 +38,7 @@ public class User implements Serializable {
     public static final String FIELD_CONFIRMED = "cfrmd";
     public static final String FIELD_RESTORE_FOR_EMAIL = "_rstr_for_mail";
     public static final String FIELD_NEW_RECOVERY_PASSWORD = "_rec_pswd";
+    public static final String FIELD_USER_TYPE = "_type";
 
     public static final String FIELD_CONTEST_INFO = "_contests";
     public static final String FIELD_LAST_USER_ACTIVITY = "_lua";
@@ -48,6 +49,8 @@ public class User implements Serializable {
 
     private Map<String, ContestInfoForUser> contest2info = new HashMap<>();
     private UserActivityEntry userActivityEntry;
+
+    private UserType type = UserType.PARTICIPANT;
 
     public User() {
     }
@@ -61,6 +64,9 @@ public class User implements Serializable {
                 case FIELD_LAST_USER_ACTIVITY:
                     userActivityEntry = UserActivityEntry.deserialize(deserializer.getDeserializer(field));
                     break;
+                case FIELD_USER_TYPE:
+                    type = UserType.valueOf(deserializer.getString(field));
+                    break;
                 default:
                     Object fieldValue = deserializer.getObject(field);
                     if (fieldValue instanceof DBObject)
@@ -68,6 +74,10 @@ public class User implements Serializable {
                     map.put(field, fieldValue);
             }
         }
+
+        //TODO get red of iposov
+        if (getLogin().equals("iposov"))
+            type = UserType.EVENT_ADMIN;
     }
 
     private void loadContestsInfo(Deserializer deserializer) {
@@ -102,6 +112,14 @@ public class User implements Serializable {
 
     public String getEmail() {
         return getString(FIELD_EMAIL);
+    }
+
+    public UserType getType() {
+        return type;
+    }
+
+    public void setType(UserType type) {
+        this.type = type;
     }
 
     public boolean testPassword(String password) {
@@ -218,6 +236,8 @@ public class User implements Serializable {
 
         if (userActivityEntry != null) //it is null if this is not an authorized page, e.g. a registration page
             userActivityEntry.store(serializer.getSerializer(FIELD_LAST_USER_ACTIVITY), false);
+
+        serializer.write(FIELD_USER_TYPE, type.toString());
     }
 
     public void store() {

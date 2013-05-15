@@ -29,6 +29,12 @@ POST    /:event/:contest/submit     controllers.Contests.submit(event, contest)
 POST    /:event/:contest/stop       controllers.Contests.stop(event, contest)
 POST    /:event/:contest/restart    controllers.Contests.restart(event, contest)
 
+#admin
+GET     /:event/admin               controllers.EventAdministration.admin(event)
+GET     /:event/registeredUsers     controllers.EventAdministration.getUsers(event)
+GET     /:event/:user/add_admin     controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = false)
+GET     /:event/:user/remove_admin  controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = true)
+
 #debug
 #TODO: 1) create controller intention, 2) TODO highlight. 3) Create method intention shows up even if there is no controller 4) autoimport play.mvc.Result
 #TODO report. comment in the normal line is not highlighted as an error, but it does not work

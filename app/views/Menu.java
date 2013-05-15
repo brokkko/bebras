@@ -3,6 +3,7 @@ package views;
 import controllers.routes;
 import models.Event;
 import models.User;
+import models.UserType;
 import play.mvc.Http;
 
 import java.util.ArrayList;
@@ -24,6 +25,10 @@ public class Menu {
         if (User.isAuthorized()) {
             menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
             menu.add(new MenuItem("Личные данные", routes.UserInfo.info(eventId)));
+
+            if (User.current().getType() == UserType.EVENT_ADMIN)
+                menu.add(new MenuItem("Администрирование", routes.EventAdministration.admin(eventId)));
+
             menu.add(new MenuItem("Выход", routes.Registration.logout(eventId)));
         } else {
             menu.add(new MenuItem("Вход", routes.Registration.login(eventId)));

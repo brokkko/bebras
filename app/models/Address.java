@@ -72,4 +72,12 @@ public class Address implements Serializable {
                 deserializer.getString("house")
         );
     }
+
+    @Override
+    public String toString() {
+        return "index='" + index + '\'' +
+                ", city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", house='" + house + '\'';
+    }
 }
