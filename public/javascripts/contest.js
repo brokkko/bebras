@@ -112,6 +112,8 @@ var submit_answer; //function (problem_id, answer)
 
         contest_info = $.parseJSON($('.contest-info').text());
 
+        answer_sending_info_show('ok');
+
         switch (contest_info.status) {
             case "going":
                 load_list();
@@ -124,6 +126,10 @@ var submit_answer; //function (problem_id, answer)
 
                 if (contest_info.duration > 0)
                     timer();
+
+                //if user stopped manually, but server did not get this
+                if (hasLocalStorage() && localStorage.getItem(local_storage_key_stop()) == "stopped")
+                    stop_contest(true);
 
                 break;
             case "wait":
@@ -162,6 +168,10 @@ var submit_answer; //function (problem_id, answer)
 
     function stop_confirmation_click() {
         stop_contest(true);
+
+        //write down that contest stopped
+        if (hasLocalStorage())
+            localStorage.setItem(local_storage_key_stop(), "stopped");
     }
 
     function stop_contest(send_stop_request) {
@@ -304,6 +314,10 @@ var submit_answer; //function (problem_id, answer)
 
     function local_storage_key() {
         return "answers-" + contest_info.storage_id;
+    }
+
+    function local_storage_key_stop() {
+        return "stop-" + contest_info.storage_id;
     }
 
     //clock
