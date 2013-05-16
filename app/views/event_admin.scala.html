@@ -2,6 +2,7 @@
 @import models.Event
 @import scala.List
 @import views.ResourceLink
+@import models.forms.validators.KenguruSchoolCodeValidator
 @main_with_menu("Администрирование " + Event.current.getTitle)(List(new ResourceLink("admin.css")), List()) { } {
     <h1>Администрирование мероприятия @Event.current.getTitle</h1>
     <p>На этой странице можно изменять настройки мероприятия и анализировать его результаты.
@@ -19,7 +20,12 @@
         <li>День рождения: дата</li>
         <li>Телефон: строка</li>
         <li>email: строка</li>
-        <li>Полное наименование школы: слепой список <a href="#">загрузить список</a></li>
+        <li><b>Полное наименование школы: слепой список (Загружено школ: @KenguruSchoolCodeValidator.schoolCodesCount())</b>
+            <form enctype="multipart/form-data" method="POST" action="@routes.EventAdministration.uploadKenguruSchoolCodes(Event.currentId)">
+                <input type="file" name="kenguru-codes">
+                <input type="submit" value="Загрузить файл">
+            </form>
+        </li>
         <li>Согласие на обработку персональных данных: согласие</li>
         <li>Согласие с правилами соревнования: согласие</li>
     </ol>

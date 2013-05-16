@@ -1,10 +1,13 @@
 package models.forms.validators;
 
 import au.com.bytecode.opencsv.CSVReader;
+import models.Event;
 import models.serialization.Deserializer;
 import play.Logger;
 import play.cache.Cache;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -30,7 +33,8 @@ public class KenguruSchoolCodeValidator extends Validator<String> {
             return getMessage();
     }
 
-    public Set<String> getSchoolCodes() {
+    //TODO make this and other corresponding methods not static
+    public static Set<String> getSchoolCodes() {
         try {
             return Cache.getOrElse("kenguru-school-code", new Callable<Set<String>>() {
                 @Override
@@ -43,10 +47,18 @@ public class KenguruSchoolCodeValidator extends Validator<String> {
         }
     }
 
-    private Set<String> readSchoolCodes() throws IOException {
+    public static int schoolCodesCount() {
+        return getSchoolCodes().size();
+    }
+
+    public static void reloadSchoolCodes() {
+        Cache.remove("kenguru-school-code");
+    }
+
+    private static Set<String> readSchoolCodes() throws IOException {
         CSVReader in = new CSVReader(
                 new InputStreamReader(
-                        KenguruSchoolCodeValidator.class.getResourceAsStream("/schools-2.txt"), "windows-1251"
+                        new FileInputStream(getKenguruSchoolsFile()), "windows-1251"
                 ),
                 ';', '"', 1
         );
@@ -55,12 +67,16 @@ public class KenguruSchoolCodeValidator extends Validator<String> {
 
         String[] line;
         while ((line = in.readNext()) != null) {
-            if (line.length < 4)
+            if (line.length < 1)
                 Logger.debug("Short line in SCHOOLS.csv: " + Arrays.toString(line));
             else
-                result.add(line[3]);
+                result.add(line[0]);
         }
 
         return result;
+    }
+
+    public static File getKenguruSchoolsFile() {
+        return new File(Event.current().getEventDataFolder(), "school-codes.csv");
     }
 }

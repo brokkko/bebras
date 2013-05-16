@@ -11,15 +11,19 @@ import models.data.CsvDataWriter;
 import models.data.Feature;
 import models.forms.InputField;
 import models.forms.inputtemplate.AddressInputTemplate;
+import models.forms.validators.KenguruSchoolCodeValidator;
 import models.serialization.MongoDeserializer;
 import play.Logger;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
+import views.html.error;
 import views.html.event_admin;
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
@@ -65,6 +69,26 @@ public class EventAdministration extends Controller {
                         }
                 )
         );
+    }
+
+    public static Result uploadKenguruSchoolCodes(String eventId) {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart kenguruCodes = body.getFile("kenguru-codes");
+        if (kenguruCodes == null)
+            return badRequest(error.render("Не выбран файл для загрузки", new String[]{}));
+
+//            String fileName = kenguruCodes.getFilename();
+//            String contentType = kenguruCodes.getContentType();
+        try {
+            File file = kenguruCodes.getFile();
+            Path destPath = Paths.get(KenguruSchoolCodeValidator.getKenguruSchoolsFile().toURI());
+            Files.move(Paths.get(file.toURI()), destPath, StandardCopyOption.REPLACE_EXISTING);
+            KenguruSchoolCodeValidator.reloadSchoolCodes();
+            return redirect(routes.EventAdministration.admin(Event.currentId()));
+        } catch (IOException e) {
+            Logger.error("Failed to make a file operation", e);
+            return badRequest(error.render("Ошибка при загрузке файла, " + e.getMessage(), new String[]{}));
+        }
     }
 
     //TODO report private methods are visible from routes file

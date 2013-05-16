@@ -1,9 +1,9 @@
 package controllers;
 
+import play.Play;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -15,6 +15,6 @@ import java.io.IOException;
 public class Debug extends Controller {
 
     public static Result debug(String action) throws IOException {
-        return ok(new File(".").getCanonicalPath());
+        return ok(Play.application().getFile("asdf").getCanonicalPath());
     }
 }

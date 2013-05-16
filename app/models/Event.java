@@ -10,9 +10,11 @@ import models.serialization.ListDeserializer;
 import models.serialization.MemoryDeserializer;
 import models.serialization.MongoDeserializer;
 import play.Logger;
+import play.Play;
 import play.cache.Cache;
 import play.mvc.Http;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -154,6 +156,10 @@ public class Event {
 
     public InputForm getEditUserForm() {
         return editUserForm;
+    }
+
+    public File getEventDataFolder() {
+        return new File(Play.application().getFile("data"), getId());
     }
 
 }
