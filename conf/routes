@@ -31,7 +31,8 @@ POST    /:event/:contest/restart    controllers.Contests.restart(event, contest)
 
 #admin
 GET     /:event/admin               controllers.EventAdministration.admin(event)
-GET     /:event/registeredUsers     controllers.EventAdministration.getUsers(event)
+GET     /:event/registeredUsers     controllers.EventAdministration.getUsers(event, appendResults:Boolean = false)
+GET     /:event/usersWithResults    controllers.EventAdministration.getUsers(event, appendResults:Boolean = true)
 GET     /:event/:user/add_admin     controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = false)
 GET     /:event/:user/remove_admin  controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = true)
 

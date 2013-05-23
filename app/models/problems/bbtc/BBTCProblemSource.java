@@ -3,6 +3,7 @@ package models.problems.bbtc;
 import au.com.bytecode.opencsv.CSVReader;
 import models.problems.InmemoryProblemSource;
 import models.problems.ProblemSource;
+import play.Logger;
 
 import java.io.*;
 
@@ -36,20 +37,20 @@ public class BBTCProblemSource extends InmemoryProblemSource {
         CSVReader problemsReader = new CSVReader(resourceReader, ',', '"', 1);
         String [] nextLine;
         while ((nextLine = problemsReader.readNext()) != null) {
-            String type = nextLine[5];
-            String question = nextLine[6];
+            String type = nextLine[5].trim();
+            String question = nextLine[6].trim();
             int answersCount = Integer.parseInt(type);
             String[] answers = new String[answersCount];
             System.arraycopy(nextLine, 7, answers, 0, answersCount);
-            String correctAnswer = nextLine[12];
+            String correctAnswer = nextLine[12].trim();
 
 //            String number = nextLine[0];
 //            String solution = nextLine[12];
 
-            ProblemSource source = getSubsourceOrCreate(nextLine[1]).getSubsourceOrCreate(nextLine[2]);
+            ProblemSource source = getSubsourceOrCreate(nextLine[1].trim()).getSubsourceOrCreate(nextLine[2].trim());
             BBTCProblem problem = new BBTCProblem(question, answers, correctAnswer);
 
-            source.put(nextLine[4], problem);
+            source.put(nextLine[4].trim(), problem);
         }
     }
 }

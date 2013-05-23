@@ -114,12 +114,6 @@ public class Contests extends Controller {
             textStatus = "results";
         contestInfoSerializer.write("status", textStatus);
 
-//        Logger.info("[5] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
-
-//        Status ok = ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
-
-//        Logger.info("[6] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
-
         return ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
     }
 

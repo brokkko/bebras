@@ -128,8 +128,10 @@ var submit_answer; //function (problem_id, answer)
                     timer();
 
                 //if user stopped manually, but server did not get this
-                if (hasLocalStorage() && localStorage.getItem(local_storage_key_stop()) == "stopped")
+                if (hasLocalStorage() && localStorage.getItem(local_storage_key_stop()) == "stopped") {
+                    localStorage.removeItem(local_storage_key_stop());
                     stop_contest(true);
+                }
 
                 break;
             case "wait":
@@ -168,10 +170,6 @@ var submit_answer; //function (problem_id, answer)
 
     function stop_confirmation_click() {
         stop_contest(true);
-
-        //write down that contest stopped
-        if (hasLocalStorage())
-            localStorage.setItem(local_storage_key_stop(), "stopped");
     }
 
     function stop_contest(send_stop_request) {
@@ -182,7 +180,8 @@ var submit_answer; //function (problem_id, answer)
                 dataType: 'json',
                 data: '{}',
                 processData: false,
-                contentType: 'application/json; charset=UTF-8'
+                contentType: 'application/json; charset=UTF-8',
+                error: stop_contest_error
             });
 
         //don't show contest stop again
@@ -197,6 +196,12 @@ var submit_answer; //function (problem_id, answer)
 
         //show last screen
         animate_substitute($('#all-problems-in-pages'), $('#contest-finished-info'));
+    }
+
+    function stop_contest_error() {
+        //write down that contest stopped
+        if (hasLocalStorage())
+            localStorage.setItem(local_storage_key_stop(), "stopped");
     }
 
     //sending answers

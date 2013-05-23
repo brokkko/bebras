@@ -93,10 +93,10 @@ public class Submission implements Serializable {
     }
 
     private void populateAbsentData() {
-        User user = User.current();
+        //here we call current user only if it is really needed
 
         if (userId == null)
-            userId = user.getId();
+            userId = User.current().getId();
         if (serverTime == null)
             serverTime = AuthenticatedAction.getRequestTime();
 
@@ -106,7 +106,7 @@ public class Submission implements Serializable {
         if (!problemId.startsWith("/")) {
             int pid = Integer.parseInt(problemId);
             Contest contest = Contest.current();
-            ConfiguredProblem problem = contest.getConfiguredUserProblems(user).get(pid);
+            ConfiguredProblem problem = contest.getConfiguredUserProblems(User.current()).get(pid);
 
             problemId = problem.getLink();
         }

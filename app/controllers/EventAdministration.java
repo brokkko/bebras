@@ -9,6 +9,8 @@ import controllers.actions.LoadEvent;
 import models.*;
 import models.data.CsvDataWriter;
 import models.data.Feature;
+import models.data.features.ContestResultFeatures;
+import models.data.features.FunctionFeature;
 import models.forms.InputField;
 import models.forms.inputtemplate.AddressInputTemplate;
 import models.forms.validators.KenguruSchoolCodeValidator;
@@ -24,7 +26,10 @@ import views.html.event_admin;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -39,20 +44,23 @@ import java.util.zip.ZipOutputStream;
 @Authenticated
 public class EventAdministration extends Controller {
 
-    public static Result getUsers(final String eventId) {
+    public static Result getUsers(final String eventId, final boolean appendResults) {
         if (User.current().getType() != UserType.EVENT_ADMIN)
             return forbidden();
 
         final Event currentEvent = Event.current();
 
+        final String fileName = eventId + "-users" + (appendResults ? "-ans" : "");
+
         F.Promise<byte[]> promiseOfInt = Akka.future(
                 new Callable<byte[]>() {
                     public byte[] call() throws IOException {
+
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         ZipOutputStream zos = new ZipOutputStream(baos);
-                        zos.putNextEntry(new ZipEntry(eventId + "-users.csv"));
+                        zos.putNextEntry(new ZipEntry(fileName + ".csv"));
 
-                        writeUsersInfo(currentEvent, zos);
+                        writeUsersInfo(currentEvent, zos, appendResults);
 
                         zos.close();
                         return baos.toByteArray();
@@ -63,7 +71,7 @@ public class EventAdministration extends Controller {
                 promiseOfInt.map(
                         new F.Function<byte[], Result>() {
                             public Result apply(byte[] file) {
-                                response().setHeader("Content-Disposition", "attachment; filename=" + currentEvent.getId() + "-users.zip");
+                                response().setHeader("Content-Disposition", "attachment; filename=" + fileName + ".zip");
                                 return ok(file).as("application/zip");
                             }
                         }
@@ -92,7 +100,7 @@ public class EventAdministration extends Controller {
     }
 
     //TODO report private methods are visible from routes file
-    private static void writeUsersInfo(Event event, OutputStream zos) throws IOException {
+    private static void writeUsersInfo(Event event, OutputStream zos, boolean appendResults) throws IOException {
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
         DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
@@ -177,7 +185,11 @@ public class EventAdministration extends Controller {
                         }
                     });
 
-            for (final Contest contest : event.getContests())
+            Collection<Contest> contests = event.getContests();
+            //noinspection unchecked
+            List<Feature<User>> contestScoresFeatures = new ArrayList<>();
+
+            for (final Contest contest : contests) {
                 userWriter.addFeature(new Feature<User>() {
                     @Override
                     public String name() {
@@ -188,6 +200,36 @@ public class EventAdministration extends Controller {
                     public String eval(User user) {
                         Date start = user.contestStartTime(contest.getId());
                         return start == null ? "" : start.toString();
+                    }
+                });
+
+                if (appendResults) {
+                    ContestResultFeatures contestResultFeatures = new ContestResultFeatures(contest);
+                    userWriter.addFeature(contestResultFeatures.getNumRightFeature());
+                    userWriter.addFeature(contestResultFeatures.getNumWrongFeature());
+                    userWriter.addFeature(contestResultFeatures.getNumSkippedFeature());
+
+                    Feature<User> scoresFeature = contestResultFeatures.getScoresFeature();
+                    if (!contest.isAllowRestart())
+                        contestScoresFeatures.add(scoresFeature);
+
+                    userWriter.addFeature(scoresFeature);
+                }
+            }
+
+            if (appendResults)
+                userWriter.addFeature(new FunctionFeature<User>(contestScoresFeatures) {
+                    @Override
+                    protected String evalFunction(String[] params) {
+                        int sum = 0;
+                        for (String param : params)
+                            sum += Integer.parseInt(param);
+                        return "" + sum;
+                    }
+
+                    @Override
+                    public String name() {
+                        return "sum_scores";
                     }
                 });
 
@@ -223,5 +265,4 @@ public class EventAdministration extends Controller {
 
         return ok("admin added");
     }
-
 }
