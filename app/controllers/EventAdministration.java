@@ -79,6 +79,228 @@ public class EventAdministration extends Controller {
         );
     }
 
+    public static Result getUsersAnswers(final String eventId) {
+        if (User.current().getType() != UserType.EVENT_ADMIN)
+            return forbidden();
+
+        final Event currentEvent = Event.current();
+
+        final String fileName = eventId + "-answers-to-problems";
+
+        F.Promise<byte[]> promiseOfInt = Akka.future(
+                new Callable<byte[]>() {
+                    public byte[] call() throws IOException {
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        ZipOutputStream zos = new ZipOutputStream(baos);
+                        zos.putNextEntry(new ZipEntry(fileName + ".csv"));
+
+                        writeUsersAnswers(currentEvent, zos);
+
+                        zos.close();
+                        return baos.toByteArray();
+                    }
+                }
+        );
+        return async(
+                promiseOfInt.map(
+                        new F.Function<byte[], Result>() {
+                            public Result apply(byte[] file) {
+                                response().setHeader("Content-Disposition", "attachment; filename=" + fileName + ".zip");
+                                return ok(file).as("application/zip");
+                            }
+                        }
+                )
+        );
+    }
+
+    //TODO generalize this three get methods
+    public static Result getUsersActivity(final String eventId) {
+        if (User.current().getType() != UserType.EVENT_ADMIN)
+            return forbidden();
+
+        final Event currentEvent = Event.current();
+
+        final String fileName = eventId + "-activity";
+
+        F.Promise<byte[]> promiseOfInt = Akka.future(
+                new Callable<byte[]>() {
+                    public byte[] call() throws IOException {
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        ZipOutputStream zos = new ZipOutputStream(baos);
+                        zos.putNextEntry(new ZipEntry(fileName + ".csv"));
+
+                        writeUsersActivity(currentEvent, zos);
+
+                        zos.close();
+                        return baos.toByteArray();
+                    }
+                }
+        );
+        return async(
+                promiseOfInt.map(
+                        new F.Function<byte[], Result>() {
+                            public Result apply(byte[] file) {
+                                response().setHeader("Content-Disposition", "attachment; filename=" + fileName + ".zip");
+                                return ok(file).as("application/zip");
+                            }
+                        }
+                )
+        );
+    }
+
+    private static void writeUsersActivity(Event currentEvent, ZipOutputStream zos) {
+        DBCollection activityCollection = MongoConnection.getActivityCollection();
+        DBObject sort = new BasicDBObject("u", 1);
+        sort.put("d", 1);
+
+        try (
+                CsvDataWriter<UserActivityEntry> activityWriter = new CsvDataWriter<>(zos);
+                DBCursor activityCursor = activityCollection.find().sort(sort)
+        ) {
+            activityWriter.addFeature(new Feature<UserActivityEntry>() {
+                @Override
+                public String name() {
+                    return "user";
+                }
+
+                @Override
+                public String eval(UserActivityEntry entry) {
+                    return entry.getUser();
+                }
+            });
+            activityWriter.addFeature(new Feature<UserActivityEntry>() {
+                @Override
+                public String name() {
+                    return "ip";
+                }
+
+                @Override
+                public String eval(UserActivityEntry entry) {
+                    return entry.getIp();
+                }
+            });
+            activityWriter.addFeature(new Feature<UserActivityEntry>() {
+                @Override
+                public String name() {
+                    return "user agent";
+                }
+
+                @Override
+                public String eval(UserActivityEntry entry) {
+                    return entry.getUa();
+                }
+            });
+            activityWriter.addFeature(new Feature<UserActivityEntry>() {
+                @Override
+                public String name() {
+                    return "time";
+                }
+
+                @Override
+                public String eval(UserActivityEntry entry) {
+                    return entry.getDate().toString();
+                }
+            });
+
+            while (activityCursor.hasNext())
+                activityWriter.writeObject(UserActivityEntry.deserialize(new MongoDeserializer(activityCursor.next())));
+
+
+        } catch (Exception e) {
+            Logger.error("failed to write user activity");
+        }
+    }
+
+    private static void writeUsersAnswers(Event currentEvent, ZipOutputStream zos) {
+        try (
+                CsvDataWriter<Submission> answersWriter = new CsvDataWriter<>(zos)
+        ) {
+            answersWriter.addFeature(new Feature<Submission>() {
+                @Override
+                public String name() {
+                    return "user";
+                }
+
+                @Override
+                public String eval(Submission submission) {
+                    return submission.getUserId();
+                }
+            });
+
+            answersWriter.addFeature(new Feature<Submission>() {
+                @Override
+                public String name() {
+                    return "contest_id";
+                }
+
+                @Override
+                public String eval(Submission submission) {
+                    return submission.getContest().getId();
+                }
+            });
+
+            answersWriter.addFeature(new Feature<Submission>() {
+                @Override
+                public String name() {
+                    return "problem_id";
+                }
+
+                @Override
+                public String eval(Submission submission) {
+                    return submission.getProblemId();
+                }
+            });
+
+            answersWriter.addFeature(new Feature<Submission>() {
+                @Override
+                public String name() {
+                    return "answer";
+                }
+
+                @Override
+                public String eval(Submission submission) {
+                    //TODO generalize, other answers are different
+                    Integer ansInt = (Integer) submission.getAnswer().get("a");
+                    int c = ansInt < 0 ? '-' : ansInt + 'A';
+                    return Character.toString((char) c);
+                }
+            });
+
+            for (Contest contest : currentEvent.getContests()) {
+                DBCollection contestAnswersCollection = contest.getCollection();
+
+                DBObject sort = new BasicDBObject("u", 1);
+                sort.put("pid", 1);
+                sort.put("lt", -1);
+
+                try (
+                        DBCursor answersCursor = contestAnswersCollection.find().sort(sort)
+                ) {
+                    Submission previousSubmission = null;
+
+                    //write all users
+                    while (answersCursor.hasNext()) {
+                        Submission submission = new Submission(contest, new MongoDeserializer(answersCursor.next()));
+
+                        if (previousSubmission != null &&
+                                previousSubmission.getUserId().equals(submission.getUserId()) &&
+                                previousSubmission.getProblemId().equals(submission.getProblemId())
+                                ) continue;
+
+                        previousSubmission = submission;
+
+                        answersWriter.writeObject(submission);
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            Logger.error("Failed to write users answers", e);
+        }
+    }
+
     public static Result uploadKenguruSchoolCodes(String eventId) {
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart kenguruCodes = body.getFile("kenguru-codes");

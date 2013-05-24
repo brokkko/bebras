@@ -3,7 +3,6 @@ package models.problems.bbtc;
 import au.com.bytecode.opencsv.CSVReader;
 import models.problems.InmemoryProblemSource;
 import models.problems.ProblemSource;
-import play.Logger;
 
 import java.io.*;
 

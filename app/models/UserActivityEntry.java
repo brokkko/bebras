@@ -29,6 +29,18 @@ public class UserActivityEntry {
         return date;
     }
 
+    public String getUa() {
+        return ua;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
     public UserActivityEntry(String user, String ip, String ua, Date date) {
         this.user = user;
         this.ip = ip;

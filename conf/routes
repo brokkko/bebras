@@ -33,6 +33,8 @@ POST    /:event/:contest/restart    controllers.Contests.restart(event, contest)
 GET     /:event/admin               controllers.EventAdministration.admin(event)
 GET     /:event/registeredUsers     controllers.EventAdministration.getUsers(event, appendResults:Boolean = false)
 GET     /:event/usersWithResults    controllers.EventAdministration.getUsers(event, appendResults:Boolean = true)
+GET     /:event/usersAnswers        controllers.EventAdministration.getUsersAnswers(event)
+GET     /:event/usersActivity       controllers.EventAdministration.getUsersActivity(event)
 GET     /:event/:user/add_admin     controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = false)
 GET     /:event/:user/remove_admin  controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = true)
 
