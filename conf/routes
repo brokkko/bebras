@@ -31,10 +31,12 @@ POST    /:event/:contest/restart    controllers.Contests.restart(event, contest)
 
 #admin
 GET     /:event/admin               controllers.EventAdministration.admin(event)
-GET     /:event/registeredUsers     controllers.EventAdministration.getUsers(event, appendResults:Boolean = false)
-GET     /:event/usersWithResults    controllers.EventAdministration.getUsers(event, appendResults:Boolean = true)
+GET     /:event/registeredUsers     controllers.EventAdministration.getUsers(event, appendResults:Integer = 0)
+GET     /:event/usersWithResults    controllers.EventAdministration.getUsers(event, appendResults:Integer = 1)
+GET     /:event/usersWithResults2   controllers.EventAdministration.getUsers(event, appendResults:Integer = 2)
 GET     /:event/usersAnswers        controllers.EventAdministration.getUsersAnswers(event)
 GET     /:event/usersActivity       controllers.EventAdministration.getUsersActivity(event)
+GET     /:event/:user/exportUser    controllers.EventAdministration.exportTopUsers(event, user)
 GET     /:event/:user/add_admin     controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = false)
 GET     /:event/:user/remove_admin  controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = true)
 

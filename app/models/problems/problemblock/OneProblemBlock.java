@@ -7,6 +7,7 @@ import models.problems.LinkProblem;
 import models.problems.Problem;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,5 +41,15 @@ public class OneProblemBlock extends ProblemBlock {
     protected void configure(Matcher matcher) {
         link = matcher.group(1);
         problem = new LinkProblem(link);
+    }
+
+    @Override
+    public Collection<? extends String> getAllPossibleProblems() {
+        return Arrays.asList(link);
+    }
+
+    @Override
+    public int getProblemsCount() {
+        return 1;
     }
 }

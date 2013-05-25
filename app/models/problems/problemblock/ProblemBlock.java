@@ -4,6 +4,7 @@ import models.Contest;
 import models.User;
 import models.problems.ConfiguredProblem;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,4 +40,8 @@ public abstract class ProblemBlock { //TODO implement Serializable
     protected abstract Pattern getConfigurationPattern();
 
     protected abstract void configure(Matcher matcher);
+
+    public abstract Collection<? extends String> getAllPossibleProblems();
+
+    public abstract int getProblemsCount();
 }

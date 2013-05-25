@@ -33,8 +33,11 @@
     <p><a href='#'>Настройка</a> администраторов мероприятия</p>
     <p></p>
 
-    <p><b>Список зарегистрированных участников: </b><a href="@routes.EventAdministration.getUsers(Event.currentId, false)">загрузить</a></p>
-    <p><b>Список зарегистрированных участников с результатами: </b><a href="@routes.EventAdministration.getUsers(Event.currentId, true)">загрузить</a></p>
+    <p><b>Список зарегистрированных участников: </b><a href="@routes.EventAdministration.getUsers(Event.currentId, 0)">загрузить</a></p>
+    <p><b>Список зарегистрированных участников с результатами: </b>
+        <a href="@routes.EventAdministration.getUsers(Event.currentId, 1)">без учета порядка</a>
+        <a href="@routes.EventAdministration.getUsers(Event.currentId, 2)">с учетом порядка</a>
+    </p>
     <p><b>Список ответов участников: </b><a href="@routes.EventAdministration.getUsersAnswers(Event.currentId)">загрузить</a></p>
     <p><b>Данные по посещению пользователей: </b><a href="@routes.EventAdministration.getUsersActivity(Event.currentId)">загрузить</a></p>
 

@@ -26,10 +26,7 @@ import views.html.event_admin;
 
 import java.io.*;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -44,13 +41,18 @@ import java.util.zip.ZipOutputStream;
 @Authenticated
 public class EventAdministration extends Controller {
 
-    public static Result getUsers(final String eventId, final boolean appendResults) {
+    public static Result getUsers(final String eventId, final Integer appendResults) {
         if (User.current().getType() != UserType.EVENT_ADMIN)
             return forbidden();
 
         final Event currentEvent = Event.current();
 
-        final String fileName = eventId + "-users" + (appendResults ? "-ans" : "");
+        String fileNameTemp = eventId + "-users";
+        if (appendResults == 1)
+            fileNameTemp += "-ans";
+        if (appendResults == 2)
+            fileNameTemp += "-ans-2";
+        final String fileName = fileNameTemp;
 
         F.Promise<byte[]> promiseOfInt = Akka.future(
                 new Callable<byte[]>() {
@@ -261,10 +263,7 @@ public class EventAdministration extends Controller {
 
                 @Override
                 public String eval(Submission submission) {
-                    //TODO generalize, other answers are different
-                    Integer ansInt = (Integer) submission.getAnswer().get("a");
-                    int c = ansInt < 0 ? '-' : ansInt + 'A';
-                    return Character.toString((char) c);
+                    return submissionToAnswer(submission);
                 }
             });
 
@@ -322,7 +321,7 @@ public class EventAdministration extends Controller {
     }
 
     //TODO report private methods are visible from routes file
-    private static void writeUsersInfo(Event event, OutputStream zos, boolean appendResults) throws IOException {
+    private static void writeUsersInfo(Event event, OutputStream zos, int appendResults) throws IOException {
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
         DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
@@ -425,8 +424,10 @@ public class EventAdministration extends Controller {
                     }
                 });
 
-                if (appendResults) {
+                if (appendResults > 0) {
                     ContestResultFeatures contestResultFeatures = new ContestResultFeatures(contest);
+                    userWriter.addFeature(contestResultFeatures.getLastSubmissionTimeFeature());
+
                     userWriter.addFeature(contestResultFeatures.getNumRightFeature());
                     userWriter.addFeature(contestResultFeatures.getNumWrongFeature());
                     userWriter.addFeature(contestResultFeatures.getNumSkippedFeature());
@@ -436,10 +437,15 @@ public class EventAdministration extends Controller {
                         contestScoresFeatures.add(scoresFeature);
 
                     userWriter.addFeature(scoresFeature);
+
+                    if (appendResults == 1)
+                        contestResultFeatures.appendProblemsFeatures(userWriter);
+                    else
+                        contestResultFeatures.appendOrderedProblemsFeatures(userWriter);
                 }
             }
 
-            if (appendResults)
+            if (appendResults > 0)
                 userWriter.addFeature(new FunctionFeature<User>(contestScoresFeatures) {
                     @Override
                     protected String evalFunction(String[] params) {
@@ -486,5 +492,188 @@ public class EventAdministration extends Controller {
         user.store();
 
         return ok("admin added");
+    }
+
+    public static Result exportTopUsers(String eventId, final String user) {
+        if (User.current().getType() != UserType.EVENT_ADMIN)
+            return forbidden();
+
+        final Event currentEvent = Event.current();
+
+        final String fileName = eventId + "-user-" + user;
+
+        F.Promise<byte[]> promiseOfInt = Akka.future(
+                new Callable<byte[]>() {
+                    public byte[] call() throws IOException {
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        ZipOutputStream zos = new ZipOutputStream(baos);
+                        zos.putNextEntry(new ZipEntry(fileName + ".csv"));
+
+                        writeTopUsers(currentEvent, user, zos);
+
+                        zos.close();
+                        return baos.toByteArray();
+                    }
+                }
+        );
+        return async(
+                promiseOfInt.map(
+                        new F.Function<byte[], Result>() {
+                            public Result apply(byte[] file) {
+                                response().setHeader("Content-Disposition", "attachment; filename=" + fileName + ".zip");
+                                return ok(file).as("application/zip");
+                            }
+                        }
+                )
+        );
+    }
+
+    private static void writeTopUsers(Event event, String user, OutputStream zos) {
+        try (
+                CsvDataWriter<Submission> answersWriter = new CsvDataWriter<>(zos)
+        ) {
+            answersWriter.addFeature(new Feature<Submission>() {
+                @Override
+                public String name() {
+                    return "user";
+                }
+
+                @Override
+                public String eval(Submission submission) {
+                    return submission.getUserId();
+                }
+            });
+
+            answersWriter.addFeature(new Feature<Submission>() {
+                @Override
+                public String name() {
+                    return "contest_id";
+                }
+
+                @Override
+                public String eval(Submission submission) {
+                    return submission.getContest().getId();
+                }
+            });
+
+            answersWriter.addFeature(new Feature<Submission>() {
+                @Override
+                public String name() {
+                    return "problem_id";
+                }
+
+                @Override
+                public String eval(Submission submission) {
+                    return submission.getProblemId();
+                }
+            });
+
+            answersWriter.addFeature(new Feature<Submission>() {
+                @Override
+                public String name() {
+                    return "answer";
+                }
+
+                @Override
+                public String eval(Submission submission) {
+                    //TODO generalize, other answers are different
+                    return submissionToAnswer(submission);
+                }
+            });
+
+            answersWriter.addFeature(new Feature<Submission>() {
+                @Override
+                public String name() {
+                    return "local_time";
+                }
+
+                @Override
+                public String eval(Submission submission) {
+                    return submission.getLocalTime() + "";
+                }
+            });
+
+            answersWriter.addFeature(new Feature<Submission>() {
+                @Override
+                public String name() {
+                    return "server_time";
+                }
+
+                @Override
+                public String eval(Submission submission) {
+                    return submission.getServerTime() + "";
+                }
+            });
+
+            for (Contest contest : event.getContests()) {
+                DBCollection contestAnswersCollection = contest.getCollection();
+
+                DBObject query = new BasicDBObject();
+                if (user.equals("top")) {
+                    List<String> topList = Arrays.asList(
+                            "51858a0a0cf286004fd80dc6",
+                            "5173e9060cf286004fd80cfb",
+                            "5169fe9f0cf286004fd80c7c",
+                            "518293200cf286004fd80db0",
+                            "51879a040cf286004fd80dd2",
+                            "515c77e90cf286004fd80b8b",
+                            "516025120cf286004fd80be2",
+                            "5163ce130cf286004fd80c19",
+                            "519651cce4b0eea7c99c0317",
+                            "5166e6e30cf286004fd80c4e",
+                            "517e44d20cf286004fd80d7d",
+                            "519a5230e4b0eea7c99cb235",
+                            "5168500f0cf286004fd80c64",
+                            "5190c177e4b0219bc1fb822c",
+                            "5191fcc4e4b01f79dccd70f2",
+                            "516c1a490cf286004fd80c84",
+                            "519268b6e4b0f0ff542ee775",
+                            "5190c24de4b0219bc1fb8280",
+                            "51932b54e4b0f0ff542ef89b",
+                            "518aa5110cf2ed7773418cb6",
+                            "519a024de4b0eea7c99c90f0",
+                            "519a7345e4b0eea7c99cc8d4",
+                            "515c5f050cf286004fd80b82",
+                            "5197bebae4b0eea7c99c3d48",
+                            "51912210e4b0219bc1fbb2d1",
+                            "51656c090cf286004fd80c33",
+                            "5161c5790cf286004fd80bf4",
+                            "5197b6fbe4b0eea7c99c392a",
+                            "519a62cbe4b0eea7c99cbf3b",
+                            "51988abce4b0eea7c99c4e77"
+                    );
+                    DBObject userInfo = new BasicDBObject("$in", topList);
+                    query.put("u", userInfo);
+                } else
+                    query.put("u", user);
+
+                DBObject sort = new BasicDBObject("u", 1);
+                sort.put("lt", 1);
+
+                try (
+                        DBCursor answersCursor = contestAnswersCollection.find(query).sort(sort)
+                ) {
+                    //write all users
+                    while (answersCursor.hasNext()) {
+                        Submission submission = new Submission(contest, new MongoDeserializer(answersCursor.next()));
+                        answersWriter.writeObject(submission);
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            Logger.error("Failed to write users answers", e);
+        }
+    }
+
+    //TODO generalize, other answers are different
+    public static String submissionToAnswer(Submission submission) {
+        if (submission == null)
+            return "-";
+
+        Integer ansInt = (Integer) submission.getAnswer().get("a");
+        int c = ansInt < 0 ? '-' : ansInt + 'A';
+        return Character.toString((char) c);
     }
 }

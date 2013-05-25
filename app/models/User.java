@@ -366,4 +366,24 @@ public class User implements Serializable {
 
         return pid2ans;
     }
+
+    /**
+     * @param contest a contest to get results from
+     * @return a list with user answers
+     */
+    public List<Submission> getSubmissionsForContest(Contest contest) { //TODO optimize, code duplication with get submission for contest
+        List<Submission> pid2ans = new ArrayList<>();
+
+        String uid = getId();
+        List<ConfiguredProblem> configuredUserProblems = contest.getConfiguredUserProblems(this);
+
+        for (ConfiguredProblem configuredUserProblem : configuredUserProblems) {
+            String link = configuredUserProblem.getLink();
+            Submission submission = Submission.getSubmissionForUser(contest, uid, link, Submission.AnswerOrdering.LAST, Submission.TimeType.LOCAL);
+
+            pid2ans.add(submission);
+        }
+
+        return pid2ans;
+    }
 }

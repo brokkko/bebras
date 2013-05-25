@@ -55,4 +55,20 @@ public class RandomProblemsBlock extends ProblemBlock {
         link = matcher.group(2);
         problemSource = new LinkProblemSource(link);
     }
+
+    @Override
+    public Collection<? extends String> getAllPossibleProblems() {
+        List<String> list = problemSource.list();
+        List<String> result = new ArrayList<>(list.size());
+
+        for (String s : list)
+            result.add(link + '/' + s); //TODO code duplication
+
+        return result;
+    }
+
+    @Override
+    public int getProblemsCount() {
+        return count;
+    }
 }

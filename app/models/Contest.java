@@ -177,6 +177,21 @@ public class Contest {
         return contest;
     }
 
+    public List<String> getAllPossibleProblems() {
+        List<String> result = new ArrayList<>();
+        for (ProblemBlock problemBlock : problemBlocks)
+            result.addAll(problemBlock.getAllPossibleProblems());
+
+        return result;
+    }
+
+    public int getProblemsCount() {
+        int problemsCount = 0;
+        for (ProblemBlock problemBlock : problemBlocks)
+            problemsCount += problemBlock.getProblemsCount();
+        return problemsCount;
+    }
+
     public List<Problem> getUserProblems(User user) {
         List<Problem> problems = new ArrayList<>();
 
@@ -229,7 +244,11 @@ public class Contest {
     }
 
     public ContestResult evaluateUserResults(User user) {
-        List<Answer> answers = user.getAnswersForContest(this);
+        List<Submission> submissions = user.getSubmissionsForContest(this);
+        return evaluateUserResults(user, submissions);
+    }
+
+    public ContestResult evaluateUserResults(User user, List<Submission> submissions) {
         List<Problem> problems = getUserProblems(user);
 
         int r = 0;
@@ -241,7 +260,8 @@ public class Contest {
         int discount = (Integer) grader.get("wrong");
 
         for (int i = 0; i < problems.size(); i++) {
-            Answer answer = answers.get(i);
+            Submission submission = submissions.get(i);
+            Answer answer = submission == null ? null : submission.getAnswer();
             Problem problem = problems.get(i);
 
             if (answer == null) {
