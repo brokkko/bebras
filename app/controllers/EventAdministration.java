@@ -14,6 +14,9 @@ import models.data.features.FunctionFeature;
 import models.forms.InputField;
 import models.forms.inputtemplate.AddressInputTemplate;
 import models.forms.validators.KenguruSchoolCodeValidator;
+import models.problems.Problem;
+import models.problems.RootProblemSource;
+import models.serialization.JSONSerializer;
 import models.serialization.MongoDeserializer;
 import play.Logger;
 import play.libs.Akka;
@@ -442,6 +445,9 @@ public class EventAdministration extends Controller {
                         contestResultFeatures.appendProblemsFeatures(userWriter);
                     else
                         contestResultFeatures.appendOrderedProblemsFeatures(userWriter);
+
+                    userWriter.addFeature(contestResultFeatures.getProblemsOrderFeature());
+                    userWriter.addFeature(contestResultFeatures.getUserHistoryFeature());
                 }
             }
 
@@ -667,13 +673,140 @@ public class EventAdministration extends Controller {
         }
     }
 
+    public static Result getUsersMatrix(final String eventId) {
+        if (User.current().getType() != UserType.EVENT_ADMIN)
+            return forbidden();
+
+        final Event currentEvent = Event.current();
+
+        final String fileName = eventId + "-users-matrix";
+
+        F.Promise<byte[]> promiseOfInt = Akka.future(
+                new Callable<byte[]>() {
+                    public byte[] call() throws IOException {
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        ZipOutputStream zos = new ZipOutputStream(baos);
+                        zos.putNextEntry(new ZipEntry(fileName + ".mat"));
+
+                        writeUsersMatrix(fileName, currentEvent, zos);
+
+                        zos.close();
+                        return baos.toByteArray();
+                    }
+                }
+        );
+        return async(
+                promiseOfInt.map(
+                        new F.Function<byte[], Result>() {
+                            public Result apply(byte[] file) {
+                                response().setHeader("Content-Disposition", "attachment; filename=" + fileName + ".zip");
+                                return ok(file).as("application/zip");
+                            }
+                        }
+                )
+        );
+    }
+
+    private static void writeUsersMatrix(String fileName, Event event, ZipOutputStream zos) throws IOException {
+        DBObject allUsersQuery = new BasicDBObject(User.FIELD_EVENT, event.getId());
+
+        List<User> allUsers = new ArrayList<>();
+
+        try (DBCursor allUsersCursor = MongoConnection.getUsersCollection().find(allUsersQuery)) {
+            while (allUsersCursor.hasNext())
+                allUsers.add(User.deserialize(new MongoDeserializer(allUsersCursor.next())));
+        }
+
+        Map<User, String> user2answersList = new HashMap<>();
+
+        int usersCount = 0;
+        for (User user : allUsers) {
+            Logger.info("reading answers for user #" + (usersCount++) + ": " + user.getLogin());
+
+            StringBuilder userAnswers = new StringBuilder();
+
+            for (Contest contest : event.getContests()) {
+                if (contest.isAllowRestart())
+                    continue;
+
+                List<String> possibleProblems = contest.getAllPossibleProblems();
+                List<Submission> submissions = user.getSubmissionsForContest(contest);
+
+                for (String possibleProblem : possibleProblems) {
+                    String ans = "-";
+                    //try to find answer in submissions
+                    for (Submission submission : submissions)
+                        if (submission != null && submission.getProblemId().equals('/' + possibleProblem)) {//TODO code duplication
+                            ans = submissionToAnswer(submission);
+                            break;
+                        }
+
+                    userAnswers.append(ans);
+                }
+            }
+
+            user2answersList.put(user, userAnswers.toString());
+        }
+
+        PrintStream out = new PrintStream(zos);
+
+        out.println(allUsers.size());
+
+        for (User userI : allUsers) {
+            String ans1 = user2answersList.get(userI);
+            for (User userJ : allUsers) {
+                String ans2 = user2answersList.get(userJ);
+
+                int cnt = 0;
+                for (int i = 0; i < ans1.length(); i++)
+                    if (ans1.charAt(i) != ans2.charAt(i))
+                        cnt++;
+
+                out.print(cnt);
+                out.print(' ');
+            }
+
+            out.println();
+        }
+
+        out.flush();
+        zos.closeEntry();
+
+        zos.putNextEntry(new ZipEntry(fileName + ".mat.rlabel"));
+        out = new PrintStream(zos);
+        for (User user : allUsers)
+            out.println(user.getId());
+        out.flush();
+        zos.closeEntry();
+
+        zos.putNextEntry(new ZipEntry(fileName + ".mat.clabel"));
+        out = new PrintStream(zos);
+        for (User user : allUsers)
+            out.println(user.getLogin());
+        out.flush();
+        zos.closeEntry();
+    }
+
+
     //TODO generalize, other answers are different
     public static String submissionToAnswer(Submission submission) {
         if (submission == null)
             return "-";
 
         Integer ansInt = (Integer) submission.getAnswer().get("a");
-        int c = ansInt < 0 ? '-' : ansInt + 'A';
-        return Character.toString((char) c);
+        if (ansInt < 0)
+            return "-";
+
+        Problem problem = RootProblemSource.getInstance().get(submission.getProblemId().substring(1));
+
+        JSONSerializer jsonSerializer = new JSONSerializer();
+        problem.check(submission.getAnswer(), jsonSerializer);
+        int res = jsonSerializer.getNode().get("result").getIntValue(); //TODO generalize this all
+
+        if (res < 0)
+            return (char)(ansInt + 'a') + "";
+        else
+            return (char)(ansInt + 'A') + "";
     }
 }

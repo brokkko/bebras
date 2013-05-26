@@ -4,7 +4,6 @@ import models.Contest;
 import models.User;
 import models.problems.ConfiguredProblem;
 import models.problems.LinkProblemSource;
-import models.problems.Problem;
 import models.problems.ProblemSource;
 
 import java.util.*;
@@ -64,7 +63,7 @@ public class RandomProblemsBlock extends ProblemBlock {
         for (String s : list)
             result.add(link + '/' + s); //TODO code duplication
 
-        return result;
+        return result.subList(0, count); //TODo this sublist is a hack
     }
 
     @Override

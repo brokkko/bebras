@@ -51,4 +51,7 @@ public class CsvDataWriter<T> implements AutoCloseable {
         out.close();
     }
 
+    public int getNumberOfFeatures() {
+        return features.size();
+    }
 }

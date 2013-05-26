@@ -249,7 +249,7 @@ public class Contest {
     }
 
     public ContestResult evaluateUserResults(User user, List<Submission> submissions) {
-        List<Problem> problems = getUserProblems(user);
+        List<ConfiguredProblem> problems = getConfiguredUserProblems(user);
 
         int r = 0;
         int w = 0;
@@ -262,7 +262,7 @@ public class Contest {
         for (int i = 0; i < problems.size(); i++) {
             Submission submission = submissions.get(i);
             Answer answer = submission == null ? null : submission.getAnswer();
-            Problem problem = problems.get(i);
+            Problem problem = problems.get(i).getProblem();
 
             if (answer == null) {
                 n++;
@@ -284,6 +284,6 @@ public class Contest {
             }
         }
 
-        return new ContestResult(r, w, n, scores, bonus, discount);
+        return new ContestResult(r, w, n, scores, bonus, discount, "");
     }
 }

@@ -1,12 +1,15 @@
 package models.data.features;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import controllers.EventAdministration;
-import models.Contest;
-import models.ContestResult;
-import models.Submission;
-import models.User;
+import models.*;
 import models.data.CsvDataWriter;
 import models.data.Feature;
+import models.problems.ConfiguredProblem;
+import models.serialization.MongoDeserializer;
 import play.Logger;
 
 import java.util.List;
@@ -74,6 +77,14 @@ public class ContestResultFeatures {
 
     public Feature<User> getLastSubmissionTimeFeature() {
         return new LastSubmissionTimeFeature();
+    }
+
+    public Feature<User> getProblemsOrderFeature() {
+        return new ProblemsOrderFeature();
+    }
+
+    public Feature<User> getUserHistoryFeature() {
+        return new UserHistoryFeature();
     }
 
     public void appendProblemsFeatures(CsvDataWriter<User> dataWriter) {
@@ -202,19 +213,85 @@ public class ContestResultFeatures {
                     lastSubmission = localTime;
             }
 
-            int seconds = (int) Math.round(lastSubmission / 1000.0);
+            return displayTimeInMillis(lastSubmission);
+        }
+    }
 
-            int minutes = seconds / 60;
-            seconds = seconds % 60;
-            return num2str2digits(minutes) + ":" + num2str2digits(seconds);
+    private class ProblemsOrderFeature implements Feature<User> {
+
+        @Override
+        public String name() {
+            return contestName + ".problems_order";
         }
 
-        private String num2str2digits(int num) {
-            String result = num + "";
-            while (result.length() < 2)
-                    result = "0" + result;
+        @Override
+        public String eval(User user) {
+            StringBuilder buffer = new StringBuilder();
 
-            return result;
+            for (ConfiguredProblem problem : contest.getConfiguredUserProblems(user))
+                buffer.append(problem.getLink().substring("/bbtc/?/".length())).append(' ');
+
+            String s = buffer.toString();
+            return s.substring(0, s.length() - 1);
         }
+    }
+
+    private class UserHistoryFeature implements Feature<User> {
+
+        @Override
+        public String name() {
+            return contestName + ".history";
+        }
+
+        @Override
+        public String eval(User user) {
+            DBCollection usersCollection = contest.getCollection();
+
+            DBObject query = new BasicDBObject("u", user.getId());
+            DBObject sort = new BasicDBObject("lt", 1);
+
+            StringBuilder result = new StringBuilder();
+
+            try (
+                    DBCursor usersCursor = usersCollection.find(query).sort(sort)
+            ) {
+                long previousLocalTime = -1;
+                while (usersCursor.hasNext()) {
+                    Submission submission = new Submission(contest, new MongoDeserializer(usersCursor.next()));
+                    if (submission.getLocalTime() == previousLocalTime)
+                        continue;
+
+                    previousLocalTime = submission.getLocalTime();
+
+                    String pid = submission.getProblemId().substring("/bbtc/?/".length());
+                    result
+                            .append(displayTimeInMillis(previousLocalTime))
+                            .append('|')
+                            .append(pid)
+                            .append('|')
+                            .append(EventAdministration.submissionToAnswer(submission))
+                            .append(' ');
+                }
+            }
+
+            String s = result.toString();
+            return s.length() == 0 ? "" : s.substring(0, s.length() - 1);
+        }
+    }
+
+    private String displayTimeInMillis(long time) {
+        int seconds = (int) Math.round(time / 1000.0);
+
+        int minutes = seconds / 60;
+        seconds = seconds % 60;
+        return num2str2digits(minutes) + ":" + num2str2digits(seconds);
+    }
+
+    private String num2str2digits(int num) {
+        String result = num + "";
+        while (result.length() < 2)
+            result = "0" + result;
+
+        return result;
     }
 }

@@ -14,14 +14,16 @@ public class ContestResult { //TODO generalize
     private int scores;
     private int bonus;
     private int discount;
+    private String answersList;
 
-    public ContestResult(int r, int w, int n, int scores, int bonus, int discount) {
+    public ContestResult(int r, int w, int n, int scores, int bonus, int discount, String answersList) {
         this.r = r;
         this.w = w;
         this.n = n;
         this.scores = scores;
         this.bonus = bonus;
         this.discount = discount;
+        this.answersList = answersList;
     }
 
     public int getR() {

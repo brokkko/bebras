@@ -36,6 +36,7 @@ GET     /:event/usersWithResults    controllers.EventAdministration.getUsers(eve
 GET     /:event/usersWithResults2   controllers.EventAdministration.getUsers(event, appendResults:Integer = 2)
 GET     /:event/usersAnswers        controllers.EventAdministration.getUsersAnswers(event)
 GET     /:event/usersActivity       controllers.EventAdministration.getUsersActivity(event)
+GET     /:event/usersMatrix         controllers.EventAdministration.getUsersMatrix(event)
 GET     /:event/:user/exportUser    controllers.EventAdministration.exportTopUsers(event, user)
 GET     /:event/:user/add_admin     controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = false)
 GET     /:event/:user/remove_admin  controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = true)
