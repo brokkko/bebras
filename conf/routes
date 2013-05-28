@@ -40,6 +40,7 @@ GET     /:event/usersMatrix         controllers.EventAdministration.getUsersMatr
 GET     /:event/:user/exportUser    controllers.EventAdministration.exportTopUsers(event, user)
 GET     /:event/:user/add_admin     controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = false)
 GET     /:event/:user/remove_admin  controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = true)
+GET     /:event/evalScores          controllers.EventAdministration.evalScores(event)
 
 #trash
 POST    /:event/upload_kenguru_codes    controllers.EventAdministration.uploadKenguruSchoolCodes(event)

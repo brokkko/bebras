@@ -9,6 +9,12 @@
     Все моменты времени на этой странице указаны по московскому времени.
     Московское время: <iframe src="http://free.timeanddate.com/clock/i3m3rjyq/n166/tlru33/fs18/tct/pct/avb/th1" frameborder="0" width="72" height="24" allowTransparency="true"></iframe>
     </p>
+    <div class='contest-description final-results'> @*TODO remove *@
+        <h1>
+            Окончательные результаты<br>
+            Вы набрали баллов: <span class='final-result'>@User.current.totalScores(Event.current)</span>. Заняли место: <span class="final-result">@User.current.totalPosition</span>.
+        </h1>
+    </div>
     @for(contest <- Event.current.getContests) {
         <div class='contest-description'>
             <div class='info'>
@@ -72,10 +78,16 @@
                     case 6 => {}
                     }
                 </p>
+                <p>Полные результаты соревнования доступны ограниченное количество времени</p> @*TODO убрать*@
             </div>
             <div class='description'>
-                <p class='description-title big-title'>Описание</p>
-                <p>@contest.getDescription</p>
+                @if(User.current().getContestStatus(contest) == 2 || User.current().getContestStatus(contest) == 3 && contest.resultsAvailable) {
+                <div id='contest-results'><p>@contest_results(contest.evaluateUserResults(User.current))</p></div>
+                }
+                @if(contest.getDescription != null) {
+                    <p class='description-title big-title'>Описание</p>
+                    <p>@contest.getDescription</p>
+                }
             </div>
             <div class='footer'></div>
         </div>

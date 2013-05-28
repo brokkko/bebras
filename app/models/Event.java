@@ -36,6 +36,8 @@ public class Event {
     private LinkedHashMap<String, Contest> contests;
     private InputForm usersForm;
     private InputForm editUserForm;
+    private Date registrationStart; //may be null, means start always
+    private Date registrationFinish; //may be null, means never finishes
 
     private Event(Deserializer deserializer) {
         this.id = deserializer.getString("_id");
@@ -72,6 +74,9 @@ public class Event {
                 Contest contest = Contest.deserialize(this, contestDeserializer);
                 contests.put(contest.getId(), contest);
             }
+
+        registrationStart = Utils.parseSimpleTime(deserializer.getString("registration start"));
+        registrationFinish = Utils.parseSimpleTime(deserializer.getString("registration finish"));
 
         //TODO enters site before confirmation
         //TODO choose where to go if authorized
@@ -162,4 +167,11 @@ public class Event {
         return new File(Play.application().getFile("data"), getId());
     }
 
+    public boolean registrationStarted() {
+        return registrationStart == null || registrationStart.before(new Date()); //TODO get date from ... AuthenticatedAction
+    }
+
+    public boolean registrationFinished() {
+        return registrationFinish != null && registrationFinish.before(new Date()); //TODO get date from ... AuthenticatedAction
+    }
 }

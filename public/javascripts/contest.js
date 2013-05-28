@@ -65,7 +65,7 @@ var submit_answer; //function (problem_id, answer)
         animate_substitute($current_page, $new_page);
 
         current_page = page;
-        window.scrollTo(0, 0);
+        window.scrollTo(0, $selectors.offset().top - 10);
     }
 
     //problem info

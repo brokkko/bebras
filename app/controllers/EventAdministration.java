@@ -809,4 +809,41 @@ public class EventAdministration extends Controller {
         else
             return (char)(ansInt + 'A') + "";
     }
+
+    //TODO this is only for BBTC :(
+    public static Result evalScores(final String event) {
+        if (User.current().getType() != UserType.EVENT_ADMIN)
+            return forbidden();
+
+        F.Promise<Boolean> promiseOfVoid = Akka.future(
+                new Callable<Boolean>() {
+                    public Boolean call() throws IOException {
+                        return addScoresForAll(Event.getInstance(event));
+                    }
+                }
+        );
+        return async(
+                promiseOfVoid.map(
+                        new F.Function<Boolean, Result>() {
+                            public Result apply(Boolean v) {
+                                return ok("scores filled");
+                            }
+                        }
+                )
+        );
+    }
+
+    private static Boolean addScoresForAll(Event event) {
+        DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
+
+        try(DBCursor cursor = MongoConnection.getUsersCollection().find(query)) {
+            while (cursor.hasNext()) {
+                User user = User.deserialize(new MongoDeserializer(cursor.next()));
+                user.put("__bbtc__scores__", user.totalScores(event));
+                user.store();
+            }
+        }
+
+        return false; //TODO report, suggests importing java.lang.Boolean in "return Boolean"
+    }
 }

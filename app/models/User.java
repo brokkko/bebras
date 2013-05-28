@@ -386,4 +386,18 @@ public class User implements Serializable {
 
         return pid2ans;
     }
+
+    //TODO the following methods are only for BBTC contest
+    public int totalScores(Event event) {
+        int scores = 0;
+        for (Contest contest : event.getContests())
+            scores += contest.evaluateUserResults(this).getScores();
+        return scores;
+    }
+
+    public long totalPosition() {
+        DBObject query = new BasicDBObject("__bbtc__scores__", new BasicDBObject("$gt", totalScores(Event.current())));
+        query.put(User.FIELD_EVENT, Event.currentId());
+        return 1 + MongoConnection.getUsersCollection().count(query);
+    }
 }

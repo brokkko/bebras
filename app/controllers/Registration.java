@@ -27,6 +27,12 @@ public class Registration extends Controller {
     public static Result registration(String eventId) {
         //TODO use form.errorsAsJson() to ajax validate form
 
+        if (!Event.current().registrationStarted())
+            return ok(error.render("error.msg.registration_not_started", new String[0]));
+
+        if (Event.current().registrationFinished())
+            return ok(error.render("error.msg.registration_finished", new String[0]));
+
         RawForm form = new RawForm();
         form.bindFromRequest();
 
