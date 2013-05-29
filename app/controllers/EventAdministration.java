@@ -1,5 +1,6 @@
 package controllers;
 
+import au.com.bytecode.opencsv.CSVReader;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -833,13 +834,26 @@ public class EventAdministration extends Controller {
         );
     }
 
-    private static Boolean addScoresForAll(Event event) {
+    private static Boolean addScoresForAll(Event event) throws IOException {
+        //read all users
+        HashMap<String, String> user2place = new HashMap<>();
+        CSVReader reader = new CSVReader(
+                new BufferedReader(new InputStreamReader(
+                        new FileInputStream(new File(event.getEventDataFolder(), "places.csv")), "windows-1251"
+                )),
+                ';', '"', 1
+        );
+
+        String[] line;
+        while ((line = reader.readNext()) != null)
+            user2place.put(line[0].trim(), line[line.length -1].trim());
+
         DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
 
         try(DBCursor cursor = MongoConnection.getUsersCollection().find(query)) {
             while (cursor.hasNext()) {
                 User user = User.deserialize(new MongoDeserializer(cursor.next()));
-                user.put("__bbtc__scores__", user.totalScores(event));
+                user.put("__bbtc__scores__", user2place.get(user.getId()));
                 user.store();
             }
         }

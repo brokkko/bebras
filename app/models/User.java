@@ -395,9 +395,8 @@ public class User implements Serializable {
         return scores;
     }
 
-    public long totalPosition() {
-        DBObject query = new BasicDBObject("__bbtc__scores__", new BasicDBObject("$gt", totalScores(Event.current())));
-        query.put(User.FIELD_EVENT, Event.currentId());
-        return 1 + MongoConnection.getUsersCollection().count(query);
+    public String totalPosition() {
+        Object position = get("__bbtc__scores__");
+        return position == null ? "-" : position.toString();
     }
 }
