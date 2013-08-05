@@ -1,0 +1,42 @@
+@*TODO to be renamed*@
+@(contest:Contest, changeContestForm:models.forms.RawForm, addBlockForm:models.forms.RawForm)
+@import views.ResourceLink
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css"), new ResourceLink("admin.css")), List(new ResourceLink("forms.js"), new ResourceLink("admin.js"))) { } {
+    <h1>Администрирование соревнования @contest.getName</h1>
+
+    <h2>Информация</h2>
+    @contest_info(contest)
+
+    <h2>Основные настройки</h2>
+    @contest_administration(contest, changeContestForm)
+
+    <h1>Набор заданий</h1>
+
+    @if(contest.getProblemBlocks.size() == 0) {
+        <p>Нет блоков для отображения</p>
+    }
+
+    @for((block, index) <- contest.getProblemBlocks.zipWithIndex) {
+        <form action="@routes.ContestAdministration.moveBlockUp(Event.currentId, contest.getId, index)" method="POST" class='actions-move-up-@index'></form>
+        <form action="@routes.ContestAdministration.moveBlockDown(Event.currentId, contest.getId, index)" method="POST" class='actions-move-down-@index'></form>
+        <form action="@routes.ContestAdministration.removeBlock(Event.currentId, contest.getId, index)" method="POST" class='actions-remove-@index'></form>
+
+        <p>@(index + 1). @block.getInfoString:
+            @for(confProblem <- block.getAllPossibleProblems(contest)) {
+                @confProblem.getName
+            }
+
+            @if(index != 0) {
+                <a href="#" class='submit actions-move-up-@index' title="Поднять вверх">↑</a>
+            }
+            @if(index != contest.getProblemBlocks.size - 1) {
+                <a href="#" class='submit actions-move-down-@index' title="Опустить вниз">↓</a>
+            }
+            <a href="#" class='submit actions-remove-@index' title="Удалить блок">⨯</a>
+        </p>
+    }
+
+    <h2>Добавить блок</h2>
+    @Forms.getAddBlockForm().formatExtended(addBlockForm, routes.ContestAdministration.doAddBlock(Event.currentId, contest.getId), false, "form.do_add")
+}

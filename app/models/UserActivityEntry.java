@@ -1,9 +1,10 @@
 package models;
 
 import controllers.MongoConnection;
-import models.serialization.Deserializer;
-import models.serialization.MongoSerializer;
-import models.serialization.Serializer;
+import models.newserialization.Deserializer;
+import models.newserialization.MongoSerializer;
+import models.newserialization.Serializer;
+import org.bson.types.ObjectId;
 
 import java.util.Date;
 
@@ -20,7 +21,7 @@ public class UserActivityEntry {
     public static String FIELD_USER_AGENT = "ua";
     public static String FIELD_DATE = "d";
 
-    private String user;
+    private ObjectId user;
     private String ip;
     private String ua;
     private Date date;
@@ -37,11 +38,11 @@ public class UserActivityEntry {
         return ip;
     }
 
-    public String getUser() {
+    public ObjectId getUser() {
         return user;
     }
 
-    public UserActivityEntry(String user, String ip, String ua, Date date) {
+    public UserActivityEntry(ObjectId user, String ip, String ua, Date date) {
         this.user = user;
         this.ip = ip;
         this.ua = ua;
@@ -50,17 +51,17 @@ public class UserActivityEntry {
 
     public static UserActivityEntry deserialize(Deserializer deserializer) {
         return UserActivityEntry.deserialize(
-                deserializer.getString(FIELD_USER),
+                deserializer.readObjectId(FIELD_USER),
                 deserializer
         );
     }
 
-    public static UserActivityEntry deserialize(String user, Deserializer deserializer) {
+    public static UserActivityEntry deserialize(ObjectId user, Deserializer deserializer) {
         return new UserActivityEntry(
                 user,
-                deserializer.getString(FIELD_IP),
-                deserializer.getString(FIELD_USER_AGENT),
-                (Date) deserializer.getObject(FIELD_DATE)
+                deserializer.readString(FIELD_IP),
+                deserializer.readString(FIELD_USER_AGENT),
+                deserializer.readDate(FIELD_DATE)
         );
     }
 
@@ -75,7 +76,7 @@ public class UserActivityEntry {
     public void store() {
         MongoSerializer mongoSerializer = new MongoSerializer();
         store(mongoSerializer, true);
-        mongoSerializer.store(MongoConnection.getActivityCollection());
+        MongoConnection.getActivityCollection().save(mongoSerializer.getObject());
     }
 
     @Override

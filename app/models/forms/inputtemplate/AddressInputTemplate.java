@@ -1,11 +1,11 @@
 package models.forms.inputtemplate;
 
 import models.Address;
-import models.forms.InputField;
 import models.forms.RawForm;
+import models.newserialization.SerializableSerializationType;
+import models.newserialization.SerializationType;
 import play.api.templates.Html;
 import play.i18n.Messages;
-import views.html.fields.address;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,15 +13,15 @@ import views.html.fields.address;
  * Date: 18.01.13
  * Time: 20:31
  */
-public class AddressInputTemplate extends InputTemplate {
+public class AddressInputTemplate extends InputTemplate<Address> {
 
     @Override
-    public Html format(RawForm form, InputField inputField) {
-        return address.render(form, inputField.getName());
+    public Html render(RawForm form, String field) {
+        return views.html.fields.address.render(form, field);
     }
 
     @Override
-    public void write(String field, Object value, RawForm rawForm) {
+    public void write(String field, Address value, RawForm rawForm) {
         if (value == null) {
             rawForm.remove(field, "index");
             rawForm.remove(field, "city");
@@ -30,16 +30,14 @@ public class AddressInputTemplate extends InputTemplate {
             return;
         }
 
-        Address addr = (Address) value;
-
-        rawForm.put(field, addr.getIndex(), "index");
-        rawForm.put(field, addr.getCity(), "city");
-        rawForm.put(field, addr.getStreet(), "street");
-        rawForm.put(field, addr.getHouse(), "house");
+        rawForm.put(field, value.getIndex(), "index");
+        rawForm.put(field, value.getCity(), "city");
+        rawForm.put(field, value.getStreet(), "street");
+        rawForm.put(field, value.getHouse(), "house");
     }
 
     @Override
-    public Object read(String field, RawForm form) {
+    public Address read(String field, RawForm form) {
         if (
                 form.isEmptyValue(field, "index") &&
                 form.isEmptyValue(field, "city") &&
@@ -69,5 +67,15 @@ public class AddressInputTemplate extends InputTemplate {
             return null;
 
         return new Address(index, city, street, house);
+    }
+
+    @Override
+    public SerializationType<Address> getType() {
+        return new SerializableSerializationType<>(Address.class);
+    }
+
+    @Override
+    public String[] getUserInputFields() {
+        return new String[]{"index", "city", "street", "house"};
     }
 }

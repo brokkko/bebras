@@ -1,0 +1,10 @@
+@(result:models.results.Info, resultPattern:models.results.InfoPattern, classes:String)
+@import models.Utils
+@*TODO think how to make title depend on elements in info, such as scores*@
+<table border="0" class="info@if(classes != null){ @classes}">
+    @for(field <- resultPattern.getFields) {
+    <tr>
+        <td>@resultPattern.getTitle(field)</td><td>@result.get(field)</td>
+    </tr>
+    }
+</table> @*Результаты соревнования: вы набрали @Utils.scoresWord(result.get("scores").asInstanceOf[Integer])*@

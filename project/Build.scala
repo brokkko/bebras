@@ -4,8 +4,8 @@ import play.Project._
 
 object ApplicationBuild extends Build {
 
-    val appName         = "bbtc-contest"
-    val appVersion      = "0.1.7"
+    val appName         = "dces2"
+    val appVersion      = "0.2.0"
 
     val appDependencies = Seq(
       javaCore,

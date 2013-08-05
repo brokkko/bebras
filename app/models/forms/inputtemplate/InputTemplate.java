@@ -1,11 +1,13 @@
 package models.forms.inputtemplate;
 
-import models.forms.InputField;
 import models.forms.RawForm;
+import models.newforms.blocks.InputBlock;
+import models.newserialization.Deserializer;
+import models.newserialization.SerializableUpdatable;
+import models.newserialization.SerializationType;
+import models.newserialization.Serializer;
 import play.api.templates.Html;
-
-import java.util.HashMap;
-import java.util.Map;
+import play.i18n.Messages;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,26 +15,38 @@ import java.util.Map;
  * Date: 20.03.13
  * Time: 23:42
  */
-public abstract class InputTemplate { //Object -> String fields, String fields -> Object
+public abstract class InputTemplate<T> implements SerializableUpdatable { //Object -> String fields, String fields -> Object
 
-    public static final Map<String, InputTemplate> registeredTemplates = new HashMap<>();
+    private InputBlock block; //TODO implement description of view by means of blocks
 
-    static {
-        registeredTemplates.put("boolean", new BooleanInputTemplate());
-        registeredTemplates.put("string", new StringInputTemplate());
-        registeredTemplates.put("date", new DateInputTemplate());
-        registeredTemplates.put("address", new AddressInputTemplate());
-        registeredTemplates.put("password", new PasswordInputTemplate());
-        registeredTemplates.put("multiline", new MultilineInputTemplate());
+    protected String title;
+
+    public String getTitle() {
+        return title;
     }
 
-    public static InputTemplate getInstance(String name) {
-        return registeredTemplates.get(name);
+    public abstract Html render(RawForm form, String field);/* {
+        return block.render(form, field);
+    }*/
+
+    public abstract void write(String field, T value, RawForm rawForm);
+
+    public abstract T read(String field, RawForm form);
+
+    public abstract SerializationType<T> getType();
+
+    @Override
+    public void serialize(Serializer serializer) {
+        serializer.write("title", title);
     }
 
-    public abstract Html format(RawForm form, InputField inputField);
+    @Override
+    public void update(Deserializer deserializer) {
+        title = deserializer.readString("title", "-");
+    }
 
-    public abstract void write(String field, Object value, RawForm rawForm);
+    public String[] getUserInputFields() {
+        return null;
+    }
 
-    public abstract Object read(String field, RawForm form);
 }

@@ -4,6 +4,11 @@
     margin: 0.5em 0;
 }
 
+.content h2 {
+    font-size: 1.5em;
+    margin: 0.3em 0;
+}
+
 .content p {
     padding-bottom: 1em;
 }
@@ -146,4 +151,17 @@ nav a:hover {
     background-color: white;
     padding: 4px;
     border: 1px solid black;
+}
+
+
+/*info*/
+
+.info tr td:nth-child(even) {
+    font-weight: bold;
+    color: #a51e00;
+}
+
+.info tr td:nth-child(odd) {
+    padding-right: 1em;
+    width: 50%;
 }

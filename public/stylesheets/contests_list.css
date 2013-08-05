@@ -10,14 +10,21 @@
 
 .contest-description .info {
     float: left;
-    width: 40%;
+    /*width: 40%;*/
     /*border-right: 1px solid #00008b;*/
 }
 
-.contest-description .description {
+.contest-description .results-and-description {
     display: block;
     margin-left: 40%;
     padding-left: 1em;
+    overflow: hidden;
+    /*border-left: 1px solid #00008b;*/
+}
+
+.contest-description .results-and-description .description {
+    clear: left;
+    padding-top: 1em;
 }
 
 .contest-description .info .title {
@@ -39,8 +46,6 @@
 
 .contest-description .header {
     font-weight: 800;
-    text-transform: uppercase;
-    text-align: center;
 }
 
 .contest-description .skip {
@@ -95,28 +100,30 @@ p.time iframe {
     display: inline;
 }
 
-/*contest results*/
-#contest-results {
-
-}
-
-#contest-results h1 {
-    margin-top: 0;
-    font-weight: bold;
+.big-title {
+    text-transform: uppercase;
     text-align: center;
-    font-size: 1em;
-    color: #a51e00;
+    margin-bottom: 0.5em;
 }
 
-#contest-results tr td:nth-child(even) {
-    font-weight: bold;
-    color: #a51e00;
+.big-title span {
+    color: red;
 }
 
-#contest-results tr td:nth-child(odd) {
-    padding-right: 1em;
+/* contest administration */
+
+.go-contest-admin {
+    display: block;
+    text-align: right;
 }
 
-.final-result {
-    color: #a51e00;
+/*
+.contest-administration {
+    display: none;
 }
+
+.contest-administration-show-hide .shower {
+    text-align: right;
+    cursor: pointer;
+    color: #33bb33;
+}*/

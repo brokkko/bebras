@@ -66,6 +66,13 @@ form.basic-form .input-text {
     width: 308px; /*320 - 2 * padding - 2 * border*/
 }
 
+form.basic-form .input-multiline {
+    border: 2px #01a1de solid;
+    border-radius: 4px;
+    padding: 2px 4px;
+    width: 308px; /*320 - 2 * padding - 2 * border*/
+}
+
 form.basic-form .input-checkbox {
     border: 2px #01a1de solid;
     width: 20px;

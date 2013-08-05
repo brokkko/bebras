@@ -3,6 +3,7 @@ package controllers.actions;
 import controllers.routes;
 import models.Event;
 import models.User;
+import models.UserType;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -36,9 +37,13 @@ public class AuthenticatedAction extends Action<Authenticated> {
         //store request time to determine contest status
         ctx.args.put("request time", new Date());
 
-        if (configuration.load())
+        if (configuration.load()) {
             if (User.current() == null) //call to current loads user. And also test if there is such user
                 return loginRedirect;
+
+            if (configuration.admin() && User.current().getType() != UserType.EVENT_ADMIN)
+                return loginRedirect;
+        }
 
         return delegate.call(ctx);
     }

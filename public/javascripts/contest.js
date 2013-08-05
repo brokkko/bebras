@@ -236,7 +236,7 @@ var submit_answer; //function (problem_id, answer)
     }
 
     function send_delay(fails) {
-        var delay = fails * 60000;
+        var delay = /*fails **/ 60000;
         if (delay > 600 * 1000)
             delay = 600 * 1000; //not greater than two minutes
         return delay;
@@ -302,7 +302,7 @@ var submit_answer; //function (problem_id, answer)
         if (duration > 0 && time >= duration) //don't send answers that are after the contest had finished
             return;
 
-        var ans = {"lt": time, "pid": problem_id, "a": answer};
+        var ans = {"lt": time, "pn": problem_id, "a": answer};
         push_answer_to_list(ans);
 
         if (sending_timeout_id == null)

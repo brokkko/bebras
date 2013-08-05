@@ -1,6 +1,7 @@
 package models.forms.validators;
 
-import models.serialization.Deserializer;
+import models.newserialization.Deserializer;
+import models.newserialization.Serializer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,16 +11,24 @@ import models.serialization.Deserializer;
  */
 public class PatternValidator extends Validator<String> {
 
-    private final String pattern;
+    private String pattern;
 
-    public PatternValidator(Deserializer deserializer) {
-        pattern = deserializer.getString("pattern");
+    @Override
+    public Validator.ValidationResult validate(String value) {
+        if (! value.matches(pattern))
+            return message();
+        return ok();
     }
 
     @Override
-    public String validate(String value) {
-        if (! value.matches(pattern))
-            return getMessage();
-        return null;
+    public void update(Deserializer deserializer) {
+        super.update(deserializer);
+        pattern = deserializer.readString("pattern");
+    }
+
+    @Override
+    public void serialize(Serializer serializer) {
+        super.serialize(serializer);
+        serializer.write("pattern", pattern);
     }
 }

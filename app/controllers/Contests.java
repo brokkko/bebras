@@ -4,23 +4,20 @@ import controllers.actions.*;
 import models.Contest;
 import models.Submission;
 import models.User;
-import models.Utils;
-import models.problems.Answer;
-import models.problems.Problem;
-import models.serialization.JSONDeserializer;
-import models.serialization.JSONSerializer;
-import models.serialization.ListSerializer;
-import models.serialization.Serializer;
+import models.UserType;
+import models.newproblems.Problem;
+import models.newserialization.JSONDeserializer;
+import models.newserialization.JSONSerializer;
+import models.newserialization.ListSerializer;
+import models.newserialization.Serializer;
+import models.results.Info;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
-import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.Results;
 import views.ResourceLink;
-import views.html.contest;
 
 import java.util.*;
 
@@ -33,8 +30,10 @@ import java.util.*;
 @LoadEvent
 @Authenticated
 @LoadContest
+@DcesController
 public class Contests extends Controller {
 
+    @SuppressWarnings("UnusedParameters")
     public static Result startContest(String eventId, String contestId) {
         return ok(views.html.start_contest_confirmation.render());
     }
@@ -48,18 +47,12 @@ public class Contests extends Controller {
         if (status == 6)
             return forbidden();
 
-        long time = System.currentTimeMillis();
-
-//        Logger.info("[1] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
         List<List<Problem>> pagedUserProblems = contest.getPagedUserProblems(user);
 
         List<ResourceLink> cssLinksList = getCssLinks(pagedUserProblems);
         List<ResourceLink> jsLinksList = getJsLinks(pagedUserProblems);
 
-//        Logger.info("[2] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
-        List<Answer> answersForContest = user.getAnswersForContest(contest);
-
-//        Logger.info("[3] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
+        List<Info> answersForContest = user.getAnswersForContest(contest);
 
         //fill json info with user answers
         JSONSerializer contestInfoSerializer = new JSONSerializer();
@@ -70,12 +63,12 @@ public class Contests extends Controller {
         for (List<Problem> page : pagedUserProblems)
             for (Problem problem : page) {
                 Serializer problemInfoSerializer = problemsInfoSerializer.getSerializer();
-                Answer answer = answersForContest.get(index);
+                Info answer = answersForContest.get(index);
 
                 if (answer == null)
-                    problemInfoSerializer.write("ans", null);
+                    problemInfoSerializer.writeNull("ans");
                 else
-                    Utils.writeMapToSerializer(answer, problemInfoSerializer.getSerializer("ans"));
+                    problem.getAnswerPattern().write(problemInfoSerializer, "ans", answer);
                 problemInfoSerializer.write("type", problem.getType());
 
                 problem2index.put(problem, index);
@@ -119,10 +112,10 @@ public class Contests extends Controller {
         return ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
     }
 
+    @SuppressWarnings("UnusedParameters")
     @BodyParser.Of(BodyParser.Json.class)
     public static Result submit(String eventId, String contestId) {
         Contest contest = Contest.current();
-        User user = User.current();
 
         JsonNode submissionJson = request().body().asJson();
         if (!(submissionJson instanceof ArrayNode))
@@ -144,18 +137,21 @@ public class Contests extends Controller {
             submissions.add(submission);
         }
 
+        User user = User.current();
+        user.invalidateContestResults(contestId);
+
         //store all submissions
         for (Submission submission : submissions)
-            submission.store();
+            submission.serialize();
 
         return ok();
     }
 
+    @SuppressWarnings("UnusedParameters")
     public static Result stop(String eventId, String contestId) {
         Contest contest = Contest.current();
         User user = User.current();
 
-        int contestStatus = user.getContestStatus(contest);
         if (!user.contestIsGoing(contest))
             return forbidden();
 
@@ -168,7 +164,7 @@ public class Contests extends Controller {
     public static Result restart(String eventId, String contestId) {
         Contest contest = Contest.current();
 
-        if (!contest.isAllowRestart())
+        if (!contest.isAllowRestart() && User.current().getType() != UserType.EVENT_ADMIN)
             return forbidden();
 
         User user = User.current();
@@ -179,7 +175,8 @@ public class Contests extends Controller {
         user.setContestStartTime(contestId, null);
         user.setContestFinishTime(contestId, null);
         user.generateContestRandSeed(contestId);
-        user.store(); //TODO This is a duplicated todo about storing user info. Here it is actually stored in generateContestRandSeed
+        user.invalidateContestResults(contest.getId());
+        user.store();
 
         Submission.removeAllAnswersForUser(user.getId(), contest);
 
@@ -192,7 +189,7 @@ public class Contests extends Controller {
 
         for (List<Problem> page : pagedUserProblems)
             for (Problem problem : page)
-                jsLinks.add(problem.getJsLink());
+                jsLinks.add(problem.getType() + ".problem");
 
         List<ResourceLink> jsLinksList = new ArrayList<>();
         for (String jsLink : jsLinks)
@@ -205,7 +202,7 @@ public class Contests extends Controller {
 
         for (List<Problem> page : pagedUserProblems)
             for (Problem problem : page)
-                cssLinks.add(problem.getCssLink());
+                cssLinks.add(problem.getType() + ".problem");
 
         List<ResourceLink> cssLinksList = new ArrayList<>();
         for (String cssLink : cssLinks)

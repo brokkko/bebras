@@ -2,9 +2,14 @@ package models;
 
 import com.mongodb.*;
 import controllers.actions.AuthenticatedAction;
-import models.problems.Answer;
-import models.problems.ConfiguredProblem;
-import models.serialization.*;
+import models.newproblems.ConfiguredProblem;
+import models.newproblems.Problem;
+import models.newproblems.ProblemInfo;
+import models.newserialization.*;
+import models.results.Info;
+import org.bson.types.ObjectId;
+import play.Logger;
+
 import java.util.*;
 
 /**
@@ -20,6 +25,7 @@ public class Submission implements Serializable {
     public static final String SERVER_TIME_FIELD = "st";
     public static final String ANSWER_FIELD = "a";
     public static final String PROBLEM_ID_FIELD = "pid";
+    public static final String PROBLEM_NUM_FIELD = "pn";
 
     public static enum TimeType {
         LOCAL,
@@ -33,17 +39,17 @@ public class Submission implements Serializable {
 
     private Contest contest;
 
-    private String userId;
+    private ObjectId user;
     private long localTime; /* time in milliseconds from the beginning*/
     private Date serverTime;
-    private String problemId;
-    private Answer answer;
+    private ObjectId problemId;
+    private Info answer;
 
-    public static Submission getSubmissionForUser(Contest contest, String userId, String problemId, AnswerOrdering answerOrdering, TimeType timeType) {
+    public static Submission getSubmissionForUser(Contest contest, ObjectId user, ObjectId problemId, AnswerOrdering answerOrdering, TimeType timeType) {
         DBCollection collection = contest.getCollection();
 
         BasicDBObject query = new BasicDBObject();
-        query.put(USER_FIELD, userId);
+        query.put(USER_FIELD, user);
 
         if (problemId != null)
             query.put(PROBLEM_ID_FIELD, problemId);
@@ -55,79 +61,90 @@ public class Submission implements Serializable {
                 ))
         ) {
             if (cursor.hasNext())
-                return new Submission(contest, new MongoDeserializer(cursor.next()));
+                return new Submission(user, contest, new MongoDeserializer(cursor.next()));
             else
                 return null;
         }
     }
 
-    public Submission(Contest contest, String userId, long localTime, Date serverTime, String problemId, Answer answer) {
+    public Submission(Contest contest, Deserializer deserializer) {
+        this(readUserFromDeserializer(deserializer), contest, deserializer);
+    }
+
+    private static ObjectId readUserFromDeserializer(Deserializer deserializer) {
+        ObjectId user = deserializer.readObjectId(USER_FIELD);
+        if (user == null)
+            user = User.current().getId();
+        return user;
+    }
+
+    public Submission(Contest contest, ObjectId user, long localTime, Date serverTime, ObjectId problemId, Info answer) {
         this.contest = contest;
-        this.userId = userId;
+        this.user = user;
         this.localTime = localTime;
         this.serverTime = serverTime;
         this.problemId = problemId;
         this.answer = answer;
     }
 
-    public Submission(Contest contest, Deserializer deserializer) {
+    //user = null means current user
+    public Submission(ObjectId user, Contest contest, Deserializer deserializer) {
+        this.user = user;
         this.contest = contest;
 
-        userId = deserializer.getString(USER_FIELD);
-        serverTime = (Date) deserializer.getObject(SERVER_TIME_FIELD);
-        problemId = deserializer.getObject(PROBLEM_ID_FIELD).toString();
+        serverTime = deserializer.readDate(SERVER_TIME_FIELD);
+        problemId = deserializer.readObjectId(PROBLEM_ID_FIELD);
+        Integer problemNumber = deserializer.readInt(PROBLEM_NUM_FIELD);
 
         //read local time either long or int
-        Object localTimeAsObject = deserializer.getObject(LOCAL_TIME_FIELD);
-        if (localTimeAsObject instanceof Integer)
-            localTime = (Integer) localTimeAsObject;
-        else if (localTimeAsObject instanceof Long)
-            localTime = (Long) localTimeAsObject;
+        localTime = deserializer.readLong(LOCAL_TIME_FIELD);
 
-        answer = new Answer();
-        Deserializer answerDeserializer = deserializer.getDeserializer(ANSWER_FIELD);
-        for (String field : answerDeserializer.fieldSet())
-            answer.put(field, answerDeserializer.getObject(field));
+        populateAbsentData(contest, problemNumber);
 
-        populateAbsentData();
+        //load answer
+        Problem problem = ProblemInfo.get(problemId).getProblem();
+
+        if (problem == null) { //TODO null means DB problems .... what to do ...
+            Logger.error("unknown problem");
+            answer = new Info();
+        } else
+            answer = problem.getAnswerPattern().read(deserializer, ANSWER_FIELD);
     }
 
-    private void populateAbsentData() {
+    private void populateAbsentData(Contest contest, Integer problemNumber) {
         //here we call current user only if it is really needed
 
-        if (userId == null)
-            userId = User.current().getId();
+        if (user == null)
+            user = User.current().getId();
+
         if (serverTime == null)
             serverTime = AuthenticatedAction.getRequestTime();
 
-        if (problemId == null)
+        if (problemId == null && problemNumber == null)
             throw new IllegalArgumentException("submission without problem id");
 
-        if (!problemId.startsWith("/")) {
-            int pid = Integer.parseInt(problemId);
-            Contest contest = Contest.current();
-            ConfiguredProblem problem = contest.getConfiguredUserProblems(User.current()).get(pid);
+        if (problemId == null) {
+            int pid = problemNumber;
+            ConfiguredProblem problem = contest.getUserProblems(User.current()).get(pid);
 
-            problemId = problem.getLink();
+            problemId = problem.getProblemId();
         }
-
     }
 
     @Override
-    public void store(Serializer serializer) {
-        serializer.write(USER_FIELD, userId);
+    public void serialize(Serializer serializer) {
+        serializer.write(USER_FIELD, user);
         serializer.write(LOCAL_TIME_FIELD, localTime);
         serializer.write(SERVER_TIME_FIELD, serverTime);
         serializer.write(PROBLEM_ID_FIELD, problemId);
 
-        Serializer answerSerializer = serializer.getSerializer(ANSWER_FIELD);
-        for (Map.Entry<String, Object> field2value : answer.entrySet())
-            answerSerializer.write(field2value.getKey(), field2value.getValue());
+        Problem problem = ProblemInfo.get(problemId).getProblem();
+        problem.getAnswerPattern().write(serializer, ANSWER_FIELD, answer);
     }
 
-    public void store() {
+    public void serialize() {
         MongoSerializer serializer = new MongoSerializer();
-        store(serializer);
+        serialize(serializer);
 
         contest.getCollection().save(serializer.getObject());
     }
@@ -136,8 +153,8 @@ public class Submission implements Serializable {
         return contest;
     }
 
-    public String getUserId() {
-        return userId;
+    public ObjectId getUser() {
+        return user;
     }
 
     public long getLocalTime() {
@@ -148,15 +165,15 @@ public class Submission implements Serializable {
         return serverTime;
     }
 
-    public String getProblemId() {
+    public ObjectId getProblemId() {
         return problemId;
     }
 
-    public Answer getAnswer() {
+    public Info getAnswer() {
         return answer;
     }
 
-    public static void removeAllAnswersForUser(String userId, Contest contest) {
+    public static void removeAllAnswersForUser(ObjectId userId, Contest contest) {
         DBCollection data = contest.getCollection();
 
         BasicDBObject removeObject = new BasicDBObject();

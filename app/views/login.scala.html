@@ -11,5 +11,5 @@
         <p class="warning">@Messages.get(additionalMessage)</p>
     }
     <p>Введите свои учетные данные</p>
-    @Forms.getLoginForm.format(form, routes.Registration.login(Event.currentId))
+    @Forms.getLoginForm.formatExtended(form, routes.Registration.login(Event.currentId), false, "form.do_login")
 }

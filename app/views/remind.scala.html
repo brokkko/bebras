@@ -7,5 +7,5 @@
 @main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) { } {
     <h1>Восстановление пароля</h1>
     <p class="warning">Введите свой логин или email, чтобы получить письмо с новым паролем.</p>
-    @Forms.getPasswordRemindForm.format(form, routes.Registration.doPasswordRemind(Event.currentId))
+    @Forms.getPasswordRemindForm.formatExtended(form, routes.Registration.doPasswordRemind(Event.currentId), false, "form.do_remind")
 }

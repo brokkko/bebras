@@ -1,12 +1,11 @@
 package models.data;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import play.Logger;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,42 +15,59 @@ import java.util.List;
  */
 public class CsvDataWriter<T> implements AutoCloseable {
 
-    private List<Feature<T>> features = new ArrayList<>();
+    private final Table<T> table;
     private CSVWriter out;
     private boolean headerWritten = false;
 
-    public CsvDataWriter(OutputStream out) throws UnsupportedEncodingException {
-        this.out = new CSVWriter(new OutputStreamWriter(out, "windows-1251"), ';', '"');
+    public CsvDataWriter(Table<T> table, OutputStream out) {
+        this.table = table;
+
+        try {
+            init(out, "windows-1251", ';', '"');
+        } catch (UnsupportedEncodingException e) {
+            Logger.error("Error in CsvDataWriter", e);
+        }
     }
 
-    public void addFeature(Feature<T> feature) {
-        features.add(feature);
+    public CsvDataWriter(Table<T> table, OutputStream out, String encoding, char delimiter, char quote) throws UnsupportedEncodingException {
+        this.table = table;
+
+        init(out, encoding, delimiter, quote);
     }
 
-    public void writeObject(T object) {
+    private void init(OutputStream out, String encoding, char delimiter, char quote) throws UnsupportedEncodingException {
+        this.out = new CSVWriter(new OutputStreamWriter(out, encoding), delimiter, quote);
+    }
+
+    private void writeObject(T object) throws Exception {
         if (!headerWritten) {
             headerWritten = true;
 
-            String[] newLine = new String[features.size()];
+            String[] newLine = new String[table.getFeaturesCount()];
             int ind = 0;
-            for (Feature<T> feature : features)
-                newLine[ind++] = feature.name();
+            for (String title : table.getTitles())
+                newLine[ind++] = title;
             out.writeNext(newLine);
         }
 
-        String[] newLine = new String[features.size()];
+        table.load(object);
+
+        String[] newLine = new String[table.getFeaturesCount()];
         int ind = 0;
-        for (Feature<T> feature : features)
-            newLine[ind++] = feature.eval(object);
+        for (String feature : table.getFeatureNames()) {
+            Object value = table.getFeature(feature);
+            newLine[ind++] = value == null ? "" : value.toString();
+        }
         out.writeNext(newLine);
+    }
+
+    public void writeObjects(ObjectsProvider<T> provider) throws Exception {
+        while (provider.hasNext())
+            writeObject(provider.next());
     }
 
     @Override
     public void close() throws Exception {
         out.close();
-    }
-
-    public int getNumberOfFeatures() {
-        return features.size();
     }
 }

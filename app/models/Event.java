@@ -4,11 +4,13 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
+import controllers.actions.AuthenticatedAction;
+import models.data.TableDescription;
 import models.forms.*;
-import models.serialization.Deserializer;
-import models.serialization.ListDeserializer;
-import models.serialization.MemoryDeserializer;
-import models.serialization.MongoDeserializer;
+import models.newserialization.*;
+import models.results.EmptyTranslator;
+import models.results.InfoPattern;
+import models.results.Translator;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
@@ -35,39 +37,32 @@ public class Event {
     private String title;
     private LinkedHashMap<String, Contest> contests;
     private InputForm usersForm;
-    private InputForm editUserForm;
     private Date registrationStart; //may be null, means start always
     private Date registrationFinish; //may be null, means never finishes
+    private Date results;
+    private InfoPattern userInfoPattern;
+
+    private Translator resultTranslator;
+    private List<TableDescription> tables;
 
     private Event(Deserializer deserializer) {
-        this.id = deserializer.getString("_id");
-        this.title = deserializer.getString("title");
+        this.id = deserializer.readString("_id");
+        this.title = deserializer.readString("title");
 
-//        this.contests = new ArrayList<>();
-//        List contestsConfig = storedObject.getList("contests");
-//        if (contestsConfig != null) {
-//            for (Object contestInfo : contestsConfig)
-//                contests.add(new Contest((StoredObject) contestInfo));
-//        }
+        usersForm = new SerializableSerializationType<>(InputForm.class).read(deserializer, "users");
+        if (usersForm == null)
+            usersForm = new InputForm();
 
-        Deserializer usersDeserializer = deserializer.getDeserializer("users");
-        if (usersDeserializer != null) {
-            usersForm = InputForm.deserialize("user", usersDeserializer);
-            editUserForm = InputForm.deserialize("user", usersDeserializer, new InputForm.FieldFilter() {
-                @Override
-                public boolean accept(InputField field) {
-                    return ! field.getBooleanConfig("skip_for_edit", false) && field.getBooleanConfig("store", true);
-                }
-            });
-        } else {
-            usersForm = null;
-            editUserForm = null;
-        }
+        //get info pattern from field
+        userInfoPattern = new InfoPattern();
+        if (usersForm != null)
+            for (InputField inputField : usersForm.getFields())
+                if (inputField.isStore())
+                    userInfoPattern.register(inputField.getName(), inputField.getInputTemplate().getType(), inputField.getInputTemplate().getTitle());
 
-        //deserialize contests
+        //deserialize contests (they are not SerializableUpdatable)
         ListDeserializer contestsDeserializer = deserializer.getListDeserializer("contests");
         contests = new LinkedHashMap<>();
-
         if (contestsDeserializer != null)
             while (contestsDeserializer.hasMore()) {
                 Deserializer contestDeserializer = contestsDeserializer.getDeserializer();
@@ -75,8 +70,16 @@ public class Event {
                 contests.put(contest.getId(), contest);
             }
 
-        registrationStart = Utils.parseSimpleTime(deserializer.getString("registration start"));
-        registrationFinish = Utils.parseSimpleTime(deserializer.getString("registration finish"));
+        registrationStart = deserializer.readDate("registration start");
+        registrationFinish = deserializer.readDate("registration finish");
+        results = deserializer.readDate("results");
+
+        resultTranslator = SerializationTypesRegistry.TRANSLATOR.read(deserializer, "results translator");
+        if (resultTranslator == null)
+            resultTranslator = new EmptyTranslator();
+
+
+        tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
 
         //TODO enters site before confirmation
         //TODO choose where to go if authorized
@@ -84,7 +87,7 @@ public class Event {
 
     public static Event getInstance(final String eventId) {
         try {
-            return Cache.getOrElse("event-" + eventId, new Callable<Event>() {
+            return Cache.getOrElse(eventCacheKey(eventId), new Callable<Event>() {
                 @Override
                 public Event call() throws Exception {
                     return createEventById(eventId);
@@ -94,6 +97,10 @@ public class Event {
             Logger.error("Error while getting event '" + eventId + "'", e);
             return null;
         }
+    }
+
+    private static String eventCacheKey(String eventId) {
+        return "event-" + eventId;
     }
 
     private static Event current(Http.Context ctx) {
@@ -116,6 +123,29 @@ public class Event {
         return event;
     }
 
+    public void serialize(Serializer serializer) {
+        serializer.write("_id", id);
+        serializer.write("title", title);
+
+        usersForm.serialize(serializer.getSerializer("users"));
+
+        //serialize contests
+        ListSerializer contestsSerializer = serializer.getListSerializer("contests");
+
+        for (Contest contest : contests.values()) {
+            Serializer contestSerializer = contestsSerializer.getSerializer();
+            contest.serialize(contestSerializer);
+        }
+
+        serializer.write("registration start", registrationStart);
+        serializer.write("registration finish", registrationFinish);
+        serializer.write("results", results);
+
+        SerializationTypesRegistry.TRANSLATOR.write(serializer, "results translator", resultTranslator);
+
+        SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).write(serializer, "tables", tables);
+    }
+
     public static String currentId(Http.Context ctx) {
         Event current = current(ctx);
         return current == null ? null : current.getId();
@@ -131,12 +161,16 @@ public class Event {
     }
 
     private static Event createEventById(String eventId) throws Exception {
-        DBCollection eventsCollection = MongoConnection.getEventsCollection();
-        DBObject eventObject = eventsCollection.findOne(new BasicDBObject("_id", eventId));
+        DBObject eventObject = loadEventDBObject(eventId);
         if (eventObject == null)
-            throw new Exception("No such collection");
+            throw new Exception("No such collection: " + eventId);
         else
             return new Event(new MongoDeserializer(eventObject));
+    }
+
+    private static DBObject loadEventDBObject(String eventId) {
+        DBCollection eventsCollection = MongoConnection.getEventsCollection();
+        return eventsCollection.findOne(new BasicDBObject("_id", eventId));
     }
 
     public String getId() {
@@ -151,8 +185,27 @@ public class Event {
         return contests.get(id);
     }
 
+    public void setContests(Collection<Contest> contests) {
+        this.contests.clear();
+        for (Contest contest : contests)
+            this.contests.put(contest.getId(), contest);
+    }
+
     public Collection<Contest> getContests() {
         return contests.values();
+    }
+
+    public Collection<Contest> getContestsAvailableForUser() {
+        User user = User.current();
+        if (user.getType() == UserType.EVENT_ADMIN)
+            return getContests();
+
+        List<Contest> c = new ArrayList<>(contests.size());
+        for (Contest contest : contests.values())
+            if (!contest.isOnlyAdmin())
+                c.add(contest);
+
+        return c;
     }
 
     public InputForm getUsersForm() {
@@ -160,11 +213,36 @@ public class Event {
     }
 
     public InputForm getEditUserForm() {
-        return editUserForm;
+        return usersForm.filter(new InputForm.FieldFilter() {
+            @Override
+            public boolean accept(InputField field) {
+                return !field.isSkipForEdit() && field.isStore();
+            }
+        });
+    }
+
+    public Date getResults() {
+        return results;
+    }
+
+    public List<? extends TableDescription> getTables() {
+        return tables;
+    }
+
+    public TableDescription getTable(int index) {
+        return index < 0 || index >= tables.size() ? null : tables.get(index);
+    }
+
+    //TODO works only after authentication
+    public boolean resultsAvailable() {
+        return getResults().before(AuthenticatedAction.getRequestTime());
     }
 
     public File getEventDataFolder() {
-        return new File(Play.application().getFile("data"), getId());
+        File folder = new File(Play.application().getFile("data"), getId());
+        //noinspection ResultOfMethodCallIgnored
+        folder.mkdirs();
+        return folder;
     }
 
     public boolean registrationStarted() {
@@ -173,5 +251,43 @@ public class Event {
 
     public boolean registrationFinished() {
         return registrationFinish != null && registrationFinish.before(new Date()); //TODO get date from ... AuthenticatedAction
+    }
+
+    public InfoPattern getUserInfoPattern() {
+        return userInfoPattern;
+    }
+
+    public Translator getResultTranslator() {
+        return resultTranslator;
+    }
+
+    public InfoPattern getResultsInfoPattern() {
+        return resultTranslator.getInfoPattern();
+    }
+
+    //form
+
+    public void updateFromEventChangeForm(Deserializer deserializer) {
+        title = deserializer.readString("title");
+        results = deserializer.readDate("results");
+        registrationStart = deserializer.readDate("registration start");
+        registrationFinish = deserializer.readDate("registration finish");
+    }
+
+    public void invalidateCache() {
+        Cache.remove(eventCacheKey(id));
+    }
+
+    public void store() {
+        DBObject eventObject = loadEventDBObject(id);
+        MongoSerializer serializer = new MongoSerializer(eventObject);
+        serialize(serializer);
+        MongoConnection.getEventsCollection().save(eventObject);
+
+        invalidateCache();
+    }
+
+    public void addContest(Contest contest) {
+        contests.put(contest.getId(), contest);
     }
 }

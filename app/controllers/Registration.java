@@ -1,16 +1,17 @@
 package controllers;
 
+import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.*;
 import models.forms.*;
 import models.forms.validators.AuthenticatorValidator;
-import models.serialization.FormDeserializer;
+import models.newserialization.FormDeserializer;
 import org.apache.commons.mail.EmailException;
 import play.Logger;
+import play.Play;
 import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.*;
 
 import java.util.UUID;
 
@@ -20,23 +21,24 @@ import java.util.UUID;
  * Date: 09.01.13
  * Time: 16:39
  */
-
 @LoadEvent
+@DcesController
 public class Registration extends Controller {
 
+    @SuppressWarnings("UnusedParameters")
     public static Result registration(String eventId) {
         //TODO use form.errorsAsJson() to ajax validate form
 
         if (!Event.current().registrationStarted())
-            return ok(error.render("error.msg.registration_not_started", new String[0]));
+            return ok(views.html.error.render("error.msg.registration_not_started", new String[0]));
 
         if (Event.current().registrationFinished())
-            return ok(error.render("error.msg.registration_finished", new String[0]));
+            return ok(views.html.error.render("error.msg.registration_finished", new String[0]));
 
         RawForm form = new RawForm();
         form.bindFromRequest();
 
-        return ok(register.render(form));
+        return ok(views.html.register.render(form));
     }
 
     public static Result doRegistration(String eventId) {
@@ -46,7 +48,7 @@ public class Registration extends Controller {
         RawForm rawForm = formDeserializer.getRawForm();
 
         if (rawForm.hasErrors())
-            return ok(register.render(rawForm));
+            return ok(views.html.register.render(rawForm));
 
         User user = User.deserialize(formDeserializer);
 
@@ -54,22 +56,22 @@ public class Registration extends Controller {
         String confirmationUUID = UUID.randomUUID().toString();
         String password = User.generatePassword();
 
-        String email = user.getString(User.FIELD_EMAIL);
-        String login = user.getString(User.FIELD_LOGIN);
-        String name = user.getString(User.FIELD_NAME);
-        String patronymic = user.getString(User.FIELD_PATRONYMIC);
+        String email = user.getEmail();
+        String login = user.getLogin();
+        String greeting = user.getGreeting();
 
         try {
-            Email.sendRegistrationConfirmationEmail(name, patronymic, email, login, password, confirmationUUID);
+            Email.sendRegistrationConfirmationEmail(greeting, email, login, password, confirmationUUID);
         } catch (EmailException e) {
             Logger.error("Failed to send email", e);
-            return internalServerError("Failed to send email");
+            if (!Play.isDev()) //allow to fail when sending email in dev mode
+                return internalServerError("Failed to send email");
         }
 
-        user.put(User.FIELD_REGISTRATION_UUID, registrationUUID);
-        user.put(User.FIELD_CONFIRMATION_UUID, confirmationUUID);
-        user.put(User.FIELD_EVENT, eventId);
-        user.put(User.FIELD_PASS_HASH, User.passwordHash(password));
+        user.setRegistrationUUID(registrationUUID);
+        user.setConfirmationUUID(confirmationUUID);
+        user.setEvent(Event.current());
+        user.setPasswordHash(User.passwordHash(password));
 
         user.store();
 
@@ -77,42 +79,45 @@ public class Registration extends Controller {
     }
 
     public static Result waitForEmail(String eventId, String uuid, boolean passwordRecovery) {
-        User user = User.getInstance(User.FIELD_REGISTRATION_UUID, uuid);
+        User user = User.getUserByRegistrationUUID(uuid);
 
         if (user == null)
             return redirect(routes.Registration.login(eventId));
 
-        Boolean restoreForEmail = (Boolean) user.get(User.FIELD_RESTORE_FOR_EMAIL);
+        Boolean restoreForEmail = user.isRestoreForEmail();
         boolean isEmail = ! passwordRecovery || restoreForEmail == null || restoreForEmail;
 
-        return ok(wait_for_email.render(
+        return ok(views.html.wait_for_email.render(
                 isEmail, isEmail ? user.getEmail() : user.getLogin()
         ));
     }
 
+    @SuppressWarnings("UnusedParameters")
     public static Result confirmRegistration(String eventId, String uuid, boolean passwordRecovery) {
-        User user = User.getInstance(User.FIELD_CONFIRMATION_UUID, uuid);
+        User user = User.getUserByConfirmationUUID(uuid);
+
+        //allow in dev mode to confirm by login
+        if (user == null && Play.isDev())
+            user = User.getUserByLogin(uuid);
 
         if (user == null)
-            return ok(login.render(new RawForm(), passwordRecovery ? "page.recovery.already_recovered" : "page.registration.already_confirmed"));
+            return ok(views.html.login.render(new RawForm(), passwordRecovery ? "page.recovery.already_recovered" : "page.registration.already_confirmed"));
 
-        user.put(User.FIELD_REGISTRATION_UUID, null);
-        user.put(User.FIELD_CONFIRMATION_UUID, null);
-        user.put(User.FIELD_CONFIRMED, true);
+        user.setRegistrationUUID(null);
+        user.setConfirmationUUID(null);
+        user.setConfirmed(true);
 
         if (passwordRecovery)
-            user.put(
-                    User.FIELD_PASS_HASH,
-                    user.get(User.FIELD_NEW_RECOVERY_PASSWORD)
-            );
+            user.setPasswordHash(user.getNewRecoveryPassword());
 
         user.store();
 
-        return ok(login.render(new RawForm(), passwordRecovery ? "page.registration.password_recovered" : "page.registration.confirmed"));
+        return ok(views.html.login.render(new RawForm(), passwordRecovery ? "page.registration.password_recovered" : "page.registration.confirmed"));
     }
 
+    @SuppressWarnings("UnusedParameters")
     public static Result login(String eventId) {
-        return ok(login.render(new RawForm(), null));
+        return ok(views.html.login.render(new RawForm(), null));
     }
 
     public static Result doLogin(String eventId) {
@@ -122,17 +127,18 @@ public class Registration extends Controller {
         RawForm form = formDeserializer.getRawForm();
 
         if (form.hasErrors())
-            return ok(login.render(form, null));
+            return ok(views.html.login.render(form, null));
 
-        User user = (User) formDeserializer.getValidationData(AuthenticatorValidator.VALIDATED_USER);
+        User user = (User) formDeserializer.getValidationData();
 
         session(User.getUsernameSessionKey(), user.getLogin());
 
         return redirect(routes.UserInfo.contestsList(eventId));
     }
 
+    @SuppressWarnings("UnusedParameters")
     public static Result passwordRemind(String eventId) {
-        return ok(remind.render(new RawForm()));
+        return ok(views.html.remind.render(new RawForm()));
     }
 
     public static Result doPasswordRemind(String eventId) {
@@ -141,26 +147,26 @@ public class Registration extends Controller {
         RawForm form = formDeserializer.getRawForm();
 
         if (form.hasErrors())
-            return ok(remind.render(form));
+            return ok(views.html.remind.render(form));
 
         //let's understand what is it, email or login
 
-        String emailOrLogin = formDeserializer.getString(Forms.PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN);
+        String emailOrLogin = formDeserializer.readString(Forms.PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN);
 
         boolean isEmail = emailOrLogin.contains("@");
 
-        User user = User.getInstance(isEmail ? User.FIELD_EMAIL : User.FIELD_LOGIN, emailOrLogin);
+        User user = isEmail ? User.getUserByEmail(emailOrLogin) : User.getUserByLogin(emailOrLogin);
 
         if (user == null) {
             String error_message = isEmail ? "password_remind.wrong_email" : "password_remind.wrong_login";
             form.reject(Messages.get(error_message));
-            return ok(remind.render(form));
+            return ok(views.html.remind.render(form));
         }
 
         String newPassword = User.generatePassword();
 
-        String recoveryUUID = (String) user.get(User.FIELD_REGISTRATION_UUID);
-        String confirmationUUID = (String) user.get(User.FIELD_CONFIRMATION_UUID);
+        String recoveryUUID = user.getRegistrationUUID();
+        String confirmationUUID = user.getConfirmationUUID();
 
         if (recoveryUUID == null)
             recoveryUUID = UUID.randomUUID().toString();
@@ -169,8 +175,7 @@ public class Registration extends Controller {
 
         try {
             Email.sendPasswordRestoreEmail(
-                    user.getString(User.FIELD_NAME),
-                    user.getString(User.FIELD_PATRONYMIC),
+                    user.getGreeting(),
                     user.getEmail(),
                     user.getLogin(),
                     newPassword,
@@ -181,10 +186,10 @@ public class Registration extends Controller {
             return internalServerError("Failed to send email");
         }
 
-        user.put(User.FIELD_CONFIRMATION_UUID, confirmationUUID);
-        user.put(User.FIELD_REGISTRATION_UUID, recoveryUUID);
-        user.put(User.FIELD_RESTORE_FOR_EMAIL, isEmail);
-        user.put(User.FIELD_NEW_RECOVERY_PASSWORD, User.passwordHash(newPassword));
+        user.setConfirmationUUID(confirmationUUID);
+        user.setRegistrationUUID(recoveryUUID);
+        user.setRestoreForEmail(isEmail);
+        user.setNewRecoveryPassword(User.passwordHash(newPassword));
 
         user.store();
 

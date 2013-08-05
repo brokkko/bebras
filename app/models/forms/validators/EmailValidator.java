@@ -1,7 +1,5 @@
 package models.forms.validators;
 
-import models.serialization.Deserializer;
-
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
@@ -12,20 +10,21 @@ import javax.mail.internet.InternetAddress;
  * Time: 17:57
  */
 public class EmailValidator extends Validator<String> {
-    public EmailValidator(Deserializer deserializer) {
+
+    public EmailValidator() {
         defaultMessage = "error.msg.email";
     }
 
     @Override
-    public String validate(String email) {
+    public Validator.ValidationResult validate(String email) {
         if (email.indexOf('@') < 0)
-            return getMessage();
+            return message();
 
         try {
             new InternetAddress(email);
         } catch (AddressException e) {
-            return getMessage();
+            return message();
         }
-        return null;
+        return ok();
     }
 }

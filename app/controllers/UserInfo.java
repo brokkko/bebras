@@ -1,11 +1,12 @@
 package controllers;
 
 import controllers.actions.Authenticated;
+import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.Event;
 import models.User;
-import models.serialization.FormDeserializer;
-import models.serialization.FormSerializer;
+import models.newserialization.FormDeserializer;
+import models.newserialization.FormSerializer;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import play.mvc.Controller;
@@ -20,17 +21,20 @@ import play.mvc.Result;
  */
 @LoadEvent
 @Authenticated
+@DcesController
 public class UserInfo extends Controller {
 
-    public static Result contestsList(String eventId) { //TODO use event id
-        return ok(views.html.contests_list.render());
+    @SuppressWarnings("UnusedParameters")
+    public static Result contestsList(String eventId) {
+        return ok(views.html.contests_list.render(new RawForm()));
     }
 
+    @SuppressWarnings("UnusedParameters")
     public static Result info(String eventId) { //TODO use event id
         User user = User.current();
 
         FormSerializer formSerializer = new FormSerializer(Event.current().getEditUserForm());
-        user.store(formSerializer);
+        user.serialize(formSerializer);
 
         return ok(views.html.user_info.render(
                 formSerializer.getRawForm(),
@@ -49,7 +53,7 @@ public class UserInfo extends Controller {
             return ok(views.html.user_info.render(form, null));
 
         User user = User.current();
-        user.update(formDeserializer);
+        user.updateFromForm(formDeserializer, registrationForm);
         user.store();
 
         flash("user_info_change_msg", "1");

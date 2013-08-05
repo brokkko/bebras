@@ -1,4 +1,4 @@
-@(status:String, pagedUserProblems:List[List[models.problems.Problem]], problem2index:Map[models.problems.Problem, Integer], jsonContestInfo:String, problemsCss:List[views.ResourceLink], problemsJs:List[views.ResourceLink])
+@(status:String, pagedUserProblems:List[List[models.newproblems.Problem]], problem2index:Map[models.newproblems.Problem, Integer], jsonContestInfo:String, problemsCss:List[views.ResourceLink], problemsJs:List[views.ResourceLink])
 @import models.Contest
 @import models.Event
 @import models.User
@@ -22,7 +22,8 @@
 
         <div class='contest-info hidden'>@Html(jsonContestInfo)</div>
         @if(status == "results") {
-            <div id='contest-results'>@contest_results(Contest.current.evaluateUserResults(User.current))</div>
+            <h1>Результаты соревнования:</h1>
+            <div id='contest-results'>@info(User.current.getContestResults(Contest.current), Contest.current.getResultsInfoPattern, null)</div>
         }
         @format_pages_top(pagedUserProblems.length, "dont-move-down")
         @format_pages_bottom()
@@ -49,7 +50,7 @@
             @if(Contest.current.resultsNotAvailableAtAll) {
                 Результаты и правильные ответы будут доступны позже.
             } else {
-                Результаты и правильные ответы будут доступны: <b>@Utils.formatContestDate(Contest.current.getResults).</b>
+                Результаты и правильные ответы будут доступны: <b>@Utils.formatContestDate(Contest.current.getResults).</b> <!--TODO report at_f. does not work-->
             }
         }
         </p>

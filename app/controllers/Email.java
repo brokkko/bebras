@@ -1,5 +1,6 @@
 package controllers;
 
+import controllers.actions.DcesController;
 import models.Event;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
@@ -19,6 +20,7 @@ import java.util.Arrays;
  * Date: 05.01.13
  * Time: 22:12
  */
+@DcesController
 public class Email {
 
     private static String sendEmail(String to, String subject, String message) throws EmailException {
@@ -67,25 +69,25 @@ public class Email {
         return email.send();
     }
 
-    public static void sendRegistrationConfirmationEmail(String name, String patronymic, String email, String login, String password, String confirmationUUID) throws EmailException {
+    public static void sendRegistrationConfirmationEmail(String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
         String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, false)
                 .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();
         sendEmail(
                 email,
                 Messages.get("mail.registration.subject", title),
-                createLineBreaks(Messages.get("mail.registration.body", name, patronymic, title, registrationLink, login, password))
+                createLineBreaks(Messages.get("mail.registration.body", greeting, title, registrationLink, login, password))
         );
     }
 
-    public static void sendPasswordRestoreEmail(String name, String patronymic, String email, String login, String password, String confirmationUUID) throws EmailException {
+    public static void sendPasswordRestoreEmail(String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
         String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, true)
                 .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();
         sendEmail(
                 email,
                 Messages.get("mail.password_remind.subject", title),
-                createLineBreaks(Messages.get("mail.password_remind.body", name, patronymic, title, registrationLink, login, password))
+                createLineBreaks(Messages.get("mail.password_remind.body", greeting, title, registrationLink, login, password))
         );
     }
 

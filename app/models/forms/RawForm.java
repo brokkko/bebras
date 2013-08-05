@@ -15,11 +15,11 @@ import java.util.Map;
  */
 public class RawForm {
 
-    private final Map<String, String> map;
+    private final Map<String, Object> map;
     private List<String> globalErrors = null;
     private final Map<String, List<String>> errors = new HashMap<>();
 
-    public RawForm(Map<String, String> map) {
+    public RawForm(Map<String, Object> map) {
         this.map = map;
     }
 
@@ -53,7 +53,7 @@ public class RawForm {
     }
 
     public String get(String field, String... postfixes) {
-        return map.get(postfixField(field, postfixes));
+        return stringify(map.get(postfixField(field, postfixes)));
     }
 
     public int getAsInt(String field, int defaultValue, String... postfixes) {
@@ -72,7 +72,7 @@ public class RawForm {
     }
 
     public void put(String field, Object value, String... postfixes) {
-        map.put(postfixField(field, postfixes), stringify(value));
+        map.put(postfixField(field, postfixes), value);
     }
 
     public void remove(String field, String... postfixes) {
