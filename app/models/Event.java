@@ -8,6 +8,7 @@ import controllers.actions.AuthenticatedAction;
 import models.data.TableDescription;
 import models.forms.*;
 import models.newserialization.*;
+import models.results.CombinedTranslator;
 import models.results.EmptyTranslator;
 import models.results.InfoPattern;
 import models.results.Translator;
@@ -42,7 +43,8 @@ public class Event {
     private Date results;
     private InfoPattern userInfoPattern;
 
-    private Translator resultTranslator;
+    private List<Translator> resultTranslators;
+    private CombinedTranslator resultTranslator = null; //cached translator that unions all translators
     private List<TableDescription> tables;
 
     private Event(Deserializer deserializer) {
@@ -74,10 +76,10 @@ public class Event {
         registrationFinish = deserializer.readDate("registration finish");
         results = deserializer.readDate("results");
 
-        resultTranslator = SerializationTypesRegistry.TRANSLATOR.read(deserializer, "results translator");
-        if (resultTranslator == null)
-            resultTranslator = new EmptyTranslator();
-
+        resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
+        if (resultTranslators.size() == 0)
+            resultTranslators.add(new EmptyTranslator());
+        resultTranslator = new CombinedTranslator(resultTranslators);
 
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
 
@@ -141,7 +143,7 @@ public class Event {
         serializer.write("registration finish", registrationFinish);
         serializer.write("results", results);
 
-        SerializationTypesRegistry.TRANSLATOR.write(serializer, "results translator", resultTranslator);
+        SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).write(serializer, "results translators", resultTranslators);
 
         SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).write(serializer, "tables", tables);
     }

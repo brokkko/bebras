@@ -81,9 +81,12 @@ GET         /assets/*file                                           controllers.
 # + TODO add contest
 # + TODO remove contest
 # + TODO add user
+
+# TODO final rating
+
 # TODO registered users
 # TODO remove user
+
 # TODO max scores evaluation (several translators)
-# TODO final rating
 # TODO интерфейс
 # TODO режим соревнования, что оно окончилось, но к задачам уже не перейти

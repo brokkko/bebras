@@ -50,6 +50,10 @@ public class InfoPattern extends SerializationType<Info> {
         return field2title.get(field);
     }
 
+    public SerializationType getType(String field) {
+        return field2type.get(field);
+    }
+
     public void write(Info value, Serializer serializer) {
         if (value == null)
             return;

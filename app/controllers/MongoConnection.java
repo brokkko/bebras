@@ -2,10 +2,7 @@ package controllers;
 
 import com.mongodb.*;
 import models.*;
-import models.migration.Migrator;
-import models.migration.Migrator2;
-import models.migration.Migrator3;
-import models.migration.Migrator4;
+import models.migration.*;
 import models.newproblems.ProblemLink;
 import play.Configuration;
 import play.Logger;
@@ -37,7 +34,8 @@ public class MongoConnection {
             null, //1
             new Migrator2(),
             new Migrator3(),
-            new Migrator4()
+            new Migrator4(),
+            new Migrator5()
     };
 
     public static DBCollection getConfigCollection() {

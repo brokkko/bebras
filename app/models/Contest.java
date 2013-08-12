@@ -1,11 +1,9 @@
 package models;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import controllers.actions.AuthenticatedAction;
 import models.data.TableDescription;
 import models.forms.InputForm;
 import models.forms.RawForm;
@@ -13,6 +11,7 @@ import models.newproblems.newproblemblock.ProblemBlock;
 import models.newserialization.*;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
+import models.results.CombinedTranslator;
 import models.results.EmptyTranslator;
 import models.results.InfoPattern;
 import models.results.Translator;
@@ -48,7 +47,8 @@ public class Contest {
     private List<Integer> pageSizes;
     private List<ProblemBlock> problemBlocks;
 
-    private Translator resultTranslator;
+    private CombinedTranslator resultTranslator;
+    private List<Translator> resultTranslators;
 
     private List<TableDescription> tables;
 
@@ -77,9 +77,10 @@ public class Contest {
 
         //read results translator
 
-        resultTranslator = SerializationTypesRegistry.TRANSLATOR.read(deserializer, "results translator");
-        if (resultTranslator == null)
-            resultTranslator = new EmptyTranslator();
+        resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
+        if (resultTranslators.size() == 0)
+            resultTranslators.add(new EmptyTranslator());
+        resultTranslator = new CombinedTranslator(resultTranslators);
 
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
 
@@ -106,7 +107,7 @@ public class Contest {
         SerializationTypesRegistry.list(int.class).write(serializer, "page sizes", pageSizes);
         SerializationTypesRegistry.list(SerializationTypesRegistry.PROBLEM_BLOCK).write(serializer, "blocks", problemBlocks);
 
-        SerializationTypesRegistry.TRANSLATOR.write(serializer, "results translator", resultTranslator);
+        SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).write(serializer, "results translators", resultTranslators);
 
         SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).write(serializer, "tables", tables);
 
