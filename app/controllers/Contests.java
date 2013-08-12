@@ -82,7 +82,7 @@ public class Contests extends Controller {
         Date contestStartTime = user.contestStartTime(contestId);
         if (contestStartTime == null) {
             contestStartTime = AuthenticatedAction.getRequestTime();
-            if (!contest.contestFinished()) { //don't mark that user started contest if he can not start it. TODO check this condition in some other way
+            if (!user.contestFinished(contest)) { //don't mark that user started contest if he can not start it. TODO check this condition in some other way
                 user.setContestStartTime(contestId, contestStartTime);
                 user.store();
             }
@@ -105,7 +105,7 @@ public class Contests extends Controller {
             textStatus = "going";
         if (status == 2)
             textStatus = "results";
-        if (status == 3 && contest.resultsAvailable())
+        if (status == 3 && user.resultsAvailable(contest))
             textStatus = "results";
         contestInfoSerializer.write("status", textStatus);
 

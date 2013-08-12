@@ -428,16 +428,30 @@ public class User implements SerializableUpdatable {
         return AuthenticatedAction.getRequestTime().getTime() - start.getTime() >= contest.getDurationInMs();
     }
 
+    //contest timing
+
+    public boolean contestStarted(Contest contest) {
+        return getType() == UserType.EVENT_ADMIN || contest.getStart().before(AuthenticatedAction.getRequestTime());
+    }
+
+    public boolean contestFinished(Contest contest) {
+        return getType() != UserType.EVENT_ADMIN && contest.getFinish().before(AuthenticatedAction.getRequestTime());
+    }
+
+    public boolean resultsAvailable(Contest contest) {
+        return contest.getResults().before(AuthenticatedAction.getRequestTime());
+    }
+
     public int getContestStatus(Contest contest) {
         if (contestIsGoing(contest))
             return 1; //going
-        if (contest.resultsAvailable() && userParticipatedAndFinished(contest))
+        if (resultsAvailable(contest) && userParticipatedAndFinished(contest))
             return 2; //results available
-        if (contest.contestFinished() && !participatedInContest(contest.getId()))
+        if (contestFinished(contest) && !participatedInContest(contest.getId()))
             return 3; //finished but not participated
         if (userParticipatedAndFinished(contest))
             return 4; //finished but still waiting results
-        if (contest.contestStarted())
+        if (contestStarted(contest))
             return 5; //still may participate
         return 6; //still not started;
     }

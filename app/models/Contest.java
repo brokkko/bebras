@@ -1,5 +1,6 @@
 package models;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -165,18 +166,6 @@ public class Contest {
             return MongoConnection.getCollection(CONTEST_COLLECTION_NAME_PREFIX + event.getId() + "_" + id);
     }
 
-    public boolean contestStarted() {
-        return start.before(AuthenticatedAction.getRequestTime());
-    }
-
-    public boolean contestFinished() {
-        return finish.before(AuthenticatedAction.getRequestTime());
-    }
-
-    public boolean resultsAvailable() {
-        return getResults().before(AuthenticatedAction.getRequestTime());
-    }
-
     public boolean isUnlimitedTime() {
         return duration == 0;
     }
@@ -185,6 +174,7 @@ public class Contest {
         return getResults().before(start);
     }
 
+    //TODO move to user
     public boolean resultsNotAvailableAtAll() {
         return getResults().getTime() - finish.getTime() > 1000l * 60 * 60 * 24 * 265 * 50; // 50 years
     }
@@ -318,7 +308,9 @@ public class Contest {
     public long getNumStarted() {
         DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
 
-        query.put("_contests." + id + ".sd", new BasicDBObject("$exists", true));
+        String sd = "_contests." + id + ".sd";
+        query.put(sd, new BasicDBObject(new BasicDBObject("$exists", true)));
+        query.put(sd, new BasicDBObject("$ne", null));
 
         return MongoConnection.getUsersCollection().count(query);
     }
