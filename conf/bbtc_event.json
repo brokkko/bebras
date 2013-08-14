@@ -284,11 +284,13 @@
                 "5 random <- /bbtc/hard/9",
                 "5 random <- /bbtc/hard/10"
             ],
-            "results translator": {
-                "type": "beaver",
-                "scores": 1,
-                "penalty": -1
-            },
+            "results translators": [
+                {
+                    "type": "beaver",
+                    "scores": 1,
+                    "penalty": -1
+                }
+            ],
             "tables": [
                 {
                     "title": "Результаты соревнования Экспресс-тест",

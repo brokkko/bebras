@@ -83,6 +83,7 @@ GET         /assets/*file                                           controllers.
 # + TODO add user
 
 # TODO final rating
+# TODO Extra pages
 
 # TODO registered users
 # TODO remove user

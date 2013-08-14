@@ -5,11 +5,13 @@
     "finish": "2013-05-21 00:00",
     "duration": 10,
     "page sizes": [5],
-    "results translator": {
-        "type": "beaver",
-        "scores": 1,
-        "penalty": -1
-    },
+    "results translators": [
+        {
+            "type": "beaver",
+            "scores": 1,
+            "penalty": -1
+        }
+    ],
     "tables": [
         {
             "title": "Результаты соревнования %%%cname%%%",

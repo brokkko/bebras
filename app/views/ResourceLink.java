@@ -25,6 +25,21 @@ public class ResourceLink {
 
     private String localUrl;
     private String externalUrl;
+    private String type;
+
+    public ResourceLink(String localUrl, String type, String externalUrl) {
+        this.localUrl = localize(type, localUrl);
+        this.externalUrl = externalUrl;
+        this.type = type;
+    }
+
+    public ResourceLink(String localUrl) {
+        this(localUrl, determineType(localUrl));
+    }
+
+    public ResourceLink(String localUrl, String type) {
+        this(localUrl, type, null);
+    }
 
     private static String localize(String type, String localUrl) {
         switch (type) {
@@ -44,24 +59,11 @@ public class ResourceLink {
             return localUrl + "." + type;
     }
 
-    public ResourceLink(String localUrl, String type, String externalUrl) {
-        this.localUrl = localize(type, localUrl);
-        this.externalUrl = externalUrl;
-    }
-
-    public ResourceLink(String localUrl) {
-        this(localUrl, determineType(localUrl));
-    }
-
     private static String determineType(String url) {
         int point = url.lastIndexOf('.');
         if (point == -1)
             return "";
         return url.substring(point + 1);
-    }
-
-    public ResourceLink(String localUrl, String type) {
-        this(localUrl, type, null);
     }
 
     public String apply() {
@@ -84,5 +86,9 @@ public class ResourceLink {
     @Override
     public String toString() {
         return apply();
+    }
+
+    public String getType() {
+        return type;
     }
 }
