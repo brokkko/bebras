@@ -32,13 +32,4 @@
     @for((table, ind) <- Event.current.getTables.zipWithIndex) {
         <p>@(ind + 1). @table.getTitle: <a href="@routes.EventAdministration.csvTable(Event.currentId, ind)">скачать</a></p>
     }
-
-    <p>Чтобы добавить пользователя, перейдите по ссылке
-        <span class='link'>http://on-line.runodog.ru/[login]/[password]/[email]/[1 for admin]/create_user</span>, например
-        <span class='link'>http://on-line.runodog.ru/ilya/qwerty/iposov@@gmail.com/1/create_user</span> создаст пользователя
-        с логином ilya, паролем qwerty, почтой iposov@@gmail.com, 1 - означает, что он администратор. 0 означало бы, что он
-        обычный пользователь.
-    </p>
-    <p>Недоработки на данный момент: необходимо улучшать интерфейс; позволить добавлять и удалять пользователей;
-    вернуть вычисление итогового рейтинга</p>
 }

@@ -159,6 +159,10 @@ public class User implements SerializableUpdatable {
         return (String) info.get(FIELD_EMAIL);
     }
 
+    public void setEmail(String email) {
+        this.info.put(FIELD_EMAIL, email);
+    }
+
     public Event getEvent() {
         return event;
     }
@@ -686,6 +690,7 @@ public class User implements SerializableUpdatable {
 
         usersCollection.remove(remove);
     }
+
 }
 
 

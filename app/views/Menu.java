@@ -26,8 +26,10 @@ public class Menu {
             menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
             menu.add(new MenuItem("Личные данные", routes.UserInfo.info(eventId)));
 
-            if (User.current().getType() == UserType.EVENT_ADMIN)
+            if (User.current().getType() == UserType.EVENT_ADMIN) {
                 menu.add(new MenuItem("Администрирование", routes.EventAdministration.admin(eventId)));
+                menu.add(new MenuItem("Помощь", routes.EventAdministration.help(eventId)));
+            }
 
             menu.add(new MenuItem("Выход", routes.Registration.logout(eventId)));
         } else {

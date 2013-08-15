@@ -278,6 +278,9 @@ public class Contest {
     }
 
     public void registerProblemName(ObjectId pid, String name) {
+        if (pid == null) //don't register anything if there is no problem
+            return;
+
         pid2name.put(pid.toString(), name);
     }
 

@@ -215,4 +215,8 @@ public class EventAdministration extends Controller {
 
         return redirect(routes.UserInfo.contestsList(eventId));
     }
+
+    public static Result help(String eventId) {
+        return ok(views.html.help.render());
+    }
 }

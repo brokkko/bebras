@@ -111,6 +111,9 @@ public class Application extends Controller {
 
         User user = User.deserialize(formDeserializer);
 
+        //may say that such email is already registered
+        user.setEmail(email);
+
         if (isAdmin)
             user.setType(UserType.EVENT_ADMIN);
 
