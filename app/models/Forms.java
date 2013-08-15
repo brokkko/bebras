@@ -211,6 +211,15 @@ public class Forms {
                                             "title", "Дата завершения регистрации"
                                     ),
                                     "required", true
+                            ),
+                            Utils.mapify(
+                                    "name", "tables",
+                                    "view", Utils.mapify(
+                                            "type", "json list",
+                                            "placeholder", "Введите информацию про таблицы",
+                                            "title", "Таблицы с данными"
+                                    ),
+                                    "required", true
                             )
                     ),
                     "validators",

@@ -19,6 +19,9 @@ public class SubstringFunctionFeatures<T> extends FunctionFeaturesSet<T> {
     protected Object function(String function, Object feature) {
         String code = (String) feature;
 
+        if (code == null)
+            return null;
+
         int pos = function.indexOf('-');
         if (pos < 0)
             throw new IllegalArgumentException("No \"-\" in function name");

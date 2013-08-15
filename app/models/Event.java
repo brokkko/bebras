@@ -274,6 +274,7 @@ public class Event {
         results = deserializer.readDate("results");
         registrationStart = deserializer.readDate("registration start");
         registrationFinish = deserializer.readDate("registration finish");
+        tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
     }
 
     public void invalidateCache() {
