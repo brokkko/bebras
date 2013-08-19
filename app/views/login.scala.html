@@ -1,11 +1,11 @@
 @(form:models.forms.RawForm, additionalMessage:String)
+@import views.widgets.FormsWidget
 @import models.forms.RawForm
-@import views.ResourceLink
 @import scala.List
 @import play.i18n.Messages
 @import models.Forms
 @import models.Event
-@main_with_menu(Event.current().getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) { } {
+@main_with_menu(Event.current().getTitle)(List(FormsWidget.get)) { } {
     <h1>@models.Event.current.getTitle</h1>
     @if(additionalMessage != null) {
         <p class="warning">@Messages.get(additionalMessage)</p>

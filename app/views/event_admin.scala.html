@@ -1,10 +1,11 @@
 @(form:models.forms.RawForm)
+@import views.widgets.AdminWidget
+@import views.widgets.FormsWidget
 @import models.Event
 @import models.forms.RawForm
 @import scala.List
-@import views.ResourceLink
 @import models.forms.validators.FileListValidator
-@main_with_menu("Администрирование " + Event.current.getTitle)(List(new ResourceLink("admin.css"), new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) { } {
+@main_with_menu("Администрирование " + Event.current.getTitle)(List(AdminWidget.get, FormsWidget.get)) { } {
     <h1>Администрирование мероприятия @Event.current.getTitle</h1>
     @models.Forms.getEventChangeForm.formatExtended(form, controllers.routes.EventAdministration.admin(Event.currentId), true, "form.do_change")
 

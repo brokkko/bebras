@@ -17,7 +17,9 @@ import org.codehaus.jackson.node.ObjectNode;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.ResourceLink;
+import views.widgets.ListWidget;
+import views.widgets.ResourceLink;
+import views.widgets.Widget;
 
 import java.util.*;
 
@@ -48,9 +50,6 @@ public class Contests extends Controller {
             return forbidden();
 
         List<List<Problem>> pagedUserProblems = contest.getPagedUserProblems(user);
-
-        List<ResourceLink> cssLinksList = getCssLinks(pagedUserProblems);
-        List<ResourceLink> jsLinksList = getJsLinks(pagedUserProblems);
 
         List<Info> answersForContest = user.getAnswersForContest(contest);
 
@@ -109,7 +108,7 @@ public class Contests extends Controller {
             textStatus = "results";
         contestInfoSerializer.write("status", textStatus);
 
-        return ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
+        return ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), getProblemsWidgets(pagedUserProblems)));
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -183,31 +182,20 @@ public class Contests extends Controller {
         return redirect(routes.UserInfo.contestsList(eventId));
     }
 
-    //TODO this is almost the same as get css links
-    private static List<ResourceLink> getJsLinks(List<List<Problem>> pagedUserProblems) {
-        Set<String> jsLinks = new HashSet<>();
+    private static Widget getProblemsWidgets(List<List<Problem>> pagedUserProblems) {
+        Set<String> links = new HashSet<>();
 
         for (List<Problem> page : pagedUserProblems)
             for (Problem problem : page)
-                jsLinks.add(problem.getType() + ".problem");
+                links.add(problem.getType() + ".problem");
 
-        List<ResourceLink> jsLinksList = new ArrayList<>();
-        for (String jsLink : jsLinks)
-            jsLinksList.add(new ResourceLink(jsLink, "js"));
-        return jsLinksList;
-    }
+        List<ResourceLink> linksList = new ArrayList<>();
+        for (String link : links) {
+            linksList.add(new ResourceLink(link, "js"));
+            linksList.add(new ResourceLink(link, "css"));
+        }
 
-    private static List<ResourceLink> getCssLinks(List<List<Problem>> pagedUserProblems) {
-        Set<String> cssLinks = new HashSet<>();
-
-        for (List<Problem> page : pagedUserProblems)
-            for (Problem problem : page)
-                cssLinks.add(problem.getType() + ".problem");
-
-        List<ResourceLink> cssLinksList = new ArrayList<>();
-        for (String cssLink : cssLinks)
-            cssLinksList.add(new ResourceLink(cssLink, "css"));
-        return cssLinksList;
+        return new ListWidget(linksList);
     }
 
 }

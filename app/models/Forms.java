@@ -299,6 +299,30 @@ public class Forms {
             )
     );
 
+    @SuppressWarnings("unchecked")
+    private static InputForm setHtmlBlockForm = InputForm.deserialize(
+            new MemoryDeserializer(
+                    "fields",
+                    Utils.listify(
+                            Utils.mapify(
+                                    "name", "html",
+                                    "view", Utils.mapify(
+                                            "type", "multiline",
+                                            "title", "Html-текст блока",
+                                            "placeholder", "Введите html-текст блока"
+                                    ),
+                                    "required", false,
+                                    "validators", Utils.listify(
+                                    )
+                            )
+                    ),
+                    "validators",
+                    Utils.listify(
+
+                    )
+            )
+    );
+
     public static InputForm getLoginForm() {
         return loginForm;
     }
@@ -321,5 +345,9 @@ public class Forms {
 
     public static InputForm getAddContestForm() {
         return addContestForm;
+    }
+
+    public static InputForm getSetHtmlBlockForm() {
+        return setHtmlBlockForm;
     }
 }

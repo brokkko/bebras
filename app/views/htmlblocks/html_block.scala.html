@@ -1,0 +1,11 @@
+@(html:views.htmlblocks.HtmlBlock, editable:Boolean)
+<div class='html-block'>
+@if(editable) {
+<span class='html-block-ref hidden'>@routes.EventAdministration.setHtmlBlock(html.getEventId, html.getId)</span>
+<div class='html-block-actions'>
+<a class='html-block-edit-action' href='#'>Edit</a>
+<a class='html-block-undo-action' href='#'>Undo</a>
+</div>
+}
+<div class='contents'>@Html(html.getHtml)</div>
+</div>

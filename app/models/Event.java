@@ -16,6 +16,7 @@ import play.Logger;
 import play.Play;
 import play.cache.Cache;
 import play.mvc.Http;
+import views.htmlblocks.HtmlBlock;
 
 import java.io.File;
 import java.util.*;
@@ -293,4 +294,9 @@ public class Event {
     public void addContest(Contest contest) {
         contests.put(contest.getId(), contest);
     }
+
+    public HtmlBlock getHtmlBlock(String id) {
+        return HtmlBlock.load(this.id, id);
+    }
+
 }

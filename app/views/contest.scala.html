@@ -1,11 +1,11 @@
-@(status:String, pagedUserProblems:List[List[models.newproblems.Problem]], problem2index:Map[models.newproblems.Problem, Integer], jsonContestInfo:String, problemsCss:List[views.ResourceLink], problemsJs:List[views.ResourceLink])
+@(status:String, pagedUserProblems:List[List[models.newproblems.Problem]], problem2index:Map[models.newproblems.Problem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)
+@import views.widgets.CssJsWidget
 @import models.Contest
 @import models.Event
 @import models.User
 @import scala.List
-@import models.Utils;
-@import views.ResourceLink
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contest.css")) ++ problemsCss, List(new ResourceLink("contest.js")) ++ problemsJs) {
+@import models.Utils
+@main_with_menu(Event.current.getTitle)(List(CssJsWidget get "contest", problemsWidgets)) {
     <div id='contest-time'>
         @if(Contest.current.isUnlimitedTime) {
             <div id='time-status-info'>Время не ограничено</div>

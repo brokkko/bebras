@@ -1,12 +1,14 @@
 @(addContestForm:models.forms.RawForm)
+@import views.widgets.ResourceLink
+@import views.widgets.FormsWidget
+@import views.widgets.AdminWidget
 @import models.Event
 @import models.Contest
 @import models.Forms
 @import models.forms.RawForm;
 @import models.User
 @import scala.List
-@import views.ResourceLink
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), new ResourceLink("forms.css"), new ResourceLink("admin.css")), List(new ResourceLink("admin.js"), new ResourceLink("forms.js"))) { } {
+    @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), FormsWidget.get, AdminWidget.get, new ResourceLink("forms.js"))) { } {
     <h1>Список доступных этапов соревнования</h1>
     <p class='time warning'>
     Все моменты времени на этой странице указаны по московскому времени.

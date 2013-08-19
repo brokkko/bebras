@@ -1,14 +1,14 @@
-package views;
+package views.widgets;
 
 import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
- * Date: 13.08.13
- * Time: 14:46
+ * Date: 16.08.13
+ * Time: 15:16
  */
-public interface ResourcesPack {
+public interface Widget {
 
     List<ResourceLink> links();
 

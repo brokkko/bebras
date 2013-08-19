@@ -48,6 +48,8 @@ GET         /:event/:user/remove_admin                               controllers
 GET         /:event/:login/:pass/:email/:isAdmin/create_user         controllers.EventAdministration.createUser(event, login, pass, email, isAdmin)
 POST        /:event/add_contest                                      controllers.EventAdministration.addContest(event)
 GET         /:event/help                                             controllers.EventAdministration.help(event)
+#html block
+POST        /:event/:block/set_html_block                            controllers.EventAdministration.setHtmlBlock(event, block)
 
 #admin contest
 GET         /:event/:contest/contest_admin                           controllers.ContestAdministration.contestAdmin(event, contest)
@@ -86,7 +88,7 @@ GET         /assets/*file                                            controllers
 # TODO final rating
 # TODO Extra pages
 
-# TODO registered users
+# + TODO registered users
 # TODO remove user
 
 # TODO max scores evaluation (several translators)

@@ -1,8 +1,9 @@
 @*TODO to be renamed*@
 @(contest:Contest, changeContestForm:models.forms.RawForm, addBlockForm:models.forms.RawForm)
-@import views.ResourceLink
+@import views.widgets.FormsWidget
+@import views.widgets.CssJsWidget
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css"), new ResourceLink("admin.css")), List(new ResourceLink("forms.js"), new ResourceLink("admin.js"))) { } {
+@main_with_menu(Event.current.getTitle)(List(FormsWidget.get(), CssJsWidget.get("admin"))) { } {
     <h1>Администрирование соревнования @contest.getName</h1>
 
     <h2>Информация</h2>

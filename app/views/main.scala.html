@@ -1,7 +1,6 @@
-@(title: String)(css:scala.List[views.ResourceLink], js:scala.List[views.ResourceLink])(content: Html)
-@import views.ResourceLink
+@(title: String)(widgets:scala.List[views.widgets.Widget])(content: Html)
+@import views.widgets.ResourceLink
 @import scala.List
-
 <!DOCTYPE html>
 
 <html>
@@ -9,11 +8,11 @@
         <title>@title</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <link media="screen" rel="stylesheet" media="screen" href="@ResourceLink.RESET">
-        @for(link <- css){
+        @for(widget <- widgets; link <- widget.links if link.getType == "css") {
             <link media="screen" rel="stylesheet" media="screen" href="@link">
         }
         <script src="@ResourceLink.JQUERY" type="text/javascript"></script>
-        @for(link <- js){
+        @for(widget <- widgets; link <- widget.links if link.getType == "js") {
             <script src="@link" type="text/javascript"></script>
         }
     </head>

@@ -1,7 +1,9 @@
-package views;
+package views.widgets;
 
-import controllers.routes;
 import play.Play;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,7 +11,7 @@ import play.Play;
  * Date: 02.01.13
  * Time: 22:00
  */
-public class ResourceLink {
+public class ResourceLink implements Widget {
 
     public static final ResourceLink JQUERY = new ResourceLink(
             "jquery-1.7.2.min",
@@ -78,7 +80,7 @@ public class ResourceLink {
         }
 
         if (returnLocal)
-            return routes.Assets.at(localUrl).url();
+            return controllers.routes.Assets.at(localUrl).url();
         else
             return externalUrl;
     }
@@ -90,5 +92,10 @@ public class ResourceLink {
 
     public String getType() {
         return type;
+    }
+
+    @Override
+    public List<ResourceLink> links() {
+        return Arrays.asList(this);
     }
 }

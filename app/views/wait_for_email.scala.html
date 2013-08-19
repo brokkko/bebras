@@ -1,9 +1,9 @@
 @(isEmail:Boolean, email_or_login:String)
-@import views.ResourceLink
-@import views.MenuItem
+@@import views.widgets.ResourceLink
+    @import views.MenuItem
 @import play.data.DynamicForm
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(), List()) { } {
+@main_with_menu(Event.current.getTitle)(List()) { } {
     <h1>@if(isEmail){
         На адрес @email_or_login
     } else {

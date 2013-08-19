@@ -6,6 +6,7 @@ import controllers.actions.LoadContest;
 import controllers.actions.LoadEvent;
 import models.*;
 import models.data.*;
+import models.forms.InputForm;
 import models.forms.RawForm;
 import models.forms.validators.FileListValidator;
 import models.newproblems.ProblemLink;
@@ -19,6 +20,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import play.Logger;
+import play.data.DynamicForm;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
@@ -27,6 +29,7 @@ import play.mvc.Result;
 import views.html.contests_list;
 import views.html.error;
 import views.html.event_admin;
+import views.htmlblocks.HtmlBlock;
 
 import java.io.*;
 import java.nio.file.*;
@@ -218,5 +221,22 @@ public class EventAdministration extends Controller {
 
     public static Result help(String eventId) {
         return ok(views.html.help.render());
+    }
+
+    public static Result setHtmlBlock(String event, String block) {
+        InputForm form = Forms.getSetHtmlBlockForm();
+
+        FormDeserializer deserializer = new FormDeserializer(form);
+
+        RawForm rawForm = deserializer.getRawForm();
+        if (rawForm.hasErrors())
+            return badRequest("Failed to get html");
+
+        HtmlBlock htmlBlock = HtmlBlock.load(event, block);
+        htmlBlock.setHtml(rawForm.get("html"));
+
+        Logger.info(rawForm.get("html"));
+
+        return ok();
     }
 }

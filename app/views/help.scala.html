@@ -1,7 +1,7 @@
 @()
-@import views.ResourceLink
+@import views.widgets.ResourceLink
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("help.css")), List()) { } {
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("help.css"))) { } {
     <h1>Помощь по интерфейсу администрирования</h1>
     <h2>Основные понятия</h2>
     <p>Данная система позволяет организовывать <b>события</b>.

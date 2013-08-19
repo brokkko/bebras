@@ -1,11 +1,12 @@
 @(form:models.forms.RawForm, message:String)
+@import views.htmlblocks.HtmlBlockWidget
+@import views.widgets.FormsWidget
 @import models.forms.RawForm
-@import views.ResourceLink
 @import models.Event
 @import models.Forms
 @import scala.List
 @import play.i18n.Messages
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) { } {
+@main_with_menu(Event.current.getTitle)(List(FormsWidget.get, HtmlBlockWidget.get)) { } {
     <h1>Здесь вы можете посмотреть и изменить свои личные данные</h1>
 
     @if(message != null) {
@@ -13,4 +14,6 @@
     }
 
     @Event.current.getEditUserForm.formatExtended(form, routes.UserInfo.doChangeInfo(Event.currentId), true, "form.do_change")
+
+    @Event.current.getHtmlBlock("asdf").format(true)
 }
