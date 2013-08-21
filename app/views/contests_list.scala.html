@@ -3,9 +3,7 @@
 @import views.widgets.FormsWidget
 @import views.widgets.AdminWidget
 @import models.Event
-@import models.Contest
 @import models.Forms
-@import models.forms.RawForm;
 @import models.User
 @import scala.List
     @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), FormsWidget.get, AdminWidget.get, new ResourceLink("forms.js"))) { } {
@@ -46,7 +44,7 @@
                     }
                     }
                 </span></p>
-                @if((contest.isAllowRestart || User.current.getType == UserType.EVENT_ADMIN) && User.current.userParticipatedAndFinished(contest)) {
+                @if((contest.isAllowRestart || User.current.hasEventAdminRight) && User.current.userParticipatedAndFinished(contest)) {
                     <form class='invisible-form' action="@routes.Contests.restart(Event.current.getId, contest.getId)" method="POST">
                         <p class='contest-action'><a href='#' onclick="$(this).parents('form').submit(); return false;">Сбросить результаты, чтобы попробовать еще раз</a></p>
                     </form>
@@ -99,7 +97,7 @@
                 }
             </div>
             <div class='footer'></div>
-            @if(User.current.getType == UserType.EVENT_ADMIN) {
+            @if(User.current.hasEventAdminRight) {
                 @contest_info(contest)
                 <a class='go-contest-admin' href="@routes.ContestAdministration.contestAdmin(Event.currentId, contest.getId)">Администрирование соревнования</a>
 
@@ -120,7 +118,7 @@
         </div>
     }
 
-    @if(User.current.getType == UserType.EVENT_ADMIN) {
+    @if(User.current.hasEventAdminRight) {
     <div class='contest-description'>
     <p class='header big-title'>Добавить соревнование</p>
         @Forms.getAddContestForm().formatExtended(addContestForm, routes.EventAdministration.addContest(Event.currentId), false, "form.do_add")

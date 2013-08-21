@@ -5,10 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import controllers.actions.DcesController;
-import models.Event;
-import models.User;
-import models.UserType;
-import models.Utils;
+import models.*;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newserialization.FormDeserializer;
@@ -76,7 +73,7 @@ public class Application extends Controller {
         user.setEmail(email);
 
         if (isAdmin)
-            user.setType(UserType.EVENT_ADMIN);
+            user.setRole(event.getRole("EVENT_ADMIN"));
 
         user.setConfirmed(true);
         user.setPasswordHash(User.passwordHash(password));

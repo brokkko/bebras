@@ -3,8 +3,6 @@ package models.migration;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import models.User;
-import models.UserType;
 import org.bson.types.ObjectId;
 
 /**
@@ -40,8 +38,8 @@ public class Migrator2 extends Migrator {
         migrate(MongoConnection.getUsersCollection(), new DBObjectTranslator() {
             @Override
             public boolean translate(DBObject object) {
-                if (object.get(User.FIELD_USER_TYPE) == null) {
-                    object.put(User.FIELD_USER_TYPE, UserType.PARTICIPANT.toString());
+                if (object.get("_type") == null) {
+                    object.put("_type", "PARTICIPANT");
                     return true;
                 }
 

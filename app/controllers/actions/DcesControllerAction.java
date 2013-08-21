@@ -14,9 +14,14 @@ public class DcesControllerAction extends Action<DcesController> {
 
     @Override
     public Result call(Http.Context ctx) throws Throwable {
-        if (ServerConfiguration.getInstance().isMaintenanceMode())
+        ServerConfiguration config = ServerConfiguration.getInstance();
+        if (config.isMaintenanceMode())
             //TODO попытаться обойтись без времени обслуживания
             return ok(error.render("В данный момент сервер находится в режиме обслуживания, зайдите позже", null)); //TODO сделать время возвращения
+
+        //migrate if needed
+        if (config.getDbVersion() != ServerConfiguration.CURRENT_DB_VERSION && !ctx.request().uri().endsWith("/migrate"))
+            return ok(error.render("В данный момент сервер находится в режиме обслуживания, зайдите позже", null)); //TODO избавиться и от этой хрени тоже
 
         Result call = delegate.call(ctx);
 

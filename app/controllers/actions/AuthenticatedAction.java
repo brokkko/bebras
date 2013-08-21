@@ -3,7 +3,6 @@ package controllers.actions;
 import controllers.routes;
 import models.Event;
 import models.User;
-import models.UserType;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -41,7 +40,7 @@ public class AuthenticatedAction extends Action<Authenticated> {
             if (User.current() == null) //call to current loads user. And also test if there is such user
                 return loginRedirect;
 
-            if (configuration.admin() && User.current().getType() != UserType.EVENT_ADMIN)
+            if (configuration.admin() && !User.current().hasEventAdminRight())
                 return loginRedirect;
         }
 

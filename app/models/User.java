@@ -38,7 +38,7 @@ public class User implements SerializableUpdatable {
     public static final String FIELD_CONTEST_INFO = "_contests";
     public static final String FIELD_LAST_USER_ACTIVITY = "_lua";
     public static final String FIELD_EVENT_RESULTS = "_er";
-    public static final String FIELD_USER_TYPE = "_type";
+    public static final String FIELD_USER_ROLE = "_role";
 
     public static final String FIELD_LOGIN = "login";
     public static final String FIELD_NAME = "name";
@@ -69,7 +69,7 @@ public class User implements SerializableUpdatable {
     private Info eventResults = null;
     private UserActivityEntry userActivityEntry;
 
-    private UserType type = UserType.PARTICIPANT;
+    private UserRole role = UserRole.EMPTY;
 
     // cache
     private Map<Contest, List<Submission>> cachedAllSubmissions = new HashMap<>();
@@ -83,8 +83,8 @@ public class User implements SerializableUpdatable {
             userActivityEntry = UserActivityEntry.deserialize(getId(), userActivityDeserializer);
 
         id = deserializer.readObjectId("_id");
-        type = UserType.valueOf(deserializer.readString(FIELD_USER_TYPE, UserType.PARTICIPANT.toString()));
 
+        //read event
         String eventId = deserializer.readString(FIELD_EVENT);
         if (eventId != null) {
             event = Event.getInstance(eventId);
@@ -93,6 +93,12 @@ public class User implements SerializableUpdatable {
         } else
             event = Event.current();
 
+        //read role
+        String roleName = deserializer.readString(FIELD_USER_ROLE);
+        if (roleName != null)
+            role = event.getRole(roleName);
+
+        // -------
         passwordHash = deserializer.readString(FIELD_PASS_HASH);
 
         info = event.getUserInfoPattern().read(deserializer);
@@ -110,7 +116,7 @@ public class User implements SerializableUpdatable {
 
         //TODO get rid of iposov
         if (getLogin().equals("iposov"))
-            type = UserType.EVENT_ADMIN;
+            role = event.getRole("EVENT_ADMIN");
     }
 
     public void updateFromForm(FormDeserializer deserializer, InputForm form) {
@@ -179,12 +185,12 @@ public class User implements SerializableUpdatable {
         this.passwordHash = passwordHash;
     }
 
-    public UserType getType() {
-        return type;
+    public UserRole getRole() {
+        return role;
     }
 
-    public void setType(UserType type) {
-        this.type = type;
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
     public boolean testPassword(String password) {
@@ -318,7 +324,7 @@ public class User implements SerializableUpdatable {
         if (userActivityEntry != null) //it is null if this is not an authorized page, e.g. a registration page
             userActivityEntry.store(serializer.getSerializer(FIELD_LAST_USER_ACTIVITY), false);
 
-        serializer.write(FIELD_USER_TYPE, type.toString());
+        serializer.write(FIELD_USER_ROLE, role.getName());
 
         //write registration data
         serializer.write(FIELD_REGISTRATION_UUID, registrationUUID);
@@ -435,11 +441,11 @@ public class User implements SerializableUpdatable {
     //contest timing
 
     public boolean contestStarted(Contest contest) {
-        return getType() == UserType.EVENT_ADMIN || contest.getStart().before(AuthenticatedAction.getRequestTime());
+        return hasEventAdminRight() || contest.getStart().before(AuthenticatedAction.getRequestTime());
     }
 
     public boolean contestFinished(Contest contest) {
-        return getType() != UserType.EVENT_ADMIN && contest.getFinish().before(AuthenticatedAction.getRequestTime());
+        return !hasEventAdminRight() && contest.getFinish().before(AuthenticatedAction.getRequestTime());
     }
 
     public boolean resultsAvailable(Contest contest) {
@@ -667,6 +673,16 @@ public class User implements SerializableUpdatable {
         store();
 
         return eventResults;
+    }
+
+    //rights
+
+    public boolean hasRight(String right) {
+        return role.hasRight(right);
+    }
+
+    public boolean hasEventAdminRight() {
+        return hasRight("event admin");
     }
 
     public void invalidateEventResults() {

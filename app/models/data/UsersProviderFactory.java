@@ -22,7 +22,7 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
     public ObjectsProvider<User> get() {
         BasicDBObject query = new BasicDBObject(User.FIELD_EVENT, eventId);
         if (role != null)
-            query.put(User.FIELD_USER_TYPE, role);
+            query.put(User.FIELD_USER_ROLE, role);
 
         return new UsersProvider(loadEventResults, query, null);
     }

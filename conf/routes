@@ -42,8 +42,6 @@ GET         /:event/:contest/:table/csv_table                        controllers
 #GET         /:event/usersActivity                                   controllers.EventAdministration.getUsersActivity(event)
 #GET         /:event/usersMatrix                                     controllers.EventAdministration.getUsersMatrix(event)
 #GET         /:event/evalScores                                      controllers.EventAdministration.evalScores(event)
-GET         /:event/:user/add_admin                                  controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = false)
-GET         /:event/:user/remove_admin                               controllers.EventAdministration.modifyAdmin(event, user, remove:Boolean = true)
 GET         /:event/:login/:pass/:email/:isAdmin/create_user         controllers.EventAdministration.createUser(event, login, pass, email, isAdmin)
 POST        /:event/add_contest                                      controllers.EventAdministration.addContest(event)
 GET         /:event/help                                             controllers.EventAdministration.help(event)

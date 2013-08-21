@@ -54,16 +54,8 @@ public class Event {
         this.id = deserializer.readString("_id");
         this.title = deserializer.readString("title");
 
-        usersForm = new SerializableSerializationType<>(InputForm.class).read(deserializer, "users");
-        if (usersForm == null)
-            usersForm = new InputForm();
-
-        //get info pattern from field
-        userInfoPattern = new InfoPattern();
-        if (usersForm != null)
-            for (InputField inputField : usersForm.getFields())
-                if (inputField.isStore())
-                    userInfoPattern.register(inputField.getName(), inputField.getInputTemplate().getType(), inputField.getInputTemplate().getTitle());
+        InputForm usersForm = new SerializableSerializationType<>(InputForm.class).read(deserializer, "users");
+        setUsersForm(usersForm);
 
         //deserialize contests (they are not SerializableUpdatable)
         ListDeserializer contestsDeserializer = deserializer.getListDeserializer("contests");
@@ -88,12 +80,30 @@ public class Event {
 
         //read roles
         List<UserRole> roles = SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).read(deserializer, "roles");
-        this.roles = new HashMap<>();
-        for (UserRole role : roles)
-            this.roles.put(role.getName(), role);
+        setRoles(roles);
 
         //TODO enters site before confirmation
         //TODO choose where to go if authorized
+    }
+
+    private void setRoles(List<UserRole> roles) {
+        this.roles = new HashMap<>();
+        for (UserRole role : roles)
+            this.roles.put(role.getName(), role);
+    }
+
+    private void setUsersForm(InputForm usersForm) {
+        this.usersForm = usersForm;
+
+        if (this.usersForm == null)
+            this.usersForm = new InputForm();
+
+        //get info pattern from field
+        userInfoPattern = new InfoPattern();
+        if (this.usersForm != null)
+            for (InputField inputField : this.usersForm.getFields())
+                if (inputField.isStore())
+                    userInfoPattern.register(inputField.getName(), inputField.getInputTemplate().getType(), inputField.getInputTemplate().getTitle());
     }
 
     public static Event getInstance(final String eventId) {
@@ -197,6 +207,11 @@ public class Event {
         return title;
     }
 
+    public UserRole getRole(String name) {
+        UserRole role = roles.get(name);
+        return role == null ? UserRole.EMPTY : role;
+    }
+
     public Contest getContestById(String id) {
         return contests.get(id);
     }
@@ -213,7 +228,7 @@ public class Event {
 
     public Collection<Contest> getContestsAvailableForUser() {
         User user = User.current();
-        if (user.getType() == UserType.EVENT_ADMIN)
+        if (user.hasEventAdminRight())
             return getContests();
 
         List<Contest> c = new ArrayList<>(contests.size());

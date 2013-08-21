@@ -34,7 +34,7 @@
 //
 //    //TODO this is only for BBTC :(
 //    public static Result evalScores(final String event) {
-//        if (User.current().getType() != UserType.EVENT_ADMIN)
+//        if (User.current().getRole() != UserType.EVENT_ADMIN)
 //            return forbidden();
 //
 //        F.Promise<Boolean> promiseOfVoid = Akka.future(
@@ -83,7 +83,7 @@
 //    }
 //
 //    public static Result getUsers(final String eventId, final Integer appendResults) {
-//        if (User.current().getType() != UserType.EVENT_ADMIN)
+//        if (User.current().getRole() != UserType.EVENT_ADMIN)
 //            return forbidden();
 //
 //        final Event currentEvent = Event.current();
@@ -123,7 +123,7 @@
 //    }
 //
 //    public static Result getUsersAnswers(final String eventId) {
-//        if (User.current().getType() != UserType.EVENT_ADMIN)
+//        if (User.current().getRole() != UserType.EVENT_ADMIN)
 //            return forbidden();
 //
 //        final Event currentEvent = Event.current();
@@ -158,7 +158,7 @@
 //    }
 //
 //    public static Result getRegisteredUsers(final String eventId) {
-//        if (User.current().getType() != UserType.EVENT_ADMIN)
+//        if (User.current().getRole() != UserType.EVENT_ADMIN)
 //            return forbidden();
 //
 //        final Event currentEvent = Event.current();
@@ -194,7 +194,7 @@
 //
 //    //TODO generalize this three get methods
 //    public static Result getUsersActivity(final String eventId) {
-//        if (User.current().getType() != UserType.EVENT_ADMIN)
+//        if (User.current().getRole() != UserType.EVENT_ADMIN)
 //            return forbidden();
 //
 //        final Event currentEvent = Event.current();
@@ -534,7 +534,7 @@
 //
 //
 //    public static Result getUsersMatrix(final String eventId) {
-//        if (User.current().getType() != UserType.EVENT_ADMIN)
+//        if (User.current().getRole() != UserType.EVENT_ADMIN)
 //            return forbidden();
 //
 //        final Event currentEvent = Event.current();

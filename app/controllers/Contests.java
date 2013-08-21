@@ -4,7 +4,6 @@ import controllers.actions.*;
 import models.Contest;
 import models.Submission;
 import models.User;
-import models.UserType;
 import models.newproblems.Problem;
 import models.newserialization.JSONDeserializer;
 import models.newserialization.JSONSerializer;
@@ -163,7 +162,7 @@ public class Contests extends Controller {
     public static Result restart(String eventId, String contestId) {
         Contest contest = Contest.current();
 
-        if (!contest.isAllowRestart() && User.current().getType() != UserType.EVENT_ADMIN)
+        if (!contest.isAllowRestart() && !User.current().hasEventAdminRight())
             return forbidden();
 
         User user = User.current();

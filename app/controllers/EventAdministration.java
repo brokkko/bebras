@@ -110,19 +110,6 @@ public class EventAdministration extends Controller {
         return redirect(routes.EventAdministration.admin(eventId));
     }
 
-    @SuppressWarnings("UnusedParameters")
-    public static Result modifyAdmin(String event, String login, Boolean remove) {
-        User user = User.getUserByLogin(login);
-
-        if (user == null)
-            return notFound("No such user");
-
-        user.setType(remove ? UserType.PARTICIPANT : UserType.EVENT_ADMIN);
-        user.store();
-
-        return ok("admin added");
-    }
-
     public static Result createUser(String eventId, String login, String password, String email, String isAdmin) {
         if (User.getInstance(User.FIELD_LOGIN, login) != null)
             return badRequest("user already exists");

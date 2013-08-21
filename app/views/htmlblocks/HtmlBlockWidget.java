@@ -1,7 +1,6 @@
 package views.htmlblocks;
 
 import models.User;
-import models.UserType;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
 
@@ -23,7 +22,7 @@ public class HtmlBlockWidget implements Widget {
     private final List<ResourceLink> links;
 
     private HtmlBlockWidget() {
-        if (User.current().getType() == UserType.EVENT_ADMIN)
+        if (User.current().hasEventAdminRight())
             links = Arrays.asList(css, jsEditor, jsBlock);
         else
             links = Arrays.asList(css);
