@@ -63,7 +63,7 @@ public class FormDeserializer extends Deserializer {
 
         Map<String, Object> values = this.values;
 
-        /* TODO report. replace with for each intention removes unchecked and supposes the wrong name
+        /* TODO report. replace with for each intention removes unchecked and suggests the wrong name
         for (int i = 0; i < prefixes.length; i++)
             //noinspection unchecked
             values = (Map<String, Object>) values.get(prefixes[i]);
@@ -144,7 +144,21 @@ public class FormDeserializer extends Deserializer {
     public Deserializer getDeserializer(String field) {
         //treats json ObjectNodes as deserializer
         Object value = values.get(field);
-        return value == null ? null : new JSONDeserializer((ObjectNode) value);
+
+        if (value == null)
+            return null;
+
+        if (value instanceof ObjectNode)
+            return new JSONDeserializer((ObjectNode) value);
+
+        if (value instanceof Serializable) {
+            MemorySerializer serializer = new MemorySerializer();
+            Map<String, Object> map = serializer.getMap();
+            ((Serializable) value).serialize(serializer);
+            return new MemoryDeserializer(map);
+        }
+
+        throw new IllegalStateException("Can not get deserializer");
     }
 
     @Override

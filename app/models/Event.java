@@ -48,6 +48,8 @@ public class Event {
     private CombinedTranslator resultTranslator = null; //cached translator that unions all translators
     private List<TableDescription> tables;
 
+    private Map<String, UserRole> roles;
+
     private Event(Deserializer deserializer) {
         this.id = deserializer.readString("_id");
         this.title = deserializer.readString("title");
@@ -83,6 +85,12 @@ public class Event {
         resultTranslator = new CombinedTranslator(resultTranslators);
 
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
+
+        //read roles
+        List<UserRole> roles = SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).read(deserializer, "roles");
+        this.roles = new HashMap<>();
+        for (UserRole role : roles)
+            this.roles.put(role.getName(), role);
 
         //TODO enters site before confirmation
         //TODO choose where to go if authorized
@@ -147,6 +155,11 @@ public class Event {
         SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).write(serializer, "results translators", resultTranslators);
 
         SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).write(serializer, "tables", tables);
+
+        //write roles
+        SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).write(serializer, "roles",
+                new ArrayList<>(roles.values())
+        );
     }
 
     public static String currentId(Http.Context ctx) {
