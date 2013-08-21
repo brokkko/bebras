@@ -24,56 +24,15 @@ import java.util.concurrent.Callable;
 @DcesController
 public class Application extends Controller {
 
-    public static Result initialize() throws IOException {
-        DBCollection bbtcCollection = MongoConnection.getEventsCollection();
-
-        DBObject bbtcObject = getEventTemplate();
-        bbtcCollection.save(bbtcObject);
-        Cache.set("event-bbtc", null, 1);
-
-        return ok("Site is successfully initialized");
-    }
-
-    public static Result initializeTrash() throws IOException {
-        DBCollection configCollection = MongoConnection.getConfigCollection();
-        if (configCollection.findOne() != null && !Play.isDev())
-            return badRequest("Site is already initialized");
-//            return notFound();
-
-        //TODO this is a temporary initialization, move it somewhere else
-
-        configCollection.remove(new BasicDBObject()); //remove all
-
-        DBCollection bbtcCollection = MongoConnection.getEventsCollection();
-//        bbtcCollection.remove(new BasicDBObject());
-
-        //bbtc event object
-        DBObject bbtcObject = getEventTemplate();
-        bbtcCollection.save(bbtcObject);
-        //clear Cache
-        Cache.set("event-bbtc", null, 1);
-
-        //bbtc test event object
-        DBObject bbtcTestObject = (DBObject) JSON.parse(Utils.getResourceAsString("/bbtc_test_event.json"));
-        bbtcCollection.save(bbtcTestObject);
-        //clear Cache
-        Cache.set("event-bbtc-test", null, 1);
-
-        //save configuration object to make it not possible to reinit the application
-        //configCollection.save(new BasicDBObject());
-        return ok("Site is successfully initialized");
-    }
-
     public static Result createEvent(String eventId) throws IOException {
         DBCollection eventsCollection = MongoConnection.getEventsCollection();
 
         //bbtc pattern event object
-        DBObject bbtcObject = getEventTemplate();
-        bbtcObject.put("_id", eventId);
+        DBObject bbtcObject = getEventTemplate(eventId);
 
         eventsCollection.save(bbtcObject);
         //clear Cache
-        Cache.set("event-" + eventId, null, 1);
+        Cache.remove("event-" + eventId);
 
         //create admins
         Event event = Event.getInstance(eventId);
@@ -81,11 +40,13 @@ public class Application extends Controller {
         createUser(event, "iposov", "zxcvvgcv42", "iposov@gmail.com", true);
         createUser(event, "mikhail_larionov", "letmeinplease", "mikhail_larionov@rambler.ru", true);
 
-        return ok("Event " + eventId + " successfully initialized");
+        return ok("Event " + eventId + " successfully created");
     }
 
-    public static DBObject getEventTemplate() throws IOException {
-        return (DBObject) JSON.parse(Utils.getResourceAsString("/bbtc_event.json"));
+    public static DBObject getEventTemplate(String eventId) throws IOException {
+        String eventTemplate = Utils.getResourceAsString("/bbtc_event_pattern.json");
+        eventTemplate = eventTemplate.replaceAll("%%%eid%%%", eventId);
+        return (DBObject) JSON.parse(eventTemplate);
     }
 
     public static void createUser(Event event, String login, String password, String email, boolean isAdmin) {

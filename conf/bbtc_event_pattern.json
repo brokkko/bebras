@@ -1,0 +1,226 @@
+{
+    "_id": "%%%eid%%%",
+    "title": "Название события",
+    "users": {
+        "fields": [
+            {
+                "name": "login",
+                "view": {
+                    "type": "string",
+                    "title": "Логин",
+                    "placeholder": "Введите логин"
+                },
+                "required": true,
+                "skip for edit": true,
+                "validators": [
+                    {
+                        "type": "user field",
+                        "message": "Такой логин уже зарегистрирован. Выберите себе другой логин",
+                        "field": "login"
+                    },
+                    {
+                        "type": "pattern",
+                        "pattern": "[-a-zA-Z0-9_]+",
+                        "message": "Логин может содержать только латинские буквы, цифры, знак - и подчеркивание _"
+                    }
+                ]
+            },
+            {
+                "name": "surname",
+                "view": {
+                    "type": "string",
+                    "title": "Фамилия",
+                    "placeholder": "Введите фамилию"
+                },
+                "required": true
+            },
+            {
+                "name": "name",
+                "view": {
+                    "type": "string",
+                    "title": "Имя",
+                    "placeholder": "Введите имя"
+                },
+                "required": true
+            },
+            {
+                "name": "patronymic",
+                "view": {
+                    "type": "string",
+                    "title": "Отчество",
+                    "placeholder": "Введите отчество"
+                },
+                "required": true
+            },
+            {
+                "name": "birthday",
+                "view": {
+                    "type": "date",
+                    "title": "Дата рождения"
+                },
+                "validators": [
+                    {
+                        "type": "date",
+                        "comparison": "<= now + 0 Y",
+                        "message": "Для участия в соревновании необходимо родиться"
+                    },
+                    {
+                        "type": "date",
+                        "comparison": "<= now - 18 Y",
+                        "message": "Для участия в соревновании необходимо быть старше 18 лет"
+                    },
+                    {
+                        "type": "date",
+                        "comparison": ">= now - 100 Y",
+                        "message": "Для участия в соревновании необходимо быть младше 100 лет"
+                    }
+                ]
+            },
+            {
+                "name": "phone",
+                "view": {
+                    "type": "string",
+                    "title": "Телефон",
+                    "placeholder": "Введите телефон"
+                },
+                "validators": [
+                    {
+                        "type": "phone"
+                    }
+                ]
+            },
+            {
+                "name": "email",
+                "view": {
+                    "type": "string",
+                    "title": "email",
+                    "placeholder": "Введите email"
+                },
+                "required": true,
+                "skip for edit": true,
+                "validators": [
+                    {
+                        "type": "email"
+                    },
+                    {
+                        "type": "user field",
+                        "message": "Такой email уже зарегистрирован. Попробуйте восстановить пароль.",
+                        "field": "email"
+                    }
+                ]
+            },
+            {
+                "name": "schoolcode",
+                "view": {
+                    "type": "string",
+                    "title": "Код школы",
+                    "placeholder": "Введите код школы"
+                },
+                "required": true,
+                "validators": [
+                    {
+                        "type": "pattern",
+                        "pattern": "\\d{8}",
+                        "message": "Номер школы должен состоять из 8 цифр"
+                    },
+                    {
+                        "type": "file list",
+                        "file": "school-codes.csv",
+                        "encoding": "windows-1251",
+                        "message": "Этого номера школы нет в базе"
+                    }
+                ]
+            },
+            {
+                "name": "schoolname",
+                "view": {
+                    "type": "string",
+                    "title": "Полное наименование школы",
+                    "placeholder": "Введите полное наименование школы"
+                },
+                "required": true
+            },
+            {
+                "name": "schooladdr",
+                "view": {
+                    "type": "address",
+                    "title": "Почтовый адрес школы"
+                }
+            },
+            {
+                "name": "personal_data",
+                "view": {
+                    "type": "boolean",
+                    "hint": "В соответствии с требованиями статьи 9 Федерального закона от 27.07.06 «О персональных данных» № 152-ФЗ",
+                    "title": "Подтверждаю свое согласие на обработку моих персональных данных"
+                },
+                "required": true,
+                "store": false,
+                "validators": [
+                    {
+                        "type": "boolean",
+                        "need": true,
+                        "message": "Для регистрации вам необходимо подтвердить свое согласие на обработку персональных данных"
+                    }
+                ]
+            },
+            {
+                "name": "contest_rules",
+                "view": {
+                    "type": "boolean",
+                    "hint": "<a target=\"blank\" href=\"/assets/BBTC_regulations_0513.pdf\">Правила соревнования</a>",
+                    "title": "Согласен с правилами"
+                },
+                "required": true,
+                "store": false,
+                "validators": [
+                    {
+                        "type": "boolean",
+                        "need": true,
+                        "message": "Для регистрации вам необходимо прочитать правила и согласиться с ними"
+                    }
+                ]
+            }
+        ],
+        "validators": []
+    },
+    "tables": [
+        {
+            "title": "Зарегистрированные пользователи",
+            "objects": {
+                "type": "users",
+                "event": "%%%eid%%%",
+                "role": "PARTICIPANT"
+            },
+            "columns": [
+                "id -> user._id",
+                "login -> user.login",
+                "surname -> user.surname",
+                "name -> user.name",
+                "patronymic -> user.patronymic",
+                "birthday -> user.birthday",
+                "phone -> user.phone",
+                "email -> user.email",
+                "Code_all -> user.schoolcode",
+                "Code -> substring.0-2|user.schoolcode",
+                "Code1 -> substring.0-3|user.schoolcode",
+                "Code2 -> substring.3-5|user.schoolcode",
+                "Code3 -> substring.5-8|user.schoolcode",
+                "schoolname -> user.schoolname",
+                "address index -> user.schooladdr.index",
+                "address city -> user.schooladdr.city",
+                "address street -> user.schooladdr.street",
+                "address house -> user.schooladdr.house",
+                "personal_data -> const.true",
+                "contest_rules -> const.true"
+            ]
+        }
+    ],
+    "registration start": "2013-04-01 00:00",
+    "registration finish": "2013-05-21 00:00",
+    "contests": [],
+    "results": "2013-05-28 00:00",
+    "results translator": {
+        "type": "sum scores"
+    }
+}
