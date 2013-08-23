@@ -20,6 +20,10 @@ public class UserRole implements SerializableUpdatable {
 
     public static final UserRole EMPTY = new UserRole();
 
+    static {
+        EMPTY.update(new MemoryDeserializer("name", "EMPTY"));
+    }
+
     private String name;
     private Set<String> rights;
     private InputForm usersForm;
@@ -29,6 +33,9 @@ public class UserRole implements SerializableUpdatable {
     private String description;
 
     private List<String> mayRegister = new ArrayList<>();
+
+    public UserRole() {
+    }
 
     public boolean hasRight(String right) {
         return rights != null && rights.contains(right);
@@ -99,7 +106,7 @@ public class UserRole implements SerializableUpdatable {
         mayRegister = SerializationTypesRegistry.list(String.class).read(deserializer, "may register");
 
         title = deserializer.readString("title", name);
-        description = deserializer.readString("description", null);
+        description = deserializer.readString("description");
     }
 
     private void setUsersForm(InputForm usersForm) {
