@@ -5,7 +5,6 @@ import models.newserialization.Deserializer;
 import models.newserialization.SerializationType;
 import models.newserialization.Serializer;
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -41,7 +40,9 @@ public class JsonInputTemplate extends InputTemplate<ObjectNode> {
             public String toString() {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    ObjectWriter writer = mapper.writer().withDefaultPrettyPrinter();
+                    DefaultPrettyPrinter pr = new DefaultPrettyPrinter();
+                    pr.indentArraysWith(new DefaultPrettyPrinter.Lf2SpacesIndenter());
+                    ObjectWriter writer = mapper.writer().withPrettyPrinter(pr);
                     return writer.writeValueAsString(value);
                 } catch (IOException e) {
                     return ""; //can not occur

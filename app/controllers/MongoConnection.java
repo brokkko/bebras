@@ -37,7 +37,8 @@ public class MongoConnection {
             new Migrator3(),
             new Migrator4(),
             new Migrator5(),
-            new Migrator6()
+            new Migrator6(),
+            new Migrator7()
     };
 
     public static DBCollection getConfigCollection() {

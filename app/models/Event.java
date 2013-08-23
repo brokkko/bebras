@@ -6,7 +6,6 @@ import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import controllers.actions.AuthenticatedAction;
 import models.data.TableDescription;
-import models.forms.*;
 import models.newserialization.*;
 import models.results.CombinedTranslator;
 import models.results.EmptyTranslator;
@@ -38,11 +37,9 @@ public class Event {
     private String id;
     private String title;
     private LinkedHashMap<String, Contest> contests;
-    private InputForm usersForm;
     private Date registrationStart; //may be null, means start always
     private Date registrationFinish; //may be null, means never finishes
     private Date results;
-    private InfoPattern userInfoPattern;
 
     private List<Translator> resultTranslators;
     private CombinedTranslator resultTranslator = null; //cached translator that unions all translators
@@ -53,9 +50,6 @@ public class Event {
     private Event(Deserializer deserializer) {
         this.id = deserializer.readString("_id");
         this.title = deserializer.readString("title");
-
-        InputForm usersForm = new SerializableSerializationType<>(InputForm.class).read(deserializer, "users");
-        setUsersForm(usersForm);
 
         //deserialize contests (they are not SerializableUpdatable)
         ListDeserializer contestsDeserializer = deserializer.getListDeserializer("contests");
@@ -90,20 +84,6 @@ public class Event {
         this.roles = new HashMap<>();
         for (UserRole role : roles)
             this.roles.put(role.getName(), role);
-    }
-
-    private void setUsersForm(InputForm usersForm) {
-        this.usersForm = usersForm;
-
-        if (this.usersForm == null)
-            this.usersForm = new InputForm();
-
-        //get info pattern from field
-        userInfoPattern = new InfoPattern();
-        if (this.usersForm != null)
-            for (InputField inputField : this.usersForm.getFields())
-                if (inputField.isStore())
-                    userInfoPattern.register(inputField.getName(), inputField.getInputTemplate().getType(), inputField.getInputTemplate().getTitle());
     }
 
     public static Event getInstance(final String eventId) {
@@ -147,8 +127,6 @@ public class Event {
     public void serialize(Serializer serializer) {
         serializer.write("_id", id);
         serializer.write("title", title);
-
-        usersForm.serialize(serializer.getSerializer("users"));
 
         //serialize contests
         ListSerializer contestsSerializer = serializer.getListSerializer("contests");
@@ -212,6 +190,10 @@ public class Event {
         return role == null ? UserRole.EMPTY : role;
     }
 
+    public UserRole getAnonymousRole() {
+        return getRole("ANONYMOUS");
+    }
+
     public Contest getContestById(String id) {
         return contests.get(id);
     }
@@ -237,19 +219,6 @@ public class Event {
                 c.add(contest);
 
         return c;
-    }
-
-    public InputForm getUsersForm() {
-        return usersForm;
-    }
-
-    public InputForm getEditUserForm() {
-        return usersForm.filter(new InputForm.FieldFilter() {
-            @Override
-            public boolean accept(InputField field) {
-                return !field.isSkipForEdit() && field.isStore();
-            }
-        });
     }
 
     public Date getResults() {
@@ -284,10 +253,6 @@ public class Event {
         return registrationFinish != null && registrationFinish.before(new Date()); //TODO get date from ... AuthenticatedAction
     }
 
-    public InfoPattern getUserInfoPattern() {
-        return userInfoPattern;
-    }
-
     public Translator getResultTranslator() {
         return resultTranslator;
     }
@@ -304,6 +269,9 @@ public class Event {
         registrationStart = deserializer.readDate("registration start");
         registrationFinish = deserializer.readDate("registration finish");
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
+
+        List<UserRole> roles = SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).read(deserializer, "roles");
+        setRoles(roles);
     }
 
     public void invalidateCache() {

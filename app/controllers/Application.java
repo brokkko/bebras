@@ -49,7 +49,7 @@ public class Application extends Controller {
     public static void createUser(Event event, String login, String password, String email, boolean isAdmin) {
         User.removeUser(event, login);
 
-        InputForm registrationForm = Event.current().getUsersForm();
+        InputForm registrationForm = Event.current().getRole("PARTICIPANT").getUsersForm();
 
         RawForm myRawForm = new RawForm();
 

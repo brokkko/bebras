@@ -101,7 +101,7 @@ public class User implements SerializableUpdatable {
         // -------
         passwordHash = deserializer.readString(FIELD_PASS_HASH);
 
-        info = event.getUserInfoPattern().read(deserializer);
+        info = role.getUserInfoPattern().read(deserializer);
 
         //read registration data
         registrationUUID = deserializer.readString(FIELD_REGISTRATION_UUID);
@@ -230,6 +230,11 @@ public class User implements SerializableUpdatable {
         return user;
     }
 
+    public static UserRole currentRole() {
+        User user = User.current();
+        return user == null ? Event.current().getAnonymousRole() : user.getRole();
+    }
+
     private static void checkUserActivity(User user) {
         Http.Context context = Http.Context.current();
         Date requestTime = AuthenticatedAction.getRequestTime();
@@ -310,7 +315,7 @@ public class User implements SerializableUpdatable {
 
     @Override
     public void serialize(Serializer serializer) {
-        event.getUserInfoPattern().write(info, serializer);
+        role.getUserInfoPattern().write(info, serializer);
 
         Serializer contestInfoSerializer = serializer.getSerializer(FIELD_CONTEST_INFO);
         for (Map.Entry<String, ContestInfoForUser> id2date : contest2info.entrySet()) {

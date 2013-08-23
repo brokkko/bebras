@@ -4,6 +4,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
+import models.Event;
+import models.User;
 import models.newserialization.*;
 import play.api.templates.Html;
 
@@ -63,7 +65,8 @@ public class HtmlBlock implements SerializableUpdatable {
     }
 
     public Html format(boolean edit) {
-        return views.html.htmlblocks.html_block.render(this, edit);
+        boolean mayEdit = User.currentRole().hasRight("event admin");
+        return views.html.htmlblocks.html_block.render(this, mayEdit);
     }
 
     @Override

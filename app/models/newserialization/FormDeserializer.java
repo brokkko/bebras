@@ -215,4 +215,7 @@ public class FormDeserializer extends Deserializer {
         return (byte[]) values.get(field);
     }
 
+    public void addValue(String field, Object value) {
+        values.put(field, value);
+    }
 }

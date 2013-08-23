@@ -1,11 +1,14 @@
-@(form:models.forms.RawForm)
+@(form:models.forms.RawForm, role:models.UserRole, byUser:Boolean)
 @import views.widgets.FormsWidget
-@import models.forms.RawForm
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get)) { } {
     <h1>Регистрация участника</h1>
     <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
     После заполнения анкеты вы получите письмо с паролем, поэтому
     убедитесь, что вы правильно указали email.
-    @Event.current.getUsersForm.formatExtended(form, controllers.routes.Registration.registration(Event.currentId), false, "form.do_register")
+    @if(byUser) {
+        @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistrationByUser(Event.currentId, role.getName), false, "form.do_register")
+    } else {
+        @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistration(Event.currentId, role.getName), false, "form.do_register")
+    }
 }

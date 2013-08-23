@@ -110,15 +110,6 @@ public class EventAdministration extends Controller {
         return redirect(routes.EventAdministration.admin(eventId));
     }
 
-    public static Result createUser(String eventId, String login, String password, String email, String isAdmin) {
-        if (User.getInstance(User.FIELD_LOGIN, login) != null)
-            return badRequest("user already exists");
-
-        Application.createUser(Event.current(), login, password, email, isAdmin.equals("1"));
-
-        return ok("user created");
-    }
-
     // information about event
 
     public static <T> Result evalCsvTable(final String fileName, final TableDescription<T> tableDescription) {

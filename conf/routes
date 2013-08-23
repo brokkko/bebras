@@ -6,8 +6,15 @@
 #TODO get rid of such initialization
 GET         /:event/create/LkfshdoFMSMNmsRbfgskldNhgkjfhspdfg        controllers.Application.createEvent(event)
 
+#registration
 GET         /:event/register                                         controllers.Registration.registration(event)
-POST        /:event/register                                         controllers.Registration.doRegistration(event)
+GET         /:event/register_by_user                                 controllers.Registration.registrationByUser(event)
+GET         /:event/:role/register                                   controllers.Registration.roleRegistration(event, role)
+GET         /:event/:role/register_by_user                           controllers.Registration.roleRegistrationByUser(event, role)
+POST        /:event/:role/register                                   controllers.Registration.doRegistration(event, role)
+POST        /:event/:role/register_by_user                           controllers.Registration.doRegistrationByUser(event, role)
+
+#other user actions
 GET         /:event/registered/:uuid                                 controllers.Registration.waitForEmail(event, uuid, passwordRecovery:Boolean=false)
 GET         /:event/recovered/:uuid                                  controllers.Registration.waitForEmail(event, uuid, passwordRecovery:Boolean=true)
 GET         /:event/confirm/:uuid                                    controllers.Registration.confirmRegistration(event, uuid, passwordRecovery:Boolean=false)
@@ -42,7 +49,6 @@ GET         /:event/:contest/:table/csv_table                        controllers
 #GET         /:event/usersActivity                                   controllers.EventAdministration.getUsersActivity(event)
 #GET         /:event/usersMatrix                                     controllers.EventAdministration.getUsersMatrix(event)
 #GET         /:event/evalScores                                      controllers.EventAdministration.evalScores(event)
-GET         /:event/:login/:pass/:email/:isAdmin/create_user         controllers.EventAdministration.createUser(event, login, pass, email, isAdmin)
 POST        /:event/add_contest                                      controllers.EventAdministration.addContest(event)
 GET         /:event/help                                             controllers.EventAdministration.help(event)
 #html block
@@ -81,11 +87,15 @@ GET         /assets/*file                                            controllers
 # + TODO add contest
 # + TODO remove contest
 # + TODO add user
+# + TODO registered users
 
 # TODO final rating
 # TODO Extra pages
+# TODO make help as extra page
+# TODO при загрузке bbtc задач удалять старые или просто сделать возможность удалить все задачи соревнования (каталога)
+# TODO клонировать соревнования, клонировать только с клонировавшим пользователем
+# TODO распихать побольше редактируемых блоков по страницам
 
-# + TODO registered users
 # TODO remove user
 
 # TODO max scores evaluation (several translators)

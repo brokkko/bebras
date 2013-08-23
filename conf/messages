@@ -83,6 +83,9 @@ actions.unknown_contest=Неизвестное соревнование
 password_remind.wrong_login=Пользователя с таким именем не зарегистрировано
 password_remind.wrong_email=Пользователя с таким email не зарегистрировано
 
+registration.ok=Вы успешно зарегистрированы!
+registration.ok.title=Завершение регистрации
+
 button.undo=Отменить
 
 form.do_register=Зарегистрироваться

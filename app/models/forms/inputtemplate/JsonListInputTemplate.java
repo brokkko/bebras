@@ -42,7 +42,9 @@ public class JsonListInputTemplate extends InputTemplate<ArrayNode> {
             public String toString() {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    ObjectWriter writer = mapper.writer().withDefaultPrettyPrinter();
+                    DefaultPrettyPrinter pr = new DefaultPrettyPrinter();
+                    pr.indentArraysWith(new DefaultPrettyPrinter.Lf2SpacesIndenter());
+                    ObjectWriter writer = mapper.writer().withPrettyPrinter(pr);
                     return writer.writeValueAsString(value);
 
                     /*StringWriter out = new StringWriter();

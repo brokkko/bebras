@@ -72,3 +72,7 @@ i {
 u {
     text-decoration: underline;
 }
+
+a:visited {
+    color: inherit;
+}

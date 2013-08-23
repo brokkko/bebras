@@ -6,7 +6,7 @@
 @import models.Forms
 @import models.User
 @import scala.List
-    @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), FormsWidget.get, AdminWidget.get, new ResourceLink("forms.js"))) { } {
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), FormsWidget.get, AdminWidget.get)) { } {
     <h1>Список доступных этапов соревнования</h1>
     <p class='time warning'>
     Все моменты времени на этой странице указаны по московскому времени.

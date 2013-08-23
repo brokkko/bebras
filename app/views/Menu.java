@@ -3,6 +3,7 @@ package views;
 import controllers.routes;
 import models.Event;
 import models.User;
+import models.UserRole;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +19,19 @@ public class Menu {
     public static List<MenuItem> current() {
         List<MenuItem> menu = new ArrayList<>();
 
-        String eventId = Event.currentId();
+        Event event = Event.current();
+        String eventId = event.getId();
 
         if (User.isAuthorized()) {
             menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
             menu.add(new MenuItem("Личные данные", routes.UserInfo.info(eventId)));
 
-            if (User.current().hasEventAdminRight()) {
+            User user = User.current();
+            UserRole role = user.getRole();
+            if (role.mayRegisterSomebody())
+                menu.add(new MenuItem("Регистрация", routes.Registration.registrationByUser(eventId)));
+
+            if (user.hasEventAdminRight()) {
                 menu.add(new MenuItem("Администрирование", routes.EventAdministration.admin(eventId)));
                 menu.add(new MenuItem("Помощь", routes.EventAdministration.help(eventId)));
             }
@@ -32,7 +39,11 @@ public class Menu {
             menu.add(new MenuItem("Выход", routes.Registration.logout(eventId)));
         } else {
             menu.add(new MenuItem("Вход", routes.Registration.login(eventId)));
-            menu.add(new MenuItem("Регистрация", routes.Registration.registration(eventId)));
+
+            UserRole role = event.getAnonymousRole();
+            if (role.mayRegisterSomebody())
+                menu.add(new MenuItem("Регистрация", routes.Registration.registration(eventId)));
+
             menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(eventId)));
         }
 

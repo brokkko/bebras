@@ -1,10 +1,10 @@
 package controllers;
 
+import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.*;
 import models.forms.*;
-import models.forms.validators.AuthenticatorValidator;
 import models.newserialization.FormDeserializer;
 import org.apache.commons.mail.EmailException;
 import play.Logger;
@@ -13,6 +13,7 @@ import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -27,7 +28,37 @@ public class Registration extends Controller {
 
     @SuppressWarnings("UnusedParameters")
     public static Result registration(String eventId) {
-        //TODO use form.errorsAsJson() to ajax validate form
+        Event event = Event.current();
+        return processSelectRegistration(event, event.getAnonymousRole(), false);
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    @Authenticated
+    public static Result registrationByUser(String eventId) {
+        Event event = Event.current();
+        return processSelectRegistration(event, User.currentRole(), true);
+    }
+
+    private static Result processSelectRegistration(Event event, UserRole registerRole, boolean byUser) {
+        List<String> mayRegister = registerRole.getMayRegister();
+
+        if (mayRegister.size() == 0)
+            return forbidden();
+
+        if (mayRegister.size() == 1) {
+            String roleName = mayRegister.get(0);
+            return byUser ?
+                    redirect(routes.Registration.roleRegistrationByUser(event.getId(), roleName)) :
+                    redirect(routes.Registration.roleRegistration(event.getId(), roleName));
+        }
+
+        return ok(views.html.registration_select.render(event, registerRole, byUser));
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    public static Result roleRegistration(String eventId, String roleName) {
+        Event event = Event.current();
+        UserRole registeeRole = event.getRole(roleName);
 
         if (!Event.current().registrationStarted())
             return ok(views.html.error.render("error.msg.registration_not_started", new String[0]));
@@ -35,47 +66,110 @@ public class Registration extends Controller {
         if (Event.current().registrationFinished())
             return ok(views.html.error.render("error.msg.registration_finished", new String[0]));
 
+
+        if (registeeRole == UserRole.EMPTY)
+            return forbidden();
+
+        return processRoleRegistration(event, event.getAnonymousRole(), registeeRole, false);
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    @Authenticated
+    public static Result roleRegistrationByUser(String eventId, String roleName) {
+        Event event = Event.current();
+        UserRole registeeRole = event.getRole(roleName);
+
+        if (registeeRole == UserRole.EMPTY)
+            return forbidden();
+
+        return processRoleRegistration(event, User.currentRole(), registeeRole, true);
+    }
+
+    public static Result processRoleRegistration(Event event, UserRole registerRole, UserRole registeeRole, boolean byUser) {
+        //TODO use form.errorsAsJson() to ajax validate form
+
+        if (!registerRole.mayRegister(registeeRole))
+            return forbidden();
+
         RawForm form = new RawForm();
         form.bindFromRequest();
 
-        return ok(views.html.register.render(form));
+        return ok(views.html.register.render(form, registeeRole, byUser));
     }
 
-    public static Result doRegistration(String eventId) {
-        InputForm registrationForm = Event.current().getUsersForm();
+    @SuppressWarnings("UnusedParameters")
+    public static Result doRegistration(String eventId, String roleName) {
+        Event event = Event.current();
+        return processRegistration(event, event.getAnonymousRole(), event.getRole(roleName), false);
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    @Authenticated
+    public static Result doRegistrationByUser(String eventId, String roleName) {
+        Event event = Event.current();
+        return processRegistration(event, User.currentRole(), event.getRole(roleName), true);
+    }
+
+    private static Result processRegistration(Event event, UserRole registerRole, UserRole registeeRole, boolean byUser) {
+        //test roles
+        if (!registerRole.mayRegister(registeeRole))
+            return forbidden();
+
+        //read form
+        InputForm registrationForm = registeeRole.getUsersForm();
 
         FormDeserializer formDeserializer = new FormDeserializer(registrationForm);
         RawForm rawForm = formDeserializer.getRawForm();
 
         if (rawForm.hasErrors())
-            return ok(views.html.register.render(rawForm));
+            return ok(views.html.register.render(rawForm, registeeRole, byUser));
+
+        //add value for user role
+        formDeserializer.addValue(User.FIELD_USER_ROLE, registeeRole.getName());
 
         User user = User.deserialize(formDeserializer);
-
-        String registrationUUID = UUID.randomUUID().toString();
-        String confirmationUUID = UUID.randomUUID().toString();
-        String password = User.generatePassword();
 
         String email = user.getEmail();
         String login = user.getLogin();
         String greeting = user.getGreeting();
 
-        try {
-            Email.sendRegistrationConfirmationEmail(greeting, email, login, password, confirmationUUID);
-        } catch (EmailException e) {
-            Logger.error("Failed to send email", e);
-            if (!Play.isDev()) //allow to fail when sending email in dev mode
-                return internalServerError("Failed to send email");
+        String registrationUUID = null;
+        String confirmationUUID = null;
+
+        String password;
+
+        boolean needEmailConfirmation = formDeserializer.isNull("password");
+
+        if (needEmailConfirmation) {
+            registrationUUID = UUID.randomUUID().toString();
+            confirmationUUID = UUID.randomUUID().toString();
+
+            password = User.generatePassword();
+
+            try {
+                Email.sendRegistrationConfirmationEmail(greeting, email, login, password, confirmationUUID);
+            } catch (EmailException e) {
+                Logger.error("Failed to send email", e);
+                if (!Play.isDev()) //allow to fail when sending email in dev mode
+                    return internalServerError("Failed to send email");
+            }
+        } else {
+            password = formDeserializer.readString("password");
+            user.setConfirmed(true);
         }
 
         user.setRegistrationUUID(registrationUUID);
         user.setConfirmationUUID(confirmationUUID);
+
         user.setEvent(Event.current());
         user.setPasswordHash(User.passwordHash(password));
 
         user.store();
 
-        return redirect(routes.Registration.waitForEmail(eventId, registrationUUID, false));
+        return needEmailConfirmation ?
+                redirect(routes.Registration.waitForEmail(event.getId(), registrationUUID, false)) :
+                ok(views.html.message.render("registration.ok.title", "registration.ok", null));
+
     }
 
     public static Result waitForEmail(String eventId, String uuid, boolean passwordRecovery) {

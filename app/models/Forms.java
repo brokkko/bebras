@@ -220,6 +220,15 @@ public class Forms {
                                             "title", "Таблицы с данными"
                                     ),
                                     "required", true
+                            ),
+                            Utils.mapify(
+                                    "name", "roles",
+                                    "view", Utils.mapify(
+                                            "type", "json list",
+                                            "placeholder", "Введите информацию роли пользователей",
+                                            "title", "Роли пользователей"
+                                    ),
+                                    "required", true
                             )
                     ),
                     "validators",

@@ -22,7 +22,7 @@ import java.util.concurrent.Callable;
 public class ServerConfiguration {
 
     private static final String CACHE_KEY = "server-configuration";
-    public static final int CURRENT_DB_VERSION = 6;
+    public static final int CURRENT_DB_VERSION = 7;
 
     public static ServerConfiguration getInstance() {
         try {

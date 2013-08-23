@@ -1,0 +1,6 @@
+@(title:String, message:String, args:String*)
+@import scala.List
+@import play.i18n.Messages
+@main_with_menu(Messages.get(title))(List()) { } {
+    <h1>@Messages.get(message, args)</h1>
+}
