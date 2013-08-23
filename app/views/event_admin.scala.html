@@ -1,4 +1,4 @@
-@(form:models.forms.RawForm)
+@(eventForm:models.forms.RawForm, cloneForm:models.forms.RawForm)
 @import views.widgets.AdminWidget
 @import views.widgets.FormsWidget
 @import models.Event
@@ -7,7 +7,7 @@
 @import models.forms.validators.FileListValidator
 @main_with_menu("Администрирование " + Event.current.getTitle)(List(AdminWidget.get, FormsWidget.get)) { } {
     <h1>Администрирование мероприятия @Event.current.getTitle</h1>
-    @models.Forms.getEventChangeForm.formatExtended(form, controllers.routes.EventAdministration.admin(Event.currentId), true, "form.do_change")
+    @models.Forms.getEventChangeForm.formatExtended(eventForm, controllers.routes.EventAdministration.admin(Event.currentId), true, "form.do_change")
 
     <p>Список школ:</p>
     <form enctype="multipart/form-data" method="POST" action="@routes.EventAdministration.uploadKenguruSchoolCodes(Event.currentId)">
@@ -33,4 +33,7 @@
     @for((table, ind) <- Event.current.getTables.zipWithIndex) {
         <p>@(ind + 1). @table.getTitle: <a href="@routes.EventAdministration.csvTable(Event.currentId, ind)">скачать</a></p>
     }
+
+    <p>Клонирование события</p>
+    @models.Forms.getCloneEventForm.formatExtended(eventForm, controllers.routes.EventAdministration.doClone(Event.currentId), false, "form.do_add")
 }

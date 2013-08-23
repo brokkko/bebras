@@ -332,6 +332,34 @@ public class Forms {
             )
     );
 
+    @SuppressWarnings("unchecked")
+    private static InputForm cloneEventForm = InputForm.deserialize(
+            new MemoryDeserializer(
+                    "fields",
+                    Utils.listify(
+                            Utils.mapify(
+                                    "name", "new_event_id",
+                                    "view", Utils.mapify(
+                                            "type", "string",
+                                            "title", "Идентификатор нового события",
+                                            "placeholder", "Введите идентификатор нового события"
+                                    ),
+                                    "required", true,
+                                    "validators", Utils.listify(
+                                        Utils.mapify(
+                                                "type", "event id",
+                                                "message", "На сервере уже зарегистрировано событие с этим идентификатором"
+                                        )
+                                    )
+                            )
+                    ),
+                    "validators",
+                    Utils.listify(
+
+                    )
+            )
+    );
+
     public static InputForm getLoginForm() {
         return loginForm;
     }
@@ -358,5 +386,9 @@ public class Forms {
 
     public static InputForm getSetHtmlBlockForm() {
         return setHtmlBlockForm;
+    }
+
+    public static InputForm getCloneEventForm() {
+        return cloneEventForm;
     }
 }

@@ -3,8 +3,6 @@
 # ~~~~
 
 # Home page
-#TODO get rid of such initialization
-GET         /:event/create/LkfshdoFMSMNmsRbfgskldNhgkjfhspdfg        controllers.Application.createEvent(event)
 
 #registration
 GET         /:event/register                                         controllers.Registration.registration(event)
@@ -69,6 +67,7 @@ POST        /:event/:contest/:index/remove_block                     controllers
 #global admin
 GET         /migrate                                                 controllers.Application.migrate()
 GET         /:index/migrate                                          controllers.Application.migrateByIndex(index:Integer)
+POST        /:event/clone_event                                      controllers.EventAdministration.doClone(event)
 
 #trash
 POST        /:event/upload_kenguru_codes                             controllers.EventAdministration.uploadKenguruSchoolCodes(event)

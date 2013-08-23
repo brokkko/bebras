@@ -1,5 +1,8 @@
 package controllers;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
 import controllers.actions.LoadContest;
@@ -14,6 +17,7 @@ import models.newproblems.bbtc.BBTCProblemsLoader;
 import models.newserialization.FormDeserializer;
 import models.newserialization.FormSerializer;
 import models.newserialization.JSONDeserializer;
+import models.newserialization.MongoSerializer;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
@@ -92,7 +96,7 @@ public class EventAdministration extends Controller {
         Event event = Event.current();
         event.serialize(serializer);
 
-        return ok(event_admin.render(serializer.getRawForm()));
+        return ok(event_admin.render(serializer.getRawForm(), new RawForm()));
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -101,7 +105,7 @@ public class EventAdministration extends Controller {
         RawForm rawForm = deserializer.getRawForm();
 
         if (rawForm.hasErrors())
-            return ok(event_admin.render(rawForm));
+            return ok(event_admin.render(rawForm, new RawForm()));
 
         Event event = Event.current();
         event.updateFromEventChangeForm(deserializer);
@@ -216,5 +220,31 @@ public class EventAdministration extends Controller {
         Logger.info(rawForm.get("html"));
 
         return ok();
+    }
+
+    public static Result doClone(String eventId) {
+        FormDeserializer deserializer = new FormDeserializer(Forms.getCloneEventForm());
+        RawForm form = deserializer.getRawForm();
+        if (form.hasErrors())
+            return ok(views.html.event_admin.render(new RawForm(), form));
+
+        String newEventId = form.get("new_event_id");
+
+        //just copy db object
+        DBCollection eventsCollection = MongoConnection.getEventsCollection();
+        DBObject cloningEvent = eventsCollection.findOne(new BasicDBObject("_id", eventId));
+        cloningEvent.put("_id", newEventId);
+        eventsCollection.save(cloningEvent);
+
+        //clone user db object
+        MongoSerializer userSerializer = new MongoSerializer();
+        User.current().serialize(userSerializer);
+        DBObject userObject = userSerializer.getObject();
+        userObject.put(User.FIELD_EVENT, newEventId);
+        userObject.removeField("_id");
+        MongoConnection.getUsersCollection().save(userObject);
+
+//        return ok(views.html.event_admin.render(new RawForm(), new RawForm()));
+        return redirect(routes.Registration.login(newEventId));
     }
 }

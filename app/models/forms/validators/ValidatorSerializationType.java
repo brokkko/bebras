@@ -20,6 +20,7 @@ public class ValidatorSerializationType extends SerializableTreeSerializationTyp
         registerClass("boolean", BooleanValidator.class);
         registerClass("problem block configuration", ProblemBlockConfigurationValidator.class);
         registerClass("event has contest", CurrentEventHasContestValidator.class);
+        registerClass("event id", EventIdValidator.class);
     }
 
 }
