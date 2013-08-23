@@ -299,4 +299,8 @@ public class Event {
         return HtmlBlock.load(this.id, id);
     }
 
+    public static HtmlBlock getGlobalHtmlBlock(String id) {
+        return HtmlBlock.load("", id);
+    }
+
 }

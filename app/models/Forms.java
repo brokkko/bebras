@@ -349,6 +349,11 @@ public class Forms {
                                         Utils.mapify(
                                                 "type", "event id",
                                                 "message", "На сервере уже зарегистрировано событие с этим идентификатором"
+                                        ),
+                                        Utils.mapify(
+                                                "type", "pattern",
+                                                "pattern", "[\\-a-zA-Z0-9]+",
+                                                "message", "Идентификатор может содержать только символы a-z, A-Z, 0-9 и тире"
                                         )
                                     )
                             )

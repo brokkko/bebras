@@ -88,12 +88,12 @@ GET         /assets/*file                                            controllers
 # + TODO remove contest
 # + TODO add user
 # + TODO registered users
+# + TODO клонировать соревнования, клонировать только с клонировавшим пользователем
 
 # TODO final rating
 # TODO Extra pages
 # TODO make help as extra page
 # TODO при загрузке bbtc задач удалять старые или просто сделать возможность удалить все задачи соревнования (каталога)
-# TODO клонировать соревнования, клонировать только с клонировавшим пользователем
 # TODO распихать побольше редактируемых блоков по страницам
 
 # TODO remove user

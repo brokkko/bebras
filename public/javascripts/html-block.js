@@ -25,6 +25,7 @@ $(function() {
 
             var $contents = $("<div></div>");
             $contents.addClass('contents');
+            $contents.addClass('admin');
             $contents.html(html);
 
             console.log($form);

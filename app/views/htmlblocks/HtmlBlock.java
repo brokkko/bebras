@@ -64,7 +64,7 @@ public class HtmlBlock implements SerializableUpdatable {
         store();
     }
 
-    public Html format(boolean edit) {
+    public Html format() {
         boolean mayEdit = User.currentRole().hasRight("event admin");
         return views.html.htmlblocks.html_block.render(this, mayEdit);
     }
