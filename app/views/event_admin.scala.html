@@ -9,7 +9,7 @@
     <h1>Администрирование мероприятия @Event.current.getTitle</h1>
     @models.Forms.getEventChangeForm.formatExtended(eventForm, controllers.routes.EventAdministration.admin(Event.currentId), true, "form.do_change")
 
-    <p>Список школ:</p>
+    <h2>Список школ:</h2>
     <form enctype="multipart/form-data" method="POST" action="@routes.EventAdministration.uploadKenguruSchoolCodes(Event.currentId)">
         <input type="file" name="kenguru-codes">
         <input type="submit" value="Загрузить файл">
@@ -29,11 +29,16 @@
     <p><b>Данные по посещению пользователей: </b><a href="@routes.EventAdministration.getUsersActivity(Event.currentId)">загрузить</a></p>
     *@
     <p></p>
-    <p>Данные по событию:</p>
+    <h2>Данные по событию:</h2>
     @for((table, ind) <- Event.current.getTables.zipWithIndex) {
         <p>@(ind + 1). @table.getTitle: <a href="@routes.EventAdministration.csvTable(Event.currentId, ind)">скачать</a></p>
     }
 
-    <p>Клонирование события</p>
+    <h2>Клонировать событие</h2>
     @models.Forms.getCloneEventForm.formatExtended(eventForm, controllers.routes.EventAdministration.doClone(Event.currentId), false, "form.do_add")
+
+    <h2>Удаление события</h2>
+
+    <form action="@routes.EventAdministration.doRemoveEvent(Event.currentId)" method="POST" class='actions-remove-event'></form>
+    <a href="#" class='submit actions-remove-event' title='Удалить...'>Удалить событие</a>
 }

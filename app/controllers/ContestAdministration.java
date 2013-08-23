@@ -166,6 +166,8 @@ public class ContestAdministration extends Controller {
         event.setContests(contestsList);
         event.store();
 
+        //TODO remove corresponding collections
+
         return redirect;
     }
 

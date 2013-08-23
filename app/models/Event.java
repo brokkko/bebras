@@ -275,7 +275,11 @@ public class Event {
     }
 
     public void invalidateCache() {
-        Cache.remove(eventCacheKey(id));
+        invalidateCache(id);
+    }
+
+    public static void invalidateCache(String eventId) {
+        Cache.remove(eventCacheKey(eventId));
     }
 
     public void store() {

@@ -68,6 +68,7 @@ POST        /:event/:contest/:index/remove_block                     controllers
 GET         /migrate                                                 controllers.Application.migrate()
 GET         /:index/migrate                                          controllers.Application.migrateByIndex(index:Integer)
 POST        /:event/clone_event                                      controllers.EventAdministration.doClone(event)
+POST        /:event/remove_event                                     controllers.EventAdministration.doRemoveEvent(event)
 
 #trash
 POST        /:event/upload_kenguru_codes                             controllers.EventAdministration.uploadKenguruSchoolCodes(event)

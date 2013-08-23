@@ -37,6 +37,7 @@ import views.htmlblocks.HtmlBlock;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -244,7 +245,19 @@ public class EventAdministration extends Controller {
         userObject.removeField("_id");
         MongoConnection.getUsersCollection().save(userObject);
 
+        Event.invalidateCache(newEventId);
+
 //        return ok(views.html.event_admin.render(new RawForm(), new RawForm()));
         return redirect(routes.Registration.login(newEventId));
+    }
+
+    public static Result doRemoveEvent(String eventId) {
+        //TODO remove corresponding collections
+
+        MongoConnection.getEventsCollection().remove(new BasicDBObject("_id", eventId));
+
+        Event.invalidateCache(eventId);
+
+        return ok(views.html.message.render("Событие удалено", "Событие успешно удалено", new String[]{}));
     }
 }
