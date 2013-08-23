@@ -1,10 +1,7 @@
 @(form:models.forms.RawForm, message:String)
-@import views.widgets.ResourceLink
 @import views.htmlblocks.HtmlBlockWidget
 @import views.widgets.FormsWidget
-@import models.forms.RawForm
 @import models.Event
-@import models.Forms
 @import scala.List
 @import play.i18n.Messages
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get, HtmlBlockWidget.get)) { } {

@@ -41,7 +41,7 @@ $(function() {
 //            $wym._box.remove();
             $block.append($contents);
 
-            $block.find('a').text('Edit');
+            $block.find('.html-block-edit-action').text('Edit');
             $block.find('.html-block-undo-action').hide();
         } else {
             //turn edit on

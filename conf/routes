@@ -50,6 +50,7 @@ GET         /:event/:contest/:table/csv_table                        controllers
 POST        /:event/add_contest                                      controllers.EventAdministration.addContest(event)
 GET         /:event/help                                             controllers.EventAdministration.help(event)
 #html block
+POST        /~global/:block/set_html_block                           controllers.Application.setGlobalHtmlBlock(block)
 POST        /:event/:block/set_html_block                            controllers.EventAdministration.setHtmlBlock(event, block)
 
 #admin contest

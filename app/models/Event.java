@@ -300,7 +300,7 @@ public class Event {
     }
 
     public static HtmlBlock getGlobalHtmlBlock(String id) {
-        return HtmlBlock.load("", id);
+        return HtmlBlock.load("~global", id);
     }
 
 }

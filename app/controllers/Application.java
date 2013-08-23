@@ -9,11 +9,13 @@ import models.*;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newserialization.FormDeserializer;
+import play.Logger;
 import play.Play;
 import play.cache.Cache;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.*;
+import views.htmlblocks.HtmlBlock;
 
 import java.io.*;
 import java.util.concurrent.Callable;
@@ -72,5 +74,10 @@ public class Application extends Controller {
         );
 
     }
+
+    public static Result setGlobalHtmlBlock(String block) {
+        return EventAdministration.setHtmlBlock("~global", block);
+    }
+
 
 }
