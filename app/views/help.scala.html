@@ -1,0 +1,7 @@
+@()
+@import views.htmlblocks.HtmlBlockWidget
+@import views.widgets.ResourceLink
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("help.css"), HtmlBlockWidget.get)) { } {
+    @Event.getGlobalHtmlBlock("help").format
+}

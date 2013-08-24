@@ -10,7 +10,7 @@ import models.Event;
  */
 public class EventIdValidator extends Validator<String> {
     @Override
-    public ValidationResult validate(String value) {
+    public Validator.ValidationResult validate(String value) {
         return Event.getInstance(value) == null ? ok() : message();
     }
 }
