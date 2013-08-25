@@ -95,7 +95,12 @@ public class EventAdministration extends Controller {
     public static Result admin(String eventId) {
         FormSerializer serializer = new FormSerializer(Forms.getEventChangeForm());
         Event event = Event.current();
-        event.serialize(serializer);
+
+        try {
+            event.serialize(serializer);
+        } catch (Exception e) {
+            //do nothing
+        }
 
         return ok(event_admin.render(serializer.getRawForm(), new RawForm()));
     }

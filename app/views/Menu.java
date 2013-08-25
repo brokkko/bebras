@@ -4,9 +4,12 @@ import controllers.routes;
 import models.Event;
 import models.User;
 import models.UserRole;
+import play.mvc.Call;
+import play.mvc.Http;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +19,20 @@ import java.util.List;
  */
 public class Menu {
 
-    public static List<MenuItem> current() {
+    public static Menu current() {
+        Map<String,Object> contextArgs = Http.Context.current().args;
+        Menu menu = (Menu) contextArgs.get("menu");
+        if (menu == null) {
+            menu = new Menu();
+            contextArgs.put("menu", menu);
+        }
+
+        return menu;
+    }
+
+    private List<MenuItem> items;
+
+    public Menu() {
         List<MenuItem> menu = new ArrayList<>();
 
         Event event = Event.current();
@@ -47,10 +63,15 @@ public class Menu {
             menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(eventId)));
         }
 
-        //TODO show only if this is defined in Event
-//        menu.add(new MenuItem("Тренировочное соревнование", null));
-
-        return menu;
+        this.items = menu;
     }
 
+    public void addMenuItem(String title, Call call) {
+        int len = items.size();
+        items.add(len - 1, new MenuItem(title, call)); //add before "Exit"
+    }
+
+    public List<MenuItem> items() {
+        return items;
+    }
 }

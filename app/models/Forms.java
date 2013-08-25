@@ -225,8 +225,17 @@ public class Forms {
                                     "name", "roles",
                                     "view", Utils.mapify(
                                             "type", "json list",
-                                            "placeholder", "Введите информацию роли пользователей",
+                                            "placeholder", "Введите информацию о ролях пользователей",
                                             "title", "Роли пользователей"
+                                    ),
+                                    "required", true
+                            ),
+                            Utils.mapify(
+                                    "name", "plugins",
+                                    "view", Utils.mapify(
+                                            "type", "json list",
+                                            "placeholder", "Введите информацию о подключенных плагинах",
+                                            "title", "Подключенные плагины"
                                     ),
                                     "required", true
                             )

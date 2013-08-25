@@ -52,7 +52,7 @@ public class Contest {
 
     private List<TableDescription> tables;
 
-    private Map<String, String> pid2name = new HashMap<>();
+    private LinkedHashMap<String, String> pid2name = new LinkedHashMap<>();
 
     public Contest(Event event, Deserializer deserializer) {
         this.event = event;
@@ -172,7 +172,7 @@ public class Contest {
     }
 
     public boolean resultsAvailableImmediately() {
-        return getResults().before(start);
+        return !getResults().after(start);
     }
 
     //TODO move to user

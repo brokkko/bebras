@@ -1,6 +1,6 @@
 package models.newserialization;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -9,7 +9,7 @@ import java.util.Map;
  * Date: 02.08.13
  * Time: 12:26
  */
-public class StringMapSerializationType<T> extends SerializationType<Map<String, T>>{
+public class StringMapSerializationType<T> extends SerializationType<LinkedHashMap<String, T>>{
 
     private final SerializationType<T> subtype;
 
@@ -18,28 +18,28 @@ public class StringMapSerializationType<T> extends SerializationType<Map<String,
     }
 
     @Override
-    public void write(Serializer serializer, String field, Map<String, T> value) {
+    public void write(Serializer serializer, String field, LinkedHashMap<String, T> value) {
         writeToSerializer(serializer.getSerializer(field), value);
     }
 
     @Override
-    public void write(ListSerializer serializer, Map<String, T> value) {
+    public void write(ListSerializer serializer, LinkedHashMap<String, T> value) {
         writeToSerializer(serializer.getSerializer(), value);
     }
 
     @Override
-    public Map<String, T> read(Deserializer deserializer, String field) {
+    public LinkedHashMap<String, T> read(Deserializer deserializer, String field) {
         if (deserializer.isNull(field))
-            return new HashMap<>();
+            return new LinkedHashMap<>();
 
         return readFromDeserializer(deserializer.getDeserializer(field));
     }
 
     @Override
-    public Map<String, T> read(ListDeserializer deserializer) {
+    public LinkedHashMap<String, T> read(ListDeserializer deserializer) {
         if (deserializer.nextIsNull()) {
             deserializer.readString(); //type does not matter
-            return new HashMap<>();
+            return new LinkedHashMap<>();
         }
 
         return readFromDeserializer(deserializer.getDeserializer());
@@ -50,8 +50,8 @@ public class StringMapSerializationType<T> extends SerializationType<Map<String,
             subtype.write(serializer, keyValue.getKey(), keyValue.getValue());
     }
 
-    private Map<String, T> readFromDeserializer(Deserializer deserializer) {
-        Map<String, T> result = new HashMap<>();
+    private LinkedHashMap<String, T> readFromDeserializer(Deserializer deserializer) {
+        LinkedHashMap<String, T> result = new LinkedHashMap<>();
         for (String field : deserializer.fields())
             result.put(field, subtype.read(deserializer, field));
 

@@ -1,6 +1,7 @@
 package models.data;
 
 import com.mongodb.BasicDBObject;
+import models.Event;
 import models.User;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
@@ -20,6 +21,10 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
 
     @Override
     public ObjectsProvider<User> get() {
+        String eventId = this.eventId;
+        if ("~current".equals(eventId))
+            eventId = Event.currentId();
+
         BasicDBObject query = new BasicDBObject(User.FIELD_EVENT, eventId);
         if (role != null)
             query.put(User.FIELD_USER_ROLE, role);

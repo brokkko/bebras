@@ -9,7 +9,7 @@
         <div class='navigation'>
             <nav>
             <img src="@routes.Assets.at("images/dog.png")">
-            @for(menu_item <- views.Menu.current) {
+            @for(menu_item <- views.Menu.current.items) {
                 @if(menu_item.isCurrent) {
                     <span class='menu-item'>@menu_item.getTitle</span>
                 } else {

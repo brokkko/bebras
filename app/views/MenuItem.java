@@ -14,16 +14,10 @@ public class MenuItem {
 
     private String title;
     private Call link;
-    private boolean current;
 
     public MenuItem(String title, Call link) {
         this.title = title;
         this.link = link;
-
-        if (link == null)
-            return;
-
-        current = Http.Context.current().request().path().equals(link.url()); //TODO make sure this works in all situations
     }
 
     public String getTitle() {
@@ -35,6 +29,6 @@ public class MenuItem {
     }
 
     public boolean isCurrent() {
-        return current;
+        return link != null && Http.Context.current().request().path().equals(link.url()); //TODO make sure this works in all situations;
     }
 }

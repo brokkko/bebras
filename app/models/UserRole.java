@@ -54,7 +54,12 @@ public class UserRole implements SerializableUpdatable {
     }
 
     public InputForm getUsersForm() {
-        return usersForm;
+        return usersForm.filter(new InputForm.FieldFilter() {
+            @Override
+            public boolean accept(InputField field) {
+                return !field.isExtra();
+            }
+        });
     }
 
     public InfoPattern getUserInfoPattern() {
@@ -65,7 +70,7 @@ public class UserRole implements SerializableUpdatable {
         return usersForm.filter(new InputForm.FieldFilter() {
             @Override
             public boolean accept(InputField field) {
-                return !field.isSkipForEdit() && field.isStore();
+                return !field.isSkipForEdit() && field.isStore() && !field.isExtra();
             }
         });
     }

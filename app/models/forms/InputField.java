@@ -5,6 +5,7 @@ import models.forms.validators.Validator;
 import models.newserialization.*;
 import play.api.templates.Html;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,6 +56,15 @@ public class InputField implements SerializableUpdatable {
     public void update(Deserializer deserializer) {
         name = deserializer.readString("name");
         inputTemplate = SerializationTypesRegistry.INPUT_TEMPLATE.read(deserializer, "view");
+
+        if (inputTemplate == null) {
+            skipForEdit = true;
+            store = true;
+            required = false;
+            validators = new ArrayList<>();
+            return;
+        }
+
         skipForEdit = deserializer.readBoolean("skip for edit", false);
         store = deserializer.readBoolean("store", true);
         required = deserializer.readBoolean("required", false);
@@ -68,6 +78,10 @@ public class InputField implements SerializableUpdatable {
         serializer.write("store", store);
         serializer.write("required", required);
         SerializationTypesRegistry.list(SerializationTypesRegistry.VALIDATOR).write(serializer, "validators", validators);
+    }
+
+    public boolean isExtra() {
+        return inputTemplate == null;
     }
 
     public boolean isRequired() {

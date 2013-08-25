@@ -15,6 +15,7 @@ import play.Logger;
 import play.Play;
 import play.cache.Cache;
 import play.mvc.Http;
+import plugins.Plugin;
 import views.htmlblocks.HtmlBlock;
 
 import java.io.File;
@@ -46,6 +47,7 @@ public class Event {
     private List<TableDescription> tables;
 
     private Map<String, UserRole> roles;
+    private LinkedHashMap<String, Plugin> plugins; //linked map is needed because plugins initialization may matter
 
     private Event(Deserializer deserializer) {
         this.id = deserializer.readString("_id");
@@ -76,6 +78,9 @@ public class Event {
         List<UserRole> roles = SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).read(deserializer, "roles");
         setRoles(roles);
 
+        List<Plugin> plugins = SerializationTypesRegistry.list(SerializationTypesRegistry.PLUGIN).read(deserializer, "plugins");
+        setPlugins(plugins);
+
         //TODO enters site before confirmation
         //TODO choose where to go if authorized
     }
@@ -84,6 +89,12 @@ public class Event {
         this.roles = new HashMap<>();
         for (UserRole role : roles)
             this.roles.put(role.getName(), role);
+    }
+
+    private void setPlugins(List<Plugin> plugins) {
+        this.plugins = new LinkedHashMap<>();
+        for (Plugin plugin : plugins)
+            this.plugins.put(plugin.getRef(), plugin);
     }
 
     public static Event getInstance(final String eventId) {
@@ -148,6 +159,8 @@ public class Event {
         SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).write(serializer, "roles",
                 new ArrayList<>(roles.values())
         );
+
+        SerializationTypesRegistry.list(SerializationTypesRegistry.PLUGIN).write(serializer, "plugins", new ArrayList<>(plugins.values()));
     }
 
     public static String currentId(Http.Context ctx) {
@@ -192,6 +205,14 @@ public class Event {
 
     public UserRole getAnonymousRole() {
         return getRole("ANONYMOUS");
+    }
+
+    public List<Plugin> getPlugins() {
+        return new ArrayList<>(plugins.values());
+    }
+
+    public Plugin getPlugin(String id) {
+        return plugins.get(id);
     }
 
     public Contest getContestById(String id) {
@@ -272,6 +293,9 @@ public class Event {
 
         List<UserRole> roles = SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).read(deserializer, "roles");
         setRoles(roles);
+
+        List<Plugin> plugins = SerializationTypesRegistry.list(SerializationTypesRegistry.PLUGIN).read(deserializer, "plugins");
+        setPlugins(plugins);
     }
 
     public void invalidateCache() {
