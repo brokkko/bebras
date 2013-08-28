@@ -197,6 +197,14 @@ public class Forms {
                                     "required", true
                             ),
                             Utils.mapify(
+                                    "name", "restricted results",
+                                    "view", Utils.mapify(
+                                            "type", "datetime",
+                                            "title", "Дата отображения сокращенных результатов"
+                                    ),
+                                    "required", false
+                            ),
+                            Utils.mapify(
                                     "name", "registration start",
                                     "view", Utils.mapify(
                                             "type", "datetime",

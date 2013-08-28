@@ -1,5 +1,15 @@
-@()
+@(okMessage:String, errorMessage:String, uploadCall:play.mvc.Call)
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List()) { } {
-    hello
+    <h1>Загрузка данных пользователей</h1>
+    @if(okMessage != null) {
+        <p class='warning'>@okMessage</p>
+    }
+    @if(errorMessage != null) {
+        <p class='warning'>@errorMessage</p>
+    }
+    <form enctype="multipart/form-data" method="POST" action="@uploadCall">
+        <input type="file" name="new-fields">
+        <input type="submit" value="Загрузить файл">
+    </form>
 }

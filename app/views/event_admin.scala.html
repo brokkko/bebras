@@ -2,9 +2,7 @@
 @import views.widgets.AdminWidget
 @import views.widgets.FormsWidget
 @import models.Event
-@import models.forms.RawForm
 @import scala.List
-@import models.forms.validators.FileListValidator
 @main_with_menu("Администрирование " + Event.current.getTitle)(List(AdminWidget.get, FormsWidget.get)) { } {
     <h1>Администрирование мероприятия @Event.current.getTitle</h1>
     @models.Forms.getEventChangeForm.formatExtended(eventForm, controllers.routes.EventAdministration.admin(Event.currentId), true, "form.do_change")

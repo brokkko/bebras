@@ -46,6 +46,9 @@
                     case 6 => {
                         соревнование еще не началось
                     }
+                    case 7 => {
+                        доступны сокращенные результаты
+                    }
                     }
                 </span></p>
                 @if((contest.isAllowRestart || User.current.hasEventAdminRight) && User.current.userParticipatedAndFinished(contest)) {
@@ -82,14 +85,14 @@
                     case 5 => {
                     <a href='@routes.Contests.startContest(Event.current.getId, contest.getId)'>Начать</a>
                     }
-                    case 6 => {}
+                    case 6 | 7 => {}
                     }
                 </p>
                 @*<p>Полные результаты соревнования доступны ограниченное количество времени</p> TODO убрать*@
             </div>
             <div class='results-and-description'>
                 <p class='header big-title'>&nbsp;</p>
-                @if(User.current().getContestStatus(contest) == 2 || User.current().getContestStatus(contest) == 3 && User.current.resultsAvailable(contest)) {
+                @if(User.current().getContestStatus(contest) == 2 || User.current().getContestStatus(contest) == 7 || User.current().getContestStatus(contest) == 3 && User.current.resultsAvailable(contest)) {
                 <p class='header'>Результаты соревнования</p>
                 <div><p>@info(User.current.getContestResults(contest), contest.getResultsInfoPattern, null)</p></div>
                 }
@@ -102,9 +105,6 @@
             </div>
             <div class='footer'></div>
             @if(User.current.hasEventAdminRight) {
-                @contest_info(contest)
-                <a class='go-contest-admin' href="@routes.ContestAdministration.contestAdmin(Event.currentId, contest.getId)">Администрирование соревнования</a>
-
                 <form action="@routes.ContestAdministration.moveContestUp(Event.currentId, contest.getId)" method="POST" class='actions-move-up-@contest.getId'></form>
                 <form action="@routes.ContestAdministration.moveContestDown(Event.currentId, contest.getId)" method="POST" class='actions-move-down-@contest.getId'></form>
                 <form action="@routes.ContestAdministration.removeContest(Event.currentId, contest.getId)" method="POST" class='actions-remove-@contest.getId'></form>
@@ -117,6 +117,8 @@
                         <a href="#" class='submit actions-move-down-@contest.getId' title="Опустить вниз">↓</a>
                     }
                     <a href="#" class='submit actions-remove-@contest.getId' title="Удалить соревнование">⨯</a>
+
+                    <a class='go-contest-admin' href="@routes.ContestAdministration.contestAdmin(Event.currentId, contest.getId)">Администрирование соревнования</a>
                 </p>
             }
         </div>

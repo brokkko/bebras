@@ -457,13 +457,26 @@ public class User implements SerializableUpdatable {
         return contest.getResults().before(AuthenticatedAction.getRequestTime());
     }
 
+    public boolean restrictedResults() {
+        Date restrictedResults = event.getRestrictedResults();
+        return restrictedResults != null && !hasEventAdminRight() && restrictedResults.before(AuthenticatedAction.getRequestTime());
+    }
+
     public int getContestStatus(Contest contest) {
         if (contestIsGoing(contest))
             return 1; //going
-        if (resultsAvailable(contest) && userParticipatedAndFinished(contest))
-            return 2; //results available
-        if (contestFinished(contest) && !participatedInContest(contest.getId()))
-            return 3; //finished but not participated
+        if (resultsAvailable(contest) && userParticipatedAndFinished(contest)) {
+            if (restrictedResults())
+                return 7; //results available, but they are restricted
+            else
+                return 2; //results available
+        }
+        if (contestFinished(contest) && !participatedInContest(contest.getId())) {
+            if (restrictedResults())
+                return 7; //results available, but they are restricted
+            else
+                return 3; //finished but not participated
+        }
         if (userParticipatedAndFinished(contest))
             return 4; //finished but still waiting results
         if (contestStarted(contest))

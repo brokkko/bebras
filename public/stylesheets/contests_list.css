@@ -113,11 +113,11 @@ p.time iframe {
 /* contest administration */
 
 .go-contest-admin {
-    display: block;
-    text-align: right;
+    /*display: block;*/
+    /*text-align: right;*/
+    float: right;
 }
 
-/*
 .contest-administration {
     display: none;
 }

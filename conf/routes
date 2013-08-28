@@ -107,3 +107,8 @@ GET         /assets/*file                                  controllers.Assets.at
 # TODO max scores evaluation (several translators)
 # TODO интерфейс
 # TODO режим соревнования, что оно окончилось, но к задачам уже не перейти
+
+# TODO redirect() instead of ok() for each POST
+
+# Тип результа
+# Не отображать список ответов для пользователя

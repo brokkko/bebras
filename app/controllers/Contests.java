@@ -45,7 +45,7 @@ public class Contests extends Controller {
         Contest contest = Contest.current();
 
         int status = user.getContestStatus(contest);
-        if (status == 6)
+        if (status == 6 || status == 7)
             return forbidden();
 
         List<List<Problem>> pagedUserProblems = contest.getPagedUserProblems(user);
