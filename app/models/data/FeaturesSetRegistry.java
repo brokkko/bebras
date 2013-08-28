@@ -1,10 +1,7 @@
 package models.data;
 
 import models.User;
-import models.data.features.ConstFunctionFeatures;
-import models.data.features.ContestHistoryFeatures;
-import models.data.features.SubstringFunctionFeatures;
-import models.data.features.UserFeatures;
+import models.data.features.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +31,7 @@ public class FeaturesSetRegistry {
 
         set.register("substring", new SubstringFunctionFeatures(set));
         set.register("const", new ConstFunctionFeatures());
+        set.register("excel", new ExcelFeatures(set));
 
         return set;
     }

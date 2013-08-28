@@ -1,22 +1,18 @@
 package plugins;
 
 import au.com.bytecode.opencsv.CSVReader;
+import models.Contest;
 import models.Event;
 import models.User;
-import models.forms.validators.FileListValidator;
+import org.bson.types.ObjectId;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 import views.Menu;
-import views.html.error;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,7 +53,7 @@ public class FieldsUploader extends Plugin {
             Controller.flash("ok", "Данные успешно загружены");
             return Controller.redirect(getCall());
         } catch (Exception e) {
-            Controller.flash("error", "При загрузке данных произошла ошибка");
+            Controller.flash("error", "При загрузке данных произошла ошибка: " + e.getMessage());
             Logger.error("error loading file " + fieldsFile, e);
             return Controller.redirect(getCall());
         }
@@ -68,6 +64,21 @@ public class FieldsUploader extends Plugin {
         String[] title = reader.readNext();
         if (title == null)
             throw new IOException("No title in csv file");
+        //find _id index
 
+        String[] line;
+        while ((line = reader.readNext()) != null) {
+            ObjectId id = new ObjectId(line[0]);
+            User user = User.getInstance("_id", id);
+            if (user == null)
+                continue;
+            for (int i = 0; i < Math.min(title.length, line.length); i++)
+                user.getInfo().put(title[i], line[i]);
+
+            for (Contest contest: Event.current().getContests())
+                user.invalidateContestResults(contest.getId());
+
+            user.store();
+        }
     }
 }

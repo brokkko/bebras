@@ -24,26 +24,26 @@ public class BeaverTranslator implements Translator {
         int r = 0;
         int w = 0;
         int n = 0;
-        StringBuilder ans = new StringBuilder();
+//        StringBuilder ans = new StringBuilder();
 
         for (int i = 0; i < problemsCount; i++) {
             Info problemResult = from.get(i);
             Info problemSettings = settings.get(i);
 
             int result = problemResult == null ? 0 : (Integer) problemResult.get("result");
-            String answer = problemResult == null ? "." : (String) problemResult.get("answer");
+//            String answer = problemResult == null ? "." : (String) problemResult.get("answer");
             if (problemSettings == null) {
                 if (result < 0) {
                     result = -penalty * result;
-                    ans.append(answer.toLowerCase());
+//                    ans.append(answer.toLowerCase());
                     w++;
                 } else if (result > 0) {
                     result = scores * result;
-                    ans.append(answer.toUpperCase());
+//                    ans.append(answer.toUpperCase());
                     r++;
                 } else {
                     result = noAnswerPenalty;
-                    ans.append('.');
+//                    ans.append('.');
                     n++;
                 }
             } // TODO implement else
@@ -56,7 +56,7 @@ public class BeaverTranslator implements Translator {
         result.put("r", r);
         result.put("w", w);
         result.put("n", n);
-        result.put("ans", ans.toString());
+//        result.put("ans", ans.toString());
 //        result.put("max", problemsCount * scores);
         return result;
     }
@@ -67,8 +67,8 @@ public class BeaverTranslator implements Translator {
                 "scores", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.scores"),
                 "r", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.right"),
                 "w", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.wrong"),
-                "n", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.skip"),
-                "ans", new BasicSerializationType<>(String.class), Messages.get("results_translator.beaver.title.answers")/*,
+                "n", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.skip")/*,
+                "ans", new BasicSerializationType<>(String.class), Messages.get("results_translator.beaver.title.answers"),
                 "max", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.max")*/
         );
     }

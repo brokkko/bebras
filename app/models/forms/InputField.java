@@ -1,6 +1,7 @@
 package models.forms;
 
 import models.forms.inputtemplate.InputTemplate;
+import models.forms.inputtemplate.StringInputTemplate;
 import models.forms.validators.Validator;
 import models.newserialization.*;
 import play.api.templates.Html;
@@ -20,9 +21,10 @@ public class InputField implements SerializableUpdatable {
 
     private String name;
     private InputTemplate inputTemplate;
-    private boolean skipForEdit;
+    private boolean skipForEdit; //do not create form entry for it (edit form)
     private boolean required;
     private boolean store;
+    private boolean extra; //do not create form entry for it
     private List<Validator> validators;
 
     public String getName() {
@@ -62,6 +64,7 @@ public class InputField implements SerializableUpdatable {
             store = true;
             required = false;
             validators = new ArrayList<>();
+            extra = true;
             return;
         }
 
@@ -69,6 +72,7 @@ public class InputField implements SerializableUpdatable {
         store = deserializer.readBoolean("store", true);
         required = deserializer.readBoolean("required", false);
         validators = SerializationTypesRegistry.list(SerializationTypesRegistry.VALIDATOR).read(deserializer, "validators");
+        extra = false;
     }
 
     public void serialize(Serializer serializer) {
@@ -81,7 +85,7 @@ public class InputField implements SerializableUpdatable {
     }
 
     public boolean isExtra() {
-        return inputTemplate == null;
+        return extra;
     }
 
     public boolean isRequired() {

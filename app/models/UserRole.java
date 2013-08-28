@@ -124,8 +124,12 @@ public class UserRole implements SerializableUpdatable {
         userInfoPattern = new InfoPattern();
         if (this.usersForm != null)
             for (InputField inputField : this.usersForm.getFields())
-                if (inputField.isStore())
-                    userInfoPattern.register(inputField.getName(), inputField.getInputTemplate().getType(), inputField.getInputTemplate().getTitle());
+                if (inputField.isStore()) {
+                    if (inputField.isExtra())
+                        userInfoPattern.register(inputField.getName(), new BasicSerializationType<>(String.class), inputField.getName()); //TODO think about title
+                    else
+                        userInfoPattern.register(inputField.getName(), inputField.getInputTemplate().getType(), inputField.getInputTemplate().getTitle());
+                }
     }
 
 }
