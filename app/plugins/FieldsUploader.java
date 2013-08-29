@@ -1,7 +1,6 @@
 package plugins;
 
 import au.com.bytecode.opencsv.CSVReader;
-import models.Contest;
 import models.Event;
 import models.User;
 import org.bson.types.ObjectId;
@@ -23,9 +22,13 @@ import java.io.*;
 public class FieldsUploader extends Plugin {
 
     @Override
-    public void init() {
-        if (User.currentRole().hasRight("event admin"))
-            Menu.current().addMenuItem("Загрузить данные", getCall());
+    public void initPage() {
+        Menu.addMenuItem("Загрузить данные", getCall(), "event admin");
+    }
+
+    @Override
+    public void initEvent(Event event) {
+        //do nothing
     }
 
     @Override
@@ -75,10 +78,7 @@ public class FieldsUploader extends Plugin {
             for (int i = 0; i < Math.min(title.length, line.length); i++)
                 user.getInfo().put(title[i], line[i]);
 
-            for (Contest contest: Event.current().getContests())
-                user.invalidateContestResults(contest.getId());
-
-            user.store();
+            user.invalidateAllResults();
         }
     }
 }

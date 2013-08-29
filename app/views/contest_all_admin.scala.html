@@ -6,6 +6,10 @@
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get(), CssJsWidget.get("admin"))) { } {
     <h1>Администрирование соревнования @contest.getName</h1>
 
+    @if(flash.get("message") != null) {
+        <p class='warning'>@flash.get("message")</p>
+    }
+
     <h2>Информация</h2>
     @contest_info(contest)
 
@@ -40,4 +44,12 @@
 
     <h2>Добавить блок</h2>
     @Forms.getAddBlockForm().formatExtended(addBlockForm, routes.ContestAdministration.doAddBlock(Event.currentId, contest.getId), false, "form.do_add")
+
+    <h1>Очистка результатов</h1>
+    <p>После изменения настроек процесса подведения итогов может оказаться, что уже вычисленные результаты участников более неактуальны. В этом случае
+        необходимо очистить вычисленные результаты.
+    </p>
+    <p><a href="#" class='submit actions-invalidate-contest-results' title="Очистить результаты соревнования">Очистить результаты соревнования</a></p>
+    <form action="@routes.ContestAdministration.doInvalidateContestsAndEventResults(Event.currentId(), contest.getId)" method="POST" class='actions-invalidate-contest-results'></form>
+
 }

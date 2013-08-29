@@ -649,7 +649,7 @@ public class User implements SerializableUpdatable {
             problemsSettingsInfo.add(null);
         }
 
-        return contest.getResultTranslator().translate(problemsInfo, problemsSettingsInfo);
+        return contest.getResultTranslator().translate(problemsInfo, problemsSettingsInfo, this);
     }
 
     public Info getContestResults(Contest contest) {
@@ -686,7 +686,7 @@ public class User implements SerializableUpdatable {
             contestsSettings.add(null);
         }
 
-        eventResults = resultTranslator.translate(contestsInfo, contestsSettings);
+        eventResults = resultTranslator.translate(contestsInfo, contestsSettings, this);
 
         store();
 
@@ -714,6 +714,40 @@ public class User implements SerializableUpdatable {
         contestInfo.setFinalResults(null);
         invalidateEventResults();
         store();
+    }
+
+    public void invalidateAllResults() {
+        for (Contest contest : event.getContests())
+            getContestInfoCreateIfNeeded(contest.getId()).setFinalResults(null);
+        invalidateEventResults();
+    }
+
+    private static void invalidateOneContestResults(Event event, Contest contest) {
+        DBCollection usersCollection = MongoConnection.getUsersCollection();
+        DBObject query = new BasicDBObject("event_id", event.getId());
+        String contestResultsField = User.FIELD_CONTEST_INFO + "." + contest.getId() + ".res";
+        DBObject update = new BasicDBObject("$unset", new BasicDBObject(contestResultsField, ""));
+
+        usersCollection.updateMulti(query, update);
+    }
+
+    public static void invalidateAllContestResults(Event event, Contest contest) {
+        invalidateAllEventResults(event);
+        invalidateOneContestResults(event, contest);
+    }
+
+    public static void invalidateAllEventResults(Event event) {
+        DBCollection usersCollection = MongoConnection.getUsersCollection();
+        DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
+        DBObject update = new BasicDBObject("$unset", new BasicDBObject(User.FIELD_EVENT_RESULTS, ""));
+
+        usersCollection.updateMulti(query, update);
+    }
+
+    public static void invalidateAllResults(Event event) {
+        for (Contest contest : event.getContests())
+            invalidateOneContestResults(event, contest);
+        invalidateAllEventResults(event);
     }
 
     public static void removeUser(Event event, String login) {

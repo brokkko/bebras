@@ -1,5 +1,6 @@
 package models.results;
 
+import models.User;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 
@@ -28,11 +29,11 @@ public class CombinedTranslator implements Translator {
 
 
     @Override
-    public Info translate(List<Info> from, List<Info> settings) {
+    public Info translate(List<Info> from, List<Info> settings, User user) {
         Info result = new Info();
 
         for (Translator translator : translators) {
-            Info info = translator.translate(from, settings);
+            Info info = translator.translate(from, settings, user);
             for (String field : translator.getInfoPattern().getFields())
                 result.put(field, info.get(field));
         }

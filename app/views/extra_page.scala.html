@@ -1,0 +1,8 @@
+@(eventId:String, blockId:String)
+@import views.htmlblocks.HtmlBlockWidget
+@import views.htmlblocks.HtmlBlock
+@import views.widgets.ResourceLink
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("help.css"), HtmlBlockWidget.get)) { } {
+    @HtmlBlock.load(eventId, blockId).format
+}

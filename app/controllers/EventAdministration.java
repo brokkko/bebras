@@ -207,10 +207,6 @@ public class EventAdministration extends Controller {
         return redirect(routes.UserInfo.contestsList(eventId));
     }
 
-    public static Result help(String eventId) {
-        return ok(views.html.help.render());
-    }
-
     public static Result setHtmlBlock(String event, String block) {
         InputForm form = Forms.getSetHtmlBlockForm();
 
@@ -264,5 +260,49 @@ public class EventAdministration extends Controller {
         Event.invalidateCache(eventId);
 
         return ok(views.html.message.render("Событие удалено", "Событие успешно удалено", new String[]{}));
+    }
+
+    public static Result doInvalidateEventResults(final String eventId) {
+        F.Promise<Boolean> promiseOfVoid = Akka.future(
+                new Callable<Boolean>() {
+                    public Boolean call() throws Exception {
+                        User.invalidateAllEventResults(Event.getInstance(eventId));
+                        return true;
+                    }
+                }
+        );
+
+        return async(
+                promiseOfVoid.map(
+                        new F.Function<Boolean, Result>() {
+                            public Result apply(Boolean result) {
+                                flash("message", "Event results successfully invalidated");
+                                return redirect(routes.EventAdministration.admin(eventId));
+                            }
+                        }
+                )
+        );
+    }
+
+    public static Result doInvalidateContestsAndEventResults(final String eventId) {
+        F.Promise<Boolean> promiseOfVoid = Akka.future(
+                new Callable<Boolean>() {
+                    public Boolean call() throws Exception {
+                        User.invalidateAllResults(Event.getInstance(eventId));
+                        return true;
+                    }
+                }
+        );
+
+        return async(
+                promiseOfVoid.map(
+                        new F.Function<Boolean, Result>() {
+                            public Result apply(Boolean result) {
+                                flash("message", "All results successfully invalidated");
+                                return redirect(routes.EventAdministration.admin(eventId));
+                            }
+                        }
+                )
+        );
     }
 }

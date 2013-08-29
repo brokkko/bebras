@@ -1,28 +1,20 @@
 package controllers;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 import controllers.actions.*;
 import models.*;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newproblems.newproblemblock.ProblemBlock;
 import models.newserialization.FormDeserializer;
-import models.newserialization.JSONDeserializer;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
+import play.libs.Akka;
+import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.contest_all_admin;
-import views.html.contests_list;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,6 +28,7 @@ import java.util.List;
 @DcesController
 public class ContestAdministration extends Controller {
 
+    @SuppressWarnings("UnusedParameters")
     public static Result contestAdmin(String eventId, String contestId) {
         return ok(contest_all_admin.render(Contest.current(), Contest.current().saveToForm(Forms.getContestChangeForm()), new RawForm()));
     }
@@ -166,9 +159,34 @@ public class ContestAdministration extends Controller {
         event.setContests(contestsList);
         event.store();
 
+        //TODO remove users data
+
         //TODO remove corresponding collections
 
         return redirect;
+    }
+
+    public static Result doInvalidateContestsAndEventResults(final String eventId, final String contestId) {
+        F.Promise<Boolean> promiseOfVoid = Akka.future(
+                new Callable<Boolean>() {
+                    public Boolean call() throws Exception {
+                        Event event = Event.getInstance(eventId);
+                        User.invalidateAllContestResults(event, event.getContestById(contestId));
+                        return true;
+                    }
+                }
+        );
+
+        return async(
+                promiseOfVoid.map(
+                        new F.Function<Boolean, Result>() {
+                            public Result apply(Boolean result) {
+                                flash("message", "All results successfully invalidated");
+                                return redirect(routes.ContestAdministration.contestAdmin(eventId, contestId));
+                            }
+                        }
+                )
+        );
     }
 
     public static Result moveContestUp(String eventId, String contestId) {

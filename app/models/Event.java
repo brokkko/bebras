@@ -85,6 +85,13 @@ public class Event {
 
         //TODO enters site before confirmation
         //TODO choose where to go if authorized
+
+        initPlugins();
+    }
+
+    private void initPlugins() {
+        for (Plugin plugin : plugins.values())
+            plugin.initEvent(this);
     }
 
     private void setRoles(List<UserRole> roles) {

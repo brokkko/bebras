@@ -48,14 +48,15 @@ GET         /:event/:contest/:table/csv_table              controllers.EventAdmi
 #GET         /:event/usersMatrix                                     controllers.EventAdministration.getUsersMatrix(event)
 #GET         /:event/evalScores                                      controllers.EventAdministration.evalScores(event)
 POST        /:event/add_contest                            controllers.EventAdministration.addContest(event)
-GET         /:event/help                                   controllers.EventAdministration.help(event)
+POST        /:event/invalidate_event_results               controllers.EventAdministration.doInvalidateEventResults(event)
+POST        /:event/invalidate_contests_and_event_results  controllers.EventAdministration.doInvalidateContestsAndEventResults(event)
 #html block
 POST        /~global/:block/set_html_block                 controllers.Application.setGlobalHtmlBlock(block)
 POST        /:event/:block/set_html_block                  controllers.EventAdministration.setHtmlBlock(event, block)
 
 #admin contest
 GET         /:event/:contest/contest_admin                 controllers.ContestAdministration.contestAdmin(event, contest)
-
+POST        /:event/:contest/invalidate_contest_results    controllers.ContestAdministration.doInvalidateContestsAndEventResults(event, contest)
 POST        /:event/:contest/contest_up                    controllers.ContestAdministration.moveContestUp(event, contest)
 POST        /:event/:contest/contest_down                  controllers.ContestAdministration.moveContestDown(event, contest)
 POST        /:event/:contest/contest_remove                controllers.ContestAdministration.removeContest(event, contest)
@@ -96,6 +97,7 @@ GET         /assets/*file                                  controllers.Assets.at
 # + TODO клонировать соревнования, клонировать только с клонировавшим пользователем
 # + TODO make help as extra page
 # + TODO распихать побольше редактируемых блоков по страницам
+# + TODO режим соревнования, что оно окончилось, но к задачам уже не перейти
 
 # TODO final rating
 # TODO Extra pages
@@ -103,12 +105,11 @@ GET         /assets/*file                                  controllers.Assets.at
 # TODO подумать, куда еще распихать редактируемые блоки
 
 # TODO remove user
+# TODO button to invalidate all users results
 
 # TODO max scores evaluation (several translators)
 # TODO интерфейс
-# TODO режим соревнования, что оно окончилось, но к задачам уже не перейти
 
 # TODO redirect() instead of ok() for each POST
 
 # Тип результа
-# Не отображать список ответов для пользователя

@@ -1,5 +1,6 @@
 package models.results;
 
+import models.User;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
@@ -19,7 +20,7 @@ public class SumScoresTranslator implements Translator {
     );
 
     @Override
-    public Info translate(List<Info> from, List<Info> settings) {
+    public Info translate(List<Info> from, List<Info> settings, User user) {
         int scores = 0;
         for (Info entry : from) {
             Object sc = entry.get("scores");

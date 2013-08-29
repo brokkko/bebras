@@ -1,5 +1,6 @@
 package models.results;
 
+import models.User;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public class EmptyTranslator implements Translator {
     @Override
-    public Info translate(List<Info> from, List<Info> settings) {
+    public Info translate(List<Info> from, List<Info> settings, User user) {
         return new Info();
     }
 

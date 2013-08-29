@@ -26,7 +26,12 @@ public abstract class Plugin implements SerializableUpdatable {
     /**
      * Called before all actions are processed
      */
-    public abstract void init();
+    public abstract void initPage();
+
+    /**
+     * Called after event was deserialized
+     */
+    public abstract void initEvent(Event event);
 
     public abstract Result doGet(String action);
 

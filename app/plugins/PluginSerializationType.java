@@ -12,6 +12,7 @@ public class PluginSerializationType extends SerializableTreeSerializationType<P
 
     public PluginSerializationType() {
         registerClass("fields uploader", FieldsUploader.class);
+        registerClass("extra page", ExtraPage.class);
     }
 
 }

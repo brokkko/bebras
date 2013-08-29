@@ -31,7 +31,7 @@ public class DcesControllerAction extends Action<DcesController> {
         Event event = Event.current();
         if (event != Event.ERROR_EVENT)
             for (Plugin plugin : event.getPlugins())
-                plugin.init();
+                plugin.initPage();
 
         Result call = delegate.call(ctx);
 

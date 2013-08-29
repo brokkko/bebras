@@ -1,5 +1,6 @@
 package models.results;
 
+import models.User;
 import models.newserialization.SerializableUpdatable;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public interface Translator extends SerializableUpdatable {
 
-    Info translate(List<Info> from, List<Info> settings);
+    Info translate(List<Info> from, List<Info> settings, User user);
     InfoPattern getInfoPattern();
 
 }
