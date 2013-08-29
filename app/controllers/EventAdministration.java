@@ -162,7 +162,7 @@ public class EventAdministration extends Controller {
         if (tableDescription == null)
             return notFound("table not found");
 
-        return evalCsvTable(tableDescription.getTitle(), tableDescription);
+        return evalCsvTable("table-" + eventId + "-" + tableIndex, tableDescription);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -173,7 +173,7 @@ public class EventAdministration extends Controller {
         if (tableDescription == null)
             return notFound("table not found");
 
-        return evalCsvTable(tableDescription.getTitle(), tableDescription);
+        return evalCsvTable("table-" + eventId + "-" + contestId + "-" + tableIndex, tableDescription);
     }
 
     public static Result addContest(String eventId) throws IOException {

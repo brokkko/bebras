@@ -23,14 +23,14 @@
             },
             "columns": [
                 "id -> user._id",
-                "start_A -> user._contests.%%%cid%%%.sd",
-                "problems_order_A -> contest.%%%cid%%%.problems_order",
-                "history_A -> contest.%%%cid%%%.history",
-                "Answers_A -> contest.%%%cid%%%.answers_all",
-                "num_right_A -> user._contests.%%%cid%%%.res.r",
-                "num_wrong_A -> user._contests.%%%cid%%%.res.w",
-                "num_skipped_A -> user._contests.%%%cid%%%.res.n",
-                "scores_A -> user._contests.%%%cid%%%.res.scores"
+                "start -> user._contests.%%%cid%%%.sd",
+                "problems_order -> contest.%%%cid%%%.problems_order",
+                "history -> contest.%%%cid%%%.history",
+                "Answers -> contest.%%%cid%%%.answers_all",
+                "num_right -> user._contests.%%%cid%%%.res.r",
+                "num_wrong -> user._contests.%%%cid%%%.res.w",
+                "num_skipped -> user._contests.%%%cid%%%.res.n",
+                "scores -> user._contests.%%%cid%%%.res.scores"
             ]
         }
     ]
