@@ -43,7 +43,6 @@ public class Event {
     private Date results;
     private Date restrictedResults; //this results means that we can not view problems
 
-    private List<Translator> resultTranslators;
     private CombinedTranslator resultTranslator = null; //cached translator that unions all translators
     private List<TableDescription> tables;
 
@@ -69,10 +68,8 @@ public class Event {
         results = deserializer.readDate("results");
         restrictedResults = deserializer.readDate("restricted results");
 
-        resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
-        if (resultTranslators.size() == 0)
-            resultTranslators.add(new EmptyTranslator());
-        resultTranslator = new CombinedTranslator(resultTranslators);
+        List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
+        setResultTranslators(resultTranslators);
 
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
 
@@ -98,6 +95,12 @@ public class Event {
         this.roles = new HashMap<>();
         for (UserRole role : roles)
             this.roles.put(role.getName(), role);
+    }
+
+    private void setResultTranslators(List<Translator> resultTranslators) {
+        if (resultTranslators.size() == 0)
+            resultTranslators.add(new EmptyTranslator());
+        resultTranslator = new CombinedTranslator(resultTranslators);
     }
 
     private void setPlugins(List<Plugin> plugins) {
@@ -161,7 +164,7 @@ public class Event {
         serializer.write("results", results);
         serializer.write("restricted results", restrictedResults);
 
-        SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).write(serializer, "results translators", resultTranslators);
+        SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).write(serializer, "results translators", resultTranslator.getTranslators());
 
         SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).write(serializer, "tables", tables);
 
@@ -304,6 +307,8 @@ public class Event {
         restrictedResults = deserializer.readDate("restricted results");
         registrationStart = deserializer.readDate("registration start");
         registrationFinish = deserializer.readDate("registration finish");
+        List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
+        setResultTranslators(resultTranslators);
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
 
         List<UserRole> roles = SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).read(deserializer, "roles");

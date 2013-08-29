@@ -13,10 +13,11 @@ import java.util.List;
  * Date: 29.08.13
  * Time: 2:24
  */
-public class ConstantTranslator implements Translator {
+public class TransferTranslator implements Translator {
 
     private String userField;
     private String infoField;
+    private String title;
 
     @Override
     public Info translate(List<Info> from, List<Info> settings, User user) {
@@ -26,7 +27,7 @@ public class ConstantTranslator implements Translator {
     @Override
     public InfoPattern getInfoPattern() {
         //TODO think about title
-        return new InfoPattern(infoField, new BasicSerializationType<>(String.class), infoField);
+        return new InfoPattern(infoField, new BasicSerializationType<>(String.class), title);
     }
 
     @Override
@@ -37,6 +38,8 @@ public class ConstantTranslator implements Translator {
             serializer.write("user field", userField);
             serializer.write("info field", infoField);
         }
+
+        serializer.write("title", title);
     }
 
     @Override
@@ -50,5 +53,7 @@ public class ConstantTranslator implements Translator {
             userField = deserializer.readString("user field");
             infoField = deserializer.readString("info field");
         }
+
+        title = deserializer.readString("title");
     }
 }

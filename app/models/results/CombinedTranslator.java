@@ -4,6 +4,7 @@ import models.User;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,5 +67,14 @@ public class CombinedTranslator implements Translator {
     @Override
     public void update(Deserializer deserializer) {
         //do nothing //TODO implement, we don't need this functionality now
+    }
+
+    public List<Translator> getTranslators() {
+        List<Translator> tr = translators;
+
+        if (tr.size() == 1 && tr.get(0) instanceof EmptyTranslator)
+            return new ArrayList<>();
+
+        return tr;
     }
 }

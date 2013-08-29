@@ -149,6 +149,15 @@ public class Forms {
                                     "required", true
                             ),
                             Utils.mapify(
+                                    "name", "results translators",
+                                    "view", Utils.mapify(
+                                            "type", "json list",
+                                            "placeholder", "Опишите процесс вычисления результата",
+                                            "title", "Вычисление результата"
+                                    ),
+                                    "required", true
+                            ),
+                            Utils.mapify(
                                     "name", "allow restart",
                                     "view", Utils.mapify(
                                             "type", "boolean",
@@ -235,6 +244,15 @@ public class Forms {
                                             "type", "json list",
                                             "placeholder", "Введите информацию о ролях пользователей",
                                             "title", "Роли пользователей"
+                                    ),
+                                    "required", true
+                            ),
+                            Utils.mapify(
+                                    "name", "results translators",
+                                    "view", Utils.mapify(
+                                            "type", "json list",
+                                            "placeholder", "Опишите процесс вычисления результата",
+                                            "title", "Вычисление результата"
                                     ),
                                     "required", true
                             ),

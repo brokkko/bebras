@@ -48,7 +48,6 @@ public class Contest {
     private List<ProblemBlock> problemBlocks;
 
     private CombinedTranslator resultTranslator;
-    private List<Translator> resultTranslators;
 
     private List<TableDescription> tables;
 
@@ -77,10 +76,8 @@ public class Contest {
 
         //read results translator
 
-        resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
-        if (resultTranslators.size() == 0)
-            resultTranslators.add(new EmptyTranslator());
-        resultTranslator = new CombinedTranslator(resultTranslators);
+        List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
+        setTranslators(resultTranslators);
 
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
 
@@ -107,7 +104,7 @@ public class Contest {
         SerializationTypesRegistry.list(int.class).write(serializer, "page sizes", pageSizes);
         SerializationTypesRegistry.list(SerializationTypesRegistry.PROBLEM_BLOCK).write(serializer, "blocks", problemBlocks);
 
-        SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).write(serializer, "results translators", resultTranslators);
+        SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).write(serializer, "results translators", resultTranslator.getTranslators());
 
         SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).write(serializer, "tables", tables);
 
@@ -154,6 +151,12 @@ public class Contest {
 
     public TableDescription getTable(int index) {
         return index < 0 || index >= tables.size() ? null : tables.get(index);
+    }
+
+    private void setTranslators(List<Translator> resultTranslators) {
+        if (resultTranslators.size() == 0)
+            resultTranslators.add(new EmptyTranslator());
+        resultTranslator = new CombinedTranslator(resultTranslators);
     }
 
     public List<ProblemBlock> getProblemBlocks() {
@@ -299,6 +302,9 @@ public class Contest {
         pageSizes = SerializationTypesRegistry.list(int.class).read(deserializer, "page sizes");
 
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
+
+        List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
+        setTranslators(resultTranslators);
     }
 
     public RawForm saveToForm(InputForm form) {

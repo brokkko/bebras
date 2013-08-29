@@ -11,5 +11,6 @@ public class TranslatorSerializationType extends SerializableTreeSerializationTy
         registerClass("beaver", BeaverTranslator.class);
         registerClass("empty", EmptyTranslator.class);
         registerClass("sum scores", SumScoresTranslator.class);
+        registerClass("transfer", TransferTranslator.class);
     }
 }
