@@ -57,7 +57,7 @@ public class BBTCProblem implements Problem {
 
         Integer ansInt = (Integer) answer.get("a");
         if (ansInt < 0)
-            return "-";
+            return ".";
 
         Info check = check(answer);
         int res = (Integer) check.get("result");
