@@ -31,6 +31,9 @@ public class BBTCProblemsLoader {
         CSVReader problemsReader = new CSVReader(in, ';', '"', 1);
         String [] nextLine;
         while ((nextLine = problemsReader.readNext()) != null) {
+            if (lineIsEmpty(nextLine))
+                continue;
+
             String type = nextLine[5].trim();
             String question = nextLine[6].trim();
             int answersCount = Integer.parseInt(type);
@@ -54,5 +57,13 @@ public class BBTCProblemsLoader {
                 problemLink.setProblemId(pid);
             }
         }
+    }
+
+    private boolean lineIsEmpty(String[] nextLine) {
+        for (String s : nextLine)
+            if (s != null && !s.isEmpty())
+                return false;
+
+        return true;
     }
 }

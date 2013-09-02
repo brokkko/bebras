@@ -11,9 +11,7 @@ import models.newproblems.ProblemInfo;
 import models.results.Info;
 import org.bson.types.ObjectId;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -101,6 +99,20 @@ public class ContestHistoryFeatures implements FeaturesSet<User> {
 
     private Object history(Contest contest) {
         List<Submission> allSubmissions = user.getAllSubmissions(contest);
+
+        allSubmissions = new ArrayList<>(allSubmissions);
+        Collections.sort(allSubmissions, new Comparator<Submission>() {
+            @Override
+            public int compare(Submission s1, Submission s2) {
+                long dif = s1.getLocalTime() - s2.getLocalTime();
+                if (dif < 0)
+                    return -1;
+                else if (dif == 0)
+                    return 0;
+                else
+                    return 1;
+            }
+        });
 
         StringBuilder result = new StringBuilder();
         for (Submission submission : allSubmissions) {
