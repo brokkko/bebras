@@ -1,0 +1,48 @@
+@(folder: models.newproblems.ProblemLink, fullLinks: Boolean, create_form:models.forms.RawForm)
+@import views.widgets.FormsWidget
+@import models.forms.RawForm
+@import views.widgets.AdminWidget
+@import models.newproblems.ProblemLink
+@import views.widgets.ResourceLink
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List(AdminWidget.get, FormsWidget.get)) { } {
+    <div class='info-box'>
+        <div class='folder-actions'>
+            <form action="@routes.Problems.removeLink(Event.currentId(), folder.getLink)" method="POST" class='submit actions-remove-folder'></form>
+            <a class='submit actions-remove-folder' title='Удалить каталог' href='#'>Удалить</a>
+            @*<a href='#'>Переименовать</a>*@
+        </div>
+        <h2>Каталог <span class='folder-name'>@folder</span></h2>
+        <p>@if(folder.hasParent) {@problem_link(folder.getParentLink, "на уровень выше: " + folder.getParent)}</p>
+    </div>
+    @defining(folder.listFolders) { all_subfolders =>
+        @if(!all_subfolders.isEmpty) {
+            <div class='info-box'>
+                <h2>Подкаталоги</h2>
+                @for(link <- all_subfolders) {
+                    @problem_link(link, if (fullLinks) link.getLink else link.getName)
+                }
+            </div>
+        }
+    }
+    <div class='info-box'>
+        <h2>Задания</h2>
+        @defining(folder.listProblems) { all_problems =>
+            @if(all_problems.size > 0){
+                @for(link <- all_problems) {
+                    @problem_link(link, if (fullLinks) link.getLink else link.getName)
+                }
+            } else {
+                <p>Нет заданий</p>
+            }
+        }
+    </div>
+
+    <div class='info-box'>
+        <h2>Создать задание</h2>
+        @Forms.getCreateProblemForm.formatExtended(create_form, routes.Problems.createProblem(Event.currentId, folder.getLink), false, "form.do_add")
+    </div>
+
+    @*TODO add preview for problems*@
+    @*TODO optimize queries*@
+}

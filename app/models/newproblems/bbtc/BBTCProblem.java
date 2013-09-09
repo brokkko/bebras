@@ -1,5 +1,6 @@
 package models.newproblems.bbtc;
 
+import models.forms.RawForm;
 import models.newproblems.Problem;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
@@ -26,7 +27,7 @@ public class BBTCProblem implements Problem {
     private static final String FIELD_SCORES_RIGHT = "sc_r";
     private static final String FIELD_SCORES_WRONG = "sc_w";
 
-    private String question;
+    private String question = "";
     private List<String> answers;
     private int rightAnswer;
 
@@ -48,6 +49,16 @@ public class BBTCProblem implements Problem {
     @Override
     public Html format(int index, boolean showSolutions) {
         return views.html.bbtc.bbtc_problem.render(index, showSolutions, question, answers, rightAnswer);
+    }
+
+    @Override
+    public Html formatEditor() {
+        return null;
+    }
+
+    @Override
+    public void updateProblem(RawForm form) {
+        //TODO implement
     }
 
     @Override

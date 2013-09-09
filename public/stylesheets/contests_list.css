@@ -1,66 +1,3 @@
-.contest-description {
-    /*border-radius: 1em;*/
-    background-color: #e0f1ff;
-    padding: 0.5em 1em;
-    margin: 0.4em 1em;
-    color: #00008b;
-    line-height: 1.2;
-    overflow: hidden;
-}
-
-.contest-description .info {
-    float: left;
-    /*width: 40%;*/
-    /*border-right: 1px solid #00008b;*/
-}
-
-.contest-description .results-and-description {
-    display: block;
-    margin-left: 40%;
-    padding-left: 1em;
-    overflow: hidden;
-    /*border-left: 1px solid #00008b;*/
-}
-
-.contest-description .results-and-description .description {
-    clear: left;
-    padding-top: 1em;
-}
-
-.contest-description .info .title {
-    width: 100px;
-}
-
-.contest-description .info .data {
-    font-weight: bold;
-}
-
-.contest-description .footer {
-    clear: both;
-}
-
-.contest-description p {
-    padding-top: 0.1em;
-    padding-bottom: 0;
-}
-
-.contest-description .header {
-    font-weight: 800;
-}
-
-.contest-description .skip {
-    height: 0.8em;
-}
-
-.contest-description .important {
-    color: #a51e00;
-}
-
-.contest-description .description-title {
-    font-weight: bold;
-    text-align: center;
-}
-
 p.time {
     padding-bottom: 0.2em;
     vertical-align: middle;
@@ -113,17 +50,5 @@ p.time iframe {
 /* contest administration */
 
 .go-contest-admin {
-    /*display: block;*/
-    /*text-align: right;*/
     float: right;
 }
-
-.contest-administration {
-    display: none;
-}
-
-.contest-administration-show-hide .shower {
-    text-align: right;
-    cursor: pointer;
-    color: #33bb33;
-}*/

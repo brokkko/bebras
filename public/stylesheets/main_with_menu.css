@@ -165,3 +165,86 @@ nav a:hover {
     padding-right: 1em;
     width: 50%;
 }
+
+/* info blocks */
+
+.info-box {
+    /*border-radius: 1em;*/
+    background-color: #e0f1ff;
+    padding: 0.5em 1em;
+    margin: 0.4em 1em;
+    color: #00008b;
+    line-height: 1.2;
+    overflow: hidden;
+}
+
+.info-box .info {
+    float: left;
+    /*width: 40%;*/
+    /*border-right: 1px solid #00008b;*/
+}
+
+.info-box .results-and-description {
+    display: block;
+    margin-left: 40%;
+    padding-left: 1em;
+    overflow: hidden;
+    /*border-left: 1px solid #00008b;*/
+}
+
+.info-box .results-and-description .description {
+    clear: left;
+    padding-top: 1em;
+}
+
+.info-box .info .title {
+    width: 100px;
+}
+
+.info-box .info .data {
+    font-weight: bold;
+}
+
+.info-box .footer {
+    clear: both;
+}
+
+.info-box p {
+    padding-top: 0.1em;
+    padding-bottom: 0;
+}
+
+.info-box .header {
+    font-weight: 800;
+}
+
+.info-box .skip {
+    height: 0.8em;
+}
+
+.info-box .important {
+    color: #a51e00;
+}
+
+.info-box .description-title {
+    font-weight: bold;
+    text-align: center;
+}
+
+.problem-link, .problem-link:visited {
+    color: #004800;
+    text-decoration: none;
+    padding: 0 4px;
+    display: inline-block;
+}
+
+.problem-link:hover {
+    color: #008000;
+    cursor: pointer;
+}
+
+/*folder actions*/
+
+.folder-actions {
+    float: right;
+}

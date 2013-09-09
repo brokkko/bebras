@@ -1,7 +1,9 @@
 package models;
 
 import models.forms.InputForm;
+import models.newproblems.ProblemSerializationType;
 import models.newserialization.MemoryDeserializer;
+import models.newserialization.SerializationTypesRegistry;
 
 /**
  * Created with IntelliJ IDEA.
@@ -135,7 +137,8 @@ public class Forms {
                                     "view", Utils.mapify(
                                             "type", "json list",
                                             "placeholder", "Размеры страниу для задач",
-                                            "title", "Размеры страниц"
+                                            "title", "Размеры страниц",
+                                            "small", true
                                     ),
                                     "required", true
                             ),
@@ -400,6 +403,48 @@ public class Forms {
             )
     );
 
+    @SuppressWarnings("unchecked")
+    private static InputForm createProblemForm = InputForm.deserialize(
+            new MemoryDeserializer(
+                    "fields",
+                    Utils.listify(
+                            Utils.mapify(
+                                    "name", "new_problem_name",
+                                    "view", Utils.mapify(
+                                            "type", "string",
+                                            "title", "Имя нового задания",
+                                            "placeholder", "Введите имя нового задания"
+                                    ),
+                                    "required", true,
+                                    "validators", Utils.listify(
+                                            Utils.mapify(
+                                                    "type", "pattern",
+                                                    "pattern", "[\\-a-zA-Z0-9_]+",
+                                                    "message", "Идентификатор может содержать только символы a-z, A-Z, 0-9, тире и подчеркивание"
+                                            )
+                                            //TODO test such problem already exists
+                                    )
+                            ),
+                            Utils.mapify(
+                                    "name", "new_problem_type",
+                                    "view", Utils.mapify(
+                                            "type", "dropdown",
+                                            "title", "Тип нового задания",
+                                            "placeholder", "Выберите тип нового задания",
+                                            "variants", SerializationTypesRegistry.PROBLEM.getTypes()
+                                    ),
+                                    "required", true,
+                                    "validators", Utils.listify(
+                                    )
+                            )
+                    ),
+                    "validators",
+                    Utils.listify(
+
+                    )
+            )
+    );
+
     public static InputForm getLoginForm() {
         return loginForm;
     }
@@ -430,5 +475,9 @@ public class Forms {
 
     public static InputForm getCloneEventForm() {
         return cloneEventForm;
+    }
+
+    public static InputForm getCreateProblemForm() {
+        return createProblemForm;
     }
 }

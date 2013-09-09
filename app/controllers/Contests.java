@@ -186,7 +186,7 @@ public class Contests extends Controller {
 
         for (List<Problem> page : pagedUserProblems)
             for (Problem problem : page)
-                links.add(problem.getType() + ".problem");
+                links.add(problem.getType() + ".problem"); //TODO this ".problem" is not DRY, cf. ProblemWidget
 
         List<ResourceLink> linksList = new ArrayList<>();
         for (String link : links) {

@@ -6,11 +6,12 @@
 @if(showSolutions){
     <span class='right-answer hidden'>@rightAnswer</span>
 }
-<span class='problem-index'>@(index + 1).</span> @Html(statement)
+<span class='problem-index'>@(index + 1).</span> @Html(if (statement == null) "" else statement)
 </div>
 <div class='answers'>
     @for((answer, ind) <- (answers ++ List(null)).zipWithIndex) {
         <div class='answer @(answers.size + 1) match {
+            case 1 => {w2}
             case 2 => {w2}
             case 3 => {w3}
             case 4 => {w4}

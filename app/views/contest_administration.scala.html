@@ -1,8 +1,11 @@
 @(contest:models.Contest, form: models.forms.RawForm)
+@import models.newproblems.ProblemLink
 <p>id: @contest.getId</p>
 @models.Forms.getContestChangeForm.formatExtended(form, controllers.routes.ContestAdministration.doUpdateContest(Event.currentId, contest.getId), true, "form.do_change")
 <p></p>
-<h2>Загрузить задачи для соревнования (в /@Event.currentId/@contest.getId)</h2>
+@defining("/" + Event.currentId + "/" + contest.getId) { folder_link =>
+<h2>Загрузить задачи для соревнования (в @problem_link(new ProblemLink(folder_link), folder_link))</h2>
+}
 <form enctype="multipart/form-data" method="POST" action="@routes.EventAdministration.uploadProblemsFile(Event.currentId, contest.getId)">
     <input type="file" name="problem-set">
     <input type="submit" value="Загрузить файл">

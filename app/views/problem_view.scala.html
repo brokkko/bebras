@@ -1,0 +1,50 @@
+@(link:models.newproblems.ProblemLink)
+@import views.widgets.AdminWidget
+@import views.widgets.ResourceLink
+@import scala.List
+@import models.newproblems.Problem
+@import views.widgets.ProblemWidget
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contest_stub.js"), ProblemWidget get link.get, AdminWidget.get)) { } {
+    @* -- header -- *@
+    <div class='info-box'>
+        <div class='folder-actions'>
+            <form action="@routes.Problems.removeLink(Event.currentId(), link.getLink)" method="POST" class='submit actions-remove-problem'></form>
+            <a class='submit actions-remove-problem' title='Удалить задачу' href='#'>Удалить</a>
+            @*<a href='#'>Переименовать</a>*@
+        </div>
+        <h2>Задание <span class='folder-name'>@link</span></h2>
+        <p>@problem_link(link.getParentLink, "на уровень выше: " + link.getParent)</p>
+    </div>
+
+    @* -- problem statement / answer -- *@
+    <div class='problem-statement-answer'>
+        <div class='problem hidden'><span class='hidden pr_type'>@link.get.getType</span>
+            <p>Предварительный просмотр: <a href='#' class='switch-problem'>переключить на ответ</a></p>
+            @link.get.format(0, false)
+        </div>
+        <div class='problem'><span class='hidden pr_type'>@link.get.getType</span>
+            <p>Предварительный просмотр: <a href='#' class='switch-problem'>переключить на условие</a></p>
+            @link.get.format(0, true)
+        </div>
+    </div>
+
+    @* -- edit problem -- *@
+
+    @defining(link.get.formatEditor) { editor =>
+        @if(editor != null) {
+            <div class=info-box>
+                <h2>Редактирование задания</h2>
+            </div>
+
+            <form id='edit-problem' method="POST" action="">
+                @editor
+
+                <input type='submit' value="Изменить задачу">
+            </form>
+        } else {
+            <div class=info-box>
+                <p>Редактирование недоступно</p>
+            </div>
+        }
+    }
+}

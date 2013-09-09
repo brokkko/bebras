@@ -28,7 +28,7 @@
         var selectors = $problem_div.find('.task-answer-selector');
 
         if (!showing_answers($problem_div)) {
-            $('.task-answer-selector').click(click_answer);
+            $problem_div.find('.task-answer-selector').click(click_answer);
             selectors.addClass('selectable');
         } else {
             selectors.removeClass('answer-right').removeClass('answer-user-right').removeClass('answer-user-wrong');

@@ -19,5 +19,6 @@ public class InputTemplateSerializationType extends SerializableTreeSerializatio
         registerClass("int", IntegerInputTemplate.class);
         registerClass("json", JsonInputTemplate.class);
         registerClass("json list", JsonListInputTemplate.class);
+        registerClass("dropdown", DropdownInputTemplate.class);
     }
 }

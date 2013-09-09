@@ -52,7 +52,7 @@ public class ProblemBlockFactory {
     private static ProblemBlock folder(Contest contest, String link) {
         ProblemLink problemLink = new ProblemLink(link);
 
-        List<ProblemLink> list = problemLink.list();
+        List<ProblemLink> list = problemLink.listProblems();
 
         List<ObjectId> pids = new ArrayList<>();
 
@@ -69,7 +69,7 @@ public class ProblemBlockFactory {
         //warning. code duplication with method folder()
         ProblemLink problemLink = new ProblemLink(link);
 
-        List<ProblemLink> list = problemLink.list();
+        List<ProblemLink> list = problemLink.listProblems();
 
         List<ObjectId> pids = new ArrayList<>();
 

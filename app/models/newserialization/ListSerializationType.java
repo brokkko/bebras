@@ -20,6 +20,11 @@ public class ListSerializationType<T> extends SerializationType<List<T>> {
 
     @Override
     public void write(Serializer serializer, String field, List<T> values) {
+        if (values == null) {
+            serializer.writeNull(field);
+            return;
+        }
+
         ListSerializer ls = serializer.getListSerializer(field);
         for (T value : values)
             subtype.write(ls, value);
@@ -27,6 +32,11 @@ public class ListSerializationType<T> extends SerializationType<List<T>> {
 
     @Override
     public void write(ListSerializer serializer, List<T> values) {
+        if (values == null) {
+            serializer.writeNull();
+            return;
+        }
+
         ListSerializer ls = serializer.getListSerializer();
         for (T value : values)
             subtype.write(ls, value);

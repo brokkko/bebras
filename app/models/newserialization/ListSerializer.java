@@ -63,4 +63,7 @@ public abstract class ListSerializer {
             value.serialize(serializer);
     }
 
+    public void writeNull() {
+        write((String) null); //String type does not matter
+    }
 }

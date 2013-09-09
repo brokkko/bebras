@@ -17,13 +17,13 @@
     @Event.current.getHtmlBlock("contests_list_top").format
 
     @if(Event.current.resultsAvailable()) {
-    <div class='contest-description'> @*TODO remove *@
+    <div class='info-box'> @*TODO remove *@
         <p class='header'>Окончательные результаты</p>
         @info(User.current.getEventResults, Event.current.getResultsInfoPattern, null)
     </div>
     }
     @for((contest, contestIndex) <- Event.current.getContestsAvailableForUser.zipWithIndex) {
-        <div class='contest-description'>
+        <div class='info-box'>
             <div class='info'>
                 <p class='header big-title'>@contest.getName@if(contest.isOnlyAdmin) {<span><br>(Только для администратора)</span>}</p>
                 <p><span class='title'>Статус:</span> <span class='data important'>
@@ -125,7 +125,7 @@
     }
 
     @if(User.current.hasEventAdminRight) {
-    <div class='contest-description'>
+    <div class='info-box'>
     <p class='header big-title'>Добавить соревнование</p>
         @Forms.getAddContestForm().formatExtended(addContestForm, routes.EventAdministration.addContest(Event.currentId), false, "form.do_add")
     </div>

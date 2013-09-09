@@ -1,0 +1,10 @@
+@(form:models.forms.RawForm, field: String, not_selected_value:String, options:java.util.List[String])
+@import models.forms.RawForm
+<select class='input-text dropdown' name="@field" size="1">
+    @defining(form.get(field)) {cur_value =>
+        <option @if(cur_value == null) {selected} class='grayed' value=''>@not_selected_value</option>
+        @for(option <- options) {
+            <option value="@option" @if(cur_value == option){selected}>@option</option>
+        }
+    }
+</select>

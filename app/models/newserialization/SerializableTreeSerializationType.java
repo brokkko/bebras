@@ -1,7 +1,6 @@
 package models.newserialization;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ilya
@@ -86,5 +85,13 @@ public class SerializableTreeSerializationType<T extends SerializableUpdatable> 
         value.update(subDeserializer);
 
         return value;
+    }
+
+    public List<String> getTypes() {
+        return new ArrayList<>(name2class.keySet());
+    }
+
+    public Class<? extends T> getClass(String type) {
+        return name2class.get(type);
     }
 }

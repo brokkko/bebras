@@ -30,7 +30,7 @@
         @for((page, pageIndex) <- pagedUserProblems.zipWithIndex) {
             <div class='page@if(pageIndex > 0){ hidden}'>
             @for(problem <- page) {
-                <div class='problem'><span class='hidden pid'>@problem2index(problem)</span>
+                <div class='problem'><span class='hidden pid'>@problem2index(problem)</span>@*TODO add type info and rewrite contest.js*@
                     @problem.format(problem2index(problem), status == "results")
                 </div>
             }

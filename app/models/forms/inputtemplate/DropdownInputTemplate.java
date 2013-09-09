@@ -1,42 +1,41 @@
 package models.forms.inputtemplate;
 
 import models.forms.RawForm;
-import models.newserialization.BasicSerializationType;
-import models.newserialization.Deserializer;
-import models.newserialization.SerializationType;
-import models.newserialization.Serializer;
+import models.newserialization.*;
 import play.api.templates.Html;
-import views.html.fields.multiline;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
- * Date: 02.01.13
- * Time: 17:25
+ * Date: 16.01.13
+ * Time: 13:49
  */
-public class MultilineInputTemplate extends InputTemplate<String> {
+public class DropdownInputTemplate extends InputTemplate<String> {
 
     private String placeholder;
-    private boolean small;
+    private List<String> variants;
 
     @Override
     public Html render(RawForm form, String field) {
-        return multiline.render(form, field, placeholder, true, small);
+        return views.html.fields.dropdown.render(form, field, placeholder, variants);
     }
 
     @Override
     public void write(String field, String value, RawForm rawForm) {
-        if (value == null)
-            rawForm.remove(field);
-        else
+        if (value != null)
             rawForm.put(field, value);
+        else
+            rawForm.remove(field);
     }
 
     @Override
     public String read(String field, RawForm form) {
-        if (form.isEmptyValue(field))
+        String value = form.get(field);
+        if (value != null && value.isEmpty())
             return null;
-        return form.get(field);
+        return value;
     }
 
     @Override
@@ -48,14 +47,14 @@ public class MultilineInputTemplate extends InputTemplate<String> {
     public void update(Deserializer deserializer) {
         super.update(deserializer);
         placeholder = deserializer.readString("placeholder", "");
-        small = deserializer.readBoolean("small", false);
+        variants = SerializationTypesRegistry.list(String.class).read(deserializer, "variants");
     }
 
     @Override
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
-        serializer.write("placeholder", placeholder);
-        if (small)
-            serializer.write("small", small);
+        if (placeholder != null && placeholder.isEmpty())
+            serializer.write("placeholder", placeholder);
+        SerializationTypesRegistry.list(String.class).write(serializer, "variants", variants);
     }
 }

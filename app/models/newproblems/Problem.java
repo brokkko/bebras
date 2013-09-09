@@ -1,5 +1,6 @@
 package models.newproblems;
 
+import models.forms.RawForm;
 import models.newserialization.SerializableUpdatable;
 import models.results.Info;
 import models.results.InfoPattern;
@@ -14,6 +15,10 @@ import play.api.templates.Html;
 public interface Problem extends SerializableUpdatable {
 
     Html format(int index, boolean showSolutions);
+
+    Html formatEditor(); //TODO make it a usual form
+
+    void updateProblem(RawForm form); //TODO make it a usual form
 
     String answerToString(Info answer); //TODO check result also may be needed
 

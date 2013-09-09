@@ -29,10 +29,11 @@ public class JsonListInputTemplate extends InputTemplate<ArrayNode> {
     //TODO this is almost code duplication with JsonInputTemplate
 
     private String placeholder;
+    private boolean small;
 
     @Override
     public Html render(RawForm form, String field) {
-        return multiline.render(form, field, placeholder, false);
+        return multiline.render(form, field, placeholder, false, small);
     }
 
     @Override
@@ -91,11 +92,14 @@ public class JsonListInputTemplate extends InputTemplate<ArrayNode> {
     public void update(Deserializer deserializer) {
         super.update(deserializer);
         placeholder = deserializer.readString("placeholder", "");
+        small = deserializer.readBoolean("small", false);
     }
 
     @Override
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
         serializer.write("placeholder", placeholder);
+        if (small)
+            serializer.write("small", small);
     }
 }

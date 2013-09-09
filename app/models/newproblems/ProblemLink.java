@@ -11,10 +11,7 @@ import org.bson.types.ObjectId;
 import play.Logger;
 import play.cache.Cache;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -37,22 +34,20 @@ public class ProblemLink {
         this.link = normalize(link);
     }
 
+    public ProblemLink(Deserializer deserializer) {
+        this.link = deserializer.readString(FIELD_LINK);
+    }
+
+    public ProblemLink(ProblemLink folder, String name) {
+        this.link = folder.getLink() + '/' + name;
+    }
+
     private String normalize(String link) {
         if (link.startsWith("/"))
             link = link.substring(1);
         if (link.endsWith("/"))
             link = link.substring(0, link.length() - 1);
         return link;
-    }
-
-    public ProblemLink(Deserializer deserializer) {
-        this.link = deserializer.readString(FIELD_LINK);
-        //loads and caches info
-        getInfo(deserializer);
-    }
-
-    public ProblemLink(ProblemLink folder, String name) {
-        this.link = folder.getLink() + '/' + name;
     }
 
     public String getLink() {
@@ -88,39 +83,42 @@ public class ProblemLink {
 
     //TODO need to cache this
     public List<ProblemLink> listProblems() {
-        return list(true, false);
+        return list(true);
     }
 
     public List<ProblemLink> listFolders() {
-        return list(false, true);
+        return list(false);
     }
 
-    public List<ProblemLink> list() {
-        return list(false, false);
-    }
-
-    private List<ProblemLink> list(boolean filterProblems, boolean filterFolders) {
+    private List<ProblemLink> list(boolean listProblemsNotFolders) {
         BasicDBObject query = new BasicDBObject(
-                FIELD_LINK, new BasicDBObject("$regex", "^" + link + "/[^/]+$")
+                FIELD_LINK, new BasicDBObject("$regex", "^" + link + "/")
         );
 
-        ArrayList<ProblemLink> links = new ArrayList<>();
+        List<ProblemLink> problemsLinks = new ArrayList<>();
+        Set<ProblemLink> foldersLinksSet = new HashSet<>();
 
         try (DBCursor cursor = MongoConnection.getProblemDirsCollection().find(query)) {
+
             while (cursor.hasNext()) {
                 MongoDeserializer deserializer = new MongoDeserializer(cursor.next());
-                ProblemLink link = new ProblemLink(deserializer);
+                ProblemLink dbLink = new ProblemLink(deserializer);
 
-                if (filterFolders && !link.isFolder())
-                    continue;
-                if (filterProblems && !link.isProblem())
-                    continue;
-
-                links.add(link);
+                String linkDifference = dbLink.getLink().substring(this.link.length() + 1); //remove the beginning that must be the same as link
+                int slashPos = linkDifference.indexOf('/');
+                if (slashPos < 0) { //direct child
+                    if (dbLink.isProblem())
+                        problemsLinks.add(dbLink);
+                    else
+                        foldersLinksSet.add(dbLink);
+                } else {
+                    String folderName = linkDifference.substring(0, slashPos);
+                    foldersLinksSet.add(new ProblemLink(this, folderName));
+                }
             }
         }
 
-        Collections.sort(links, new Comparator<ProblemLink>() {
+        Comparator<ProblemLink> linksComparator = new Comparator<ProblemLink>() {
             @Override
             public int compare(ProblemLink l1, ProblemLink l2) {
                 if (l1 == null)
@@ -129,14 +127,40 @@ public class ProblemLink {
                     return 1;
                 return Utils.compareStrings(l1.getName(), l2.getName()); //may take links and not names
             }
-        });
+        };
 
-        return links;
+        if (listProblemsNotFolders) {
+            Collections.sort(problemsLinks, linksComparator);
+            return problemsLinks;
+        }
+
+        List<ProblemLink> foldersLinks = new ArrayList<>(foldersLinksSet);
+        Collections.sort(foldersLinks, linksComparator);
+
+        return foldersLinks;
     }
 
     public String getName() {
         String[] split = link.split("/");
         return split[split.length - 1];
+    }
+
+    public ProblemLink getParentLink() {
+        int slashPos = link.lastIndexOf('/');
+        if (slashPos < 0)
+            return null;
+        return new ProblemLink(link.substring(0, slashPos));
+    }
+
+    public String getParent() {
+        int slashPos = link.lastIndexOf('/');
+        if (slashPos < 0)
+            return null;
+        return link.substring(0, slashPos);
+    }
+
+    public boolean hasParent() {
+        return link.indexOf('/') >= 0;
     }
 
     public void mkdir() {
@@ -193,6 +217,11 @@ public class ProblemLink {
         Cache.remove(cacheKey());
     }
 
+    @Override
+    public String toString() {
+        return getLink();
+    }
+
     private String cacheKey() {
         return "problem-link-" + link;
     }
@@ -224,6 +253,22 @@ public class ProblemLink {
             return new LinkInfo();
 
         return new LinkInfo(new MongoDeserializer(db));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ProblemLink that = (ProblemLink) o;
+
+        return link.equals(that.link);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return link.hashCode();
     }
 
     private class LinkInfo {
@@ -279,6 +324,10 @@ public class ProblemLink {
                 return null;
             if (problem == null) {
                 ProblemInfo problemInfo = ProblemInfo.get(pid);
+
+                if (problemInfo == null)
+                    return null;
+
                 problem = problemInfo.getProblem();
             }
 
