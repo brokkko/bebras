@@ -10,7 +10,6 @@ import models.results.Info;
 import models.results.InfoPattern;
 import play.api.templates.Html;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
