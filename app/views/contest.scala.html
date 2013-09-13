@@ -32,6 +32,7 @@
             @for(problem <- page) {
                 <div class='problem'><span class='hidden pid'>@problem2index(problem)</span>@*TODO add type info and rewrite contest.js*@
                     @problem.format(problem2index(problem), status == "results")
+                    <div class='footer'></div>
                 </div>
             }
             </div>

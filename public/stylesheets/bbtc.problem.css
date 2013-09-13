@@ -1,12 +1,5 @@
 /*problem*/
 
-.problem {
-    background-color: #e0f1ff;
-    padding: 1em 1em 0.4em;
-    margin-bottom: 0.5em;
-    overflow: hidden;
-}
-
 .answer {
     float: left;
     margin-bottom: 4px;
@@ -37,10 +30,6 @@
 
 .statement {
     margin-bottom: 1em;
-}
-
-.problem .footer {
-    clear: both;
 }
 
 .problem-index {

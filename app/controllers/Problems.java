@@ -12,6 +12,7 @@ import models.newproblems.ProblemLink;
 import models.newserialization.FormDeserializer;
 import models.newserialization.SerializationTypesRegistry;
 import org.bson.types.ObjectId;
+import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.error;
@@ -97,6 +98,24 @@ public class Problems extends Controller {
         ObjectId pid = link.getProblemId();
         ProblemInfo pi = new ProblemInfo(pid, problem);
         pi.store();
+
+        return redirect(routes.Problems.viewProblem(eventId, problemLink));
+    }
+
+    public static Result editProblem(String eventId, String problemLink) {
+        RawForm form = new RawForm();
+        form.bindFromRequest();
+
+        ProblemLink link = new ProblemLink(problemLink);
+        Problem problem = link.get();
+
+        if (problem == null)
+            return notFound(error.render("Не удается найти задачу", new String[0]));
+
+        problem.updateProblem(form);
+
+        ProblemInfo problemInfo = new ProblemInfo(link.getProblemId(), problem);
+        problemInfo.store();
 
         return redirect(routes.Problems.viewProblem(eventId, problemLink));
     }

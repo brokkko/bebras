@@ -11,6 +11,7 @@ import models.results.Info;
 import models.results.InfoPattern;
 import play.api.templates.Html;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,11 +64,17 @@ public class BebrasProblem implements Problem {
             case 1:
                 answersHtml = views.html.bebras.answers_1x5.render(answers);
                 break;
-            /*case 2:
+            case 2:
                 answersHtml = views.html.bebras.answers_2x3.render(answers);
-                break;*/
+                break;
+            case 3:
+                answersHtml = views.html.bebras.answers_3x2.render(answers);
+                break;
+            case 5:
+                answersHtml = views.html.bebras.answers_5x1.render(answers);
+                break;
             default:
-                answersHtml = Html.apply("");
+                answersHtml = views.html.bebras.answers_5x1.render(answers);
         }
 
         return views.html.bebras.bebras_problem.render(index, showSolutions, title, country, COUNTRY_TO_NAME.get(country), statement, question, answersHtml, rightAnswer, explanation);
@@ -75,13 +82,29 @@ public class BebrasProblem implements Problem {
 
     @Override
     public Html formatEditor() {
-        //TODO implement
-        return null;
+        return views.html.bebras.bebras_editor.render(title, country, statement, question, answers, rightAnswer, answersLayout, explanation);
     }
 
     @Override
     public void updateProblem(RawForm form) {
-        //TODO implement
+        title = form.get("title");
+        country = form.get("country");
+        statement = form.get("statement");
+        question = form.get("question");
+
+        answers = new ArrayList<>();
+        answers.add(form.get("answers-0"));
+        answers.add(form.get("answers-1"));
+        answers.add(form.get("answers-2"));
+        answers.add(form.get("answers-3"));
+
+        try {
+            rightAnswer = Integer.parseInt(form.get("rightAnswer"));
+            answersLayout = Integer.parseInt(form.get("answersLayout"));
+        } catch (NumberFormatException ignored) {
+        }
+
+        explanation = form.get("explanation");
     }
 
     @Override
@@ -154,9 +177,12 @@ public class BebrasProblem implements Problem {
         statement = deserializer.readString("statement", "");
         question = deserializer.readString("question", "");
         answers = SerializationTypesRegistry.list(String.class).read(deserializer, "answers");
-        answersLayout = deserializer.readInt("answers layout", 1);
+        answersLayout = deserializer.readInt("answers layout", 0);
         rightAnswer = deserializer.readInt("right", 0);
         explanation = deserializer.readString("explanation", "");
+
+        while (answers.size() < 4)
+            answers.add("");
     }
 
     public static String numberAnswer2string(int answer) {

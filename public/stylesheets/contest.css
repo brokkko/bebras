@@ -92,3 +92,19 @@
 #answer-sending-info-ok {
     color: green;
 }
+
+.problem {
+    background-color: #e0f1ff;
+    padding: 1em 1em 0.4em;
+    margin-bottom: 0.5em;
+    overflow: hidden;
+}
+
+.problem .footer {
+    clear: both;
+}
+
+.change-problem input {
+    margin-top: 0.5em;
+    font-size: 1.2em;
+}

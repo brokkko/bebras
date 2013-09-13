@@ -4,7 +4,7 @@
 @import scala.List
 @import models.newproblems.Problem
 @import views.widgets.ProblemWidget
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contest_stub.js"), ProblemWidget get link.get, AdminWidget.get)) { } {
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), ProblemWidget get link.get, AdminWidget.get)) { } {
     @* -- header -- *@
     <div class='info-box'>
         <div class='folder-actions'>
@@ -36,11 +36,13 @@
                 <h2>Редактирование задания</h2>
             </div>
 
-            <form id='edit-problem' method="POST" action="">
-                @editor
+            <div class=info-box>
+                <form id='edit-problem' method="POST" action="@routes.Problems.editProblem(Event.currentId, link.getLink)">
+                    @editor
 
-                <input type='submit' value="Изменить задачу">
-            </form>
+                    <div class='change-problem'><input type='submit' value="Изменить задачу"></div>
+                </form>
+            </div>
         } else {
             <div class=info-box>
                 <p>Редактирование недоступно</p>

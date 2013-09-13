@@ -1,0 +1,138 @@
+.statement {
+    margin-bottom: 1em;
+}
+
+.problem-index {
+    font-weight: bold;
+}
+
+.problem-title {
+    margin-right: 1em;
+}
+
+.problem-country {
+    font-size: 18px;
+}
+
+.problem-country img {
+    vertical-align: baseline;
+    margin-bottom: -8px;
+    margin-right: 6px;
+}
+
+.task-statement, .task-question, .task-answers, .task-explanation {
+    font-family: "tahoma", "arial", "verdana", "Lucida Sans", sans-serif;
+    font-size: 1.2em;
+}
+
+/*answer selector*/
+
+.bebras-task-answer-selector {
+    width: 18px;
+    /*height: 20px;*/
+    border: solid 3px #36F;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    color: #000;
+    text-align: center;
+    background-color: #FFF;
+    /*padding-top: 2px;*/
+    /*padding-left: 1px;*/
+    padding: 1px 0;
+    display: inline-block;
+    float: left;
+    margin: 4px 2px 4px 0;
+    cursor: default;
+}
+
+.bebras-task-answer-selector.active {
+    background-color: #79F;
+    color: #FFF;
+}
+
+.bebras-task-answer-selector.selectable:hover {
+    background-color: #BCF;
+    color: #FFF;
+    cursor: pointer;
+}
+
+/*right and wrong answers*/
+
+.bebras-task-answer-selector.answer-right {
+    border-color: #33bb33;
+}
+
+.bebras-task-answer-selector.answer-user-right {
+    background-color: #47ff47;
+    color: #000;
+}
+
+.bebras-task-answer-selector.answer-user-wrong {
+    background-color: #ff6666;
+    border-color: #ff3344;
+}
+
+/*answers decoration*/
+.no-answer {
+    color: #888;
+}
+
+/*underlined words*/
+u {
+    color: #df000f;
+}
+
+/*problem elements styles*/
+
+.section-title {
+    font-family : Arial,sans-serif;
+    font-size : 1.5em;
+    color: #3366FF;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    clear: both;
+}
+
+.bebras-answer-wrapper {
+    padding-right: 20pt;
+}
+
+.bebras-task-answer-selector {
+    margin-right: 6pt;
+}
+
+.task-answers td {
+    /*padding: 2px;*/
+    vertical-align: middle;
+}
+
+/*editor*/
+.bebras-editor-title {
+    margin-top: 0.5em;
+    margin-right: 1em;
+    font-size: 1.2em;
+}
+
+.bebras-editor {
+    padding: 4px;
+    border: #3366FF 2px solid;
+    margin: 2px 8px 2px 0;
+    vertical-align: middle;
+}
+
+textarea.bebras-editor {
+    width: 100%;
+}
+
+.bebras-questions-table {
+    width: 100%;
+}
+
+.bebras-questions-table textarea.bebras-editor {
+    width: 90%;
+}
+
+.bebras-editor {
+    width: 50%;
+}

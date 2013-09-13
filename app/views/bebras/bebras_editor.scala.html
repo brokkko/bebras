@@ -1,0 +1,70 @@
+@(title:String, country:String, statement:String, question:String, answers:java.util.List[String], rightAnswer:Int, answersLayout:Int, explanation:String)
+<p><span class='bebras-editor-title'>Название:</span> <input class='bebras-editor' value="@title" name="title"></p>
+<p><span class='bebras-editor-title'>Страна:</span>
+<select class='bebras-editor' name="country">
+    @for((code, name) <- scala.List(
+        ("AT", "Австрия"),
+        ("BG", "Болгария"),
+        ("CA", "Канада"),
+        ("CH", "Швейцария"),
+        ("CZ", "Чехия"),
+        ("DE", "Германия"),
+        ("EE", "Эстония"),
+        ("ES", "Испания"),
+        ("FI", "Финляндия"),
+        ("FR", "Франция"),
+        ("HU", "Венгрия"),
+        ("IT", "Италия"),
+        ("JP", "Япония"),
+        ("LT", "Литва"),
+        ("NL", "Нидерланды"),
+        ("PL", "Польша"),
+        ("RU", "Россия"),
+        ("SI", "Словения"),
+        ("SK", "Словакия"),
+        ("UA", "Украина"),
+        ("US", "Америка")
+    )) {
+       <option value="@code"@if(country == code){ selected}>@code - @name</option>
+    }
+    </select>
+</p>
+
+<p class='bebras-editor-title'>Условие</p>
+<textarea rows=10 class='bebras-editor' name="statement">@statement</textarea>
+
+<p class='bebras-editor-title'>Вопрос</p>
+<textarea rows=10 class='bebras-editor' name="question">@question</textarea>
+
+<p class='bebras-editor-title'>Варианты ответов</p>
+<table class='bebras-questions-table'>
+    <tr>
+        <td>А. <textarea rows=6 class='bebras-editor' name="answers-0">@answers.get(0)</textarea></td>
+        <td>Б. <textarea rows=6 class='bebras-editor' name="answers-1">@answers.get(1)</textarea></td>
+    </tr>
+    <tr>
+        <td>В. <textarea rows=6 class='bebras-editor' name="answers-2">@answers.get(2)</textarea></td>
+        <td>Г. <textarea rows=6 class='bebras-editor' name="answers-3">@answers.get(3)</textarea></td>
+    </tr>
+</table>
+
+<p><span class='bebras-editor-title'>Правильный ответ:</span>
+    <select class='bebras-editor' name="rightAnswer">
+        <option value="0"@if(rightAnswer == 0){ selected}>А</option>
+        <option value="1"@if(rightAnswer == 1){ selected}>Б</option>
+        <option value="2"@if(rightAnswer == 2){ selected}>В</option>
+        <option value="3"@if(rightAnswer == 3){ selected}>Г</option>
+    </select>
+</p>
+
+<p><span class='bebras-editor-title'>Расположение вариантов ответов:</span>
+    <select class='bebras-editor' name="answersLayout">
+        <option value="1"@if(answersLayout == 1){ selected}>1x5</option>
+        <option value="2"@if(answersLayout == 2){ selected}>2x3</option>
+        <option value="3"@if(answersLayout == 3){ selected}>3x2</option>
+        <option value="5"@if(answersLayout == 5){ selected}>5x1</option>
+    </select>
+</p>
+
+<p class='bebras-editor-title'>Объяснение</p>
+<textarea rows=10 class='bebras-editor' name="explanation">@explanation</textarea>
