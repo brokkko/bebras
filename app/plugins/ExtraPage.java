@@ -49,8 +49,10 @@ public class ExtraPage extends Plugin {
     @Override
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
-        serializer.write("block", blockId);
-        serializer.write("global", global);
+        if (!getDefaultBlockId().equals(blockId))
+            serializer.write("block", blockId);
+        if (global)
+            serializer.write("global", global);
         serializer.write("right", right);
         serializer.write("title", title);
         if (!showInMenu)
@@ -61,10 +63,14 @@ public class ExtraPage extends Plugin {
     public void update(Deserializer deserializer) {
         super.update(deserializer);
 
-        blockId = deserializer.readString("block");
+        blockId = deserializer.readString("block", getDefaultBlockId());
         global = deserializer.readBoolean("global", false);
         right = deserializer.readString("right");
         title = deserializer.readString("title");
         showInMenu = deserializer.readBoolean("menu", true);
+    }
+
+    private String getDefaultBlockId() {
+        return "extra_page_" + getRef();
     }
 }

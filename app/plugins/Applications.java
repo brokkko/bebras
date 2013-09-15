@@ -156,7 +156,7 @@ public class Applications extends Plugin {
     }
 
     private Result adminApplications() {
-        return null;
+        return Controller.ok("пока не готово");
     }
 
     private Result organizerApplications() {
