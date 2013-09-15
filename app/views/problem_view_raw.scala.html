@@ -1,43 +1,44 @@
-@(link:models.newproblems.ProblemLink)
+@(pid:org.bson.types.ObjectId, problem:models.newproblems.Problem)
 @import views.widgets.AdminWidget
 @import views.widgets.ResourceLink
 @import scala.List
+@import org.bson.types.ObjectId
 @import models.newproblems.Problem
 @import views.widgets.ProblemWidget
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), ProblemWidget get link.get, AdminWidget.get)) { } {
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), ProblemWidget get problem, AdminWidget.get)) { } {
     @* -- header -- *@
     <div class='info-box'>
+        @* TODO remove problem
         <div class='folder-actions'>
             <form action="@routes.Problems.removeLink(Event.currentId(), link.getLink)" method="POST" class='submit actions-remove-problem'></form>
             <a class='submit actions-remove-problem' title='Удалить задачу' href='#'>Удалить</a>
-            @*<a href='#'>Переименовать</a>*@
         </div>
-        <h2>Задание <span class='folder-name'>@link</span></h2>
-        <p>@problem_link(link.getParentLink, "на уровень выше: " + link.getParent)</p>
+        *@
+        <h2>Задание <span class='folder-name'>@pid</span></h2>
     </div>
 
     @* -- problem statement / answer -- *@
     <div class='problem-statement-answer'>
-        <div class='problem hidden'><span class='hidden pr_type'>@link.get.getType</span>
+        <div class='problem hidden'><span class='hidden pr_type'>@problem.getType</span>
             <p>Предварительный просмотр: <a href='#' class='switch-problem'>переключить на ответ</a></p>
-            @link.get.format(0, false)
+            @problem.format(0, false)
         </div>
-        <div class='problem'><span class='hidden pr_type'>@link.get.getType</span>
+        <div class='problem'><span class='hidden pr_type'>@problem.getType</span>
             <p>Предварительный просмотр: <a href='#' class='switch-problem'>переключить на условие</a></p>
-            @link.get.format(1, true)
+            @problem.format(0, true)
         </div>
     </div>
 
     @* -- edit problem -- *@
 
-    @defining(link.get.formatEditor) { editor =>
+    @defining(problem.formatEditor) { editor =>
         @if(editor != null) {
             <div class=info-box>
                 <h2>Редактирование задания</h2>
             </div>
 
             <div class=info-box>
-                <form id='edit-problem' method="POST" action="@routes.Problems.editProblem(Event.currentId, link.getLink)">
+                <form id='edit-problem' method="POST""> @*todo make edit problem controller use pid instead of link*@
                     @editor
 
                     <div class='change-problem'><input type='submit' value="Изменить задачу"></div>

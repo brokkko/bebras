@@ -2,6 +2,7 @@
 @(contest:Contest, changeContestForm:models.forms.RawForm, addBlockForm:models.forms.RawForm)
 @import views.widgets.FormsWidget
 @import views.widgets.CssJsWidget
+@import models.newproblems.ProblemLink
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get(), CssJsWidget.get("admin"))) { } {
     <h1>Администрирование соревнования @contest.getName</h1>
@@ -14,7 +15,16 @@
     @contest_info(contest)
 
     <h2>Основные настройки</h2>
-    @contest_administration(contest, changeContestForm)
+    <p>id: @contest.getId</p>
+    @models.Forms.getContestChangeForm.formatExtended(changeContestForm, controllers.routes.ContestAdministration.doUpdateContest(Event.currentId, contest.getId), true, "form.do_change")
+    <p></p>
+    @defining("/" + Event.currentId + "/" + contest.getId) { folder_link =>
+        <h2>Загрузить задачи для соревнования (в @problem_link(new ProblemLink(folder_link), folder_link))</h2>
+    }
+    <form enctype="multipart/form-data" method="POST" action="@routes.EventAdministration.uploadProblemsFile(Event.currentId, contest.getId)">
+        <input type="file" name="problem-set">
+        <input type="submit" value="Загрузить файл">
+    </form>
 
     <h1>Набор заданий</h1>
 
@@ -29,7 +39,8 @@
 
         <p>@(index + 1). @block.getInfoString:
             @for(confProblem <- block.getAllPossibleProblems(contest)) {
-                @confProblem.getName
+                @*TODO make helper to create raw problems links*@
+                <a class='problem-link' href='@routes.Problems.viewRawProblem(Event.currentId, confProblem.getProblemId.toString)' title='@confProblem.getName'>@confProblem.getName</a>
             }
 
             @if(index != 0) {

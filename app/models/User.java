@@ -454,7 +454,7 @@ public class User implements SerializableUpdatable {
     }
 
     public boolean resultsAvailable(Contest contest) {
-        return contest.getResults().before(AuthenticatedAction.getRequestTime());
+        return hasEventAdminRight() || contest.getResults().before(AuthenticatedAction.getRequestTime());
     }
 
     public boolean restrictedResults() {

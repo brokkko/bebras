@@ -10,7 +10,7 @@ import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.contest_all_admin;
+import views.html.contest_admin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ public class ContestAdministration extends Controller {
 
     @SuppressWarnings("UnusedParameters")
     public static Result contestAdmin(String eventId, String contestId) {
-        return ok(contest_all_admin.render(Contest.current(), Contest.current().saveToForm(Forms.getContestChangeForm()), new RawForm()));
+        return ok(contest_admin.render(Contest.current(), Contest.current().saveToForm(Forms.getContestChangeForm()), new RawForm()));
     }
 
     //update contests
@@ -46,14 +46,14 @@ public class ContestAdministration extends Controller {
         Contest contest = event.getContestById(contestId);
 
         if (form.hasErrors())
-            return ok(contest_all_admin.render(contest, form, new RawForm()));
+            return ok(contest_admin.render(contest, form, new RawForm()));
 
         try {
             contest.updateFromContestChangeForm(formDeserializer);
         } catch (Exception e) {
             //TODO not good to catch all exceptions
             form.reject("Не удалось разобрать соревнование: " + e.getMessage());
-            return ok(contest_all_admin.render(contest, form, new RawForm()));
+            return ok(contest_admin.render(contest, form, new RawForm()));
 
         }
         event.store();
@@ -68,7 +68,7 @@ public class ContestAdministration extends Controller {
         Contest contest = Contest.current();
 
         if (rawForm.hasErrors())
-            return ok(contest_all_admin.render(contest, new RawForm(), rawForm));
+            return ok(contest_admin.render(contest, new RawForm(), rawForm));
 
         ProblemBlock block = (ProblemBlock) deserializer.getValidationData("config");
 

@@ -12,11 +12,11 @@ import models.newproblems.ProblemLink;
 import models.newserialization.FormDeserializer;
 import models.newserialization.SerializationTypesRegistry;
 import org.bson.types.ObjectId;
-import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.error;
 import views.html.problem_view;
+import views.html.problem_view_raw;
 import views.html.problems_folder;
 
 import java.util.Collections;
@@ -43,6 +43,16 @@ public class Problems extends Controller {
             return notFound(error.render("Не удается найти задачу", new String[0]));
 
         return ok(problem_view.render(pLink));
+    }
+
+    public static Result viewRawProblem(String eventId, String pidAsString) {
+        ObjectId pid = new ObjectId(pidAsString);
+        ProblemInfo info = ProblemInfo.get(pid);
+
+        if (info == null)
+            return notFound(error.render("Не удается найти задачу", new String[0]));
+
+        return ok(problem_view_raw.render(pid, info.getProblem()));
     }
 
     public static Result removeLink(String eventId, String path) {
