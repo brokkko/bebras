@@ -1,6 +1,7 @@
 package controllers;
 
 import controllers.actions.Authenticated;
+import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.Event;
@@ -16,10 +17,11 @@ import plugins.Plugin;
  */
 @DcesController
 @LoadEvent
-@Authenticated
 public class Plugins extends Controller {
 
     public static Result doGet(String event, String plugin, String action, String params) {
+        AuthenticatedAction.doAuthenticate();
+
         Plugin p = Event.current().getPlugin(plugin);
         if (p == null)
             return notFound();
@@ -27,6 +29,8 @@ public class Plugins extends Controller {
     }
 
     public static Result doPost(String event, String plugin, String action, String params) {
+        AuthenticatedAction.doAuthenticate();
+
         Plugin p = Event.current().getPlugin(plugin);
         if (p == null)
             return notFound();

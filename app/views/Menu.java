@@ -30,6 +30,7 @@ public class Menu {
         return menu;
     }
 
+    // if right is null, than allow for everybody even for anonymous
     public static void addMenuItem(String title, Call call, String right) {
         List<RestrictedAccessMenuItem> extraItems = getExtraItems();
 
@@ -45,10 +46,13 @@ public class Menu {
         String eventId = event.getId();
 
         if (User.isAuthorized()) {
-            menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
+            User user = User.current();
+
+            if (event.getContestsAvailableForUser().size() > 0)
+                menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
+
             menu.add(new MenuItem("Личные данные", routes.UserInfo.info(eventId)));
 
-            User user = User.current();
             UserRole role = user.getRole();
             if (role.mayRegisterSomebody())
                 menu.add(new MenuItem("Регистрация", routes.Registration.registrationByUser(eventId)));
@@ -88,9 +92,12 @@ public class Menu {
     private void fillExtraItems(List<MenuItem> menu) {
         List<RestrictedAccessMenuItem> extraItems = getExtraItems();
 
-        for (RestrictedAccessMenuItem extraItem : extraItems)
-            if (User.currentRole().hasRight(extraItem.getRight()))
+        for (RestrictedAccessMenuItem extraItem : extraItems) {
+            String right = extraItem.getRight();
+            UserRole role = User.currentRole();
+            if ("anon".equals(right) || role.hasRight(right)) //TODO remove anon role
                 menu.add(extraItem.getItem());
+        }
     }
 
     private void AddMenuItem(String title, Call call) {

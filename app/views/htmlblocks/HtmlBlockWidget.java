@@ -22,7 +22,8 @@ public class HtmlBlockWidget implements Widget {
     private final List<ResourceLink> links;
 
     private HtmlBlockWidget() {
-        if (User.current().hasEventAdminRight())
+        User user = User.current();
+        if (user != null && user.hasEventAdminRight())
             links = Arrays.asList(css, jsEditor, jsBlock);
         else
             links = Arrays.asList(css);

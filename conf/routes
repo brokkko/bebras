@@ -22,6 +22,7 @@ POST        /:event/login                                             controller
 GET         /:event/remind                                            controllers.Registration.passwordRemind(event)
 POST        /:event/remind                                            controllers.Registration.doPasswordRemind(event)
 GET         /:event/logout                                            controllers.Registration.logout(event)
+GET         /:event/enter                                             controllers.Application.enter(event)
 
 #user info
 GET         /:event/user_info                                         controllers.UserInfo.info(event)

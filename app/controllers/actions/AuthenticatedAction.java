@@ -51,4 +51,15 @@ public class AuthenticatedAction extends Action<Authenticated> {
         return (Date) Http.Context.current().args.get("request time");
     }
 
+    //call it in the beginning of a controller action, this is the same as @Authenticated but does not redirect to login
+    public static void doAuthenticate() {
+        Http.Context ctx = Http.Context.current();
+        String userName = ctx.session().get(User.getUsernameSessionKey());
+        if (userName == null)
+            return;
+
+        ctx.request().setUsername(userName);
+        ctx.args.put("request time", new Date());
+    }
+
 }

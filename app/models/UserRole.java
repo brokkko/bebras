@@ -21,6 +21,8 @@ public class UserRole implements SerializableUpdatable {
         EMPTY.update(new MemoryDeserializer("name", "EMPTY"));
     }
 
+    public static final String DEFAULT_ENTER_URL = "contests";
+
     private String name;
     private Set<String> rights;
     private InputForm usersForm;
@@ -28,6 +30,8 @@ public class UserRole implements SerializableUpdatable {
 
     private String title;
     private String description;
+
+    private String enterUrl;
 
     private List<String> mayRegister = new ArrayList<>();
 
@@ -53,6 +57,10 @@ public class UserRole implements SerializableUpdatable {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getEnterUrl() {
+        return enterUrl;
     }
 
     public InputForm getUsersForm() {
@@ -100,6 +108,9 @@ public class UserRole implements SerializableUpdatable {
 
         serializer.write("title", title);
         serializer.write("description", description);
+
+        if (!DEFAULT_ENTER_URL.equals(enterUrl))
+            serializer.write("enter", enterUrl);
     }
 
     @Override
@@ -114,6 +125,8 @@ public class UserRole implements SerializableUpdatable {
 
         title = deserializer.readString("title", name);
         description = deserializer.readString("description");
+
+        enterUrl = deserializer.readString("enter", DEFAULT_ENTER_URL);
     }
 
     private void setUsersForm(InputForm usersForm) {

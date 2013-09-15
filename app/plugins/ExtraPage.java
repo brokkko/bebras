@@ -35,7 +35,7 @@ public class ExtraPage extends Plugin {
 
     @Override
     public Result doGet(String action, String params) {
-        if (right != null && !User.currentRole().hasRight(right))
+        if (right != null && !User.currentRole().hasRight(right) && !right.equals("anon")) //TODO remove anon role
             return Controller.forbidden();
 
         return Controller.ok(views.html.extra_page.render(global ? "~global" : Event.currentId(), blockId));
