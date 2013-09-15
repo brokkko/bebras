@@ -23,7 +23,7 @@ html, body {
 }
 
 header {
-    background: #01a1de url(../images/header01.png);
+    background: #01a1de url(../../images/header01.png);
     border-bottom: 2px #00008b solid;
     font-size: 2em;
     color: #fff0b2;
@@ -37,7 +37,7 @@ header {
 
 .navigation {
     float: left;
-    width: 200px;
+    width: 284px;
 
     padding: 10px 0 32010px;
     margin: 0 0 -32000px;
@@ -46,7 +46,7 @@ header {
 }
 
 .wrapper {
-    background: #feeca5 url(../images/nav01.png) repeat;
+    background: #feeca5 url(../../images/nav01.png) repeat;
     min-height: 100%;
     height: auto !important;
     height: 100%;
@@ -55,7 +55,7 @@ header {
 }
 
 .content {
-    margin: 0 0 -32000px 200px;
+    margin: 0 0 -32000px 284px;
     padding: 1em 1em 32010px;
     background-color: white;
     border-left: 2px solid #f5972d;
@@ -67,7 +67,7 @@ footer {
     color: white;
     padding: 2px;
 
-    background: #01a1de url(../images/header01.png);
+    background: #01a1de url(../../images/header01.png);
     border-top: 2px #00008b solid;
 
     position: relative;
@@ -141,6 +141,13 @@ nav a:hover {
 
 .hidden {
     display: none;
+}
+
+nav div.contest-logo {
+    background: url(../../images/bebras-logo.png);
+    width: 280px;
+    height: 272px;
+    margin: 0 auto 1em;
 }
 
 .notification {

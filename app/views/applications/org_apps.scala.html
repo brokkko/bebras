@@ -1,0 +1,59 @@
+@(event: Event, applications: java.util.List[models.applications.Application], addApplicationForm: models.forms.RawForm)
+@import views.widgets.ApplicationsWidget
+@import views.widgets.AdminWidget
+@import views.htmlblocks.HtmlBlockWidget
+@import models.forms.RawForm
+@import models.applications.Application
+@import views.htmlblocks.HtmlBlock
+
+@main_with_menu(event.getTitle)(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get)) { } {
+    @Event.current.getHtmlBlock("school_org_applications_list_top").format
+
+    <div class='info-box'>
+    @if(applications != null && applications.size > 0) {
+        <table class='applications'>
+            <thead>
+                <tr>
+                    <td>Номер</td>
+                    <td>Идентификатор</td>
+                    <td>Кол-во участников</td>
+                    <td>Статус оплаты</td>
+                    <td>Квитанция</td>
+                    <td>Дата оплаты</td>
+                    <td>Удаление</td>
+                </tr>
+            </thead>
+            <tbody>
+            @for((application, ind) <- applications.zipWithIndex) {
+                <tr>
+                    <td>@(ind + 1)</td>
+                    <td>@application.getName</td>
+                    <td>@application.getSize</td>
+                    <td>
+                        @application.getState match {
+                            case 0 => {Новая}
+                            case 1 => {Оплачена}
+                            case 2 => {Подтврждено}
+                        }
+                    </td>
+                    <td>Пока не доступно</td>
+                    <td>
+                        @if(application.getState != Application.NEW) {
+                            @application.getComment
+                        }
+                    </td>
+                    <td>
+                        <form class=''></form>
+                        <a href="">Удалить</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    } else {
+        <p>Ни одной заявки пока не подано</p>
+    }
+    </div>
+
+    @Event.current.getHtmlBlock("school_org_applications_list_bottom").format
+}

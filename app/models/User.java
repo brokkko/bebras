@@ -12,6 +12,7 @@ import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
 import models.newserialization.*;
 import models.results.Info;
+import models.results.InfoPattern;
 import models.results.Translator;
 import org.bson.types.ObjectId;
 import play.Play;
@@ -101,7 +102,7 @@ public class User implements SerializableUpdatable {
         // -------
         passwordHash = deserializer.readString(FIELD_PASS_HASH);
 
-        info = role.getUserInfoPattern().read(deserializer);
+        info = getUserInfoPattern().read(deserializer);
 
         //read registration data
         registrationUUID = deserializer.readString(FIELD_REGISTRATION_UUID);
@@ -315,7 +316,7 @@ public class User implements SerializableUpdatable {
 
     @Override
     public void serialize(Serializer serializer) {
-        role.getUserInfoPattern().write(info, serializer);
+        getUserInfoPattern().write(info, serializer);
 
         Serializer contestInfoSerializer = serializer.getSerializer(FIELD_CONTEST_INFO);
         for (Map.Entry<String, ContestInfoForUser> id2date : contest2info.entrySet()) {
@@ -341,6 +342,14 @@ public class User implements SerializableUpdatable {
         serializer.write("_id", id);
         serializer.write(FIELD_EVENT, event.getId());
         serializer.write(FIELD_PASS_HASH, passwordHash);
+    }
+
+    private InfoPattern getUserInfoPattern() {
+        //role.getUserInfoPattern() and event plugins extra fields
+        return InfoPattern.union(
+                role.getUserInfoPattern(),
+                event.getExtraUserFields(role.getName())
+        );
     }
 
     public void serialize() {

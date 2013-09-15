@@ -20,10 +20,12 @@ public class ExtraPage extends Plugin {
     private boolean global;
     private String right;
     private String title;
+    private boolean showInMenu;
 
     @Override
     public void initPage() {
-        Menu.addMenuItem(title, getCall(), right);
+        if (showInMenu)
+            Menu.addMenuItem(title, getCall(), right);
     }
 
     @Override
@@ -51,6 +53,8 @@ public class ExtraPage extends Plugin {
         serializer.write("global", global);
         serializer.write("right", right);
         serializer.write("title", title);
+        if (!showInMenu)
+            serializer.write("menu", showInMenu);
     }
 
     @Override
@@ -61,5 +65,6 @@ public class ExtraPage extends Plugin {
         global = deserializer.readBoolean("global", false);
         right = deserializer.readString("right");
         title = deserializer.readString("title");
+        showInMenu = deserializer.readBoolean("menu", true);
     }
 }

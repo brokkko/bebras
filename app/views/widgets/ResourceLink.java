@@ -1,5 +1,6 @@
 package views.widgets;
 
+import models.Event;
 import play.Play;
 
 import java.util.Arrays;
@@ -49,7 +50,9 @@ public class ResourceLink implements Widget {
                 localUrl = "javascripts/" + localUrl;
                 break;
             case "css":
-                localUrl = "stylesheets/" + localUrl;
+                String skin = Event.currentId().startsWith("bebras") ? "bebras" : "bbtc";
+
+                localUrl = "stylesheets/" + skin + "/" + localUrl;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown resource link type '" + type + "'");

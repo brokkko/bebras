@@ -1,0 +1,252 @@
+/* text on page */
+.content h1 {
+    font-size: 2em;
+    margin: 0.5em 0;
+}
+
+.content h2 {
+    font-size: 1.5em;
+    margin: 0.3em 0;
+}
+
+.content p {
+    padding-bottom: 1em;
+}
+
+.content p.warning {
+    color: #d22100;
+}
+
+/* two columns layout */
+html, body {
+    height: 100%;
+}
+
+header {
+    background: #01a1de url(../../images/header01.png);
+    border-bottom: 2px #00008b solid;
+    font-size: 2em;
+    color: #fff0b2;
+    padding: 6px;
+    text-align: center;
+    font-family: "Arial", serif;
+    font-weight: 600;
+    text-shadow: 2px 2px 2px #00008b;
+    height: 34px; /*2em + 2px*/
+}
+
+.navigation {
+    float: left;
+    width: 200px;
+
+    padding: 10px 0 32010px;
+    margin: 0 0 -32000px;
+
+    line-height: 1.5;
+}
+
+.wrapper {
+    background: #feeca5 url(../../images/nav01.png) repeat;
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin-bottom: -32px; /*the same as footer height + 2px border + 2 x 2px padding*/
+    overflow:hidden;
+}
+
+.content {
+    margin: 0 0 -32000px 200px;
+    padding: 1em 1em 32010px;
+    background-color: white;
+    border-left: 2px solid #f5972d;
+}
+
+footer {
+    text-align: center;
+    font-size: 0.75em;
+    color: white;
+    padding: 2px;
+
+    background: #01a1de url(../../images/header01.png);
+    border-top: 2px #00008b solid;
+
+    position: relative;
+    height: 26px; /*0.75 em + 0.75 em */
+}
+
+.push {
+    height: 32px; /* the same as for footer + 2px border + 2 x 2px padding*/
+}
+
+/* footer content */
+
+.developed-in-kio {
+    float: right;
+    position: absolute;
+    top: 8px;
+    right: 0;
+    margin-right: 1em;
+}
+
+.developed-in-kio a {
+    color: white;
+}
+
+.developed-in-kio a:hover {
+    text-decoration: none;
+}
+
+/* navigation content */
+
+/*.nav-contents {*/
+    /*overflow: hidden;*/
+    /*height: 100%;*/
+    /*margin: -48px 0 -18px;*//* as header and footer*/
+    /*margin: 0 0 -66px;*//* as header and footer*/
+/*}*/
+
+/*menu items*/
+nav .menu-item {
+    display: block;
+    margin: 0.5em;
+    line-height: 1;
+    /*border: 2px solid #f5972d;*/
+    text-decoration: none;
+    padding: 4px 4px 4px 8px;
+    /*text-shadow: 1px 1px 1px #01a1de;*/
+}
+
+nav a {
+    background-color: #f5972d;
+    box-shadow: 1px 1px 1px #834E1B;
+}
+
+nav span {
+    background-color: #f5c593;
+    box-shadow: 1px 1px 1px #f5c593;
+}
+
+nav .menu-item, nav .menu-item:visited {
+    color: #00008b;
+}
+
+nav a:hover {
+    color: blue;
+}
+
+nav div.contest-logo {
+    background: url(../../images/dog.png);
+    width: 94px;
+    height: 91px;
+    margin: 0 auto 1em;
+}
+
+.hidden {
+    display: none;
+}
+
+.notification {
+    color: red;
+    font-size: 1.2em;
+    margin: 0.5em;
+    line-height: 1;
+    background-color: white;
+    padding: 4px;
+    border: 1px solid black;
+}
+
+
+/*info*/
+
+.info tr td:nth-child(even) {
+    font-weight: bold;
+    color: #a51e00;
+}
+
+.info tr td:nth-child(odd) {
+    padding-right: 1em;
+    width: 50%;
+}
+
+/* info blocks */
+
+.info-box {
+    /*border-radius: 1em;*/
+    background-color: #e0f1ff;
+    padding: 0.5em 1em;
+    margin: 0.4em 1em;
+    color: #00008b;
+    line-height: 1.2;
+    overflow: hidden;
+}
+
+.info-box .info {
+    float: left;
+    /*width: 40%;*/
+    /*border-right: 1px solid #00008b;*/
+}
+
+.info-box .results-and-description {
+    display: block;
+    margin-left: 40%;
+    padding-left: 1em;
+    overflow: hidden;
+    /*border-left: 1px solid #00008b;*/
+}
+
+.info-box .results-and-description .description {
+    clear: left;
+    padding-top: 1em;
+}
+
+.info-box .info .title {
+    width: 100px;
+}
+
+.info-box .info .data {
+    font-weight: bold;
+}
+
+.info-box .footer {
+    clear: both;
+}
+
+.info-box p {
+    padding-top: 0.1em;
+    padding-bottom: 0;
+}
+
+.info-box .header {
+    font-weight: 800;
+}
+
+.info-box .skip {
+    height: 0.8em;
+}
+
+.info-box .important {
+    color: #a51e00;
+}
+
+.info-box .description-title {
+    font-weight: bold;
+    text-align: center;
+}
+
+.problem-link, .problem-link:visited {
+    color: #004800;
+    text-decoration: none;
+    padding: 0 4px;
+    display: inline-block;
+}
+
+.problem-link:hover {
+    color: #008000;
+    cursor: pointer;
+}
+
+/*folder actions*/
+
+.folder-actions {
+    float: right;
+}

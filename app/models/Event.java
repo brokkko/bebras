@@ -49,6 +49,8 @@ public class Event {
     private Map<String, UserRole> roles;
     private LinkedHashMap<String, Plugin> plugins; //linked map is needed because plugins initialization may matter
 
+    private Map<String, InfoPattern> role2extraFields = new HashMap<>();
+
     private Event(Deserializer deserializer) {
         this.id = deserializer.readString("_id");
         this.title = deserializer.readString("title");
@@ -347,4 +349,19 @@ public class Event {
         return HtmlBlock.load("~global", id);
     }
 
+    // plugins api
+
+    public void registerExtraUserField(String role, String field, SerializationType type, String title) {
+        InfoPattern infoPattern = role2extraFields.get(role);
+        if (infoPattern == null) {
+            infoPattern = new InfoPattern();
+            role2extraFields.put(role, infoPattern);
+        }
+
+        infoPattern.register(field, type, title);
+    }
+
+    public InfoPattern getExtraUserFields(String role) {
+        return role2extraFields.get(role);
+    }
 }

@@ -9,6 +9,25 @@ import java.util.*;
  */
 public class InfoPattern extends SerializationType<Info> {
 
+    public static InfoPattern union(InfoPattern pattern1, InfoPattern pattern2) {
+        if (pattern1 == null)
+            return pattern2;
+
+        if (pattern2 == null)
+            return pattern1;
+
+        LinkedHashMap<String, SerializationType<?>> field2type = new LinkedHashMap<>();
+        LinkedHashMap<String, String> field2title = new LinkedHashMap<>();
+
+        field2type.putAll(pattern1.field2type);
+        field2type.putAll(pattern2.field2type);
+
+        field2title.putAll(pattern1.field2title);
+        field2title.putAll(pattern2.field2title);
+
+        return new InfoPattern(field2type, field2title);
+    }
+
     private final LinkedHashMap<String, SerializationType<?>> field2type;
 
     private final LinkedHashMap<String, String> field2title;
