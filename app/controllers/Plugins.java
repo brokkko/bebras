@@ -19,18 +19,26 @@ import plugins.Plugin;
 @Authenticated
 public class Plugins extends Controller {
 
-    public static Result doGet(String event, String plugin, String action) {
+    public static Result doGet(String event, String plugin, String action, String params) {
         Plugin p = Event.current().getPlugin(plugin);
         if (p == null)
             return notFound();
-        return p.doGet(action);
+        return p.doGet(action, normalize(params));
     }
 
-    public static Result doPost(String event, String plugin, String action) {
+    public static Result doPost(String event, String plugin, String action, String params) {
         Plugin p = Event.current().getPlugin(plugin);
         if (p == null)
             return notFound();
-        return p.doPost(action);
+        return p.doPost(action, normalize(params));
+    }
+
+    private static String normalize(String params) {
+        if (params == null)
+            return "";
+        if (params.endsWith("/"))
+            return params.substring(0, params.length() - 1);
+        return params;
     }
 
 }

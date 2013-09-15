@@ -22,6 +22,7 @@ public class Application implements SerializableUpdatable {
     private String name;
     private int size;
     private int state;
+    private int number;
     private Date created;
     private String comment;
     private boolean kio;
@@ -29,8 +30,10 @@ public class Application implements SerializableUpdatable {
     public Application() {
     }
 
-    public Application(User organizer, int number, boolean kio) {
-        this.name = organizer.getInfo().get("region") + "-" + organizer.getLogin() + "-" + number;
+    public Application(User organizer, int size, int number, boolean kio) {
+        this.name = organizer.getInfo().get("region") + "-" + organizer.getLogin() + "-" + number + (kio ? "bk" : "b");
+        this.number = number;
+        this.size = size;
         this.kio = kio;
     }
 
@@ -55,14 +58,7 @@ public class Application implements SerializableUpdatable {
     }
 
     public int getNumber() {
-        int pos = name.lastIndexOf('-');
-        if (pos < 0)
-            return 0;
-        try {
-            return Integer.parseInt(name.substring(pos + 1));
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
+        return number;
     }
 
     @Override
@@ -70,6 +66,7 @@ public class Application implements SerializableUpdatable {
         serializer.write("name", name);
         serializer.write("size", size);
         serializer.write("state", state);
+        serializer.write("number", number);
         serializer.write("created", created);
         serializer.write("comment", comment);
         serializer.write("kio", kio);
@@ -80,6 +77,7 @@ public class Application implements SerializableUpdatable {
         name = deserializer.readString("name");
         size = deserializer.readInt("size");
         state = deserializer.readInt("state");
+        number = deserializer.readInt("number");
         created = deserializer.readDate("created");
         comment = deserializer.readString("comment");
         kio = deserializer.readBoolean("kio");

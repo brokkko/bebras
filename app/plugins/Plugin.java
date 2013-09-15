@@ -33,21 +33,25 @@ public abstract class Plugin implements SerializableUpdatable {
      */
     public abstract void initEvent(Event event);
 
-    public abstract Result doGet(String action);
+    public abstract Result doGet(String action, String params);
 
-    public abstract Result doPost(String action);
+    public abstract Result doPost(String action, String params);
 
     protected Call getCall() {
         return getCall("go");
     }
 
     protected Call getCall(String action) {
-        return getCall(action, true);
+        return getCall(action, true, "");
     }
 
-    protected Call getCall(String action, boolean get) {
+    protected Call getCall(String action, boolean get, String params) {
         String currentId = Event.currentId();
-        return get ? routes.Plugins.doGet(currentId, ref, action) : routes.Plugins.doPost(currentId, ref, action);
+
+        if (params != null && !params.isEmpty())
+            params = params + '/';
+
+        return get ? routes.Plugins.doGet(currentId, ref, action, params) : routes.Plugins.doPost(currentId, ref, action, params); //TODO add params
     }
 
     @Override

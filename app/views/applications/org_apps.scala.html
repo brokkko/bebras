@@ -1,20 +1,23 @@
-@(event: Event, applications: java.util.List[models.applications.Application], addApplicationForm: models.forms.RawForm)
+@(event: Event, applications: java.util.List[models.applications.Application], addApplicationForm: models.forms.RawForm, plugin:plugins.Applications)
+@import views.widgets.FormsWidget
 @import views.widgets.ApplicationsWidget
 @import views.widgets.AdminWidget
 @import views.htmlblocks.HtmlBlockWidget
 @import models.forms.RawForm
 @import models.applications.Application
+@import plugins.Applications
 @import views.htmlblocks.HtmlBlock
 
-@main_with_menu(event.getTitle)(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get)) { } {
+@main_with_menu(event.getTitle)(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get, FormsWidget.get)) { } {
+    <h1>Список поданных заявок</h1>
+
     @Event.current.getHtmlBlock("school_org_applications_list_top").format
 
-    <div class='info-box'>
     @if(applications != null && applications.size > 0) {
         <table class='applications'>
             <thead>
                 <tr>
-                    <td>Номер</td>
+                    <td>№</td>
                     <td>Идентификатор</td>
                     <td>Кол-во участников</td>
                     <td>Статус оплаты</td>
@@ -26,12 +29,12 @@
             <tbody>
             @for((application, ind) <- applications.zipWithIndex) {
                 <tr>
-                    <td>@(ind + 1)</td>
+                    <td class='number'>@(ind + 1)</td>
                     <td>@application.getName</td>
                     <td>@application.getSize</td>
                     <td>
                         @application.getState match {
-                            case 0 => {Новая}
+                            case 0 => {-}
                             case 1 => {Оплачена}
                             case 2 => {Подтврждено}
                         }
@@ -43,8 +46,12 @@
                         }
                     </td>
                     <td>
-                        <form class=''></form>
-                        <a href="">Удалить</a>
+                        @if(application.getState != 2) {
+                            <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
+                            <a href="#" class="submit actions-remove-app-@ind" title="Удалить заявку @application.getName">Удалить</a>
+                        } else {
+                            &nbsp;
+                        }
                     </td>
                 </tr>
             }
@@ -53,7 +60,10 @@
     } else {
         <p>Ни одной заявки пока не подано</p>
     }
-    </div>
+
+    <h1>Подача новой заявки</h1>
+
+    @Applications.getAddApplicationForm.formatExtended(addApplicationForm, plugin.getAddCall(), false, "Подать заявку")
 
     @Event.current.getHtmlBlock("school_org_applications_list_bottom").format
 }

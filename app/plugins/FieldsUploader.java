@@ -32,14 +32,14 @@ public class FieldsUploader extends Plugin {
     }
 
     @Override
-    public Result doGet(String action) {
+    public Result doGet(String action, String params) {
         if (User.currentRole().hasRight("event admin"))
-            return Results.ok(views.html.upload_fields.render(Controller.flash("ok"), Controller.flash("error"), getCall("go", false)));
+            return Results.ok(views.html.upload_fields.render(Controller.flash("ok"), Controller.flash("error"), getCall("go", false, "")));
         return Results.forbidden();
     }
 
     @Override
-    public Result doPost(String action) {
+    public Result doPost(String action, String params) {
         if (!User.currentRole().hasRight("event admin"))
             return Results.forbidden();
 

@@ -34,7 +34,7 @@ public class ExtraPage extends Plugin {
     }
 
     @Override
-    public Result doGet(String action) {
+    public Result doGet(String action, String params) {
         if (right != null && !User.currentRole().hasRight(right))
             return Controller.forbidden();
 
@@ -42,7 +42,7 @@ public class ExtraPage extends Plugin {
     }
 
     @Override
-    public Result doPost(String action) {
+    public Result doPost(String action, String params) {
         return Controller.notFound();
     }
 

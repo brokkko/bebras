@@ -27,6 +27,8 @@ public class IntegerValidator extends Validator<Integer> {
                 return value < 0 ? ok() : custom("Число должно быть меньше нуля");
             case "<=0":
                 return value <= 0 ? ok() : custom("Число должно быть неположительным");
+            case "<=100":
+                return value <= 100 ? ok() : custom("Число должно быть не более 100");
         }
 
         return custom("Неизвестный формат сравнения");

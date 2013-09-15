@@ -5,10 +5,7 @@ import models.forms.InputForm;
 import models.newserialization.*;
 import models.results.InfoPattern;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,6 +36,11 @@ public class UserRole implements SerializableUpdatable {
 
     public boolean hasRight(String right) {
         return rights != null && rights.contains(right);
+    }
+
+    public Set<? extends String> getRights() {
+//        return rights == null ? (Set<String>) Collections.emptySet() : rights; //TODO report: remove redundant leads to error, and no error reported
+        return rights == null ? new HashSet<String>() : rights;
     }
 
     public String getName() {
