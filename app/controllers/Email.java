@@ -48,7 +48,7 @@ public class Email {
         email.addTo(to);
 
         String from = cfg.getString("from");
-        String fromName = cfg.getString("from_name");
+        String fromName = Event.currentId().startsWith("bebras") ? "Bebras contest" : cfg.getString("from_name"); //TODO get rid of bebras
         if (fromName == null)
             email.setFrom(from);
         else

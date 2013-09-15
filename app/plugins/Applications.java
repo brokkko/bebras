@@ -14,6 +14,7 @@ import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.Menu;
+import views.html.kvit;
 
 import java.util.List;
 
@@ -92,7 +93,19 @@ public class Applications extends Plugin {
                 return organizerApplications();
             case "view_apps":
                 return adminApplications();
+            case "kvit":
+                return showKvit(params);
         }
+
+        return Controller.notFound();
+    }
+
+    private Result showKvit(String name) {
+        List<Application> applications = getApplications(User.current());
+
+        for (Application application : applications)
+            if (application.getName().equals(name))
+                return Controller.ok(kvit.render(application, this));
 
         return Controller.notFound();
     }
@@ -179,6 +192,14 @@ public class Applications extends Plugin {
 
     public Call getAddCall() {
         return getCall("add_app", false, "");
+    }
+
+    public Call getAppsCall() {
+        return getCall("apps");
+    }
+
+    public Call getKvitCall(String name) {
+        return getCall("kvit", true, name);
     }
 
     public static InputForm getAddApplicationForm() {

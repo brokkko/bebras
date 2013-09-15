@@ -60,6 +60,7 @@ header {
     padding: 1em 1em 32010px;
     background-color: white;
     border-left: 2px solid #f5972d;
+    overflow: hidden;
 }
 
 footer {
@@ -134,11 +135,12 @@ nav span {
 }
 
 nav .menu-item, nav .menu-item:visited {
-    color: #00008b;
+    color: #226b00;
+    font-family: "Arial", serif;
 }
 
 nav a:hover {
-    color: blue;
+    color: #22aa00;
 }
 
 .hidden {
@@ -146,8 +148,8 @@ nav a:hover {
 }
 
 nav div.contest-logo {
-    background: url(../../images/bebras-logo.png);
-    width: 280px;
+    background: url(../../images/bebras-logo-2.png);
+    width: 272px;
     height: 272px;
     margin: 0 auto 1em;
 }
@@ -256,4 +258,8 @@ nav div.contest-logo {
 
 .folder-actions {
     float: right;
+}
+
+a, a:visited {
+    color: blue;
 }

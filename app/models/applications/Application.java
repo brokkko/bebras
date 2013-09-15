@@ -61,6 +61,10 @@ public class Application implements SerializableUpdatable {
         return number;
     }
 
+    public int getMoney() {
+        return size * (kio ? 100 : 50);
+    }
+
     @Override
     public void serialize(Serializer serializer) {
         serializer.write("name", name);

@@ -1,0 +1,38 @@
+@(app:models.applications.Application, plugin:plugins.Applications)
+@import views.htmlblocks.HtmlBlockWidget
+@import plugins.Applications
+@import models.applications.Application
+@main_with_menu(Event.current.getTitle)(scala.List(HtmlBlockWidget.get)) { } {
+<h2>Квитанция для оплаты конкурса Бобёр-2013</h2>
+
+<a href="@plugin.getAppsCall">&larr; Список заявок</a><br /><br />
+
+@*Вы можете <a href="files/receipt_cte_2012.pdf">скачать и распечатать квитанцию</a> (для просмотра необходимо использовать программу <a href="http://www.foxitsoftware.com/downloads/">Foxit PDF Reader</a> или <a href="http://get.adobe.com/reader/">Adobe Reader</a>), а затем вписать в неё код пакета (см. в таблице ниже), либо предоставить данные из таблицы в Сбербанк.
+<br /><br />                                 *@
+<table class='kvit-data' border="0" align="center">
+    <tr>
+        <td valign="top"><b>Наименование получателя платежа</b></td>
+        <td valign="top">АНО &laquo;КИО&raquo;</td>
+    </tr>
+    <tr>
+        <td valign="top"><b>ИНН получателя платежа</b></td>
+        <td valign="top">7816365714 КПП 781601001</td>
+    </tr>
+    <tr>
+        <td valign="top"><b>Номер счёта получателя платежа</b></td>
+        <td valign="top">40703810300050000015</td>
+    </tr>
+    <tr>
+        <td valign="top"><b>Наименование банка и банковские реквизиты</b></td>
+        <td valign="top">в Санкт-Петербургском ф-ле ОАО &laquo;ФОНДСЕРВИСБАНК&raquo; г. Санкт-Петербург к/с 30101810200000000717 БИК 044030717</td>
+    </tr>
+    <tr>
+        <td valign="top"><b>Наименование платежа</b></td>
+        <td valign="top">Регистрационный взнос Бобёр-2013<br />Код заявки @app.getName</td>
+    </tr>
+    <tr>
+        <td valign="top"><b>Сумма платежа</b></td>
+        <td valign="top">@app.getMoney р.</td>
+    </tr>
+</table>
+}

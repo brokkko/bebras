@@ -39,7 +39,7 @@
                             case 2 => {Подтврждено}
                         }
                     </td>
-                    <td>Пока недоступно</td>
+                    <td><a href="@plugin.getKvitCall(application.getName)">Текст</a></td>
                     <td>
                         @if(application.getState != Application.NEW) {
                             @application.getComment
@@ -63,7 +63,7 @@
 
     <h1>Подача новой заявки</h1>
 
-    @Applications.getAddApplicationForm.formatExtended(addApplicationForm, plugin.getAddCall(), false, "Подать заявку")
+    @Applications.getAddApplicationForm.formatExtended(addApplicationForm, plugin.getAddCall, false, "Подать заявку")
 
     @Event.current.getHtmlBlock("school_org_applications_list_bottom").format
 }

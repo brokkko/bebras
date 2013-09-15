@@ -64,3 +64,16 @@ span.pre {
     margin-left: 2em;
     margin-bottom: 0.5em;
 }
+
+h3 {
+    font-weight: bold;
+    margin-bottom: 0.3em;
+}
+
+table.kvit-data {
+    line-height: 1.4;
+}
+
+table.kvit-data td {
+    padding-bottom: 0.5em;
+}
