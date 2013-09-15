@@ -15,7 +15,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.Menu;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -131,7 +130,7 @@ public class Applications extends Plugin {
         applications.add(new Application(user, deserializer.readInt("size"), number, deserializer.readBoolean("kio", false)));
         user.store();
 
-        return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, new RawForm(), this));
+        return Controller.redirect(getCall("apps"));
     }
 
     private Result removeApplication(String name) {

@@ -33,7 +33,7 @@ public class UserInfo extends Controller {
     public static Result info(String eventId) { //TODO use event id
         User user = User.current();
 
-        FormSerializer formSerializer = new FormSerializer(Event.current().getRole("PARTICIPANT").getEditUserForm());
+        FormSerializer formSerializer = new FormSerializer(User.currentRole().getEditUserForm());
         user.serialize(formSerializer);
 
         return ok(views.html.user_info.render(
@@ -43,7 +43,7 @@ public class UserInfo extends Controller {
     }
 
     public static Result doChangeInfo(String eventId) {
-        InputForm registrationForm = Event.current().getRole("PARTICIPANT").getEditUserForm();
+        InputForm registrationForm = User.currentRole().getEditUserForm();
 
         FormDeserializer formDeserializer = new FormDeserializer(registrationForm);
 

@@ -4,6 +4,7 @@ import models.forms.RawForm;
 import models.newserialization.*;
 import play.api.templates.Html;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,10 +17,11 @@ public class DropdownInputTemplate extends InputTemplate<String> {
 
     private String placeholder;
     private List<String> variants;
+    private List<String> titles;
 
     @Override
     public Html render(RawForm form, String field) {
-        return views.html.fields.dropdown.render(form, field, placeholder, variants);
+        return views.html.fields.dropdown.render(form, field, placeholder, variants, titles);
     }
 
     @Override
@@ -48,13 +50,19 @@ public class DropdownInputTemplate extends InputTemplate<String> {
         super.update(deserializer);
         placeholder = deserializer.readString("placeholder", "");
         variants = SerializationTypesRegistry.list(String.class).read(deserializer, "variants");
+        titles = SerializationTypesRegistry.list(String.class).read(deserializer, "titles");
+
+        if (titles == null || titles.size() == 0)
+            titles = variants;
     }
 
     @Override
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
-        if (placeholder != null && placeholder.isEmpty())
+        if (placeholder != null && !placeholder.isEmpty())
             serializer.write("placeholder", placeholder);
         SerializationTypesRegistry.list(String.class).write(serializer, "variants", variants);
+        if (titles != variants)
+            SerializationTypesRegistry.list(String.class).write(serializer, "titles", titles);
     }
 }

@@ -2,7 +2,7 @@
 @import views.widgets.FormsWidget
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get)) { } {
-    <h1>Регистрация участника</h1>
+    <h1>Регистрация: @role.getTitle</h1>
     <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
     После заполнения анкеты вы получите письмо с паролем, поэтому
     убедитесь, что вы правильно указали email.

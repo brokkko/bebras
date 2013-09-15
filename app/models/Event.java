@@ -373,4 +373,12 @@ public class Event {
         return pattern;
     }
 
+    //TODO move to settings
+    public static String getOrganizationName() {
+        Event event = Event.current();
+        if (event != null && event.getId().startsWith("bebras"))
+            return "Центр информатизации образования «КИО»";
+        return "Центр продуктивного обучения";
+    }
+
 }

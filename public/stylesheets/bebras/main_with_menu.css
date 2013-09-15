@@ -46,7 +46,8 @@ header {
 }
 
 .wrapper {
-    background: #feeca5 url(../../images/nav01.png) repeat;
+    background: #2993dd url(../../images/nav01.png) repeat;
+    /*background-color: #2993dd;*/
     min-height: 100%;
     height: auto !important;
     height: 100%;
@@ -113,11 +114,11 @@ nav img {
 /*menu items*/
 nav .menu-item {
     display: block;
-    margin: 0.5em;
+    margin: 8px 0.5em;
     line-height: 1;
     /*border: 2px solid #f5972d;*/
     text-decoration: none;
-    padding: 4px 4px 4px 8px;
+    padding: 6px 4px 6px 8px;
     /*text-shadow: 1px 1px 1px #01a1de;*/
     text-align: center;
 }

@@ -1,10 +1,14 @@
-@(form:models.forms.RawForm, field: String, not_selected_value:String, options:java.util.List[String])
+@(form:models.forms.RawForm, field: String, not_selected_value:String, options:java.util.List[String], titles:java.util.List[String])
 @import models.forms.RawForm
 <select class='input-text dropdown' name="@field" size="1">
     @defining(form.get(field)) {cur_value =>
-        <option @if(cur_value == null) {selected} class='grayed' value=''>@not_selected_value</option>
-        @for(option <- options) {
-            <option value="@option" @if(cur_value == option){selected}>@option</option>
+        <option @if(cur_value == null || cur_value == "") {selected} class='grayed' value='' disabled>@not_selected_value</option>
+        @for((option, ind) <- options.zipWithIndex) {
+            @if(option == "~group") {
+                <optgroup label="@titles.get(ind)">
+            } else {
+            <option value="@option"@if(cur_value == option){ selected}>@titles.get(ind)</option>
+            }
         }
     }
 </select>

@@ -5,6 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import controllers.actions.Authenticated;
+import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.*;
@@ -82,13 +83,14 @@ public class Application extends Controller {
     }
 
     @LoadEvent
-    @Authenticated
     public static Result enter(String eventId) {
+        AuthenticatedAction.doAuthenticate(); //TODO may be moved to DCES controller action
+
         String url = request().uri();
         int pos = url.lastIndexOf("/enter");
         if (pos < 0)
             return notFound();
 
-        return redirect(url.substring(0, pos) + "/" + User.current().getRole().getEnterUrl());
+        return redirect(url.substring(0, pos) + "/" + User.currentRole().getEnterUrl());
     }
 }

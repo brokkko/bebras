@@ -3,6 +3,10 @@ form.basic-form select {
     font-size: inherit;
 }
 
+form.basic-form textarea {
+    font-size: inherit;
+}
+
 .basic-form {
     margin-left: 4em;
     width: 850px;

@@ -227,7 +227,7 @@ public class Registration extends Controller {
 
         session(User.getUsernameSessionKey(), user.getLogin());
 
-        return redirect(routes.UserInfo.contestsList(eventId));
+        return redirect(routes.Application.enter(eventId));
     }
 
     @SuppressWarnings("UnusedParameters")
