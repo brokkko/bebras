@@ -55,10 +55,16 @@ public class Applications extends Plugin {
                             Utils.mapify(
                                     "name", "kio",
                                     "view", Utils.mapify(
-                                            "type", "boolean",
-                                            "title", "Подать заявку дополнительно на конкурс КИО 2014",
-                                            "hint", "Поданная вами заявка будет считаться заявкой на конкурсы Бобёр и КИО"
+                                            "type", "dropdown",
+                                            "title", "Тип заявки",
+                                            "placeholder", "Выбереите тип",
+                                            "titles", Utils.listify(
+                                                "Конкурс Бобёр (50 р.)",
+                                                "Конкурсы Бобёр и КИО (100 р.)"
+                                            ),
+                                            "variants", Utils.listify("b", "bk")
                                     ),
+                                    "required", true,
                                     "validators", Utils.listify(
                                     )
                             )
@@ -140,7 +146,7 @@ public class Applications extends Plugin {
         if (appsSize != 0)
             number = applications.get(appsSize - 1).getNumber() + 1;
 
-        applications.add(new Application(user, deserializer.readInt("size"), number, deserializer.readBoolean("kio", false)));
+        applications.add(new Application(user, deserializer.readInt("size"), number, "bk".equals(deserializer.readString("kio"))));
         user.store();
 
         return Controller.redirect(getCall("apps"));
