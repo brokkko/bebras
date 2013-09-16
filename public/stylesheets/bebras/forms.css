@@ -64,14 +64,14 @@ form.basic-form small {
 
 /* text input */
 form.basic-form .input-text {
-    border: 2px #01a1de solid;
+    border: 2px #5B5E35 solid;
     border-radius: 4px;
     padding: 2px 4px;
     width: 308px; /*320 - 2 * padding - 2 * border*/
 }
 
 form.basic-form .input-multiline {
-    border: 2px #01a1de solid;
+    border: 2px #5B5E35 solid;
     border-radius: 4px;
     padding: 2px 4px;
 }
@@ -81,7 +81,7 @@ form.basic-form .input-multiline.small {
 }
 
 form.basic-form .input-checkbox {
-    border: 2px #01a1de solid;
+    border: 2px #5B5E35 solid;
     width: 20px;
     height: 20px;
     border-radius: 4px;
@@ -118,7 +118,7 @@ form.basic-form .date-input-month span {
 form.basic-form .date-input-forms input {
     width: 200px;
     float: right;
-    border: 2px #01a1de solid;
+    border: 2px #5B5E35 solid;
     border-radius: 4px;
     padding: 2px 4px;
 }
@@ -126,7 +126,7 @@ form.basic-form .date-input-forms input {
 form.basic-form .date-input-forms select {
     width: 200px;
     float: right;
-    border: 2px #01a1de solid;
+    border: 2px #5B5E35 solid;
     border-radius: 4px;
     padding: 2px 4px;
     margin: 4px 0;
@@ -157,7 +157,7 @@ form.basic-form .addr-input-field span {
 form.basic-form .addr-input-field input {
     width: 100px;
     float: right;
-    border: 2px #01a1de solid;
+    border: 2px #5B5E35 solid;
     border-radius: 4px;
     padding: 2px 4px;
     margin: 2px 0;
