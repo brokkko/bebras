@@ -18,6 +18,33 @@ table.applications tbody td {
     text-align: center;
 }
 
+table.applications tbody tr.no_button td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
 table.applications td.number {
     font-weight: bold;
+}
+
+table.applications td.remove a {
+    color: red;
+}
+
+.app-new, .app-pay, .app-acc {
+    font-weight: bold !important;
+    font-family: "Courier New", courier, serif !important;
+    font-size: 1.2em;
+}
+
+.app-new {
+    color: red !important;
+}
+
+.app-pay {
+    color: blue !important;
+}
+
+.app-acc {
+    color: green !important;
 }

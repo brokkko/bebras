@@ -1,8 +1,8 @@
-form.basic-form input,
-form.basic-form select {
-    font-size: inherit;
-}
-
+form.basic-form input[type="text"],
+form.basic-form input[type="checkbox"],
+form.basic-form input[type="password"],
+form.basic-form input[type="input"],
+form.basic-form select,
 form.basic-form textarea {
     font-size: inherit;
 }
@@ -180,17 +180,17 @@ form.basic-form .addr-input-field {
     text-align: center;
 }
 
-form.basic-form .form-button {
+.form-button {
     display: inline-block;
     color: #ffffff;
-    border: 1px solid #00008b;
+    border: 1px solid #5B5E35;
     /*border: 1px solid #01a1de;*/
     padding: 4px 8px;
     margin: 4px;
-    background-color: #01a1de;
+    background-color: #77873B;
     /*background: #900 url(../images/bt01.png) repeat-x 50%;*/
-    text-shadow: 1px 1px 1px #00008b;
-    border-radius: 4px;
+    text-shadow: 1px 1px 1px #5B5E35;
+    border-radius: 2px;
     text-decoration: none;
     font: inherit;
     font-size: 1.5em;
@@ -202,8 +202,12 @@ form.basic-form .form-button {
     -webkit-box-sizing:content-box;
 }
 
-form.basic-form .form-button:hover {
-    color: /*#f5972d*/ #ffe380;
+.form-button.small {
+    font-size: 1em;
+}
+
+.form-button:hover {
+    color: #fceaa4;
     cursor: pointer;
 }
 

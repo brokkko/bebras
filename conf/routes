@@ -82,8 +82,8 @@ POST        /:event/upload_kenguru_codes                              controller
 POST        /:event/:contest/upload_problems                          controllers.EventAdministration.uploadProblemsFile(event, contest)
 
 #plugins
-GET         /:event/:plugin/:action/$params<(.+/)?>plugin             controllers.Plugins.doGet(event, plugin, action, params)
-POST        /:event/:plugin/:action/$params<(.+/)?>post_plugin        controllers.Plugins.doPost(event, plugin, action, params)
+GET         /:event/:plugin/:action/$params<(.+/)?>p                  controllers.Plugins.doGet(event, plugin, action, params)
+POST        /:event/:plugin/:action/$params<(.+/)?>post_p             controllers.Plugins.doPost(event, plugin, action, params)
 
 #debug
 #TODO: 1) create controller intention, 2) TODO highlight. 3) Create method intention shows up even if there is no controller 4) autoimport play.mvc.Result

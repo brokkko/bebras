@@ -49,6 +49,10 @@ public class Application implements SerializableUpdatable {
         return state;
     }
 
+    public void setState(int state) {
+        this.state = state;
+    }
+
     public Date getCreated() {
         return created;
     }
@@ -61,8 +65,12 @@ public class Application implements SerializableUpdatable {
         return number;
     }
 
-    public int getMoney() {
+    public int getPrice() {
         return size * (kio ? 100 : 50);
+    }
+
+    public boolean isKio() {
+        return kio;
     }
 
     @Override

@@ -3,6 +3,9 @@ form.actions {
 }
 
 a.submit {
-    color: blue;
     text-decoration: none;
+}
+
+a.submit:hover {
+    text-decoration: underline;
 }

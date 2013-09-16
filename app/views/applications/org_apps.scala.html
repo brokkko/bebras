@@ -28,24 +28,32 @@
             </thead>
             <tbody>
             @for((application, ind) <- applications.zipWithIndex) {
-                <tr>
+                <tr@if(application.getState != 0){ class='no_button'}>
                     <td class='number'>@(ind + 1)</td>
                     <td>@application.getName</td>
                     <td>@application.getSize</td>
-                    <td>
+                    <td class="@application.getState match {
+                            case 0 => {app-new}
+                            case 1 => {app-pay}
+                            case 2 => {app-acc}
+                    }">
                         @application.getState match {
                             case 0 => {-}
-                            case 1 => {Оплачена}
+                            case 1 => {+}
                             case 2 => {Подтврждено}
                         }
                     </td>
-                    <td><a href="@plugin.getKvitCall(application.getName)">Текст</a></td>
+                    <td><a href="@plugin.getPdfKvitCall(application.getName)">PDF</a> | <a href="@plugin.getKvitCall(application.getName)">Текст</a></td>
                     <td>
                         @if(application.getState != Application.NEW) {
                             @application.getComment
+                        } else {
+                            <form method="POST" action="@plugin.getDoPayCall(application.getName)">
+                                <input type='submit' class='input-payment form-button small' value='Ввести'>
+                            </form>
                         }
                     </td>
-                    <td>
+                    <td class='remove'>
                         @if(application.getState != 2) {
                             <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
                             <a href="#" class="submit actions-remove-app-@ind" title="Удалить заявку @application.getName">Удалить</a>
@@ -60,6 +68,8 @@
     } else {
         <p>Ни одной заявки пока не подано</p>
     }
+
+    @Event.current.getHtmlBlock("school_org_applications_list_middle").format
 
     <h1>Подача новой заявки</h1>
 

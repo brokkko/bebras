@@ -68,6 +68,7 @@ $(function() {
             var editor = $textarea.wymeditor({
                 postInit: function(wym) {
                     $block.data("editor", wym);
+                    $(wym._iframe).css('height', '800px');
                 }
             });
 

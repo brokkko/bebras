@@ -161,4 +161,28 @@ public class Utils {
         return out.toString();
     }
 
+    public static void writeResourceToFile(String resource, File file) throws IOException {
+        writeResourceToFile(resource, file, null);
+    }
+
+    public static void writeResourceToFile(String resource, File file, Map<Object, Object> subs) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF8"))) {
+            String resourceAsString = getResourceAsString(resource);
+
+            if (subs != null)
+                for (Object field : subs.keySet()) {
+                    Object value = subs.get(field);
+                    resourceAsString = resourceAsString.replace(String.valueOf(field), String.valueOf(value));
+                }
+
+            writer.write(resourceAsString);
+        }
+    }
+
+    public static void runProcess(String... command) throws IOException, InterruptedException {
+        Process process = Runtime.getRuntime().exec(command);
+        int res = process.waitFor();
+        if (res != 0)
+            throw new IOException("Non zero exit code of " + command[0]);
+    }
 }
