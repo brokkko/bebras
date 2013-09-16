@@ -40,6 +40,15 @@ WYMeditor.STRINGS['en'] = {
     Containers:       'Containers',
     Classes:          'Classes',
     Status:           'Status',
-    Source_Code:      'Source code'
+    Source_Code:      'Source code',
+    /*image_upload plugin*/
+    Upload:           'Upload',
+    Uploading:        'Uploading',
+    Size:             'Size',
+    Actual:           'Actual',
+    Small:            'Small',
+    Medium:           'Medium',
+    Large:            'Large',
+    File:             'File'
 };
 

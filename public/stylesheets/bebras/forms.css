@@ -81,7 +81,7 @@ form.basic-form .input-multiline.small {
 }
 
 form.basic-form .input-checkbox {
-    border: 2px #5B5E35 solid;
+    border: 2px #5B5E35solid;
     width: 20px;
     height: 20px;
     border-radius: 4px;

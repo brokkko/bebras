@@ -9,8 +9,13 @@ import models.newserialization.MongoDeserializer;
 import models.newserialization.MongoSerializer;
 import models.newserialization.Serializer;
 import play.Logger;
+import play.Play;
 import play.cache.Cache;
 
+import java.io.File;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -54,6 +59,31 @@ public class ServerConfiguration {
     private int dbVersion = 1;
     private boolean maintenanceMode = false;
 
+    private final SecureRandom random = new SecureRandom();
+    private final char[] randomCharacters;
+
+    public ServerConfiguration() {
+        List<Character> chars = new ArrayList<>();
+
+        for (char c = 'a'; c <= 'z'; c++)
+            chars.add(c);
+
+        for (char c = 'A'; c <= 'Z'; c++)
+            chars.add(c);
+
+        for (char c = '0'; c <= '9'; c++)
+            chars.add(c);
+
+        chars.add('-');
+        chars.add('_');
+
+        randomCharacters = new char[chars.size()];
+        for (int i = 0; i < chars.size(); i++) {
+            char c = chars.get(i);
+            randomCharacters[i] = c;
+        }
+    }
+
     public int getDbVersion() {
         return dbVersion;
     }
@@ -89,6 +119,24 @@ public class ServerConfiguration {
         MongoConnection.getConfigCollection().save(serializer.getObject());
 
         Cache.remove(CACHE_KEY);
+    }
+
+    public File getResourcesFolder() {
+        return Play.application().getFile("data/_resources");
+    }
+
+    public long getRandomLong() {
+        return random.nextLong();
+    }
+
+    public String getRandomString(int len) {
+        char[] chars = new char[len];
+        int size = randomCharacters.length;
+
+        for (int i = 0; i < len; i++)
+            chars[i] = randomCharacters[random.nextInt(size)];
+
+        return new String(chars);
     }
 
 }

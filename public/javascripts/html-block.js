@@ -66,9 +66,11 @@ $(function() {
             $block.append($form);
 
             var editor = $textarea.wymeditor({
+                dialogImageUploadUrl:   '/wymupload',
                 postInit: function(wym) {
                     $block.data("editor", wym);
-                    $(wym._iframe).css('height', '800px');
+                    $(wym._iframe).css('height', '600px');
+                    wym.image_upload();
                 }
             });
 
