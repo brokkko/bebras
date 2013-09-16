@@ -23,15 +23,15 @@ html, body {
 }
 
 header {
-    background: #01a1de url(../../images/header01.png);
-    border-bottom: 2px #00008b solid;
+    background: #01a1de url(../../images/header02.png);
+    border-bottom: 2px #646c37 solid;
     font-size: 2em;
     color: #fff0b2;
     padding: 6px;
     text-align: center;
     font-family: "Arial", serif;
     font-weight: 600;
-    text-shadow: 2px 2px 2px #00008b;
+    text-shadow: 2px 2px 2px #646c37;
     height: 34px; /*2em + 2px*/
 }
 
@@ -69,8 +69,8 @@ footer {
     color: white;
     padding: 2px;
 
-    background: #01a1de url(../../images/header01.png);
-    border-top: 2px #00008b solid;
+    background: #01a1de url(../../images/header02.png);
+    border-top: 2px #646c37 solid;
 
     position: relative;
     height: 26px; /*0.75 em + 0.75 em */
@@ -135,12 +135,13 @@ nav span {
 }
 
 nav .menu-item, nav .menu-item:visited {
-    color: #226b00;
+    color: #5b5e35;
+    font-weight: bold;
     font-family: "Arial", serif;
 }
 
-nav a:hover {
-    color: #22aa00;
+nav a.menu-item:hover {
+    color: #77873b;
 }
 
 .hidden {
