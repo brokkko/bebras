@@ -4,6 +4,8 @@
 
 # Home page
 
+GET         /                                                         controllers.Application.root()
+
 #registration
 GET         /:event/register                                          controllers.Registration.registration(event)
 GET         /:event/register_by_user                                  controllers.Registration.registrationByUser(event)

@@ -93,4 +93,8 @@ public class Application extends Controller {
 
         return redirect(url.substring(0, pos) + "/" + User.currentRole().getEnterUrl());
     }
+
+    public static Result root() {
+        return redirect(routes.Application.enter("bebras13"));
+    }
 }
