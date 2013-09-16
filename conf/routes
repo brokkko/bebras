@@ -91,6 +91,7 @@ POST        /:event/:plugin/:action/$params<(.+/)?>post_plugin        controller
 GET         /:action/debug                                            controllers.Debug.debug(action)
 
 # Map static resources from the /public folder to the /assets URL path
+GET         /bebras_training/*file                                    controllers.Application.returnFile(file)
 GET         /assets/*file                                             controllers.Assets.at(path="/public", file)
 
 # + TODO debug submission

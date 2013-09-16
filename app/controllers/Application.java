@@ -1,26 +1,20 @@
 package controllers;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import controllers.actions.Authenticated;
 import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
-import models.*;
-import models.forms.InputForm;
-import models.forms.RawForm;
-import models.newserialization.FormDeserializer;
-import play.Logger;
-import play.Play;
-import play.cache.Cache;
+import models.User;
+import models.Utils;
 import play.libs.Akka;
 import play.libs.F;
-import play.mvc.*;
-import views.htmlblocks.HtmlBlock;
+import play.mvc.Controller;
+import play.mvc.Result;
+import play.mvc.Results;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.Callable;
 
 @DcesController
@@ -96,5 +90,24 @@ public class Application extends Controller {
 
     public static Result root() {
         return redirect(routes.Application.enter("bebras13"));
+    }
+
+    public static Result returnFile(String file) throws IOException {
+        InputStream resource = Application.class.getResourceAsStream("/public/bebras-training/" + file);
+
+        if (resource == null)
+            return notFound();
+
+        String content = "text/plain";
+        if (file.endsWith(".html"))
+            content = "text/html";
+        else if (file.endsWith(".css"))
+            content = "text/css";
+        else if (file.endsWith(".js"))
+            content = "text/javascript";
+        else if (file.endsWith(".png"))
+            content = "image/png";
+
+        return ok(resource).as(content);
     }
 }

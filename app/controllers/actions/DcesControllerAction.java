@@ -29,7 +29,7 @@ public class DcesControllerAction extends Action<DcesController> {
 
         //initialize plugins
         Event event = Event.current();
-        if (event != Event.ERROR_EVENT)
+        if (event != Event.ERROR_EVENT) //TODO this is very bad idea, not all requests start with event
             for (Plugin plugin : event.getPlugins())
                 plugin.initPage();
 
