@@ -62,7 +62,7 @@ public class Applications extends Plugin {
                                     "view", Utils.mapify(
                                             "type", "dropdown",
                                             "title", "Тип заявки",
-                                            "placeholder", "Выбереите тип",
+                                            "placeholder", "Выберите тип",
                                             "titles", Utils.listify(
                                                 "Конкурс Бобёр (50 р.)",
                                                 "Конкурсы Бобёр и КИО (100 р.)"

@@ -40,6 +40,7 @@ public class Application implements SerializableUpdatable {
         return s;
     }
 
+    //TODO name generation may produce colliding ids
     public Application(User organizer, int size, int number, boolean kio) {
         int inc = organizer.getId().getInc();
         int machine = organizer.getId().getMachine();

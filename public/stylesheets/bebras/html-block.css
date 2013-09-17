@@ -1,3 +1,7 @@
+.html-block-actions a {
+    display: inline-block;
+}
+
 .html-block-edit-action, .html-block-undo-action {
     /*display: block;*/
     /*border: 1px solid #000000;*/
