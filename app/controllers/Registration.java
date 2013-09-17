@@ -129,6 +129,9 @@ public class Registration extends Controller {
 
         User user = User.deserialize(formDeserializer);
 
+        if (setRegisterBy(registeeRole, byUser, referrerUserId, user))
+            return badRequest();
+
         String email = user.getEmail();
         String login = user.getLogin();
         String greeting = user.getGreeting();
@@ -164,6 +167,14 @@ public class Registration extends Controller {
         user.setEvent(Event.current());
         user.setPasswordHash(User.passwordHash(password));
 
+        user.store();
+
+        return needEmailConfirmation ?
+                redirect(routes.Registration.waitForEmail(event.getId(), registrationUUID, false)) :
+                ok(views.html.message.render("registration.ok.title", "registration.ok", null));
+    }
+
+    private static boolean setRegisterBy(UserRole registeeRole, boolean byUser, String referrerUserId, User user) {
         ObjectId registerBy = null;
         if (byUser)
             registerBy = User.current().getId();
@@ -171,24 +182,19 @@ public class Registration extends Controller {
             try {
                 registerBy = new ObjectId(referrerUserId);
             } catch (Exception ignored) { //illegal argument exception
-                return badRequest();
+                return true;
             }
             User referrer = User.getInstance("_id", registerBy);
             if (referrer == null)
-                return badRequest();
+                return true;
             if (!referrer.hasRight("region org")) //TODO don't hard code this
-                return badRequest();
+                return true;
             if (!referrer.getRole().mayRegister(registeeRole))
-                return badRequest();
+                return true;
         }
 
         user.setRegisteredBy(registerBy);
-
-        user.store();
-
-        return needEmailConfirmation ?
-                redirect(routes.Registration.waitForEmail(event.getId(), registrationUUID, false)) :
-                ok(views.html.message.render("registration.ok.title", "registration.ok", null));
+        return false;
     }
 
     public static Result waitForEmail(String eventId, String uuid, boolean passwordRecovery) {

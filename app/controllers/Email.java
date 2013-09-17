@@ -54,7 +54,8 @@ public class Email {
         else
             email.setFrom(from, fromName);
 
-        String replyTo = cfg.getString("reply_to");
+        String replyTo = Event.currentId().startsWith("bebras") ? "org@bebras.ru" : cfg.getString("reply_to"); //TODO get rid of bebras
+
         if (replyTo != null)
             try {
                 email.setReplyTo(Arrays.asList(new InternetAddress(replyTo)));
