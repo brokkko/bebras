@@ -30,8 +30,22 @@ public class Application implements SerializableUpdatable {
     public Application() {
     }
 
+    private String hexBytes(int x, int halfBytes) {
+        String s = Integer.toHexString(x).toUpperCase();
+        while (s.length() < halfBytes)
+            s = '0' + s;
+        int len = s.length();
+        if (len > halfBytes)
+            s = s.substring(len - halfBytes);
+        return s;
+    }
+
     public Application(User organizer, int size, int number, boolean kio) {
-        this.name = organizer.getInfo().get("region") + "-" + organizer.getLogin() + "-" + number + (kio ? "bk" : "b");
+        int inc = organizer.getId().getInc();
+        int machine = organizer.getId().getMachine();
+        String code = hexBytes(machine, 2) + hexBytes(inc, 4);
+
+        this.name = organizer.getInfo().get("region") + "-" + code + "-" + number + (kio ? "bk" : "b");
         this.number = number;
         this.size = size;
         this.kio = kio;
