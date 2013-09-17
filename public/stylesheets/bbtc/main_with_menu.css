@@ -59,6 +59,7 @@ header {
     padding: 1em 1em 32010px;
     background-color: white;
     border-left: 2px solid #f5972d;
+    overflow: hidden;
 }
 
 footer {
