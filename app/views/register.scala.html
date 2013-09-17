@@ -1,4 +1,4 @@
-@(form:models.forms.RawForm, role:models.UserRole, byUser:Boolean)
+@(form:models.forms.RawForm, role:models.UserRole, byUser:Boolean, referrerUserId:String)
 @import views.widgets.FormsWidget
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get)) { } {
@@ -9,6 +9,6 @@
     @if(byUser) {
         @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistrationByUser(Event.currentId, role.getName), false, "form.do_register_user")
     } else {
-        @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistration(Event.currentId, role.getName), false, "form.do_register")
+        @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistration(Event.currentId, role.getName, referrerUserId), false, "form.do_register")
     }
 }

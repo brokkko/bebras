@@ -11,7 +11,7 @@
                 <p class='header'><a href="@if(byUser) {
                     @routes.Registration.roleRegistrationByUser(event.getId, role)
                 } else {
-                    @routes.Registration.roleRegistration(event.getId, role)
+                    @routes.Registration.roleRegistration(event.getId, role, null)
                 }">@event.getRole(role).getTitle</a></p>
             </div>
             <div class='results-and-description'>

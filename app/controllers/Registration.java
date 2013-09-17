@@ -7,6 +7,7 @@ import models.*;
 import models.forms.*;
 import models.newserialization.FormDeserializer;
 import org.apache.commons.mail.EmailException;
+import org.bson.types.ObjectId;
 import play.Logger;
 import play.Play;
 import play.i18n.Messages;
@@ -49,14 +50,14 @@ public class Registration extends Controller {
             String roleName = mayRegister.get(0);
             return byUser ?
                     redirect(routes.Registration.roleRegistrationByUser(event.getId(), roleName)) :
-                    redirect(routes.Registration.roleRegistration(event.getId(), roleName));
+                    redirect(routes.Registration.roleRegistration(event.getId(), roleName, null));
         }
 
         return ok(views.html.registration_select.render(event, registerRole, byUser));
     }
 
     @SuppressWarnings("UnusedParameters")
-    public static Result roleRegistration(String eventId, String roleName) {
+    public static Result roleRegistration(String eventId, String roleName, String referrerUserId) {
         Event event = Event.current();
         UserRole registeeRole = event.getRole(roleName);
 
@@ -66,11 +67,10 @@ public class Registration extends Controller {
         if (Event.current().registrationFinished())
             return ok(views.html.error.render("error.msg.registration_finished", new String[0]));
 
-
         if (registeeRole == UserRole.EMPTY)
             return forbidden();
 
-        return processRoleRegistration(event, event.getAnonymousRole(), registeeRole, false);
+        return processRoleRegistration(event, event.getAnonymousRole(), registeeRole, false, referrerUserId);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -82,10 +82,10 @@ public class Registration extends Controller {
         if (registeeRole == UserRole.EMPTY)
             return forbidden();
 
-        return processRoleRegistration(event, User.currentRole(), registeeRole, true);
+        return processRoleRegistration(event, User.currentRole(), registeeRole, true, null);
     }
 
-    public static Result processRoleRegistration(Event event, UserRole registerRole, UserRole registeeRole, boolean byUser) {
+    public static Result processRoleRegistration(Event event, UserRole registerRole, UserRole registeeRole, boolean byUser, String referrerUserId) {
         //TODO use form.errorsAsJson() to ajax validate form
 
         if (!registerRole.mayRegister(registeeRole))
@@ -94,23 +94,23 @@ public class Registration extends Controller {
         RawForm form = new RawForm();
         form.bindFromRequest();
 
-        return ok(views.html.register.render(form, registeeRole, byUser));
+        return ok(views.html.register.render(form, registeeRole, byUser, referrerUserId));
     }
 
     @SuppressWarnings("UnusedParameters")
-    public static Result doRegistration(String eventId, String roleName) {
+    public static Result doRegistration(String eventId, String roleName, String referrerUserId) {
         Event event = Event.current();
-        return processRegistration(event, event.getAnonymousRole(), event.getRole(roleName), false);
+        return processRegistration(event, event.getAnonymousRole(), event.getRole(roleName), false, referrerUserId);
     }
 
     @SuppressWarnings("UnusedParameters")
     @Authenticated
     public static Result doRegistrationByUser(String eventId, String roleName) {
         Event event = Event.current();
-        return processRegistration(event, User.currentRole(), event.getRole(roleName), true);
+        return processRegistration(event, User.currentRole(), event.getRole(roleName), true, null);
     }
 
-    private static Result processRegistration(Event event, UserRole registerRole, UserRole registeeRole, boolean byUser) {
+    private static Result processRegistration(Event event, UserRole registerRole, UserRole registeeRole, boolean byUser, String referrerUserId) {
         //test roles
         if (!registerRole.mayRegister(registeeRole))
             return forbidden();
@@ -122,7 +122,7 @@ public class Registration extends Controller {
         RawForm rawForm = formDeserializer.getRawForm();
 
         if (rawForm.hasErrors())
-            return ok(views.html.register.render(rawForm, registeeRole, byUser));
+            return ok(views.html.register.render(rawForm, registeeRole, byUser, referrerUserId));
 
         //add value for user role
         formDeserializer.addValue(User.FIELD_USER_ROLE, registeeRole.getName());
@@ -164,12 +164,31 @@ public class Registration extends Controller {
         user.setEvent(Event.current());
         user.setPasswordHash(User.passwordHash(password));
 
+        ObjectId registerBy = null;
+        if (byUser)
+            registerBy = User.current().getId();
+        if (referrerUserId != null) {
+            try {
+                registerBy = new ObjectId(referrerUserId);
+            } catch (Exception ignored) { //illegal argument exception
+                return badRequest();
+            }
+            User referrer = User.getInstance("_id", registerBy);
+            if (referrer == null)
+                return badRequest();
+            if (!referrer.hasRight("region org")) //TODO don't hard code this
+                return badRequest();
+            if (!referrer.getRole().mayRegister(registeeRole))
+                return badRequest();
+        }
+
+        user.setRegisteredBy(registerBy);
+
         user.store();
 
         return needEmailConfirmation ?
                 redirect(routes.Registration.waitForEmail(event.getId(), registrationUUID, false)) :
                 ok(views.html.message.render("registration.ok.title", "registration.ok", null));
-
     }
 
     public static Result waitForEmail(String eventId, String uuid, boolean passwordRecovery) {

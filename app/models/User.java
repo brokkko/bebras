@@ -40,6 +40,7 @@ public class User implements SerializableUpdatable {
     public static final String FIELD_LAST_USER_ACTIVITY = "_lua";
     public static final String FIELD_EVENT_RESULTS = "_er";
     public static final String FIELD_USER_ROLE = "_role";
+    public static final String FIELD_REGISTERED_BY = "_reg_by";
 
     public static final String FIELD_LOGIN = "login";
     public static final String FIELD_NAME = "name";
@@ -71,6 +72,7 @@ public class User implements SerializableUpdatable {
     private UserActivityEntry userActivityEntry;
 
     private UserRole role = UserRole.EMPTY;
+    private ObjectId registeredBy = null;
 
     // cache
     private Map<Contest, List<Submission>> cachedAllSubmissions = new HashMap<>();
@@ -114,6 +116,8 @@ public class User implements SerializableUpdatable {
         loadContestsInfo(deserializer.getDeserializer(FIELD_CONTEST_INFO));
 
         eventResults = event.getResultsInfoPattern().read(deserializer, FIELD_EVENT_RESULTS);
+
+        registeredBy = deserializer.readObjectId(FIELD_REGISTERED_BY);
 
         //TODO get rid of iposov
         if (getLogin().equals("iposov"))
@@ -342,6 +346,8 @@ public class User implements SerializableUpdatable {
         serializer.write("_id", id);
         serializer.write(FIELD_EVENT, event.getId());
         serializer.write(FIELD_PASS_HASH, passwordHash);
+
+        serializer.write(FIELD_REGISTERED_BY, registeredBy);
     }
 
     private InfoPattern getUserInfoPattern() {
@@ -634,6 +640,14 @@ public class User implements SerializableUpdatable {
 
     public void setNewRecoveryPassword(String newRecoveryPassword) {
         this.newRecoveryPassword = newRecoveryPassword;
+    }
+
+    public ObjectId getRegisteredBy() {
+        return registeredBy;
+    }
+
+    public void setRegisteredBy(ObjectId registeredBy) {
+        this.registeredBy = registeredBy;
     }
 
     // results

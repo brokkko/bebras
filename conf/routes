@@ -9,10 +9,13 @@ GET         /                                                    controllers.App
 #registration
 GET         /:event/register                                     controllers.Registration.registration(event)
 GET         /:event/register_by_user                             controllers.Registration.registrationByUser(event)
-GET         /:event/:role/register                               controllers.Registration.roleRegistration(event, role)
+GET         /:event/:role/register                               controllers.Registration.roleRegistration(event, role, user_id=null)
 GET         /:event/:role/register_by_user                       controllers.Registration.roleRegistrationByUser(event, role)
-POST        /:event/:role/register                               controllers.Registration.doRegistration(event, role)
+POST        /:event/:role/register                               controllers.Registration.doRegistration(event, role, user_id=null)
 POST        /:event/:role/register_by_user                       controllers.Registration.doRegistrationByUser(event, role)
+
+GET         /:event/:role/:user_id/register                      controllers.Registration.roleRegistration(event, role, user_id)
+POST        /:event/:role/:user_id/register                      controllers.Registration.doRegistration(event, role, user_id)
 
 #other user actions
 GET         /:event/registered/:uuid                             controllers.Registration.waitForEmail(event, uuid, passwordRecovery:Boolean=false)
