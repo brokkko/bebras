@@ -4,6 +4,7 @@ import controllers.routes;
 import models.Event;
 import models.User;
 import models.UserRole;
+import play.Logger;
 import play.mvc.Call;
 import play.mvc.Http;
 
@@ -43,9 +44,11 @@ public class Menu {
         List<MenuItem> menu = new ArrayList<>();
 
         Event event = Event.current();
-        String eventId = event.getId();
+        String eventId = event == Event.ERROR_EVENT ? null : event.getId();
 
-        if (User.isAuthorized()) {
+        if (eventId == null) {
+            menu.add(new MenuItem("Список событий", routes.Application.listEvents()));
+        } else if (User.isAuthorized()) {
             User user = User.current();
 
             if (event.getContestsAvailableForUser().size() > 0)

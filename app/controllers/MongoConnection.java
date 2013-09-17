@@ -30,7 +30,7 @@ public class MongoConnection {
     public static final String COLLECTION_NAME_ACTIVITY = "activity";
     public static final String COLLECTION_NAME_HTML_BLOCKS = "html_blocks";
 
-    private static final Migrator[] migrators = new Migrator[]{
+    private static final Migrator[] migrators = new Migrator[] {
             null, //0
             null, //1
             new Migrator2(),
@@ -38,7 +38,8 @@ public class MongoConnection {
             new Migrator4(),
             new Migrator5(),
             new Migrator6(),
-            new Migrator7()
+            new Migrator7(),
+            new Migrator8()
     };
 
     public static DBCollection getConfigCollection() {

@@ -1,5 +1,7 @@
 package controllers;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import controllers.actions.AuthenticatedAction;
@@ -18,16 +20,16 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.list_events;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -113,7 +115,8 @@ public class Application extends Controller {
     }
 
     public static Result root() {
-        return redirect(routes.Application.enter("bebras13"));
+        String defaultEvent = ServerConfiguration.getInstance().getDefaultDomainEvent();
+        return redirect(routes.Application.enter(defaultEvent));
     }
 
     public static Result returnResource(String file, String base) throws IOException {
@@ -179,5 +182,23 @@ public class Application extends Controller {
         ArrayNode arrayOfResults = (ArrayNode) Json.parse("[]");
         arrayOfResults.add(result);
         return ok(arrayOfResults).as("text/html"); //text/html is because upload_image plugin needs this
+    }
+
+    public static Result listEvents() {
+        String domain = ServerConfiguration.getInstance().getCurrentDomain();
+
+        List<String> events = new ArrayList<>();
+
+        try (DBCursor eventsCursor = MongoConnection.getEventsCollection().find(
+                new BasicDBObject("domain", domain),
+                new BasicDBObject("_id", 1)
+        )) {
+            while (eventsCursor.hasNext()) {
+                DBObject event = eventsCursor.next();
+                events.add((String) event.get("_id"));
+            }
+        }
+
+        return ok(list_events.render(events));
     }
 }

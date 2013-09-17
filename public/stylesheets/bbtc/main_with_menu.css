@@ -251,3 +251,7 @@ nav div.contest-logo {
 .folder-actions {
     float: right;
 }
+
+a, a:visited {
+    color: #000080;
+}

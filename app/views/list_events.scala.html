@@ -1,0 +1,14 @@
+@(events:java.util.List[String])
+@import views.widgets.ResourceLink
+@main_with_menu("Список событий")(scala.List()) { } {
+    <h1>Список событий, зарегистрированных на сервере</h1>
+    <table>
+    @for(event <- events) {
+        <tr>
+            <td>@event</td>
+            <td style="width:1em"></td>
+            <td><h2><a href="@routes.Application.enter(event)">@Event.getInstance(event).getTitle</a></h2></td>
+        </tr>
+    }
+    </table>
+}

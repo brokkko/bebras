@@ -52,6 +52,8 @@ public class Event {
 
     private Map<String, InfoPattern> right2extraFields = new HashMap<>();
 
+    private String domain;
+
     private Event(Deserializer deserializer) {
         this.id = deserializer.readString("_id");
         this.title = deserializer.readString("title");
@@ -82,6 +84,8 @@ public class Event {
 
         List<Plugin> plugins = SerializationTypesRegistry.list(SerializationTypesRegistry.PLUGIN).read(deserializer, "plugins");
         setPlugins(plugins);
+
+        domain = deserializer.readString("domain");
 
         //TODO enters site before confirmation
         //TODO choose where to go if authorized
@@ -171,6 +175,8 @@ public class Event {
 
         SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).write(serializer, "tables", tables);
 
+        serializer.write("domain", domain);
+
         //write roles
         SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).write(serializer, "roles",
                 new ArrayList<>(roles.values())
@@ -221,6 +227,10 @@ public class Event {
 
     public UserRole getAnonymousRole() {
         return getRole("ANONYMOUS");
+    }
+
+    public String getDomain() {
+        return domain;
     }
 
     public List<Plugin> getPlugins() {

@@ -11,6 +11,7 @@ import models.newserialization.Serializer;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
+import play.mvc.Http;
 
 import java.io.File;
 import java.security.SecureRandom;
@@ -27,7 +28,7 @@ import java.util.concurrent.Callable;
 public class ServerConfiguration {
 
     private static final String CACHE_KEY = "server-configuration";
-    public static final int CURRENT_DB_VERSION = 7;
+    public static final int CURRENT_DB_VERSION = 8;
 
     public static ServerConfiguration getInstance() {
         try {
@@ -137,6 +138,28 @@ public class ServerConfiguration {
             chars[i] = randomCharacters[random.nextInt(size)];
 
         return new String(chars);
+    }
+
+    public String getCurrentDomain() {
+        String domain = Http.Context.current().request().host().toLowerCase();
+
+        if (domain.contains(":"))
+            domain = domain.substring(0, domain.indexOf(':'));
+
+        if (domain.startsWith("www."))
+            domain = domain.substring(4);
+
+        if (domain.equals("localhost")) //TODO allow to set this up
+            domain = "on-line.runodog.ru";
+//            domain = "bebras.ru";
+
+        return domain;
+    }
+
+    public String getDefaultDomainEvent() {
+        String domain = getCurrentDomain();
+
+        return domain.contains("bebras") ? "bebras13" : "bbtc"; //TODO allow to set this up
     }
 
 }
