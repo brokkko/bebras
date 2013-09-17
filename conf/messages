@@ -89,6 +89,7 @@ registration.ok.title=Завершение регистрации
 button.undo=Отменить
 
 form.do_register=Зарегистрироваться
+form.do_register_user=Зарегистрироваться
 form.do_change=Изменить
 form.do_save=Сохранить
 form.do_login=Войти

@@ -7,7 +7,7 @@
     После заполнения анкеты вы получите письмо с паролем, поэтому
     убедитесь, что вы правильно указали email.
     @if(byUser) {
-        @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistrationByUser(Event.currentId, role.getName), false, "form.do_register")
+        @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistrationByUser(Event.currentId, role.getName), false, "form.do_register_user")
     } else {
         @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistration(Event.currentId, role.getName), false, "form.do_register")
     }

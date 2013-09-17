@@ -150,8 +150,8 @@ public class ServerConfiguration {
             domain = domain.substring(4);
 
         if (domain.equals("localhost")) //TODO allow to set this up
-            domain = "on-line.runodog.ru";
-//            domain = "bebras.ru";
+//            domain = "on-line.runodog.ru";
+            domain = "bebras.ru";
 
         return domain;
     }
