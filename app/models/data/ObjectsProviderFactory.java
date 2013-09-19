@@ -4,6 +4,7 @@ import models.Contest;
 import models.Event;
 import models.User;
 import models.newserialization.SerializableUpdatable;
+import play.mvc.Call;
 
 /**
  * Created with IntelliJ IDEA.

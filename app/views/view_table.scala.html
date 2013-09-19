@@ -21,6 +21,10 @@
     </table>*@
 
     <div class='data-table'>
-    @for(line <- data) {<div class='dl'>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@element</div>}</div>}
+    @for(line <- data) {<div class='dl'>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@if(ind==0) {
+        <a href="@routes.UserInfo.info(Event.currentId, line(line.length - 1))"><b>@element</b></a>
+    } else {
+        @element
+    }</div>}</div>}
     </div>
 }

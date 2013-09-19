@@ -23,3 +23,12 @@
     border-top: 1px solid black;
     border-right: 1px solid black;
 }
+
+.data-table a {
+    color: #a40005;
+    text-decoration: none;
+}
+
+.data-table a:hover {
+    text-decoration: underline;
+}

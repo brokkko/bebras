@@ -5,6 +5,8 @@ import models.Event;
 import models.User;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
+import play.mvc.Call;
+import play.mvc.Controller;
 
 /**
  * Created with IntelliJ IDEA.
