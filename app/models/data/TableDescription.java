@@ -16,6 +16,7 @@ public class TableDescription<T> implements SerializableUpdatable {
     private String title;
     private ObjectsProviderFactory<T> objectsProviderFactory;
     private Table<T> table;
+    private String right;
 
     public TableDescription() {
     }
@@ -32,6 +33,10 @@ public class TableDescription<T> implements SerializableUpdatable {
         return table;
     }
 
+    public String getRight() {
+        return right;
+    }
+
     @Override
     public void update(Deserializer deserializer) {
         this.title = deserializer.readString("title");
@@ -39,6 +44,8 @@ public class TableDescription<T> implements SerializableUpdatable {
         //noinspection unchecked
         this.objectsProviderFactory = (ObjectsProviderFactory<T>)
                 SerializationTypesRegistry.OBJECTS_PROVIDER_FACTORY.read(deserializer, "objects");
+
+        this.right = deserializer.readString("right", "event admin");
 
         //read table
 
@@ -68,6 +75,7 @@ public class TableDescription<T> implements SerializableUpdatable {
     @Override
     public void serialize(Serializer serializer) {
         serializer.write("title", title);
+        serializer.write("right", right);
 
         SerializationTypesRegistry.OBJECTS_PROVIDER_FACTORY.write(serializer, "objects", objectsProviderFactory);
 

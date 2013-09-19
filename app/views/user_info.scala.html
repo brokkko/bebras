@@ -1,11 +1,15 @@
-@(form:models.forms.RawForm, message:String)
+@(user:models.User, form:models.forms.RawForm, otherUser:Boolean, message:String)
 @import views.htmlblocks.HtmlBlockWidget
 @import views.widgets.FormsWidget
 @import models.Event
 @import scala.List
 @import play.i18n.Messages
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get, HtmlBlockWidget.get)) { } {
-    <h1>Здесь вы можете посмотреть и изменить свои личные данные</h1>
+    @if(otherUser) {
+        <h1>Здесь вы можете посмотреть и изменить данные пользователя @user.getLogin</h1>
+    } else {
+        <h1>Здесь вы можете посмотреть и изменить свои личные данные</h1>
+    }
 
     @Event.current.getHtmlBlock("user_info_up").format
 
@@ -13,7 +17,21 @@
         <p class="warning">@Messages.get(message)</p>
     }
 
-    @User.current.getRole.getEditUserForm.formatExtended(form, routes.UserInfo.doChangeInfo(Event.currentId), true, "form.do_change")
+    @user.getRole.getEditUserForm.formatExtended(form, routes.UserInfo.doChangeInfo(Event.currentId, if(otherUser) user.getId.toString else null), true, "form.do_change")
 
     @Event.current.getHtmlBlock("user_info_down").format
+
+    @if(otherUser) {
+    <div class='info-box'>
+        <table>
+            <tr><td>Примерное время последнего захода</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getDate</b></td></tr>
+            <tr><td>IP</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getIp</b></td></tr>
+            <tr><td>UserAgent</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getUa</b></td></tr>
+        </table>
+    </div>
+    }
+
+    @if(user.getRole.getName == "SCHOOL_ORG") {
+        <div class='info-box'>Здесь будет информация о заявках школьного организатора</div>
+    }
 }

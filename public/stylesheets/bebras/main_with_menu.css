@@ -168,12 +168,12 @@ nav div.contest-logo {
 
 /*info*/
 
-.info tr td:nth-child(even) {
+.information tr td:nth-child(even) {
     font-weight: bold;
     color: #a51e00;
 }
 
-.info tr td:nth-child(odd) {
+.information tr td:nth-child(odd) {
     padding-right: 1em;
     width: 50%;
 }
@@ -182,23 +182,23 @@ nav div.contest-logo {
 
 .info-box {
     /*border-radius: 1em;*/
-    background-color: #e0f1ff;
+    background-color: #fceaa4;
     padding: 0.5em 1em;
     margin: 0.4em 1em;
-    color: #00008b;
+    color: #000000;
     line-height: 1.2;
     overflow: hidden;
 }
 
 .info-box .info {
     float: left;
-    /*width: 40%;*/
+    width: 40%;
     /*border-right: 1px solid #00008b;*/
 }
 
 .info-box .results-and-description {
     display: block;
-    margin-left: 40%;
+    /*margin-left: 40%;*/
     padding-left: 1em;
     overflow: hidden;
     /*border-left: 1px solid #00008b;*/
@@ -238,6 +238,20 @@ nav div.contest-logo {
     color: #a51e00;
 }
 
+.info-box .link {
+    display: inline-block;
+}
+
+.info-box .link a {
+    font-size:1.2em;
+    text-decoration: none;
+    color: #a51e00;
+}
+
+.info-box .additional {
+    float: right;
+}
+
 .info-box .description-title {
     font-weight: bold;
     text-align: center;
@@ -255,12 +269,14 @@ nav div.contest-logo {
     cursor: pointer;
 }
 
-/*folder actions*/
-
 .folder-actions {
     float: right;
 }
 
 a, a:visited {
     color: #5b5e35;
+}
+
+a:hover {
+    text-decoration: none;
 }

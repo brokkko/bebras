@@ -43,7 +43,7 @@
                             case 2 => {Подтврждено}
                         }
                     </td>
-                    <td><a href="@plugin.getPdfKvitCall(application.getName)">PDF</a> | <a href="@plugin.getKvitCall(application.getName)">Текст</a></td>
+                    <td>@plugin.getKvitHtml(User.current, application)</td>
                     <td>
                         @if(application.getState != Application.NEW) {
                             @application.getComment

@@ -1,5 +1,6 @@
 package controllers;
 
+import au.com.bytecode.opencsv.CSVReader;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -18,6 +19,7 @@ import models.newserialization.FormDeserializer;
 import models.newserialization.FormSerializer;
 import models.newserialization.JSONDeserializer;
 import models.newserialization.MongoSerializer;
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
@@ -30,6 +32,7 @@ import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Results;
 import views.html.contests_list;
 import views.html.error;
 import views.html.event_admin;
@@ -118,62 +121,6 @@ public class EventAdministration extends Controller {
         event.store();
 
         return redirect(routes.EventAdministration.admin(eventId));
-    }
-
-    // information about event
-
-    public static <T> Result evalCsvTable(final String fileName, final TableDescription<T> tableDescription) {
-        F.Promise<byte[]> promiseOfVoid = Akka.future(
-                new Callable<byte[]>() {
-                    public byte[] call() throws Exception {
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-                        try (
-                                ObjectsProvider<T> objectsProvider = tableDescription.getObjectsProviderFactory().get();
-                                ZipOutputStream zos = new ZipOutputStream(baos);
-                                CsvDataWriter<T> dataWriter = new CsvDataWriter<>(tableDescription.getTable(), zos, "windows-1251", ';', '"')
-                        ) {
-                            zos.putNextEntry(new ZipEntry(fileName + ".csv"));
-                            dataWriter.writeObjects(objectsProvider);
-                        }
-
-                        return baos.toByteArray();
-                    }
-                }
-        );
-
-        return async(
-                promiseOfVoid.map(
-                        new F.Function<byte[], Result>() {
-                            public Result apply(byte[] file) {
-                                //TODO file name should be encode somehow http://stackoverflow.com/questions/93551/how-to-encode-the-filename-parameter-of-content-disposition-header-in-http
-                                response().setHeader("Content-Disposition", "attachment; filename=" + fileName + ".zip");
-                                return ok(file).as("application/zip");
-                            }
-                        }
-                )
-        );
-    }
-
-    @SuppressWarnings("UnusedParameters")
-    public static Result csvTable(final String eventId, final Integer tableIndex) throws Exception {
-        TableDescription tableDescription = Event.current().getTable(tableIndex);
-
-        if (tableDescription == null)
-            return notFound("table not found");
-
-        return evalCsvTable("table" + tableIndex + "-" + eventId, tableDescription);
-    }
-
-    @SuppressWarnings("UnusedParameters")
-    @LoadContest
-    public static Result csvTableForContest(final String eventId, final String contestId, final Integer tableIndex) throws Exception {
-        TableDescription tableDescription = Contest.current().getTable(tableIndex);
-
-        if (tableDescription == null)
-            return notFound("table not found");
-
-        return evalCsvTable("table" + tableIndex + "-" + eventId + "-" + contestId, tableDescription);
     }
 
     public static Result addContest(String eventId) throws IOException {
@@ -304,5 +251,48 @@ public class EventAdministration extends Controller {
                         }
                 )
         );
+    }
+
+    public static Result doLoadUserFields(String eventId) {
+        if (!User.currentRole().hasRight("event admin"))
+            return Results.forbidden();
+
+        Http.MultipartFormData body = Http.Context.current().request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart newFields = body.getFile("new-fields");
+        if (newFields == null) {
+            flash("fields-upload-error", "Не выбран файл дял загрузки");
+            return Results.redirect(routes.EventAdministration.admin(eventId));
+        }
+
+        File fieldsFile = newFields.getFile();
+        try {
+            loadFileWithNewUserFields(fieldsFile);
+            flash("fields-upload-ok", "Данные успешно загружены");
+            return redirect(routes.EventAdministration.admin(eventId));
+        } catch (Exception e) {
+            flash("fields-upload-error", "При загрузке данных произошла ошибка: " + e.getMessage());
+            Logger.error("error loading file " + fieldsFile, e);
+            return redirect(routes.EventAdministration.admin(eventId));
+        }
+    }
+
+    private static void loadFileWithNewUserFields(File file) throws IOException {
+        CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(file), "windows-1251"), ';', '"');
+        String[] title = reader.readNext();
+        if (title == null)
+            throw new IOException("No title in csv file");
+        //find _id index
+
+        String[] line;
+        while ((line = reader.readNext()) != null) {
+            ObjectId id = new ObjectId(line[0]);
+            User user = User.getInstance("_id", id);
+            if (user == null)
+                continue;
+            for (int i = 0; i < Math.min(title.length, line.length); i++)
+                user.getInfo().put(title[i], line[i]);
+
+            user.invalidateAllResults();
+        }
     }
 }

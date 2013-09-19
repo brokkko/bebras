@@ -10,13 +10,15 @@ import models.newserialization.FormDeserializer;
 import models.newserialization.MemoryDeserializer;
 import models.newserialization.SerializableSerializationType;
 import models.newserialization.SerializationTypesRegistry;
+import org.bson.types.ObjectId;
+import play.api.templates.Html;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.Menu;
-import views.html.kvit;
+import views.html.applications.kvit;
 
 import java.io.File;
 import java.util.List;
@@ -251,6 +253,18 @@ public class Applications extends Plugin {
         return Controller.notFound();
     }
 
+    public Html getKvitHtml(User user, Application app) {
+        ObjectId regBy = user.getRegisteredBy();
+        if (regBy != null) {
+            User regByUser = User.getInstance("_id", regBy);
+            Object kvitType = regByUser.getInfo().get("kvit_type");
+            if ("rakurs".equals(kvitType))
+                return views.html.applications.type_rakurs.render(app, this);
+        }
+
+        return views.html.applications.type_kio.render(app, this);
+    }
+
     private Result adminApplications() {
         return Controller.ok("пока не готово");
     }
@@ -262,6 +276,7 @@ public class Applications extends Plugin {
             return Controller.forbidden();
 
         List<Application> applications = getApplications(user);
+
         return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, new RawForm(), this));
     }
 

@@ -6,6 +6,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import controllers.actions.AuthenticatedAction;
+import models.data.TableDescription;
 import models.forms.InputField;
 import models.forms.InputForm;
 import models.newproblems.ConfiguredProblem;
@@ -257,7 +258,7 @@ public class User implements SerializableUpdatable {
 
         entry.store();
         user.setUserActivityEntry(entry);
-        user.store(); //TODO think about when to store user
+        user.store();
     }
 
     public static boolean isAuthorized() {
@@ -648,6 +649,19 @@ public class User implements SerializableUpdatable {
 
     public void setRegisteredBy(ObjectId registeredBy) {
         this.registeredBy = registeredBy;
+    }
+
+    // tables
+
+    public List<TableDescription<?>> getTables() {
+        List<TableDescription<?>> result = new ArrayList<>();
+
+        List<? extends TableDescription> tables = getEvent().getTables();
+        for (TableDescription<?> table : tables)
+            if (hasRight(table.getRight()))
+                result.add(table);
+
+        return result;
     }
 
     // results

@@ -4,6 +4,7 @@ import controllers.routes;
 import models.Event;
 import models.User;
 import models.UserRole;
+import models.data.TableDescription;
 import play.Logger;
 import play.mvc.Call;
 import play.mvc.Http;
@@ -54,7 +55,7 @@ public class Menu {
             if (event.getContestsAvailableForUser().size() > 0)
                 menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
 
-            menu.add(new MenuItem("Личные данные", routes.UserInfo.info(eventId)));
+            menu.add(new MenuItem("Личные данные", routes.UserInfo.info(eventId, null)));
 
             UserRole role = user.getRole();
             if (role.mayRegisterSomebody())
@@ -62,6 +63,12 @@ public class Menu {
 
             if (user.hasEventAdminRight())
                 menu.add(new MenuItem("Администрирование", routes.EventAdministration.admin(eventId)));
+
+            List<TableDescription<?>> tables = user.getTables();
+            if (tables.size() == 1)
+                menu.add(new MenuItem(tables.get(0).getTitle(), routes.Tables.showTable(eventId, 0)));
+            else if (tables.size() > 1)
+                menu.add(new MenuItem("Данные", routes.Tables.tablesList(eventId)));
 
             fillExtraItems(menu);
 

@@ -187,8 +187,6 @@ public class Registration extends Controller {
             User referrer = User.getInstance("_id", registerBy);
             if (referrer == null)
                 return true;
-            if (!referrer.hasRight("region org")) //TODO don't hard code this
-                return true;
             if (!referrer.getRole().mayRegister(registeeRole))
                 return true;
         }

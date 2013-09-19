@@ -229,6 +229,20 @@ nav div.contest-logo {
     color: #a51e00;
 }
 
+.info-box .link {
+    display: inline-block;
+}
+
+.info-box .link a {
+    font-size:1.2em;
+    text-decoration: none;
+    color: #a51e00;
+}
+
+.info-box .additional {
+    float: right;
+}
+
 .info-box .description-title {
     font-weight: bold;
     text-align: center;

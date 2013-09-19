@@ -2,6 +2,7 @@ package models.data;
 
 import models.Contest;
 import models.Event;
+import models.User;
 import models.newserialization.SerializableUpdatable;
 
 /**
@@ -12,7 +13,7 @@ import models.newserialization.SerializableUpdatable;
  */
 public interface ObjectsProviderFactory<T> extends SerializableUpdatable {
 
-    ObjectsProvider<T> get();
+    ObjectsProvider<T> get(Event currentEvent, User currentUser);
 
     Class<T> getObjectsClass();
 

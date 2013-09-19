@@ -25,6 +25,7 @@ import views.html.list_events;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -139,6 +140,8 @@ public class Application extends Controller {
     }
 
     public static Result returnFile(String file, String base) throws IOException {
+        file = URLDecoder.decode(file, "UTF-8");
+
         return ok(new File(Play.application().getFile(base).getAbsolutePath() + "/" + file));
     }
 

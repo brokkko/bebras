@@ -1,6 +1,7 @@
 @(contest:models.Contest)
+@import models.Contest
 <p>Данные о соревновании:</p>
 К соревнованию приступили: @contest.getNumStarted
 @for((table, ind) <- contest.getTables.zipWithIndex) {
-    <p>@(ind + 1). @table.getTitle: <a href="@routes.EventAdministration.csvTableForContest(Event.currentId, contest.getId, ind)">скачать</a></p>
+    <p>@(ind + 1). @table.getTitle: <a href="@routes.Tables.csvTableForContest(Event.currentId, contest.getId, ind)">скачать</a></p>
 }

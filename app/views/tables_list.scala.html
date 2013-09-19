@@ -1,0 +1,20 @@
+@(event:models.Event)
+@import models.data.TableDescription
+@import models.Event
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List()) { } {
+    <h1>Данные по событию</h1>
+    @for((table, ind) <- User.current.getTables.zipWithIndex) {
+        <div class='info-box'>
+            <div class='link'>
+                <p><a href="@routes.Tables.showTable(Event.currentId, ind)">@table.getTitle</a></p>
+            </div>
+            <div class='additional'>
+                <p>
+                    <a href="@routes.Tables.csvTable(Event.currentId, ind)">загрузить csv</a>
+                </p>
+            </div>
+            <div class='footer'></div>
+        </div>
+    }
+}

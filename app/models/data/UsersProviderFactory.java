@@ -14,20 +14,18 @@ import models.newserialization.Serializer;
  */
 public class UsersProviderFactory implements ObjectsProviderFactory<User> {
 
-    private String eventId;
     private String role;
     private boolean loadEventResults;
     //TODO load results for separate contests
 
     @Override
-    public ObjectsProvider<User> get() {
-        String eventId = this.eventId;
-        if ("~current".equals(eventId))
-            eventId = Event.currentId();
-
-        BasicDBObject query = new BasicDBObject(User.FIELD_EVENT, eventId);
+    public ObjectsProvider<User> get(Event currentEvent, User currentUser) {
+        BasicDBObject query = new BasicDBObject(User.FIELD_EVENT, currentEvent.getId());
         if (role != null)
             query.put(User.FIELD_USER_ROLE, role);
+
+        if (!currentUser.hasEventAdminRight())
+            query.put(User.FIELD_REGISTERED_BY, currentUser.getId());
 
         return new UsersProvider(loadEventResults, query, null);
     }
@@ -40,14 +38,12 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
     @Override
     public void serialize(Serializer serializer) {
         serializer.write("role", role);
-        serializer.write("event", eventId);
         serializer.write("load event results", loadEventResults);
     }
 
     @Override
     public void update(Deserializer deserializer) {
         role = deserializer.readString("role");
-        eventId = deserializer.readString("event");
         loadEventResults = deserializer.readBoolean("load event results", false);
     }
 }

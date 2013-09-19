@@ -12,16 +12,19 @@
 
     @models.Forms.getEventChangeForm.formatExtended(eventForm, controllers.routes.EventAdministration.admin(Event.currentId), true, "form.do_change")
 
-    <h2>Список школ:</h2>
+    <h2>Список школ</h2>
     <form enctype="multipart/form-data" method="POST" action="@routes.EventAdministration.uploadKenguruSchoolCodes(Event.currentId)">
         <input type="file" name="kenguru-codes">
         <input type="submit" value="Загрузить файл">
     </form>
 
+    @upload_fields()
+
     <p></p>
+
     <h2>Данные по событию:</h2>
     @for((table, ind) <- Event.current.getTables.zipWithIndex) {
-        <p>@(ind + 1). @table.getTitle: <a href="@routes.EventAdministration.csvTable(Event.currentId, ind)">скачать</a></p>
+        <p>@(ind + 1). @table.getTitle: <a href="@routes.Tables.csvTable(Event.currentId, ind)">скачать</a></p>
     }
 
     <h2>Очистка результатов</h2>

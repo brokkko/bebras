@@ -30,8 +30,10 @@ GET         /:event/logout                                       controllers.Reg
 GET         /:event/enter                                        controllers.Application.enter(event)
 
 #user info
-GET         /:event/user_info                                    controllers.UserInfo.info(event)
-POST        /:event/user_info                                    controllers.UserInfo.doChangeInfo(event)
+GET         /:event/user_info                                    controllers.UserInfo.info(event, userId=null)
+GET         /:event/:user_id/user_info                           controllers.UserInfo.info(event, user_id)
+POST        /:event/user_info                                    controllers.UserInfo.doChangeInfo(event, userId=null)
+POST        /:event/:user_id/user_info                           controllers.UserInfo.doChangeInfo(event, user_id)
 GET         /:event/contests                                     controllers.UserInfo.contestsList(event)
 
 #contest
@@ -44,11 +46,15 @@ POST        /:event/:contest/restart                             controllers.Con
 #admin event
 GET         /:event/admin                                        controllers.EventAdministration.admin(event)
 POST        /:event/admin                                        controllers.EventAdministration.doChangeEvent(event)
-GET         /:event/:table/csv_table                             controllers.EventAdministration.csvTable(event, table:Integer)
-GET         /:event/:contest/:table/csv_table                    controllers.EventAdministration.csvTableForContest(event, contest, table:Integer)
+GET         /:event/:table/csv_table                             controllers.Tables.csvTable(event, table:Integer)
+GET         /:event/:table/show_table                            controllers.Tables.showTable(event, table:Integer)
+GET         /:event/:contest/:table/csv_table                    controllers.Tables.csvTableForContest(event, contest, table:Integer)
+GET         /:event/tables_list                                  controllers.Tables.tablesList(event)
 POST        /:event/add_contest                                  controllers.EventAdministration.addContest(event)
 POST        /:event/invalidate_event_results                     controllers.EventAdministration.doInvalidateEventResults(event)
 POST        /:event/invalidate_contests_and_event_results        controllers.EventAdministration.doInvalidateContestsAndEventResults(event)
+POST        /:event/load_user_fields                             controllers.EventAdministration.doLoadUserFields(event)
+
 #html block
 POST        /~global/:block/set_html_block                       controllers.Application.setGlobalHtmlBlock(block)
 POST        /:event/:block/set_html_block                        controllers.EventAdministration.setHtmlBlock(event, block)
