@@ -4,6 +4,7 @@ import models.Contest;
 import models.Submission;
 import models.User;
 import models.Utils;
+import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
@@ -29,7 +30,7 @@ public class ContestHistoryFeatures implements FeaturesSet<User> {
     }
 
     @Override
-    public Object getFeature(String featureName) throws Exception {
+    public Object getFeature(String featureName, FeaturesContext context) throws Exception {
         String[] contestAndFeature = featureName.split("\\.");
 
         if (contestAndFeature.length != 2)

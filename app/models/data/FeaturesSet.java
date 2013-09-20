@@ -10,5 +10,5 @@ public interface FeaturesSet<T> extends AutoCloseable {
 
     void load(T object) throws Exception;
 
-    Object getFeature(String featureName) throws Exception;
+    Object getFeature(String featureName, FeaturesContext context) throws Exception;
 }

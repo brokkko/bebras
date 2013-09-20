@@ -57,14 +57,14 @@ public class CompositeFeaturesSet<T> implements FeaturesSet<T> {
     }
 
     @Override
-    public Object getFeature(String featureName) throws Exception {
+    public Object getFeature(String featureName, FeaturesContext context) throws Exception {
         if (delimiter == null)
-            return getFeatureWithoutDelimiter(featureName);
+            return getFeatureWithoutDelimiter(featureName, context);
         else
-            return getFeatureWithDelimiter(featureName);
+            return getFeatureWithDelimiter(featureName, context);
     }
 
-    private Object getFeatureWithDelimiter(String featureName) throws Exception {
+    private Object getFeatureWithDelimiter(String featureName, FeaturesContext context) throws Exception {
         String[] split = splitName(featureName);
 
         FeaturesSet<T> set = name2set.get(split[0]);
@@ -75,12 +75,12 @@ public class CompositeFeaturesSet<T> implements FeaturesSet<T> {
         if (! loaded.contains(set))
             loadFeatureSet(set);
 
-        return set.getFeature(split[1]);
+        return set.getFeature(split[1], context);
     }
 
-    private Object getFeatureWithoutDelimiter(String featureName) throws Exception {
+    private Object getFeatureWithoutDelimiter(String featureName, FeaturesContext context) throws Exception {
         for (FeaturesSet<T> set : name2set.values()) {
-            Object result = set.getFeature(featureName);
+            Object result = set.getFeature(featureName, context);
             if (result != null)
                 return result;
         }

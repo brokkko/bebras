@@ -39,7 +39,7 @@ public class CsvDataWriter<T> implements AutoCloseable {
         this.out = new CSVWriter(new OutputStreamWriter(out, encoding), delimiter, quote);
     }
 
-    private void writeObject(T object) throws Exception {
+    private void writeObject(T object, FeaturesContext context) throws Exception {
         if (!headerWritten) {
             headerWritten = true;
 
@@ -55,15 +55,15 @@ public class CsvDataWriter<T> implements AutoCloseable {
         String[] newLine = new String[table.getFeaturesCount()];
         int ind = 0;
         for (String feature : table.getFeatureNames()) {
-            Object value = table.getFeature(feature);
+            Object value = table.getFeature(feature, context);
             newLine[ind++] = value == null ? "" : value.toString();
         }
         out.writeNext(newLine);
     }
 
-    public void writeObjects(ObjectsProvider<T> provider) throws Exception {
+    public void writeObjects(ObjectsProvider<T> provider, FeaturesContext context) throws Exception {
         while (provider.hasNext())
-            writeObject(provider.next());
+            writeObject(provider.next(), context);
     }
 
     @Override

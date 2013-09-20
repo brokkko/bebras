@@ -30,8 +30,8 @@ public class Table<T> {
         return titles.size();
     }
 
-    public Object getFeature(String featureName) throws Exception {
-        return featuresSet.getFeature(featureName);
+    public Object getFeature(String featureName, FeaturesContext context) throws Exception {
+        return featuresSet.getFeature(featureName, context);
     }
 
     public void load(T object) throws Exception {

@@ -22,16 +22,16 @@ public abstract class FunctionFeaturesSet<T> implements FeaturesSet<T> {
     }
 
     @Override
-    public Object getFeature(String featureName) throws Exception {
+    public Object getFeature(String featureName, FeaturesContext context) throws Exception {
         int pos = featureName.indexOf(DELIMITER);
         if (pos < 0)
             throw new IllegalArgumentException("feature without function name");
         String function = featureName.substring(0, pos);
         String value = featureName.substring(pos + 1);
 
-        Object feature = delegate.getFeature(value);
+        Object feature = delegate.getFeature(value, context);
 
-        return function(function, feature);
+        return function(function, feature, context);
     }
 
     @Override
@@ -39,5 +39,5 @@ public abstract class FunctionFeaturesSet<T> implements FeaturesSet<T> {
         //do nothing
     }
 
-    protected abstract Object function(String function, Object feature);
+    protected abstract Object function(String function, Object feature, FeaturesContext context);
 }

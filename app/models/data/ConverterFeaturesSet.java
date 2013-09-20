@@ -20,8 +20,8 @@ public abstract class ConverterFeaturesSet<From, To> implements FeaturesSet<From
     }
 
     @Override
-    public Object getFeature(String featureName) throws Exception {
-        return delegate.getFeature(featureName);
+    public Object getFeature(String featureName, FeaturesContext context) throws Exception {
+        return delegate.getFeature(featureName, context);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package models.data.features;
 
 import models.User;
+import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.forms.RawForm;
 import models.newserialization.FlatSerializer;
@@ -23,7 +24,7 @@ public class UserFeatures implements FeaturesSet<User> {
     }
 
     @Override
-    public Object getFeature(String featureName) {
+    public Object getFeature(String featureName, FeaturesContext context) {
         if (rawForm == null)
             throw new IllegalStateException("Object not loaded");
 

@@ -1,5 +1,6 @@
 package models.data.features;
 
+import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 
 /**
@@ -16,7 +17,7 @@ public class ConstFunctionFeatures<T> implements FeaturesSet<T> {
     }
 
     @Override
-    public Object getFeature(String featureName) {
+    public Object getFeature(String featureName, FeaturesContext context) {
         return featureName;
     }
 

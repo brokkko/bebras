@@ -22,33 +22,22 @@ public class MemoryDataWriter<T> implements AutoCloseable {
         this.table = table;
     }
 
-    private void writeObject(T object) throws Exception {
+    private void writeObject(T object, FeaturesContext context) throws Exception {
         table.load(object);
 
         String[] newLine = new String[table.getFeaturesCount()];
         int ind = 0;
         for (String feature : table.getFeatureNames()) {
-            Object value = table.getFeature(feature);
-            newLine[ind++] = value == null ? "-" : deexelify(value.toString());
+            Object value = table.getFeature(feature, context);
+            newLine[ind++] = value == null ? "-" : value.toString();
         }
 
         list.add(newLine);
     }
 
-    private String deexelify(String s) {
-        if (s == "")
-            return "-";
-
-        Matcher matcher = Pattern.compile("=\"(.*)\"").matcher(s);
-        if (matcher.matches())
-            return matcher.group(1);
-        else
-            return s;
-    }
-
-    public void writeObjects(ObjectsProvider<T> provider) throws Exception {
+    public void writeObjects(ObjectsProvider<T> provider, FeaturesContext context) throws Exception {
         while (provider.hasNext() && list.size() < MAX_SIZE)
-            writeObject(provider.next());
+            writeObject(provider.next(), context);
     }
 
     @Override

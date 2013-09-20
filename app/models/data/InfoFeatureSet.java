@@ -18,7 +18,7 @@ public class InfoFeatureSet implements FeaturesSet<Info> {
     }
 
     @Override
-    public Object getFeature(String featureName) {
+    public Object getFeature(String featureName, FeaturesContext context) {
         return object.get(featureName);
     }
 

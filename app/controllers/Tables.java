@@ -7,11 +7,7 @@ import controllers.actions.LoadEvent;
 import models.Contest;
 import models.Event;
 import models.User;
-import models.data.CsvDataWriter;
-import models.data.MemoryDataWriter;
-import models.data.ObjectsProvider;
-import models.data.TableDescription;
-import play.api.templates.Html;
+import models.data.*;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
@@ -20,7 +16,6 @@ import views.html.tables_list;
 import views.html.view_table;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
@@ -52,7 +47,7 @@ public class Tables extends Controller {
                                 CsvDataWriter<T> dataWriter = new CsvDataWriter<>(tableDescription.getTable(), zos, "windows-1251", ';', '"')
                         ) {
                             zos.putNextEntry(new ZipEntry(fileName + ".csv"));
-                            dataWriter.writeObjects(objectsProvider);
+                            dataWriter.writeObjects(objectsProvider, new FeaturesContext(currentEvent, false));
                         }
 
                         return baos.toByteArray();
@@ -92,7 +87,7 @@ public class Tables extends Controller {
                                 ObjectsProvider objectsProvider = tableDescription.getObjectsProviderFactory().get(currentEvent, currentUser);
                                 MemoryDataWriter dataWriter = new MemoryDataWriter(tableDescription.getTable())
                         ) {
-                            dataWriter.writeObjects(objectsProvider);
+                            dataWriter.writeObjects(objectsProvider, new FeaturesContext(currentEvent, true));
 
                             return dataWriter;
                         }

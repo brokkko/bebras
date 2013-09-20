@@ -1,5 +1,6 @@
 package models.data.features;
 
+import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.data.FunctionFeaturesSet;
 
@@ -16,12 +17,14 @@ public class ExcelFeatures<T> extends FunctionFeaturesSet<T> {
     }
 
     @Override
-    protected Object function(String function, Object feature) {
+    protected Object function(String function, Object feature, FeaturesContext context) {
         if (feature == null)
             return null;
 
         switch (function) {
             case "=":
+                if (context.isScreen())
+                    return feature;
                 return "=\"" + feature + "\"";
             default:
                 return "unknown excel feature";

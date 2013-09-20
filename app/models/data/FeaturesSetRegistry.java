@@ -3,9 +3,6 @@ package models.data;
 import models.User;
 import models.data.features.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
