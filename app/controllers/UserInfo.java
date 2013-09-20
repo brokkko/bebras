@@ -33,7 +33,7 @@ public class UserInfo extends Controller {
     public static Result info(String eventId, String userId) { //TODO use event id
         User user = User.current();
         User userToChange = userId == null ? user : User.getInstance("_id", new ObjectId(userId)); //TODO wrong id leads to an exception
-         if (mayChange(user, userToChange))
+        if (!mayChange(user, userToChange))
             return forbidden();
 
         FormSerializer formSerializer = new FormSerializer(userToChange.getRole().getEditUserForm());
@@ -50,7 +50,7 @@ public class UserInfo extends Controller {
     public static Result doChangeInfo(String eventId, String userId) {
         User user = User.current();
         User userToChange = userId == null ? user : User.getInstance("_id", new ObjectId(userId)); //TODO wrong id leads to an exception
-        if (mayChange(user, userToChange))
+        if (!mayChange(user, userToChange))
             return forbidden();
 
         InputForm registrationForm = userToChange.getRole().getEditUserForm();
@@ -70,7 +70,7 @@ public class UserInfo extends Controller {
     }
 
     private static boolean mayChange(User user, User userToChange) {
-        return user != userToChange && !user.hasEventAdminRight() && userToChange.getRegisteredBy().equals(user.getId());
+        return user == userToChange || user.hasEventAdminRight() || userToChange.getRegisteredBy().equals(user.getId());
     }
 
 }
