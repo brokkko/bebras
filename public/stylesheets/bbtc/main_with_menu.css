@@ -13,6 +13,10 @@
     padding-bottom: 1em;
 }
 
+.content pre {
+    padding-bottom: 1em;
+}
+
 .content p.warning {
     color: #d22100;
 }
