@@ -212,7 +212,7 @@ public class Forms {
                                     "name", "restricted results",
                                     "view", Utils.mapify(
                                             "type", "datetime",
-                                            "title", "Дата отображения сокращенных результатов"
+                                            "title", "Дата отображения только сокращенных результатов"
                                     ),
                                     "required", false
                             ),

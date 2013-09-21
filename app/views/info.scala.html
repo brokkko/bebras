@@ -4,7 +4,9 @@
 <table border="0" class="information@if(classes != null){ @classes}">
     @for(field <- resultPattern.getFields) {
     <tr>
-        <td>@resultPattern.getTitle(field)</td><td>@result.get(field)</td>
+        <td>@resultPattern.getTitle(field)</td><td>@defining(result.get(field)) { value =>
+        @if(value == null || value == "") {-} else {@value}
+        }</td>
     </tr>
     }
 </table> @*Результаты соревнования: вы набрали @Utils.scoresWord(result.get("scores").asInstanceOf[Integer])*@

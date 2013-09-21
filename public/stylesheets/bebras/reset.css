@@ -72,3 +72,11 @@ i {
 u {
     text-decoration: underline;
 }
+
+strong {
+    font-weight: bold;
+}
+
+pre {
+    font-family: monospace;
+}

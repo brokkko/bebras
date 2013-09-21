@@ -159,12 +159,12 @@ nav div.contest-logo {
 
 /*info*/
 
-.info tr td:nth-child(even) {
+.information tr td:nth-child(even) {
     font-weight: bold;
     color: #a51e00;
 }
 
-.info tr td:nth-child(odd) {
+.information tr td:nth-child(odd) {
     padding-right: 1em;
     width: 50%;
 }
