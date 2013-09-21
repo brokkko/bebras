@@ -220,7 +220,7 @@ public class EventAdministration extends Controller {
         DBObject userObject = userSerializer.getObject();
         userObject.put(User.FIELD_EVENT, newEventId);
         userObject.removeField("_id");
-        userObject.put("_contests", new BasicDBObject());rt
+        userObject.put("_contests", new BasicDBObject());
         MongoConnection.getUsersCollection().save(userObject);
 
         Event.invalidateCache(newEventId);
