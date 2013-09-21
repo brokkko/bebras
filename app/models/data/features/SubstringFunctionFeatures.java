@@ -1,5 +1,6 @@
 package models.data.features;
 
+import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.data.FunctionFeaturesSet;
 
@@ -16,19 +17,24 @@ public class SubstringFunctionFeatures<T> extends FunctionFeaturesSet<T> {
     }
 
     @Override
-    protected Object function(String function, Object feature) {
+    protected Object function(String function, Object feature, FeaturesContext context) {
         String code = (String) feature;
 
         if (code == null)
             return null;
 
-        int pos = function.indexOf('-');
-        if (pos < 0)
-            throw new IllegalArgumentException("No \"-\" in function name");
+        try {
+            int pos = function.indexOf('-');
+            if (pos < 0)
+                throw new IllegalArgumentException("No \"-\" in function name");
 
-        int a = Integer.parseInt(function.substring(0, pos));
-        int b = Integer.parseInt(function.substring(pos + 1));
+            int a = Integer.parseInt(function.substring(0, pos));
+            int b = Integer.parseInt(function.substring(pos + 1));
 
-        return code.substring(a, b);
+            return code.substring(a, b);
+        } catch (Exception e) { //TODO not very good solution to catch all exceptions
+            //IllegalArg, NumberFormat, IndexOutOfRange
+            return "";
+        }
     }
 }

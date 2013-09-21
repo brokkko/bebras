@@ -24,6 +24,7 @@ public class FeaturesSetRegistry {
         if (clazz.equals(User.class)) {
             set.register("user", (FeaturesSet<T>) new UserFeatures());
             set.register("contest", (FeaturesSet<T>) new ContestHistoryFeatures());
+            set.register("user_action", (FeaturesSet<T>) new UserActionsFeatures((FeaturesSet<User>) set));
         }
 
         set.register("substring", new SubstringFunctionFeatures(set));

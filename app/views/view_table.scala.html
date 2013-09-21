@@ -21,10 +21,6 @@
     </table>*@
 
     <div class='data-table'>
-    @for((line, line_ind) <- data.zipWithIndex) {<div class='dl'><div class='de' title='№'><b>@(line_ind + 1)</b></div>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@if(ind==0) {
-        <a href="@routes.UserInfo.info(Event.currentId, line(line.length - 1))"><b>@element</b></a>
-    } else {
-        @element
-    }</div>}</div>}
+    @for((line, line_ind) <- data.zipWithIndex) {<div class='dl'><div class='de' title='№'><b>@(line_ind + 1)</b></div>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@Html(element)</div>}</div>}
     </div>
 }

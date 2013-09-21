@@ -52,6 +52,7 @@ GET         /:event/:contest/:table/csv_table                    controllers.Tab
 GET         /:event/tables_list                                  controllers.Tables.tablesList(event)
 POST        /:event/add_contest                                  controllers.EventAdministration.addContest(event)
 POST        /:event/invalidate_event_results                     controllers.EventAdministration.doInvalidateEventResults(event)
+POST        /:event/:role/remove_registered                      controllers.EventAdministration.doRemoveAllRegisteredByRole(event, role)
 POST        /:event/invalidate_contests_and_event_results        controllers.EventAdministration.doInvalidateContestsAndEventResults(event)
 POST        /:event/load_user_fields                             controllers.EventAdministration.doLoadUserFields(event)
 
@@ -104,4 +105,5 @@ GET         /:action/debug                                       controllers.Deb
 # Map static resources from the /public folder to the /assets URL path
 GET         /bebras_training/*file                               controllers.Application.returnResource(file, base="/public/bebras-training")
 GET         /assets/*file                                        controllers.Assets.at(path="/public", file)
-GET         /~res/*file                                          controllers.Application.returnFile(file, base="/data/_resources")
+GET         /~res/*file                                          controllers.Application.returnFile(file)
+GET         /:event/~dat/*file                                   controllers.Application.returnDataFile(event, file)

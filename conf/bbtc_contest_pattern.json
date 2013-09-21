@@ -19,7 +19,8 @@
                 "type": "users",
                 "event": "%%%eid%%%",
                 "role": "PARTICIPANT",
-                "load event results": true
+                "load event results": true,
+                "filename": "%%%eid%%% %%%cid%%% answers"
             },
             "columns": [
                 "id -> user._id",

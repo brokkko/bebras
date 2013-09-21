@@ -1,0 +1,23 @@
+@(folder: java.io.File, template: java.io.File)
+@import java.io.File
+@defining(Event.current.getEventDataFolder.getAbsolutePath.length + 1) { pathPrefixLength =>
+    @defining(folder.listFiles()) { fileList =>
+        <table class='files-list'>
+        <tr>
+            <td><a href="@routes.Application.returnFile(template.getName)">@template.getName</a></td>
+            <td>Шаблон</td>
+            <td>@{template.length() / 1024}kb</td>
+        </tr>
+        @if(fileList != null) {
+            @scala.util.Sorting.stableSort(fileList, (e1: File, e2: File) => e1.lastModified() > e2.lastModified())
+            @for(file <- fileList) {
+                <tr>
+                    <td><a href="@routes.Application.returnDataFile(Event.currentId, file.getAbsolutePath.substring(pathPrefixLength))">@file.getName</a></td>
+                    <td>@{new java.util.Date(file.lastModified())}</td>
+                    <td>@{file.length() / 1024}kb</td>
+                </tr>
+            }
+        }
+        </table>
+    }
+}

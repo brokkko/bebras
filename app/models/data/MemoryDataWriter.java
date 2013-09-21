@@ -1,5 +1,7 @@
 package models.data;
 
+import play.api.templates.Html;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -29,7 +31,9 @@ public class MemoryDataWriter<T> implements AutoCloseable {
         int ind = 0;
         for (String feature : table.getFeatureNames()) {
             Object value = table.getFeature(feature, context);
-            newLine[ind++] = value == null ? "-" : value.toString();
+            newLine[ind++] = value == null ? "-" : (
+                    value instanceof Html ? value.toString() : views.html.htmlfeatures.string2html.render(value.toString()).toString()
+            );
         }
 
         list.add(newLine);

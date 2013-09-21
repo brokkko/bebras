@@ -1,3 +1,2 @@
-@(user:models.User, feature:Object)
-@*<a href="@routes.UserInfo.info()"*@
-42
+@(userId:String, eventId:String, feature:Object)
+<a href="@routes.UserInfo.info(eventId, userId)"><b>@feature</b></a>

@@ -162,4 +162,9 @@ public class ServerConfiguration {
         return domain.contains("bebras") ? "bebras13" : "bbtc"; //TODO allow to set this up
     }
 
+    public File getResource(String name) {
+        String base = "/data/_resources";
+        return new File(Play.application().getFile(base).getAbsolutePath() + "/" + name);
+    }
+
 }

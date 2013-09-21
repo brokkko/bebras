@@ -3,6 +3,7 @@
 @import views.widgets.FormsWidget
 @import models.Event
 @import scala.List
+@import java.io.File
 @main_with_menu("Администрирование " + Event.current.getTitle)(List(AdminWidget.get, FormsWidget.get)) { } {
     <h1>Администрирование мероприятия @Event.current.getTitle</h1>
 
@@ -17,15 +18,20 @@
         <input type="file" name="kenguru-codes">
         <input type="submit" value="Загрузить файл">
     </form>
+    <br>
+    @files_list(new File(Event.current.getEventDataFolder, "keng-codes"), ServerConfiguration.getInstance().getResource("school codes template.csv"))
 
     @upload_fields()
 
-    <p></p>
-
+    @*
     <h2>Данные по событию:</h2>
     @for((table, ind) <- Event.current.getTables.zipWithIndex) {
         <p>@(ind + 1). @table.getTitle: <a href="@routes.Tables.csvTable(Event.currentId, ind)">скачать</a></p>
     }
+    *@
+
+    <h2>Загруженные задания</h2>
+    @files_list(new File(Event.current.getEventDataFolder, "tasks"), ServerConfiguration.getInstance().getResource("BBTC test template.csv"))
 
     <h2>Очистка результатов</h2>
     <p>После изменения настроек процесса подведения итогов может оказаться, что уже вычисленные результаты участников более неактуальны. В этом случае
@@ -33,8 +39,10 @@
     </p>
     <p><a href="#" class='submit actions-invalidate-event-results' title="Очистить результаты события">Очистить результаты события</a></p>
     <p><a href="#" class='submit actions-invalidate-all-event-results' title="Очистить результаты события и всех соревнований">Очистить результаты события и всех соревнований</a></p>
+    <p><a href="#" class='submit submit actions-remove-all-participants' title="Удалить всех зарегистрированных участников">Удалить всех зарегистрированных участников</a></p>
     <form action="@routes.EventAdministration.doInvalidateEventResults(Event.currentId())" method="POST" class='submit actions-invalidate-event-results'></form>
     <form action="@routes.EventAdministration.doInvalidateContestsAndEventResults(Event.currentId())" method="POST" class='submit actions-invalidate-all-event-results'></form>
+    <form action="@routes.EventAdministration.doRemoveAllRegisteredByRole(Event.currentId(), "PARTICIPANT")" method="POST" class='submit actions-remove-all-participants'></form>
 
     <h2>Клонировать событие</h2>
     @models.Forms.getCloneEventForm.formatExtended(eventForm, controllers.routes.EventAdministration.doClone(Event.currentId), false, "form.do_add")

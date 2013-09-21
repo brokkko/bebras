@@ -4,9 +4,11 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import controllers.actions.Authenticated;
 import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
+import models.Event;
 import models.ServerConfiguration;
 import models.User;
 import models.Utils;
@@ -25,6 +27,7 @@ import views.html.list_events;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -139,10 +142,28 @@ public class Application extends Controller {
         return ok(resource).as(content);
     }
 
-    public static Result returnFile(String file, String base) throws IOException {
+    public static Result returnFile(String file) throws IOException {
         file = URLDecoder.decode(file, "UTF-8");
 
-        return ok(new File(Play.application().getFile(base).getAbsolutePath() + "/" + file));
+        File resource = ServerConfiguration.getInstance().getResource(file);
+
+        if (!resource.exists())
+            return notFound();
+
+        return ok(resource);
+    }
+
+    @Authenticated(admin = true)
+    @LoadEvent
+    public static Result returnDataFile(String eventId, String file) throws UnsupportedEncodingException {
+        file = URLDecoder.decode(file, "UTF-8");
+
+        File content = new File(Event.current().getEventDataFolder().getAbsolutePath() + "/" + file);
+
+        if (!content.exists())
+            return notFound();
+
+        return ok(content);
     }
 
     public static Result wymEditorUpload() {
@@ -204,4 +225,5 @@ public class Application extends Controller {
 
         return ok(list_events.render(events));
     }
+
 }

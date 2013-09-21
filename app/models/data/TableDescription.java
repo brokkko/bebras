@@ -17,6 +17,7 @@ public class TableDescription<T> implements SerializableUpdatable {
     private ObjectsProviderFactory<T> objectsProviderFactory;
     private Table<T> table;
     private String right;
+    private String filename;
 
     public TableDescription() {
     }
@@ -35,6 +36,10 @@ public class TableDescription<T> implements SerializableUpdatable {
 
     public String getRight() {
         return right;
+    }
+
+    public String getFilename() {
+        return filename;
     }
 
     @Override
@@ -70,6 +75,8 @@ public class TableDescription<T> implements SerializableUpdatable {
         }
 
         this.table = new Table<>(titles, featureNames, featuresSet);
+
+        this.filename = deserializer.readString("filename");
     }
 
     @Override
@@ -91,5 +98,8 @@ public class TableDescription<T> implements SerializableUpdatable {
 
             columnsSerializer.write(title + " -> " + featureName);
         }
+
+        if (filename != null)
+            serializer.write("filename", filename);
     }
 }

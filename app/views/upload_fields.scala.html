@@ -1,4 +1,5 @@
 @()
+@import java.io.File
 <h2>Загрузка данных пользователей</h2>
 @if(play.mvc.Controller.flash("fields-upload-ok") != null) {
     <p class='warning'>@play.mvc.Controller.flash("fields-upload-ok")</p>
@@ -10,3 +11,6 @@
     <input type="file" name="new-fields">
     <input type="submit" value="Загрузить файл">
 </form>
+
+<br>
+@files_list(new File(Event.current.getEventDataFolder, "user-data"), ServerConfiguration.getInstance().getResource("user places template.csv"))

@@ -4,6 +4,7 @@ import controllers.MongoConnection;
 import models.Event;
 import models.ServerConfiguration;
 import play.Logger;
+import play.api.templates.Html;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -16,7 +17,7 @@ import views.html.error;
 public class DcesControllerAction extends Action<DcesController> {
 
     private static final String[] NOT_EVENT_ACTION = new String[] {
-            "/~res/", "/assets/", "/~global/"
+            "/~res/", "/assets/", "/~global/", "/~dat/"
     };
 
     private boolean isEventAction() {

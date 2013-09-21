@@ -32,9 +32,14 @@ import java.util.zip.ZipOutputStream;
 @DcesController
 public class Tables extends Controller {
 
-    public static <T> Result evalCsvTable(final String fileName, final TableDescription<T> tableDescription) {
+    public static <T> Result evalCsvTable(final String defaultFileName, final TableDescription<T> tableDescription) {
         final Event currentEvent = Event.current();
         final User currentUser = User.current();
+
+        String fileName = tableDescription.getFilename();
+        if (fileName == null)
+            fileName = defaultFileName;
+        final String finalFileName = fileName;
 
         F.Promise<byte[]> promiseOfVoid = Akka.future(
                 new Callable<byte[]>() {
@@ -46,7 +51,7 @@ public class Tables extends Controller {
                                 ZipOutputStream zos = new ZipOutputStream(baos);
                                 CsvDataWriter<T> dataWriter = new CsvDataWriter<>(tableDescription.getTable(), zos, "windows-1251", ';', '"')
                         ) {
-                            zos.putNextEntry(new ZipEntry(fileName + ".csv"));
+                            zos.putNextEntry(new ZipEntry(finalFileName + ".csv"));
                             dataWriter.writeObjects(objectsProvider, new FeaturesContext(currentEvent, false));
                         }
 
@@ -60,7 +65,7 @@ public class Tables extends Controller {
                         new F.Function<byte[], Result>() {
                             public Result apply(byte[] file) {
                                 //TODO file name should be encode somehow http://stackoverflow.com/questions/93551/how-to-encode-the-filename-parameter-of-content-disposition-header-in-http
-                                response().setHeader("Content-Disposition", "attachment; filename=" + fileName + ".zip");
+                                response().setHeader("Content-Disposition", "attachment; filename=" + finalFileName + ".zip");
                                 return ok(file).as("application/zip");
                             }
                         }

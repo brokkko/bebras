@@ -1,6 +1,7 @@
 package controllers;
 
 import au.com.bytecode.opencsv.CSVReader;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -62,13 +63,20 @@ public class EventAdministration extends Controller {
         if (kenguruCodes == null)
             return badRequest(error.render("Не выбран файл для загрузки", new String[]{}));
 
-//            String fileName = kenguruCodes.getFilename();
-//            String contentType = kenguruCodes.getContentType();
         try {
             File file = kenguruCodes.getFile();
-            Path destPath = Paths.get(FileListValidator.getKenguruSchoolsFile().toURI());
+            File destFolder = Event.current().getEventDataFolder();
+            destFolder = new File(destFolder, "keng-codes");
 
-            Files.move(Paths.get(file.toURI()), destPath, StandardCopyOption.REPLACE_EXISTING);
+            destFolder.mkdir();
+
+            File destFile = new File(destFolder, kenguruCodes.getFilename());
+            Path destPath = Paths.get(destFile.getAbsolutePath());
+            String kenguruCodesDest = FileListValidator.getKenguruSchoolsFile().getAbsolutePath();
+
+            Files.copy(Paths.get(file.getAbsolutePath()), destPath, StandardCopyOption.REPLACE_EXISTING);
+            Files.move(Paths.get(file.getAbsolutePath()), Paths.get(kenguruCodesDest), StandardCopyOption.REPLACE_EXISTING);
+
             return redirect(routes.EventAdministration.admin(Event.currentId()));
         } catch (IOException e) {
             Logger.error("Failed to make a file operation", e);
@@ -86,7 +94,16 @@ public class EventAdministration extends Controller {
 
         try {
             File file = problemsFilePart.getFile();
+//            Problems.removeLinksSubtree(eventId + '/' + contestId);
             new BBTCProblemsLoader().load(file, new ProblemLink(eventId).child(contestId));
+
+            //move file
+            File destFolder = new File(Event.current().getEventDataFolder(), "tasks");
+            destFolder.mkdir();
+            File destFile = new File(destFolder, problemsFilePart.getFilename());
+
+            Files.move(Paths.get(file.getAbsolutePath()), Paths.get(destFile.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+
             return redirect(routes.ContestAdministration.contestAdmin(eventId, contestId));
         } catch (IOException e) {
             Logger.error("Failed to make a file operation", e);
@@ -185,6 +202,17 @@ public class EventAdministration extends Controller {
         cloningEvent.put("_id", newEventId);
         eventsCollection.save(cloningEvent);
 
+        //remove some staff from contests
+        try {
+            BasicDBList contests = (BasicDBList) cloningEvent.get("contests");
+            for (Object contest : contests) {
+                DBObject contestObj = (DBObject) contest;
+                contestObj.removeField("pid2name");
+                contestObj.removeField("blocks");
+            }
+        } catch (Exception ignored) {
+        }
+
         //clone user db object
         MongoSerializer userSerializer = new MongoSerializer();
         User.current().serialize(userSerializer);
@@ -253,6 +281,20 @@ public class EventAdministration extends Controller {
         );
     }
 
+    public static Result doRemoveAllRegisteredByRole(String eventId, String roleId) { //TODO generalize for other roles
+        Event event = Event.current();
+        UserRole role = event.getRole(roleId);
+        if (role.hasRight("event admin"))
+            return forbidden();
+
+        DBObject query = new BasicDBObject(User.FIELD_EVENT, eventId);
+        query.put(User.FIELD_USER_ROLE, roleId);
+
+        MongoConnection.getUsersCollection().remove(query);
+
+        return redirect(routes.EventAdministration.admin(eventId));
+    }
+
     public static Result doLoadUserFields(String eventId) {
         if (!User.currentRole().hasRight("event admin"))
             return Results.forbidden();
@@ -267,6 +309,14 @@ public class EventAdministration extends Controller {
         File fieldsFile = newFields.getFile();
         try {
             loadFileWithNewUserFields(fieldsFile);
+
+            //move file
+            File destFolder = new File(Event.current().getEventDataFolder(), "user-data");
+            destFolder.mkdir();
+            File destFile = new File(destFolder, newFields.getFilename());
+
+            Files.move(Paths.get(fieldsFile.getAbsolutePath()), Paths.get(destFile.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+
             flash("fields-upload-ok", "Данные успешно загружены");
             return redirect(routes.EventAdministration.admin(eventId));
         } catch (Exception e) {

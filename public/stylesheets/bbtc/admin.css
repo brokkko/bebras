@@ -6,3 +6,14 @@ a.submit {
     color: blue;
     text-decoration: none;
 }
+
+/*files list table*/
+
+.files-list {
+    margin-bottom: 1em;
+}
+
+.files-list td {
+    border: 1px solid black;
+    padding: 4px 8px;
+}

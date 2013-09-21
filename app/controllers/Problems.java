@@ -56,11 +56,7 @@ public class Problems extends Controller {
     }
 
     public static Result removeLink(String eventId, String path) {
-        for (String regex : new String[]{"^" + path + "/", "^" + path + "$"}) //TODO optimize two requests
-            MongoConnection.getProblemDirsCollection().remove(new BasicDBObject(
-                    "link",
-                    new BasicDBObject("$regex", regex)
-            ));
+        removeLinksSubtree(path);
 
         ProblemLink link = new ProblemLink(path);
         String parent = link.getParent();
@@ -69,6 +65,14 @@ public class Problems extends Controller {
             return redirect(routes.EventAdministration.admin(eventId));
         else
             return redirect(routes.Problems.viewFolder(eventId, parent));
+    }
+
+    public static void removeLinksSubtree(String path) {
+        for (String regex : new String[]{"^" + path + "/", "^" + path + "$"}) //TODO optimize two requests
+            MongoConnection.getProblemDirsCollection().remove(new BasicDBObject(
+                    "link",
+                    new BasicDBObject("$regex", regex)
+            ));
     }
 
     public static Result createProblem(String eventId, String folderPath) throws IllegalAccessException, InstantiationException {
