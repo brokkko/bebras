@@ -98,7 +98,7 @@ public class EventAdministration extends Controller {
             new BBTCProblemsLoader().load(file, new ProblemLink(eventId).child(contestId));
 
             //move file
-            File destFolder = new File(Event.current().getEventDataFolder(), "tasks");
+            File destFolder = new File(Event.current().getEventDataFolder(), "tasks-" + contestId);
             destFolder.mkdir();
             File destFile = new File(destFolder, problemsFilePart.getFilename());
 

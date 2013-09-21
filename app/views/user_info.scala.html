@@ -23,11 +23,17 @@
 
     @if(otherUser) {
     <div class='info-box'>
-        <table>
-            <tr><td>Примерное время последнего посещения</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getDate</b></td></tr>
-            <tr><td>IP</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getIp</b></td></tr>
-            <tr><td>UserAgent</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getUa</b></td></tr>
-        </table>
+        @defining(user.getUserActivityEntry) { ua =>
+            @if(ua == null) {
+                <p>Посещений не было</p>
+            } else {
+                <table>
+                    <tr><td>Последнее посещение</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@ua.getDate</b></td></tr>
+                    <tr><td>ip</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getIp</b></td></tr>
+                    <tr><td>user agent</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getUa</b></td></tr>
+                </table>
+            }
+        }
     </div>
     }
 

@@ -4,6 +4,7 @@
 @import views.widgets.CssJsWidget
 @import models.newproblems.ProblemLink
 @import scala.List
+@import java.io.File
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get(), CssJsWidget.get("admin"))) { } {
     <h1>Администрирование соревнования @contest.getName</h1>
 
@@ -25,6 +26,8 @@
         <input type="file" name="problem-set">
         <input type="submit" value="Загрузить файл">
     </form>
+    <br>
+    @files_list(new File(Event.current.getEventDataFolder, "tasks-" + contest.getId), ServerConfiguration.getInstance().getResource("BBTC test template.csv"))
 
     <h1>Набор заданий</h1>
 
