@@ -200,7 +200,6 @@ public class EventAdministration extends Controller {
         DBCollection eventsCollection = MongoConnection.getEventsCollection();
         DBObject cloningEvent = eventsCollection.findOne(new BasicDBObject("_id", eventId));
         cloningEvent.put("_id", newEventId);
-        eventsCollection.save(cloningEvent);
 
         //remove some staff from contests
         try {
@@ -213,12 +212,15 @@ public class EventAdministration extends Controller {
         } catch (Exception ignored) {
         }
 
+        eventsCollection.save(cloningEvent);
+
         //clone user db object
         MongoSerializer userSerializer = new MongoSerializer();
         User.current().serialize(userSerializer);
         DBObject userObject = userSerializer.getObject();
         userObject.put(User.FIELD_EVENT, newEventId);
         userObject.removeField("_id");
+        userObject.put("_contests", new BasicDBObject());rt
         MongoConnection.getUsersCollection().save(userObject);
 
         Event.invalidateCache(newEventId);
