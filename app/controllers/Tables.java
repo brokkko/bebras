@@ -11,6 +11,7 @@ import models.data.*;
 import models.forms.RawForm;
 import play.libs.Akka;
 import play.libs.F;
+import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.tables_list;
@@ -35,7 +36,7 @@ import java.util.zip.ZipOutputStream;
 @DcesController
 public class Tables extends Controller {
 
-    public static <T> Result evalCsvTable(final String defaultFileName, final TableDescription<T> tableDescription) {
+    public static <T> Result evalCsvTable(final String defaultFileName, final TableDescription<T> tableDescription, final Call currentCall) {
         final Event currentEvent = Event.current();
         final User currentUser = User.current();
 
@@ -57,7 +58,7 @@ public class Tables extends Controller {
                                 CsvDataWriter<T> dataWriter = new CsvDataWriter<>(tableDescription.getTable(), zos, "windows-1251", ';', '"')
                         ) {
                             zos.putNextEntry(new ZipEntry(finalFileName + ".csv"));
-                            dataWriter.writeObjects(objectsProvider, new FeaturesContext(currentEvent, false));
+                            dataWriter.writeObjects(objectsProvider, new FeaturesContext(currentEvent, false, currentCall));
                         }
 
                         return baos.toByteArray();
@@ -132,7 +133,7 @@ public class Tables extends Controller {
                                 ObjectsProvider objectsProvider = objectsProviderFactory.get(currentEvent, currentUser, searchFields, searchValues);
                                 MemoryDataWriter dataWriter = new MemoryDataWriter(tableDescription.getTable(), finalFullTextSearch, finalInside)
                         ) {
-                            dataWriter.writeObjects(objectsProvider, new FeaturesContext(currentEvent, true));
+                            dataWriter.writeObjects(objectsProvider, new FeaturesContext(currentEvent, true, routes.Tables.showTable(eventId, tableIndex)));
 
                             return dataWriter;
                         }
@@ -168,7 +169,7 @@ public class Tables extends Controller {
         if (!User.currentRole().hasRight(tableDescription.getRight()))
             return forbidden();
 
-        return evalCsvTable("table" + tableIndex + "-" + eventId, tableDescription);
+        return evalCsvTable("table" + tableIndex + "-" + eventId, tableDescription, routes.Tables.csvTable(eventId, tableIndex));
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -179,7 +180,11 @@ public class Tables extends Controller {
         if (tableDescription == null)
             return notFound("table not found");
 
-        return evalCsvTable("table" + tableIndex + "-" + eventId + "-" + contestId, tableDescription);
+        return evalCsvTable(
+                "table" + tableIndex + "-" + eventId + "-" + contestId,
+                tableDescription,
+                routes.Tables.csvTableForContest(eventId, contestId, tableIndex)
+        );
     }
 
     public static Result tablesList(String eventId) {

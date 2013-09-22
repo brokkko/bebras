@@ -4,6 +4,7 @@ import models.User;
 import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.data.FunctionFeaturesSet;
+import models.data.WrappedFeatureValue;
 import org.bson.types.ObjectId;
 
 /**
@@ -31,11 +32,25 @@ public class UserActionsFeatures extends FunctionFeaturesSet<User> {
             return feature;
 
         if (feature == null)
-            feature = "-";
+            feature = new WrappedFeatureValue(null, "-");
 
         switch (function) {
-            case "view":
-                return views.html.htmlfeatures.user_link.render(userId.toString(), context.getEvent().getId(), feature);
+            case "view": //TODO such wrapping of features does not allow to make full text search
+                return new WrappedFeatureValue(
+                        feature,
+                        views.html.htmlfeatures.user_link.render(userId.toString(), context.getEvent().getId(), feature)
+                );
+            case "remove":
+                return new WrappedFeatureValue(
+                        feature,
+                        views.html.htmlfeatures.action.render(
+                                "remove-user-" + userId,
+                                "Удалить пользователя",
+                                controllers.routes.EventAdministration.removeUser(context.getEvent().getId(), userId.toString()),
+                                context.getCurrentCall(),
+                                feature
+                        )
+                );
         }
 
         return feature;

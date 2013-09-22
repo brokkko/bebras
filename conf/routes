@@ -56,6 +56,7 @@ POST        /:event/invalidate_event_results                     controllers.Eve
 POST        /:event/:role/remove_registered                      controllers.EventAdministration.doRemoveAllRegisteredByRole(event, role)
 POST        /:event/invalidate_contests_and_event_results        controllers.EventAdministration.doInvalidateContestsAndEventResults(event)
 POST        /:event/load_user_fields                             controllers.EventAdministration.doLoadUserFields(event)
+POST        /:event/:user/remove_user                            controllers.EventAdministration.removeUser(event, user)
 
 #html block
 POST        /~global/:block/set_html_block                       controllers.Application.setGlobalHtmlBlock(block)

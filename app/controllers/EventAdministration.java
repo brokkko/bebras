@@ -347,4 +347,15 @@ public class EventAdministration extends Controller {
             user.invalidateAllResults();
         }
     }
+
+    public static Result removeUser(String eventId, String userId) {
+        RawForm form = new RawForm();
+        form.bindFromRequest();
+        String returnTo = form.get("-return-to");
+
+        DBObject query = new BasicDBObject("_id", new ObjectId(userId));
+        query.put("event_id", eventId); //for any case, ensure not to delete a user from another event
+        MongoConnection.getUsersCollection().remove(query);
+        return redirect(returnTo);
+    }
 }

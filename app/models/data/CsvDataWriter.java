@@ -56,7 +56,10 @@ public class CsvDataWriter<T> implements AutoCloseable {
         int ind = 0;
         for (String feature : table.getFeatureNames()) {
             Object value = table.getFeature(feature, context);
-            newLine[ind++] = value == null ? "" : value.toString();
+            if (value == null)
+                newLine[ind++] = "";
+            else
+                newLine[ind++] = value instanceof WrappedFeatureValue ? ((WrappedFeatureValue) value).getOutputValue().toString() : value.toString();
         }
         out.writeNext(newLine);
     }

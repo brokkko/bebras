@@ -3,6 +3,7 @@ package models.data.features;
 import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.data.FunctionFeaturesSet;
+import models.data.WrappedFeatureValue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,14 +19,15 @@ public class ExcelFeatures<T> extends FunctionFeaturesSet<T> {
 
     @Override
     protected Object function(String function, Object feature, FeaturesContext context) {
+        if (context.isScreen())
+            return feature;
+
         if (feature == null)
             return null;
 
         switch (function) {
             case "=":
-                if (context.isScreen())
-                    return feature;
-                return "=\"" + feature + "\"";
+                return new WrappedFeatureValue(feature, "=\"" + feature + "\"");
             default:
                 return "unknown excel feature";
         }

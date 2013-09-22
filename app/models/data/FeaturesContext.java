@@ -1,6 +1,7 @@
 package models.data;
 
 import models.Event;
+import play.mvc.Call;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,12 +12,13 @@ import models.Event;
 public class FeaturesContext {
 
     private Event event;
-
     private boolean screen;
+    private Call currentCall;
 
-    public FeaturesContext(Event event, boolean screen) {
+    public FeaturesContext(Event event, boolean screen, Call currentCall) {
         this.event = event;
         this.screen = screen;
+        this.currentCall = currentCall;
     }
 
     public Event getEvent() {
@@ -25,5 +27,9 @@ public class FeaturesContext {
 
     public boolean isScreen() {
         return screen;
+    }
+
+    public Call getCurrentCall() {
+        return currentCall;
     }
 }

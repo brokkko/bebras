@@ -1,8 +1,9 @@
-@(titles:java.util.List[String], data:java.util.List[Array[String]], tableIndex:Int,
+@(titles:java.util.List[String], data:java.util.List[Array[Object]], tableIndex:Int,
         searchTitles:java.util.List[String], searchFields:java.util.List[String], searchValues:java.util.List[String],
         fullTextSearchValue:String, inside:Boolean)
 @import views.widgets.ResourceLink
-@main_with_menu(Event.current.getTitle)(scala.List(new ResourceLink("tables.css"))) { } {
+@import views.widgets.AdminWidget
+@main_with_menu(Event.current.getTitle)(scala.List(new ResourceLink("tables.css"), AdminWidget.get)) { } {
     <p><a href="@routes.Tables.csvTable(Event.currentId, tableIndex)">загрузить csv</a></p>
 
     @*<table>
@@ -53,7 +54,7 @@
         <p class='warning'>Данных нет</p>
     } else {
         <div class='data-table'>
-            @for((line, line_ind) <- data.zipWithIndex) {<div class='dl'><div class='de' title='№'><b>@(line_ind + 1)</b></div>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@Html(element)</div>}</div>}
+            @for((line, line_ind) <- data.zipWithIndex) {<div class='dl'><div class='de' title='№'><b>@(line_ind + 1)</b></div>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@element</div>}</div>}
         </div>
     }
 }

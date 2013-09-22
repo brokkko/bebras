@@ -1,0 +1,5 @@
+@(action:String, actionTitle:String, actionCall:play.mvc.Call, returnCall:play.mvc.Call, feature:Object)
+<form class='submit actions-@action' method="POST" action="@actionCall">
+    <input type='hidden' value='@returnCall' name='-return-to'>
+</form>
+<a class='submit actions-@action' href="#" title='@actionTitle'>@feature</a>

@@ -21,7 +21,7 @@ public class MemoryDataWriter<T> implements AutoCloseable {
     private String fullTextSearch;
     private boolean inside;
 
-    private final List<String[]> list = new ArrayList<>(MAX_SIZE);
+    private final List<Object[]> list = new ArrayList<>(MAX_SIZE);
 
     public MemoryDataWriter(Table<T> table, String fullTextSearch, boolean inside) {
         this.table = table;
@@ -32,14 +32,20 @@ public class MemoryDataWriter<T> implements AutoCloseable {
     private void writeObject(T object, FeaturesContext context) throws Exception {
         table.load(object);
 
-        String[] newLine = new String[table.getFeaturesCount()];
+        Object[] newLine = new Object[table.getFeaturesCount()];
         int ind = 0;
         boolean needLine = fullTextSearch == null;
         for (String feature : table.getFeatureNames()) {
             Object value = table.getFeature(feature, context);
-            newLine[ind++] = value == null ? "-" : (
-                    value instanceof Html ? value.toString() : views.html.htmlfeatures.string2html.render(value.toString()).toString()
-            );
+            Object outputValue = value;
+
+            if (value != null && value instanceof WrappedFeatureValue) {
+                outputValue = ((WrappedFeatureValue) value).getOutputValue();
+                value = ((WrappedFeatureValue) value).getValue();
+            }
+
+            newLine[ind++] = outputValue == null ? "-" : outputValue;
+
             if (!needLine && value != null) //TODO report great idea feature. fullTextSearch != null as a second condition is marked as always true!!!
             {
                 String testValue = value.toString().toLowerCase();
@@ -63,7 +69,7 @@ public class MemoryDataWriter<T> implements AutoCloseable {
     public void close() throws Exception {
     }
 
-    public List<String[]> getList() {
+    public List<Object[]> getList() {
         return list;
     }
 }
