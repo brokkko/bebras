@@ -32,3 +32,51 @@
 .data-table a:hover {
     text-decoration: underline;
 }
+
+/*data search*/
+
+.data-search-table td:first-child {
+    padding: 2px 0.5em 2px 2px;
+}
+
+.data-search-table input {
+    border: 1px solid #a40005;
+    font-size: 1em;
+    margin: 2px 0;
+}
+
+.data-search-table input[type="submit"] {
+    background-color: #5B5E35;
+    color: white;
+    border: #ffeca8 1px solid;
+    cursor: pointer;
+    padding: 4px 6px;
+    margin: 4px 0;
+    font-size: 1em;
+}
+
+.data-search-table input[type="submit"]:hover {
+    color: #ffeca8;
+}
+
+.fast-search {
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.universal-search {
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.data-search-table input.long {
+    width: 100%;
+}

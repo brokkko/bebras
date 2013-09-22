@@ -6,6 +6,8 @@ import models.User;
 import models.newserialization.SerializableUpdatable;
 import play.mvc.Call;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
@@ -14,8 +16,12 @@ import play.mvc.Call;
  */
 public interface ObjectsProviderFactory<T> extends SerializableUpdatable {
 
-    ObjectsProvider<T> get(Event currentEvent, User currentUser);
+    ObjectsProvider<T> get(Event currentEvent, User currentUser, List<String> searchFields, List<String> searchValues);
 
     Class<T> getObjectsClass();
+
+    List<String> getFields();
+
+    List<String> getTitles();
 
 }

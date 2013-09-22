@@ -8,6 +8,7 @@ import models.Contest;
 import models.Event;
 import models.User;
 import models.data.*;
+import models.forms.RawForm;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
@@ -16,6 +17,8 @@ import views.html.tables_list;
 import views.html.view_table;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
@@ -41,13 +44,15 @@ public class Tables extends Controller {
             fileName = defaultFileName;
         final String finalFileName = fileName;
 
+        final List<String> el = Collections.emptyList();
+
         F.Promise<byte[]> promiseOfVoid = Akka.future(
                 new Callable<byte[]>() {
                     public byte[] call() throws Exception {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                         try (
-                                ObjectsProvider<T> objectsProvider = tableDescription.getObjectsProviderFactory().get(currentEvent, currentUser);
+                                ObjectsProvider<T> objectsProvider = tableDescription.getObjectsProviderFactory().get(currentEvent, currentUser, el, el);
                                 ZipOutputStream zos = new ZipOutputStream(baos);
                                 CsvDataWriter<T> dataWriter = new CsvDataWriter<>(tableDescription.getTable(), zos, "windows-1251", ';', '"')
                         ) {
@@ -84,13 +89,48 @@ public class Tables extends Controller {
         final Event currentEvent = Event.current();
         final User currentUser = User.current();
 
+        final ObjectsProviderFactory objectsProviderFactory = tableDescription.getObjectsProviderFactory();
+
+        final List<String> searchFields = new ArrayList<>();
+        final List<String> searchValues = new ArrayList<>();
+        final List<String> allSearchValues;
+
+        final List<String> allSearchFields = objectsProviderFactory.getFields();
+
+        String fullTextSearch = null; //null means no full text search
+        boolean inside = true;
+
+        if (request().method().equals("POST")) {
+            allSearchValues = new ArrayList<>();
+            RawForm form = new RawForm();
+            form.bindFromRequest();
+
+            for (String searchField : allSearchFields) {
+                String searchValue = form.get(searchField);
+                allSearchValues.add(searchValue == null ? "" : searchValue);
+                if (searchValue == null || searchValue.isEmpty())
+                    continue;
+                searchFields.add(searchField);
+                searchValues.add(searchValue);
+            }
+
+            fullTextSearch = form.get("-full-text-search");
+            inside = !"1".equals(form.get("-full-text-search-inside"));
+            if ("".equals(fullTextSearch))
+                fullTextSearch = null;
+        } else
+            allSearchValues = Collections.nCopies(allSearchFields.size(), "");
+
+        final String finalFullTextSearch = fullTextSearch;
+        final boolean finalInside = inside;
+
         F.Promise<MemoryDataWriter> promiseOfVoid = Akka.future(
                 new Callable<MemoryDataWriter>() {
                     public MemoryDataWriter call() throws Exception {
 
                         try (
-                                ObjectsProvider objectsProvider = tableDescription.getObjectsProviderFactory().get(currentEvent, currentUser);
-                                MemoryDataWriter dataWriter = new MemoryDataWriter(tableDescription.getTable())
+                                ObjectsProvider objectsProvider = objectsProviderFactory.get(currentEvent, currentUser, searchFields, searchValues);
+                                MemoryDataWriter dataWriter = new MemoryDataWriter(tableDescription.getTable(), finalFullTextSearch, finalInside)
                         ) {
                             dataWriter.writeObjects(objectsProvider, new FeaturesContext(currentEvent, true));
 
@@ -104,7 +144,14 @@ public class Tables extends Controller {
                 promiseOfVoid.map(
                         new F.Function<MemoryDataWriter, Result>() {
                             public Result apply(MemoryDataWriter dataWriter) {
-                                return ok(view_table.render(tableDescription.getTable().getTitles(), dataWriter.getList(), tableIndex));
+                                return ok(view_table.render(
+                                        tableDescription.getTable().getTitles(), dataWriter.getList(), tableIndex,
+                                        objectsProviderFactory.getTitles(),
+                                        objectsProviderFactory.getFields(),
+                                        allSearchValues,
+                                        finalFullTextSearch == null ? "" : finalFullTextSearch,
+                                        finalInside
+                                ));
                             }
                         }
                 )

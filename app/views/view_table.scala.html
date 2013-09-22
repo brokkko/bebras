@@ -1,7 +1,9 @@
-@(titles:java.util.List[String], data:java.util.List[Array[String]], index:Int)
+@(titles:java.util.List[String], data:java.util.List[Array[String]], tableIndex:Int,
+        searchTitles:java.util.List[String], searchFields:java.util.List[String], searchValues:java.util.List[String],
+        fullTextSearchValue:String, inside:Boolean)
 @import views.widgets.ResourceLink
 @main_with_menu(Event.current.getTitle)(scala.List(new ResourceLink("tables.css"))) { } {
-    <p><a href="@routes.Tables.csvTable(Event.currentId, index)">загрузить csv</a></p>
+    <p><a href="@routes.Tables.csvTable(Event.currentId, tableIndex)">загрузить csv</a></p>
 
     @*<table>
         <thead><tr>
@@ -20,7 +22,38 @@
     </tbody>
     </table>*@
 
-    <div class='data-table'>
-    @for((line, line_ind) <- data.zipWithIndex) {<div class='dl'><div class='de' title='№'><b>@(line_ind + 1)</b></div>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@Html(element)</div>}</div>}
+    @*display search table*@
+    <div class='fast-search'>
+        <h2>Поиск</h2>
+
+        <form method="post" class='data-search-table'>
+            <table>
+            @for((sf, si) <- searchFields.zipWithIndex) {
+                <tr>
+                    <td><label for="t@tableIndex-@sf">@searchTitles(si)</label></td>
+                    <td><input id='t@tableIndex-@sf' type='text' name='@sf' value='@searchValues(si)'></td>
+                </tr>
+            }
+            </table>
+            <input type='submit' value='Искать'>
+        </form>
+    </div>@* no space here *@<div class='universal-search'>
+        <h2>Полнотекстовый поиск</h2>
+
+        <form method="post" class='data-search-table'>
+            <input class='long' type='text' name='-full-text-search' value='@fullTextSearchValue' autofocus="autofocus">
+            <input type='submit' value='Искать'>&nbsp;&nbsp;&nbsp;&nbsp;<input name='-full-text-search-inside' type='checkbox' value="1"@if(!inside){ checked}>&nbsp;только полные совпадения
+        </form>
+        <p class='warning'>* этот вид поиска универсален, но работает медленно</p>
     </div>
+
+    <br>
+
+    @if(data.size() == 0) {
+        <p class='warning'>Данных нет</p>
+    } else {
+        <div class='data-table'>
+            @for((line, line_ind) <- data.zipWithIndex) {<div class='dl'><div class='de' title='№'><b>@(line_ind + 1)</b></div>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@Html(element)</div>}</div>}
+        </div>
+    }
 }
