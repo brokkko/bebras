@@ -1,5 +1,6 @@
 package models.data.features;
 
+import models.Utils;
 import models.applications.Application;
 import models.applications.ApplicationWithUser;
 import models.data.FeaturesContext;
@@ -7,6 +8,7 @@ import models.data.FeaturesSet;
 import models.data.WrappedFeatureValue;
 import play.api.templates.Html;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -16,6 +18,8 @@ import java.util.Date;
  * Time: 11:25
  */
 public class ApplicationsFeatures implements FeaturesSet<ApplicationWithUser> {
+
+    public static final SimpleDateFormat createdDateTimeFormat = new SimpleDateFormat("d.MM.YY HH:mm");
 
     private ApplicationWithUser applicationWithUser;
 
@@ -61,7 +65,7 @@ public class ApplicationsFeatures implements FeaturesSet<ApplicationWithUser> {
                 return "" + application.getSize();
             case "created":
                 Date created = application.getCreated();
-                return created == null ? "недоступно" : created.toString();
+                return created == null ? "недоступно" : createdDateTimeFormat.format(created);
             case "state":
                 if (state == Application.NEW)
                     return "новая";
