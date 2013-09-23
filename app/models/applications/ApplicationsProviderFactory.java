@@ -39,7 +39,7 @@ public class ApplicationsProviderFactory implements ObjectsProviderFactory<Appli
                     } catch (NumberFormatException ignored) {
                     }
                     break;
-                case "name":
+                case "code":
                     name = value;
                     break;
                 case "login":

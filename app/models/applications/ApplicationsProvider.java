@@ -29,6 +29,7 @@ public class ApplicationsProvider implements ObjectsProvider<ApplicationWithUser
     private DBCursor cursor;
     private ListDeserializer currentUserApplications = null;
     private int state;
+    private String name;
 
     private ApplicationWithUser nextApplication;
     private String nextLogin;
@@ -37,6 +38,7 @@ public class ApplicationsProvider implements ObjectsProvider<ApplicationWithUser
     //negative state means all states
     public ApplicationsProvider(Event currentEvent, User currentUser, String role, int state, String name, String login) {
         this.state = state;
+        this.name = name;
 
         BasicDBObject query = new BasicDBObject(User.FIELD_EVENT, currentEvent.getId());
         query.put(User.FIELD_USER_ROLE, role);
@@ -99,6 +101,9 @@ public class ApplicationsProvider implements ObjectsProvider<ApplicationWithUser
             Application nextApplication = APPLICATION_SERIALIZATION_TYPE.read(currentUserApplications);
 
             if (state >= 0 && nextApplication.getState() != state)
+                continue;
+
+            if (name != null && !name.equals(nextApplication.getName()))
                 continue;
 
             this.nextApplication = new ApplicationWithUser(nextApplication, nextUserId, nextLogin);

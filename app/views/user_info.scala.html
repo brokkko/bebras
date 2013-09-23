@@ -37,7 +37,14 @@
     </div>
     }
 
-    @if(user.getRole.getName == "SCHOOL_ORG") {
-        <div class='info-box'>Здесь будет информация о заявках школьного организатора</div>
+    @if(user.getRole.getName == "SCHOOL_ORG") { <!-- TODO this role is hardcoded -->
+        <div class='info-box'><!-- TODO this link to search is hardcoded, need to allow showing arbitrary tables in arbitrary pages -->
+            <p>Заявки школького организатора:
+            <form action="@routes.Tables.showTable(Event.currentId, 2)" method="post">
+                <input type='hidden' value="@user.getLogin" name="login">
+                <input type='submit' value='Просмотр'>
+            </form>
+            </p>
+        </div>
     }
 }

@@ -5,7 +5,6 @@ import models.applications.ApplicationWithUser;
 import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.data.WrappedFeatureValue;
-import play.mvc.Call;
 import play.api.templates.Html;
 
 import java.util.Date;
@@ -43,6 +42,7 @@ public class ApplicationsFeatures implements FeaturesSet<ApplicationWithUser> {
                 return new WrappedFeatureValue("-", views.html.htmlfeatures.action.render(
                         "confirm-" + userId + "-" + applicationName,
                         state == Application.CONFIRMED ? "Отменить подтверждение заявки" : "Подтвердить заявку",
+                        //TODO allow plugins provide tables and thus remove hardcoded "apps" as a ref to plugin
                         controllers.routes.Plugins.doPost(context.getEvent().getId(), "apps", "confirm_app", userId + "/" + applicationName + "/"),
                         context.getCurrentCall(),
                         state == Application.CONFIRMED ? "отменить подтверждение" : "подтвердить"
@@ -50,7 +50,11 @@ public class ApplicationsFeatures implements FeaturesSet<ApplicationWithUser> {
             case "id":
                 return userId;
             case "login":
-                return applicationWithUser.getLogin();
+                String login = applicationWithUser.getLogin();
+                return new WrappedFeatureValue(
+                        login,
+                        views.html.htmlfeatures.user_link.render(userId, context.getEvent().getId(), login)
+                );
             case "name":
                 return applicationName;
             case "size":

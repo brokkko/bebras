@@ -35,7 +35,7 @@ public class UserActionsFeatures extends FunctionFeaturesSet<User> {
             feature = new WrappedFeatureValue(null, "-");
 
         switch (function) {
-            case "view": //TODO such wrapping of features does not allow to make full text search
+            case "view":
                 return new WrappedFeatureValue(
                         feature,
                         views.html.htmlfeatures.user_link.render(userId.toString(), context.getEvent().getId(), feature)
