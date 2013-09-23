@@ -21,6 +21,11 @@ $(function() {
         if (payment == null || payment == "")
             return false;
 
-        return confirm("Подтвердите оплату: " + payment);
+        if (!confirm("Подтвердите оплату: " + payment))
+            return false;
+
+        $(this).parents('form').find('.payment-comment').val(payment);
+
+        return true;
     });
 });

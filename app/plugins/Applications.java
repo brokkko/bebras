@@ -124,13 +124,19 @@ public class Applications extends Plugin {
                 return addApplication();
             case "do_payment":
                 return doPayment(params);
+            case "confirm_app":
+                return confirmApplication(params);
         }
 
         return Controller.notFound();
     }
 
     private Application getApplicationByName(String name) {
-        List<Application> applications = getApplications(User.current());
+        return getApplicationByName(name, User.current());
+    }
+
+    private Application getApplicationByName(String name, User user) {
+        List<Application> applications = getApplications(user);
 
         for (Application application : applications)
             if (application.getName().equals(name))
@@ -217,6 +223,10 @@ public class Applications extends Plugin {
     }
 
     private Result doPayment(String name) {
+        RawForm form = new RawForm();
+        form.bindFromRequest();
+        String comment = form.get("comment");
+
         Application application = getApplicationByName(name);
         if (application == null)
             return Controller.notFound();
@@ -227,9 +237,45 @@ public class Applications extends Plugin {
             return result;
 
         application.setState(Application.PAYED);
+        application.setComment(comment);
         User.current().store();
 
         return result;
+    }
+
+    private Result confirmApplication(String params) {
+        RawForm form = new RawForm();
+        form.bindFromRequest();
+        String returnTo = form.get("-return-to");
+
+        String[] userAndName = params.split("/");
+        if (userAndName.length != 2)
+            return Controller.badRequest();
+
+        try {
+            String userId = userAndName[0];
+            String appName = userAndName[1];
+
+            User user = User.getInstance("_id", new ObjectId(userId));
+
+            Application application = getApplicationByName(appName, user);
+
+            if (application == null)
+                return Controller.notFound();
+
+            int state = application.getState();
+            if (state == Application.NEW)
+                return Controller.badRequest();
+
+            application.setState(state == Application.CONFIRMED ? Application.PAYED : Application.CONFIRMED);
+
+            user.store();
+
+        } catch (IllegalArgumentException ignored) { //failed to instantiate Object id
+            return Controller.badRequest();
+        }
+
+        return Controller.redirect(returnTo);
     }
 
     private Result removeApplication(String name) {

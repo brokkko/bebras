@@ -1,27 +1,10 @@
-@(titles:java.util.List[String], data:java.util.List[Array[Object]], tableIndex:Int,
+@(titles:java.util.List[String], data:java.util.List[Array[Object]], tableIndex:Int, viewAsTable:Boolean,
         searchTitles:java.util.List[String], searchFields:java.util.List[String], searchValues:java.util.List[String],
         fullTextSearchValue:String, inside:Boolean)
 @import views.widgets.ResourceLink
 @import views.widgets.AdminWidget
 @main_with_menu(Event.current.getTitle)(scala.List(new ResourceLink("tables.css"), AdminWidget.get)) { } {
     <p><a href="@routes.Tables.csvTable(Event.currentId, tableIndex)">загрузить csv</a></p>
-
-    @*<table>
-        <thead><tr>
-        @for(title <- titles) {
-            <td>@title</td>
-        }
-        </tr></thead>
-    <tbody>
-    @for(line <- data) {
-        <tr>
-        @for(element <- line) {
-            <td style="border: 1px solid black">@element</td>
-        }
-        </tr>
-    }
-    </tbody>
-    </table>*@
 
     @*display search table*@
     <div class='fast-search'>
@@ -37,6 +20,8 @@
             }
             </table>
             <input type='submit' value='Искать'>
+            &nbsp;&nbsp;&nbsp;
+            <a href='@routes.Tables.showTable(Event.currentId, tableIndex)'>Очистить</a>
         </form>
     </div>@* no space here *@<div class='universal-search'>
         <h2>Полнотекстовый поиск</h2>
@@ -53,8 +38,27 @@
     @if(data.size() == 0) {
         <p class='warning'>Данных нет</p>
     } else {
-        <div class='data-table'>
-            @for((line, line_ind) <- data.zipWithIndex) {<div class='dl'><div class='de' title='№'><b>@(line_ind + 1)</b></div>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@element</div>}</div>}
-        </div>
+        @if(viewAsTable) {
+            <table class='data-table'>
+                <thead><tr>
+                @for(title <- titles) {
+                    <td>@title</td>
+                }
+                </tr></thead>
+                <tbody>
+                @for(line <- data) {
+                    <tr>
+                    @for(element <- line) {
+                        <td>@element</td>
+                    }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        } else {
+            <div class='data-table'>
+                @for((line, line_ind) <- data.zipWithIndex) {<div class='dl'><div class='de' title='№'><b>@(line_ind + 1)</b></div>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@element</div>}</div>}
+            </div>
+        }
     }
 }

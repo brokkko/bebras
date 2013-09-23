@@ -18,6 +18,7 @@ public class TableDescription<T> implements SerializableUpdatable {
     private Table<T> table;
     private String right;
     private String filename;
+    private boolean showAsTable; //false by default
 
     public TableDescription() {
     }
@@ -40,6 +41,10 @@ public class TableDescription<T> implements SerializableUpdatable {
 
     public String getFilename() {
         return filename;
+    }
+
+    public boolean isShowAsTable() {
+        return showAsTable;
     }
 
     @Override
@@ -77,6 +82,8 @@ public class TableDescription<T> implements SerializableUpdatable {
         this.table = new Table<>(titles, featureNames, featuresSet);
 
         this.filename = deserializer.readString("filename");
+
+        this.showAsTable = deserializer.readBoolean("show as table", false);
     }
 
     @Override
@@ -101,5 +108,8 @@ public class TableDescription<T> implements SerializableUpdatable {
 
         if (filename != null)
             serializer.write("filename", filename);
+
+        if (showAsTable)
+            serializer.write("show as table", showAsTable);
     }
 }

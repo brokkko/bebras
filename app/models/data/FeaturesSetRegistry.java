@@ -1,6 +1,7 @@
 package models.data;
 
 import models.User;
+import models.applications.ApplicationWithUser;
 import models.data.features.*;
 
 /**
@@ -26,6 +27,9 @@ public class FeaturesSetRegistry {
             set.register("contest", (FeaturesSet<T>) new ContestHistoryFeatures());
             set.register("user_action", (FeaturesSet<T>) new UserActionsFeatures((FeaturesSet<User>) set));
         }
+
+        if (clazz.equals(ApplicationWithUser.class))
+            set.register("app", (FeaturesSet<T>) new ApplicationsFeatures());
 
         set.register("substring", new SubstringFunctionFeatures(set));
         set.register("const", new ConstFunctionFeatures());

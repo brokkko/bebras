@@ -50,6 +50,7 @@ public class Application implements SerializableUpdatable {
         this.number = number;
         this.size = size;
         this.kio = kio;
+        this.created = new Date();
     }
 
     public String getName() {
@@ -74,6 +75,10 @@ public class Application implements SerializableUpdatable {
 
     public String getComment() {
         return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public int getNumber() {

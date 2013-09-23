@@ -1,5 +1,6 @@
 package models.data;
 
+import models.applications.ApplicationsProviderFactory;
 import models.newserialization.SerializableTreeSerializationType;
 
 /**
@@ -12,6 +13,7 @@ public class ObjectsProviderFactorySerializationType extends SerializableTreeSer
 
     public ObjectsProviderFactorySerializationType() {
         registerClass("users", UsersProviderFactory.class);
+        registerClass("apps", ApplicationsProviderFactory.class);
     }
 
 }

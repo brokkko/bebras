@@ -40,7 +40,7 @@
                         @application.getState match {
                             case 0 => {-}
                             case 1 => {+}
-                            case 2 => {Подтврждено}
+                            case 2 => {@*Подтврждено*@&#x2714;}
                         }
                     </td>
                     <td>@plugin.getKvitHtml(User.current, application)</td>
@@ -50,6 +50,7 @@
                         } else {
                             <form method="POST" action="@plugin.getDoPayCall(application.getName)">
                                 <input type='submit' class='input-payment form-button small' value='Ввести'>
+                                <input type='hidden' class='payment-comment' name='comment'>
                             </form>
                         }
                     </td>

@@ -146,7 +146,7 @@ public class Tables extends Controller {
                         new F.Function<MemoryDataWriter, Result>() {
                             public Result apply(MemoryDataWriter dataWriter) {
                                 return ok(view_table.render(
-                                        tableDescription.getTable().getTitles(), dataWriter.getList(), tableIndex,
+                                        tableDescription.getTable().getTitles(), dataWriter.getList(), tableIndex, tableDescription.isShowAsTable(),
                                         objectsProviderFactory.getTitles(),
                                         objectsProviderFactory.getFields(),
                                         allSearchValues,
