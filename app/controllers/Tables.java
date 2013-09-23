@@ -161,7 +161,7 @@ public class Tables extends Controller {
 
     @SuppressWarnings("UnusedParameters")
     public static Result csvTable(final String eventId, final Integer tableIndex) throws Exception {
-        TableDescription tableDescription = Event.current().getTable(tableIndex);
+        TableDescription tableDescription = User.current().getTables().get(tableIndex);
 
         if (tableDescription == null)
             return notFound("table not found");

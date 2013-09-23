@@ -55,6 +55,8 @@ public class ApplicationsFeatures implements FeaturesSet<ApplicationWithUser> {
                 return userId;
             case "login":
                 String login = applicationWithUser.getLogin();
+                if (!context.isScreen())
+                    return login;
                 return new WrappedFeatureValue(
                         login,
                         views.html.htmlfeatures.user_link.render(userId, context.getEvent().getId(), login)
