@@ -63,6 +63,7 @@ table.data-table thead td {
     border: 1px solid #a40005;
     font-size: 1em;
     margin: 2px 0;
+    padding: 0 4px;
 }
 
 .data-search-table input[type="submit"] {

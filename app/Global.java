@@ -20,8 +20,6 @@ public class Global extends GlobalSettings {
 
     @Override
     public void onStart(Application app) {
-        //TODO move problem sources mount to configuration
-        //TODO allow uploading of files to mount
     }
 
     @Override
