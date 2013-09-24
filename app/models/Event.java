@@ -14,7 +14,6 @@ import models.results.Translator;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
-import play.mvc.Call;
 import play.mvc.Http;
 import plugins.Plugin;
 import views.htmlblocks.HtmlBlock;

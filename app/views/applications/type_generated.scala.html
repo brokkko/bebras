@@ -1,4 +1,4 @@
-@(app:models.applications.Application, plugin:plugins.Applications)
+@(app:models.applications.Application, plugin:plugins.Applications, kvit:models.applications.Kvit)
 @import plugins.Applications
 @import models.applications.Application
 <a href="@plugin.getPdfKvitCall(app.getName)">PDF</a> | <a href="@plugin.getKvitCall(app.getName)">Текст</a>

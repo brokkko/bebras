@@ -4,6 +4,7 @@ import models.Event;
 import models.User;
 import models.Utils;
 import models.applications.Application;
+import models.applications.Kvit;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newserialization.FormDeserializer;
@@ -18,7 +19,6 @@ import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.Menu;
-import views.html.applications.kvit;
 
 import java.io.File;
 import java.util.List;
@@ -86,7 +86,6 @@ public class Applications extends Plugin {
     @Override
     public void initPage() {
         Menu.addMenuItem("Заявки", getCall("apps"), RIGHT);
-        Menu.addMenuItem("Обзор заявок", getCall("view_apps"), "event admin");
     }
 
     @Override
@@ -104,8 +103,6 @@ public class Applications extends Plugin {
         switch (action) {
             case "apps":
                 return organizerApplications();
-            case "view_apps":
-                return adminApplications();
             case "kvit":
                 return showKvit(params);
             case "pdfkvit":
@@ -146,10 +143,11 @@ public class Applications extends Plugin {
     }
 
     private Result showKvit(String name) {
+        Kvit kvit = Kvit.getKvitForUser(User.current());
         Application application = getApplicationByName(name);
         if (application == null)
             return Controller.notFound();
-        return Controller.ok(kvit.render(application, this));
+        return Controller.ok(views.html.applications.kvit.render(application, this, kvit));
     }
 
     private Result showPdfKvit(String name) {
@@ -157,6 +155,7 @@ public class Applications extends Plugin {
         //may need to install ubuntu fontconfig package
 
         final Application application = getApplicationByName(name);
+        final Kvit kvit = Kvit.getKvitForUser(User.current());
 
         if (application == null)
             return Controller.notFound();
@@ -164,24 +163,7 @@ public class Applications extends Plugin {
         F.Promise<File> promiseOfVoid = Akka.future(
                 new Callable<File>() {
                     public File call() throws Exception {
-                        File page1 = File.createTempFile("pdf-kvit-", "-pd4-1.html");
-                        File page2 = File.createTempFile("pdf-kvit-", "-pd4-2.html");
-                        File css = File.createTempFile("pdf-kvit-", "-pd4.css");
-                        File pdf = File.createTempFile("pdf-kvit-", "-pd4.pdf");
-
-                        Map<Object,Object> subs = Utils.mapify(
-                                "{css}", css.getName(),
-                                "{price}", application.getPrice(),
-                                "{pay_for}", "Регистрационный взнос Бобёр" + (application.isKio() ? " и КИО" : "") + " 2013",
-                                "{packet_name}", application.getName()
-                        );
-                        Utils.writeResourceToFile("/public/invoice-1.html", page1, subs);
-                        Utils.writeResourceToFile("/public/invoice-2.html", page2, subs);
-                        Utils.writeResourceToFile("/public/invoice.css", css);
-
-                        Utils.runProcess("/opt/wkhtmltopdf-amd64", page1.getAbsolutePath(), page2.getAbsolutePath(), pdf.getAbsolutePath());
-
-                        return pdf;
+                        return kvit.generatePdfKvit(application);
                     }
                 }
         );
@@ -209,7 +191,7 @@ public class Applications extends Plugin {
         FormDeserializer deserializer = new FormDeserializer(getAddApplicationForm());
         RawForm rawForm = deserializer.getRawForm();
         if (rawForm.hasErrors())
-            return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, rawForm, this));
+            return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, rawForm, this, Kvit.getKvitForUser(user)));
 
         int number = 1;
         int appsSize = applications.size();
@@ -299,31 +281,22 @@ public class Applications extends Plugin {
         return Controller.notFound();
     }
 
-    public Html getKvitHtml(User user, Application app) {
-        ObjectId regBy = user.getRegisteredBy();
-        if (regBy != null) {
-            User regByUser = User.getInstance("_id", regBy);
-            Object kvitType = regByUser.getInfo().get("kvit_type");
-            if ("rakurs".equals(kvitType))
-                return views.html.applications.type_rakurs.render(app, this);
-        }
-
-        return views.html.applications.type_kio.render(app, this);
-    }
-
-    private Result adminApplications() {
-        return Controller.ok("пока не готово");
+    public Html getKvitHtml(User user, Application app, Kvit kvit) {
+        if (kvit.isGenerated())
+            return views.html.applications.type_generated.render(app, this, kvit);
+        return views.html.applications.type_file.render(app, kvit);
     }
 
     private Result organizerApplications() {
         User user = User.current();
+        Kvit kvit = Kvit.getKvitForUser(user);
 
         if (!User.currentRole().hasRight(RIGHT))
             return Controller.forbidden();
 
         List<Application> applications = getApplications(user);
 
-        return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, new RawForm(), this));
+        return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, new RawForm(), this, kvit));
     }
 
     private List<Application> getApplications(User user) { //TODO report: extract method does not extract //noinspection

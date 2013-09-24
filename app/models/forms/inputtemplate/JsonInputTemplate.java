@@ -16,7 +16,6 @@ import play.i18n.Messages;
 import views.html.fields.multiline;
 
 import java.io.IOException;
-import java.io.StringWriter;
 
 /**
  * Created with IntelliJ IDEA.

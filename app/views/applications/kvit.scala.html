@@ -1,4 +1,4 @@
-@(app:models.applications.Application, plugin:plugins.Applications)
+@(app:models.applications.Application, plugin:plugins.Applications, kvit:models.applications.Kvit)
 @import views.htmlblocks.HtmlBlockWidget
 @import plugins.Applications
 @import models.applications.Application
@@ -11,27 +11,27 @@
 <br /><br />
 <table class='kvit-data' border="0" align="center">
     <tr>
-        <td valign="top"><b>Наименование получателя платежа</b></td>
-        <td valign="top">АНО &laquo;КИО&raquo;</td>
+        <td valign="top" style="padding-right: 1em"><b>Наименование получателя платежа</b></td>
+        <td valign="top">@kvit.getOrganization</td>
     </tr>
     <tr>
-        <td valign="top"><b>ИНН получателя платежа</b></td>
-        <td valign="top">7816365714 КПП 781601001</td>
+        <td valign="top" style="padding-right: 1em"><b>ИНН получателя платежа</b></td>
+        <td valign="top">@kvit.getInnAndKpp</td>
     </tr>
     <tr>
-        <td valign="top"><b>Номер счёта получателя платежа</b></td>
-        <td valign="top">40703810300050000015</td>
+        <td valign="top" style="padding-right: 1em"><b>Номер счёта получателя платежа</b></td>
+        <td valign="top">@kvit.getAccount</td>
     </tr>
     <tr>
-        <td valign="top"><b>Наименование банка и банковские реквизиты</b></td>
-        <td valign="top">в Санкт-Петербургском ф-ле ОАО &laquo;ФОНДСЕРВИСБАНК&raquo; г. Санкт-Петербург к/с 30101810200000000717 БИК 044030717</td>
+        <td valign="top" style="padding-right: 1em"><b>Наименование банка и банковские реквизиты</b></td>
+        <td valign="top">@kvit.getBankNameAndAccountAsOneLine</td>
     </tr>
     <tr>
-        <td valign="top"><b>Наименование платежа</b></td>
+        <td valign="top" style="padding-right: 1em"><b>Наименование платежа</b></td>
         <td valign="top">Регистрационный взнос Бобёр-2013<br />Код заявки @app.getName</td>
     </tr>
     <tr>
-        <td valign="top"><b>Сумма платежа</b></td>
+        <td valign="top" style="padding-right: 1em"><b>Сумма платежа</b></td>
         <td valign="top">@app.getPrice р.</td>
     </tr>
 </table>

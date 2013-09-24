@@ -1,7 +1,6 @@
 package models;
 
 import models.forms.InputForm;
-import models.newproblems.ProblemSerializationType;
 import models.newserialization.MemoryDeserializer;
 import models.newserialization.SerializationTypesRegistry;
 
@@ -136,7 +135,7 @@ public class Forms {
                                     "name", "page sizes",
                                     "view", Utils.mapify(
                                             "type", "json list",
-                                            "placeholder", "Размеры страниу для задач",
+                                            "placeholder", "Размеры страниц для задач",
                                             "title", "Размеры страниц",
                                             "small", true
                                     ),
