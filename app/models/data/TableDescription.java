@@ -15,7 +15,8 @@ public class TableDescription<T> implements SerializableUpdatable {
 
     private String title;
     private ObjectsProviderFactory<T> objectsProviderFactory;
-    private Table<T> table;
+    private List<String> titles;
+    private List<String> featureNames;
     private String right;
     private String filename;
     private boolean showAsTable; //false by default
@@ -32,7 +33,9 @@ public class TableDescription<T> implements SerializableUpdatable {
     }
 
     public Table<T> getTable() {
-        return table;
+        FeaturesSet<T> featuresSet = FeaturesSetRegistry.getInstance().getFeaturesSet(objectsProviderFactory.getObjectsClass());
+
+        return new Table<>(titles, featureNames, featuresSet);
     }
 
     public String getRight() {
@@ -59,9 +62,8 @@ public class TableDescription<T> implements SerializableUpdatable {
 
         //read table
 
-        FeaturesSet<T> featuresSet = FeaturesSetRegistry.getInstance().getFeaturesSet(objectsProviderFactory.getObjectsClass());
-        List<String> titles = new ArrayList<>();
-        List<String> featureNames = new ArrayList<>();
+        titles = new ArrayList<>();
+        featureNames = new ArrayList<>();
 
         ListDeserializer columnsDeserializer = deserializer.getListDeserializer("columns");
 
@@ -79,8 +81,6 @@ public class TableDescription<T> implements SerializableUpdatable {
             featureNames.add(feature);
         }
 
-        this.table = new Table<>(titles, featureNames, featuresSet);
-
         this.filename = deserializer.readString("filename");
 
         this.showAsTable = deserializer.readBoolean("show as table", false);
@@ -94,8 +94,6 @@ public class TableDescription<T> implements SerializableUpdatable {
         SerializationTypesRegistry.OBJECTS_PROVIDER_FACTORY.write(serializer, "objects", objectsProviderFactory);
 
         //write table
-        List<? extends String> titles = table.getTitles();
-        List<? extends String> featureNames = table.getFeatureNames();
         ListSerializer columnsSerializer = serializer.getListSerializer("columns");
 
         int n = titles.size();

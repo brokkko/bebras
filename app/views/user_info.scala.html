@@ -21,26 +21,32 @@
 
     @Event.current.getHtmlBlock("user_info_down").format
 
-    @if(otherUser) {
-    <div class='info-box'>
-        @defining(user.getUserActivityEntry) { ua =>
-            @if(ua == null) {
-                <p>Посещений не было</p>
-            } else {
-                <table>
-                    <tr><td>Последнее посещение</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@ua.getDate</b></td></tr>
-                    <tr><td>ip</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getIp</b></td></tr>
-                    <tr><td>user agent</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getUa</b></td></tr>
-                </table>
-            }
-        }
-    </div>
+    @if(user.getRegisteredBy != null) {
+        <div class='info-box'>
+            <p>Зарегистрирован через: <b>@user.getRegisteredByUser.getInfo.get("org_name")</b></p>
+        </div>
     }
 
-    @if(user.getRole.getName == "SCHOOL_ORG") { <!-- TODO this role is hardcoded -->
+    @if(otherUser) {
+        <div class='info-box'>
+            @defining(user.getUserActivityEntry) { ua =>
+                @if(ua == null) {
+                    <p>Посещений не было</p>
+                } else {
+                    <table>
+                        <tr><td>Последнее посещение</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@ua.getDate</b></td></tr>
+                        <tr><td>ip</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getIp</b></td></tr>
+                        <tr><td>user agent</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getUa</b></td></tr>
+                    </table>
+                }
+            }
+        </div>
+    }
+
+    @if(user.getRole.getName == "SCHOOL_ORG" && otherUser) { <!-- TODO move this block to plugin -->
         <div class='info-box'><!-- TODO this link to search (1 or 2) is hardcoded, need to allow showing arbitrary tables in arbitrary pages -->
             <p>Заявки школького организатора:
-            <form action="@routes.Tables.showTable(Event.currentId, if(User.current.getRole.getName == "REGION_ORG") 1 else 2)" method="post">
+            <form action="@routes.Tables.showTableSearch(Event.currentId, if(User.current.getRole.getName == "REGION_ORG") 1 else 2)" method="post">
                 <input type='hidden' value="@user.getLogin" name="login">
                 <input type='submit' value='Просмотр'>
             </form>

@@ -159,6 +159,10 @@ public class Tables extends Controller {
         );
     }
 
+    public static Result showTableSearch(String eventId, Integer tableIndex) {
+        return showTable(eventId, tableIndex);
+    }
+
     @SuppressWarnings("UnusedParameters")
     public static Result csvTable(final String eventId, final Integer tableIndex) throws Exception {
         TableDescription tableDescription = User.current().getTables().get(tableIndex);

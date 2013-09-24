@@ -266,9 +266,13 @@ public class User implements SerializableUpdatable {
     }
 
     public static User getInstance(String field, Object value) {
+        return getInstance(field, value, Event.current().getId());
+    }
+
+    public static User getInstance(String field, Object value, String eventId) {
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
-        DBObject query = new BasicDBObject(FIELD_EVENT, Event.current().getId());
+        DBObject query = new BasicDBObject(FIELD_EVENT, eventId);
 
         query.put(field, value);
 
@@ -277,6 +281,14 @@ public class User implements SerializableUpdatable {
             return null;
         else
             return User.deserialize(new MongoDeserializer(userObject));
+    }
+
+    public static User getUserById(ObjectId id) {
+        return getInstance("_id", id);
+    }
+
+    public static User getUserById(String eventId, ObjectId id) {
+        return getInstance("_id", id, eventId);
     }
 
     public static User getUserByLogin(String login) {
@@ -645,6 +657,10 @@ public class User implements SerializableUpdatable {
 
     public ObjectId getRegisteredBy() {
         return registeredBy;
+    }
+
+    public User getRegisteredByUser() {
+        return registeredBy == null ? null : getUserById(registeredBy);
     }
 
     public void setRegisteredBy(ObjectId registeredBy) {

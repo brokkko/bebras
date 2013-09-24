@@ -45,7 +45,7 @@ public class ApplicationsFeatures implements FeaturesSet<ApplicationWithUser> {
 
                 return new WrappedFeatureValue("-", views.html.htmlfeatures.action.render(
                         "confirm-" + userId + "-" + applicationName,
-                        state == Application.CONFIRMED ? "Отменить подтверждение заявки" : "Подтвердить заявку",
+                        state == Application.CONFIRMED ? "Отменить подтверждение заявки " + applicationName : "Подтвердить заявку " + applicationName,
                         //TODO allow plugins provide tables and thus remove hardcoded "apps" as a ref to plugin
                         controllers.routes.Plugins.doPost(context.getEvent().getId(), "apps", "confirm_app", userId + "/" + applicationName + "/"),
                         context.getCurrentCall(),
