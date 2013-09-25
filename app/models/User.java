@@ -218,7 +218,7 @@ public class User implements SerializableUpdatable {
         }
     }
 
-    public static User current() {
+    public static User current() { //TODO cache users
         Map<String, Object> contextArgs = Http.Context.current().args;
 
         User user = (User) contextArgs.get("user");
@@ -313,6 +313,14 @@ public class User implements SerializableUpdatable {
 
     public static String getUsernameSessionKey() {
         return "user-" + Event.currentId();
+    }
+
+    public static String getSuUsernameSessionKey() {
+        return "su-" + Event.currentId();
+    }
+
+    public static String getSubstitutedUser() {
+        return Http.Context.current().session().get(getSuUsernameSessionKey());
     }
 
     public ObjectId getId() {

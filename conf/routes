@@ -58,6 +58,9 @@ POST        /:event/invalidate_contests_and_event_results        controllers.Eve
 POST        /:event/load_user_fields                             controllers.EventAdministration.doLoadUserFields(event)
 POST        /:event/:user/remove_user                            controllers.EventAdministration.removeUser(event, user)
 
+POST        /:event/:user/su                                     controllers.Application.substituteUser(event, user)
+GET         /:event/su_exit                                      controllers.Application.substituteUserExit(event)
+
 #html block
 POST        /~global/:block/set_html_block                       controllers.Application.setGlobalHtmlBlock(block)
 POST        /:event/:block/set_html_block                        controllers.EventAdministration.setHtmlBlock(event, block)

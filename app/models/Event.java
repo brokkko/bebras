@@ -361,11 +361,11 @@ public class Event {
 
     // plugins api
 
-    public void registerExtraUserField(String role, String field, SerializationType type, String title) {
-        InfoPattern infoPattern = right2extraFields.get(role);
+    public void registerExtraUserField(String right, String field, SerializationType type, String title) {
+        InfoPattern infoPattern = right2extraFields.get(right);
         if (infoPattern == null) {
             infoPattern = new InfoPattern();
-            right2extraFields.put(role, infoPattern);
+            right2extraFields.put(right, infoPattern);
         }
 
         infoPattern.register(field, type, title);

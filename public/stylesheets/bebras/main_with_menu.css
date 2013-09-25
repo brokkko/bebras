@@ -284,3 +284,7 @@ a, a:visited {
 a:hover {
     text-decoration: none;
 }
+
+#su-exit-form {
+    padding: 0 1em;
+}

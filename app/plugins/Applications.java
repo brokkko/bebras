@@ -92,7 +92,7 @@ public class Applications extends Plugin {
     public void initEvent(Event event) {
         event.registerExtraUserField(
                 RIGHT,
-                "apps",
+                "apps", //TODO take this field from plugin configuration
                 SerializationTypesRegistry.list(new SerializableSerializationType<>(Application.class)),
                 "Заявки"
         );

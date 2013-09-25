@@ -52,6 +52,12 @@ public class Menu {
         } else if (User.isAuthorized()) {
             User user = User.current();
 
+            if(User.getSubstitutedUser() != null) {
+                String title = "Вы работаете от имени " + User.current().getLogin() + ". ";
+                title += "Вернуться к " + User.getSubstitutedUser();
+                menu.add(new MenuItem(title, routes.Application.substituteUserExit(Event.currentId())));
+            }
+
             if (event.getContestsAvailableForUser().size() > 0)
                 menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
 

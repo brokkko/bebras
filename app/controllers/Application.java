@@ -12,6 +12,7 @@ import models.Event;
 import models.ServerConfiguration;
 import models.User;
 import models.Utils;
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.Logger;
@@ -226,4 +227,40 @@ public class Application extends Controller {
         return ok(list_events.render(events));
     }
 
+    @Authenticated
+    @LoadEvent
+    public static Result substituteUser(String eventId, String userIdAsString) {
+        ObjectId userId;
+        try {
+            userId = new ObjectId(userIdAsString);
+        } catch (IllegalArgumentException ignored) {
+            return badRequest();
+        }
+
+        User user = User.current();
+        User suUser = User.getUserById(userId);
+
+        if (suUser == null)
+            return badRequest();
+
+        if (!user.hasEventAdminRight() && !user.getId().equals(suUser.getRegisteredBy()))
+            return forbidden();
+
+        session(User.getUsernameSessionKey(), suUser.getLogin());
+        session(User.getSuUsernameSessionKey(), user.getLogin());
+
+        return redirect(routes.Application.enter(eventId));
+    }
+
+    @Authenticated
+    @LoadEvent
+    public static Result substituteUserExit(String eventId) {
+        String login = session(User.getSuUsernameSessionKey());
+        if (login == null)
+            return badRequest();
+        session(User.getUsernameSessionKey(), login);
+        session().remove(User.getSuUsernameSessionKey());
+
+        return redirect(routes.Application.enter(eventId));
+    }
 }
