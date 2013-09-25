@@ -42,10 +42,10 @@
                 }
             }
         </div>
-    }
 
-    <div class='info-box'>
-        <form class='submit actions-substitute-user' method="post" action="@routes.Application.substituteUser(Event.currentId, user.getId.toString)"></form>
-        <p>Зайти от имени пользователя <b><a href="#" class="submit actions-substitute-user" title="Зайти от имени пользователя @user.getLogin">@user.getLogin</a></b></p>
-    </div>
+        <div class='info-box'>
+            <form class='submit actions-substitute-user' method="post" action="@routes.Application.substituteUser(Event.currentId, user.getId.toString)"></form>
+            <p>Зайти от имени пользователя <b><a href="#" class="submit actions-substitute-user" title="Зайти от имени пользователя @user.getLogin">@user.getLogin</a></b></p>
+        </div>
+    }
 }
