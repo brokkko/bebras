@@ -52,12 +52,6 @@ public class Menu {
         } else if (User.isAuthorized()) {
             User user = User.current();
 
-            if(User.getSubstitutedUser() != null) {
-                String title = "Вы работаете от имени " + User.current().getLogin() + ". ";
-                title += "Вернуться к " + User.getSubstitutedUser();
-                menu.add(new MenuItem(title, routes.Application.substituteUserExit(Event.currentId())));
-            }
-
             if (event.getContestsAvailableForUser().size() > 0)
                 menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
 
@@ -78,7 +72,12 @@ public class Menu {
 
             fillExtraItems(menu);
 
-            menu.add(new MenuItem("Выход", routes.Registration.logout(eventId)));
+            if(User.getSubstitutedUser() != null) {
+                String title = "Вы работаете от имени " + User.current().getLogin() + ". ";
+                title += "Вернуться к " + User.getSubstitutedUser();
+                menu.add(new MenuItem(title, routes.Application.substituteUserExit(Event.currentId())));
+            } else
+                menu.add(new MenuItem("Выход", routes.Registration.logout(eventId)));
         } else {
             menu.add(new MenuItem("Вход", routes.Registration.login(eventId)));
 
