@@ -261,6 +261,14 @@ nav div.contest-logo {
     text-align: center;
 }
 
+.info-box .info-box-cut {
+    display: none;
+}
+
+.info-box .info-box-cut-shower {
+    cursor: pointer;
+}
+
 .problem-link, .problem-link:visited {
     color: #004800;
     text-decoration: none;

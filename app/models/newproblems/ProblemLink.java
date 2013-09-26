@@ -181,7 +181,7 @@ public class ProblemLink {
 
     public void mkdirs() {
         String[] path = link.split("/");
-        String l = path[0];
+        String l = "";
         for (String pathElement : path) {
             if (!l.isEmpty())
                 l += '/';

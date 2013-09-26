@@ -444,6 +444,36 @@ public class Forms {
             )
     );
 
+    @SuppressWarnings("unchecked")
+    private static InputForm createFolderForm = InputForm.deserialize(
+            new MemoryDeserializer(
+                    "fields",
+                    Utils.listify(
+                            Utils.mapify(
+                                    "name", "new_folder_name",
+                                    "view", Utils.mapify(
+                                            "type", "string",
+                                            "title", "Имя нового подкаталога",
+                                            "placeholder", "Введите имя нового подкаталога"
+                                    ),
+                                    "required", true,
+                                    "validators", Utils.listify(
+                                            Utils.mapify(
+                                                    "type", "pattern",
+                                                    "pattern", "[\\-a-zA-Z0-9_]+",
+                                                    "message", "Идентификатор может содержать только символы a-z, A-Z, 0-9, тире и подчеркивание"
+                                            )
+                                            //TODO test such folder already exists
+                                    )
+                            )
+                    ),
+                    "validators",
+                    Utils.listify(
+
+                    )
+            )
+    );
+
     public static InputForm getLoginForm() {
         return loginForm;
     }
@@ -478,5 +508,9 @@ public class Forms {
 
     public static InputForm getCreateProblemForm() {
         return createProblemForm;
+    }
+
+    public static InputForm getCreateFolderForm() {
+        return createFolderForm;
     }
 }

@@ -1,7 +1,8 @@
 @(title: String)(widgets:scala.List[views.widgets.Widget])(extra_navigation:Html)(content: Html)
 @import views.widgets.ResourceLink
+@import views.widgets.CssJsWidget
 @import scala.List
-@main(title)(new ResourceLink("main_with_menu.css") :: widgets) {
+@main(title)(CssJsWidget.get("main_with_menu") :: widgets) {
     <div class="wrapper">
         <header>
             @Event.current.getTitle

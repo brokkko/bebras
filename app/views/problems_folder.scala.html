@@ -1,4 +1,4 @@
-@(folder: models.newproblems.ProblemLink, fullLinks: Boolean, create_form:models.forms.RawForm)
+@(folder: models.newproblems.ProblemLink, fullLinks: Boolean, create_folder_form:models.forms.RawForm, create_form:models.forms.RawForm)
 @import views.widgets.FormsWidget
 @import models.forms.RawForm
 @import views.widgets.AdminWidget
@@ -39,8 +39,17 @@
     </div>
 
     <div class='info-box'>
-        <h2>Создать задание</h2>
+        <h2 class='info-box-cut-shower'>Создать подкаталог...</h2>
+        <div class='info-box-cut'>
+        @Forms.getCreateFolderForm.formatExtended(create_folder_form, routes.Problems.createFolder(Event.currentId, folder.getLink), false, "form.do_add")
+        </div>
+    </div>
+
+    <div class='info-box'>
+        <h2 class='info-box-cut-shower'>Создать задание...</h2>
+        <div class='info-box-cut'>
         @Forms.getCreateProblemForm.formatExtended(create_form, routes.Problems.createProblem(Event.currentId, folder.getLink), false, "form.do_add")
+        </div>
     </div>
 
     @*TODO add preview for problems*@

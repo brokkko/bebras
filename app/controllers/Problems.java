@@ -33,7 +33,7 @@ import java.util.Collections;
 public class Problems extends Controller {
 
     public static Result viewFolder(String eventId, String path) {
-        return ok(problems_folder.render(new ProblemLink(path), false, new RawForm()));
+        return ok(problems_folder.render(new ProblemLink(path), false, new RawForm(), new RawForm()));
     }
 
     public static Result viewProblem(String eventId, String link) {
@@ -75,12 +75,27 @@ public class Problems extends Controller {
             ));
     }
 
+    public static Result createFolder(String eventId, String folderPath) {
+        FormDeserializer deserializer = new FormDeserializer(Forms.getCreateFolderForm());
+        RawForm form = deserializer.getRawForm();
+
+        if (form.hasErrors())
+            return ok(problems_folder.render(new ProblemLink(folderPath), false, form, new RawForm()));
+
+        String name = deserializer.readString("new_folder_name");
+
+        ProblemLink link = new ProblemLink(new ProblemLink(folderPath), name);
+        link.mkdirs();
+
+        return redirect(routes.Problems.viewFolder(eventId, link.getLink()));
+    }
+
     public static Result createProblem(String eventId, String folderPath) throws IllegalAccessException, InstantiationException {
         FormDeserializer deserializer = new FormDeserializer(Forms.getCreateProblemForm());
         RawForm form = deserializer.getRawForm();
 
         if (form.hasErrors())
-            return ok(problems_folder.render(new ProblemLink(folderPath), false, form));
+            return ok(problems_folder.render(new ProblemLink(folderPath), false, new RawForm(), form));
 
         String name = deserializer.readString("new_problem_name");
         String type = deserializer.readString("new_problem_type");

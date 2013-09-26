@@ -84,6 +84,7 @@ GET         /:event/*pid/view_problem_raw                        controllers.Pro
 POST        /:event/*problem_link/remove_link                    controllers.Problems.removeLink(event, problem_link)
 POST        /:event/*problem_link/update_problem                 controllers.Problems.updateProblem(event, problem_link)
 POST        /:event/*folder/create_problem                       controllers.Problems.createProblem(event, folder)
+POST        /:event/*folder/create_folder                        controllers.Problems.createFolder(event, folder)
 POST        /:event/*problem_link/edit_problem                   controllers.Problems.editProblem(event, problem_link)
 
 #global admin

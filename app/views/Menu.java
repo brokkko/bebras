@@ -70,6 +70,9 @@ public class Menu {
             else if (tables.size() > 1)
                 menu.add(new MenuItem("Данные", routes.Tables.tablesList(eventId)));
 
+            if (user.hasEventAdminRight())
+                menu.add(new MenuItem("База заданий", routes.Problems.viewFolder(eventId, eventId)));
+
             fillExtraItems(menu);
 
             if(User.getSubstitutedUser() != null) {
