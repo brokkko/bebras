@@ -46,6 +46,7 @@ public class Tables extends Controller {
         final String finalFileName = fileName;
 
         final List<String> el = Collections.emptyList();
+        final FeaturesContext context = new FeaturesContext(currentEvent, false, currentCall);
 
         F.Promise<byte[]> promiseOfVoid = Akka.future(
                 new Callable<byte[]>() {
@@ -55,10 +56,10 @@ public class Tables extends Controller {
                         try (
                                 ObjectsProvider<T> objectsProvider = tableDescription.getObjectsProviderFactory().get(currentEvent, currentUser, el, el);
                                 ZipOutputStream zos = new ZipOutputStream(baos);
-                                CsvDataWriter<T> dataWriter = new CsvDataWriter<>(tableDescription.getTable(), zos, "windows-1251", ';', '"')
+                                CsvDataWriter<T> dataWriter = new CsvDataWriter<>(tableDescription.getTable(context), zos, "windows-1251", ';', '"')
                         ) {
                             zos.putNextEntry(new ZipEntry(finalFileName + ".csv"));
-                            dataWriter.writeObjects(objectsProvider, new FeaturesContext(currentEvent, false, currentCall));
+                            dataWriter.writeObjects(objectsProvider);
                         }
 
                         return baos.toByteArray();
@@ -125,15 +126,18 @@ public class Tables extends Controller {
         final String finalFullTextSearch = fullTextSearch;
         final boolean finalInside = inside;
 
+        final FeaturesContext context = new FeaturesContext(currentEvent, true, controllers.routes.Tables.showTable(eventId, tableIndex));
+        final Table table = tableDescription.getTable(context);
+
         F.Promise<MemoryDataWriter> promiseOfVoid = Akka.future(
                 new Callable<MemoryDataWriter>() {
                     public MemoryDataWriter call() throws Exception {
 
                         try (
                                 ObjectsProvider objectsProvider = objectsProviderFactory.get(currentEvent, currentUser, searchFields, searchValues);
-                                MemoryDataWriter dataWriter = new MemoryDataWriter(tableDescription.getTable(), finalFullTextSearch, finalInside)
+                                MemoryDataWriter dataWriter = new MemoryDataWriter(table, finalFullTextSearch, finalInside)
                         ) {
-                            dataWriter.writeObjects(objectsProvider, new FeaturesContext(currentEvent, true, routes.Tables.showTable(eventId, tableIndex)));
+                            dataWriter.writeObjects(objectsProvider, context);
 
                             return dataWriter;
                         }
@@ -146,7 +150,7 @@ public class Tables extends Controller {
                         new F.Function<MemoryDataWriter, Result>() {
                             public Result apply(MemoryDataWriter dataWriter) {
                                 return ok(view_table.render(
-                                        tableDescription.getTable().getTitles(), dataWriter.getList(), tableIndex, tableDescription.isShowAsTable(),
+                                        table.getTitles(), dataWriter.getList(), tableIndex, tableDescription.isShowAsTable(),
                                         objectsProviderFactory.getTitles(),
                                         objectsProviderFactory.getFields(),
                                         allSearchValues,

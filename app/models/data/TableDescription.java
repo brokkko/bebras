@@ -13,6 +13,9 @@ import java.util.List;
  */
 public class TableDescription<T> implements SerializableUpdatable {
 
+    public static final String HTML_POSTFIX = "<html>";
+    public static final String CSS_POSTFIX = "<css>";
+
     private String title;
     private ObjectsProviderFactory<T> objectsProviderFactory;
     private List<String> titles;
@@ -32,10 +35,34 @@ public class TableDescription<T> implements SerializableUpdatable {
         return objectsProviderFactory;
     }
 
-    public Table<T> getTable() {
+    public Table<T> getTable(FeaturesContext context) {
         FeaturesSet<T> featuresSet = FeaturesSetRegistry.getInstance().getFeaturesSet(objectsProviderFactory.getObjectsClass());
 
-        return new Table<>(titles, featureNames, featuresSet);
+        List<String> filteredTitles = new ArrayList<>();
+        List<String> filteredFeatureNames = new ArrayList<>();
+
+        for (int i = 0; i < titles.size(); i++) {
+            String title = titles.get(i);
+
+            //check HTML_POSTFIX and remove if needed
+            if (title.endsWith(HTML_POSTFIX)) {
+                if (!context.isScreen())
+                    continue;
+                title = title.substring(0, title.length() - HTML_POSTFIX.length());
+            }
+
+            //check CSS_POSTFIX and remove if needed
+            if (title.endsWith(CSS_POSTFIX)) {
+                if (context.isScreen())
+                    continue;
+                title = title.substring(0, title.length() - CSS_POSTFIX.length());
+            }
+
+            filteredTitles.add(title);
+            filteredFeatureNames.add(featureNames.get(i));
+        }
+
+        return new Table<>(filteredTitles, filteredFeatureNames, featuresSet, context);
     }
 
     public String getRight() {

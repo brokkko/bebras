@@ -55,7 +55,7 @@ public class CsvDataWriter<T> implements AutoCloseable {
         String[] newLine = new String[table.getFeaturesCount()];
         int ind = 0;
         for (String feature : table.getFeatureNames()) {
-            Object value = table.getFeature(feature, context);
+            Object value = table.getFeature(feature);
             if (value == null)
                 newLine[ind++] = "";
             else
@@ -64,9 +64,9 @@ public class CsvDataWriter<T> implements AutoCloseable {
         out.writeNext(newLine);
     }
 
-    public void writeObjects(ObjectsProvider<T> provider, FeaturesContext context) throws Exception {
+    public void writeObjects(ObjectsProvider<T> provider) throws Exception {
         while (provider.hasNext())
-            writeObject(provider.next(), context);
+            writeObject(provider.next(), table.getContext());
     }
 
     @Override

@@ -6,11 +6,13 @@ public class Table<T> {
     private final List<String> titles;
     private final List<String> featureNames;
     private final FeaturesSet<T> featuresSet;
+    private final FeaturesContext context;
 
-    public Table(List<String> titles, List<String> featureNames, FeaturesSet<T> featuresSet) {
+    public Table(List<String> titles, List<String> featureNames, FeaturesSet<T> featuresSet, FeaturesContext context) {
         this.titles = titles;
         this.featureNames = featureNames;
         this.featuresSet = featuresSet;
+        this.context = context;
     }
 
     public void register(String title, String featureName) {
@@ -26,11 +28,15 @@ public class Table<T> {
         return featureNames;
     }
 
+    public FeaturesContext getContext() {
+        return context;
+    }
+
     public int getFeaturesCount() {
         return titles.size();
     }
 
-    public Object getFeature(String featureName, FeaturesContext context) throws Exception {
+    public Object getFeature(String featureName) throws Exception {
         return featuresSet.getFeature(featureName, context);
     }
 

@@ -36,7 +36,7 @@ public class MemoryDataWriter<T> implements AutoCloseable {
         int ind = 0;
         boolean needLine = fullTextSearch == null;
         for (String feature : table.getFeatureNames()) {
-            Object value = table.getFeature(feature, context);
+            Object value = table.getFeature(feature);
             Object outputValue = value;
 
             if (value != null && value instanceof WrappedFeatureValue) {
