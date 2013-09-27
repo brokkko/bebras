@@ -69,7 +69,7 @@ public class UserInfo extends Controller {
         boolean wasPartial = userToChange.isPartialRegistration();
 
         if (form.hasErrors()) {
-            if (oneUserChangesHimOrHerself || !formDeserializer.isPartiallyFilled())
+            if (oneUserChangesHimOrHerself || !formDeserializer.isPartiallyFilled()) // login and email are not changeable, thus no required
                 return ok(views.html.user_info.render(userToChange, form, userId != null, null));
             else
                 partialRegistration = true;

@@ -124,7 +124,7 @@ public class Registration extends Controller {
         boolean isPartialRegistration = false;
 
         if (rawForm.hasErrors())
-            if (!byUser || !formDeserializer.isPartiallyFilled())
+            if (!byUser || !formDeserializer.isPartiallyFilled("login", "email")) //TODO think about this hardcoding of login and email as required fields
                 return ok(views.html.register.render(rawForm, registeeRole, byUser, referrerUserId));
             else
                 isPartialRegistration = true;
