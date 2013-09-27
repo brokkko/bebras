@@ -137,6 +137,13 @@ textarea.bebras-editor {
     width: 50%;
 }
 
+/*fix view*/
+.problem p {
+    margin: 0;
+    padding: 0;
+}
+
+
 /* editor, should probably be moved to editor css */
 
 .wym_left_block, .wym_right_block {
