@@ -44,10 +44,10 @@ public class UserInfo extends Controller {
         userToChange.serialize(formSerializer);
 
         return ok(views.html.user_info.render(
-                userToChange,
-                formSerializer.getRawForm(),
-                userId != null,
-                flash("user_info_change_msg") != null ? "page.user_info.info_changed" : null
+                                                     userToChange,
+                                                     formSerializer.getRawForm(),
+                                                     userId != null,
+                                                     flash("user_info_change_msg") != null ? "page.user_info.info_changed" : null
         ));
     }
 
@@ -57,20 +57,33 @@ public class UserInfo extends Controller {
         if (!mayChange(user, userToChange))
             return forbidden();
 
+        boolean oneUserChangesHimOrHerself = userToChange.getId().equals(user.getId());
+
         InputForm registrationForm = userToChange.getRole().getEditUserForm();
 
         FormDeserializer formDeserializer = new FormDeserializer(registrationForm);
 
         RawForm form = formDeserializer.getRawForm();
 
-        if (form.hasErrors())
-            return ok(views.html.user_info.render(userToChange, form, userId != null, null));
+        boolean partialRegistration = false;
+        boolean wasPartial = userToChange.isPartialRegistration();
+
+        if (form.hasErrors()) {
+            if (oneUserChangesHimOrHerself || !formDeserializer.isPartiallyFilled())
+                return ok(views.html.user_info.render(userToChange, form, userId != null, null));
+            else
+                partialRegistration = true;
+        }
 
         userToChange.updateFromForm(formDeserializer, registrationForm);
+        userToChange.setPartialRegistration(partialRegistration);
         userToChange.store();
 
         flash("user_info_change_msg", "1");
-        return redirect(routes.UserInfo.info(eventId, userToChange.getId().equals(user.getId()) ? null : userToChange.getId().toString()));
+
+        return wasPartial && oneUserChangesHimOrHerself ?
+                       redirect(routes.Application.enter(eventId)) :
+                       redirect(routes.UserInfo.info(eventId, oneUserChangesHimOrHerself ? null : userToChange.getId().toString()));
     }
 
     private static boolean mayChange(User user, User userToChange) {

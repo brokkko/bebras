@@ -5,7 +5,6 @@ import models.Event;
 import models.User;
 import models.UserRole;
 import models.data.TableDescription;
-import play.Logger;
 import play.mvc.Call;
 import play.mvc.Http;
 
@@ -52,48 +51,67 @@ public class Menu {
         } else if (User.isAuthorized()) {
             User user = User.current();
 
-            if (event.getContestsAvailableForUser().size() > 0)
-                menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
-
-            menu.add(new MenuItem("Личные данные", routes.UserInfo.info(eventId, null)));
-
-            UserRole role = user.getRole();
-            if (role.mayRegisterSomebody())
-                menu.add(new MenuItem("Регистрация", routes.Registration.registrationByUser(eventId)));
-
-            if (user.hasEventAdminRight())
-                menu.add(new MenuItem("Администрирование", routes.EventAdministration.admin(eventId)));
-
-            List<TableDescription<?>> tables = user.getTables();
-            if (tables.size() == 1)
-                menu.add(new MenuItem(tables.get(0).getTitle(), routes.Tables.showTable(eventId, 0)));
-            else if (tables.size() > 1)
-                menu.add(new MenuItem("Данные", routes.Tables.tablesList(eventId)));
-
-            if (user.hasEventAdminRight())
-                menu.add(new MenuItem("База заданий", routes.Problems.viewFolder(eventId, eventId)));
-
-            fillExtraItems(menu);
-
-            if(User.getSubstitutedUser() != null) {
-                String title = "Вы работаете от имени " + User.current().getLogin() + ". ";
-                title += "Вернуться к " + User.getSubstitutedUser();
-                menu.add(new MenuItem(title, routes.Application.substituteUserExit(Event.currentId())));
+            if (user.isPartialRegistration()) {
+                addPersonalDataMenuItem(menu, eventId);
+                addExitMenuItem(menu, eventId);
             } else
-                menu.add(new MenuItem("Выход", routes.Registration.logout(eventId)));
-        } else {
-            menu.add(new MenuItem("Вход", routes.Registration.login(eventId)));
-
-            UserRole role = event.getAnonymousRole();
-            if (role.mayRegisterSomebody())
-                menu.add(new MenuItem("Регистрация", routes.Registration.registration(eventId)));
-
-            menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(eventId)));
-
-            fillExtraItems(menu);
-        }
+                fillMenuForAuthorizedUser(menu, event, eventId, user);
+        } else
+            fillMenuForAnon(menu, event, eventId);
 
         items = menu;
+    }
+
+    private void fillMenuForAnon(List<MenuItem> menu, Event event, String eventId) {
+        menu.add(new MenuItem("Вход", routes.Registration.login(eventId)));
+
+        UserRole role = event.getAnonymousRole();
+        if (role.mayRegisterSomebody())
+            menu.add(new MenuItem("Регистрация", routes.Registration.registration(eventId)));
+
+        menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(eventId)));
+
+        fillExtraItems(menu);
+    }
+
+    private void fillMenuForAuthorizedUser(List<MenuItem> menu, Event event, String eventId, User user) {
+        if (event.getContestsAvailableForUser().size() > 0)
+            menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
+
+        addPersonalDataMenuItem(menu, eventId);
+
+        UserRole role = user.getRole();
+        if (role.mayRegisterSomebody())
+            menu.add(new MenuItem("Регистрация", routes.Registration.registrationByUser(eventId)));
+
+        if (user.hasEventAdminRight())
+            menu.add(new MenuItem("Администрирование", routes.EventAdministration.admin(eventId)));
+
+        List<TableDescription<?>> tables = user.getTables();
+        if (tables.size() == 1)
+            menu.add(new MenuItem(tables.get(0).getTitle(), routes.Tables.showTable(eventId, 0)));
+        else if (tables.size() > 1)
+            menu.add(new MenuItem("Данные", routes.Tables.tablesList(eventId)));
+
+        if (user.hasEventAdminRight())
+            menu.add(new MenuItem("База заданий", routes.Problems.viewFolder(eventId, eventId)));
+
+        fillExtraItems(menu);
+
+        addExitMenuItem(menu, eventId);
+    }
+
+    private boolean addPersonalDataMenuItem(List<MenuItem> menu, String eventId) {
+        return menu.add(new MenuItem("Личные данные", routes.UserInfo.info(eventId, null)));
+    }
+
+    private void addExitMenuItem(List<MenuItem> menu, String eventId) {
+        if (User.getSubstitutedUser() != null) {
+            String title = "Вы работаете от имени " + User.current().getLogin() + ". ";
+            title += "Вернуться к " + User.getSubstitutedUser();
+            menu.add(new MenuItem(title, routes.Application.substituteUserExit(Event.currentId())));
+        } else
+            menu.add(new MenuItem("Выход", routes.Registration.logout(eventId)));
     }
 
     private static List<RestrictedAccessMenuItem> getExtraItems() {
@@ -116,10 +134,6 @@ public class Menu {
             if ("anon".equals(right) || role.hasRight(right)) //TODO remove anon role
                 menu.add(extraItem.getItem());
         }
-    }
-
-    private void AddMenuItem(String title, Call call) {
-        items.add(new MenuItem(title, call));
     }
 
     public List<MenuItem> items() {

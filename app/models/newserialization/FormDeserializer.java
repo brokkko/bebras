@@ -10,10 +10,7 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.i18n.Messages;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ilya
@@ -24,6 +21,7 @@ public class FormDeserializer extends Deserializer {
     private final RawForm rawForm;
     private final Map<String, Object> values;
     private final Map<String, Object> validationData = new HashMap<>();
+    private final List<String> fieldsWithErrorInput = new ArrayList<>(); //all fields that have errors other that "empty but required"
 
     public FormDeserializer(InputForm inputForm) {
         this.inputForm = inputForm;
@@ -47,6 +45,11 @@ public class FormDeserializer extends Deserializer {
         for (InputField inputField : fields)
             deserializeField(inputField);
 
+        //do not run global validators if there is at least one error
+        if (rawForm.hasErrors())
+            return;
+
+        //run global validators
         //noinspection unchecked
         for (Validator<FormDeserializer> validator : inputForm.getValidators()) {
             Validator.ValidationResult result = validator.validate(this);
@@ -80,8 +83,10 @@ public class FormDeserializer extends Deserializer {
         if (value != null)
             for (Validator<Object> validator : inputField.getValidators()) {
                 Validator.ValidationResult result = validator.validate(value);
-                if (result.getMessage() != null)
+                if (result.getMessage() != null) {
                     rawForm.reject(fieldName, result.getMessage());
+                    fieldsWithErrorInput.add(fieldName);
+                }
                 if (result.getValidationData() != null) //TODO make possible to store several validation results
                     validationData.put(fieldName, result.getValidationData());
             }
@@ -111,6 +116,17 @@ public class FormDeserializer extends Deserializer {
 
     public Object getValidationData(String field) {
         return validationData.get(field);
+    }
+
+    public boolean isPartiallyFilled(String... requiredFields) {
+        if (fieldsWithErrorInput.size() > 0)
+            return false;
+
+        for (String requiredField : requiredFields)
+            if (values.get(requiredField) == null)
+                return false;
+
+        return !rawForm.hasGlobalErrors();
     }
 
     // implement deserializer

@@ -42,6 +42,7 @@ public class User implements SerializableUpdatable {
     public static final String FIELD_EVENT_RESULTS = "_er";
     public static final String FIELD_USER_ROLE = "_role";
     public static final String FIELD_REGISTERED_BY = "_reg_by";
+    public static final String FIELD_PARTIAL_REG = "_p_reg";
 
     public static final String FIELD_LOGIN = "login";
     public static final String FIELD_NAME = "name";
@@ -67,6 +68,7 @@ public class User implements SerializableUpdatable {
     private boolean confirmed;
     private boolean restoreForEmail;
     private String newRecoveryPassword;
+    private boolean partialRegistration;
 
     private Map<String, ContestInfoForUser> contest2info = new HashMap<>();
     private Info eventResults = null;
@@ -119,6 +121,7 @@ public class User implements SerializableUpdatable {
         eventResults = event.getResultsInfoPattern().read(deserializer, FIELD_EVENT_RESULTS);
 
         registeredBy = deserializer.readObjectId(FIELD_REGISTERED_BY);
+        partialRegistration = deserializer.readBoolean(FIELD_PARTIAL_REG, false);
 
         //TODO get rid of iposov
         if (getLogin().equals("iposov"))
@@ -339,6 +342,14 @@ public class User implements SerializableUpdatable {
         return info;
     }
 
+    public boolean isPartialRegistration() {
+        return partialRegistration;
+    }
+
+    public void setPartialRegistration(boolean partialRegistration) {
+        this.partialRegistration = partialRegistration;
+    }
+
     @Override
     public void serialize(Serializer serializer) {
         getUserInfoPattern().write(info, serializer);
@@ -369,6 +380,7 @@ public class User implements SerializableUpdatable {
         serializer.write(FIELD_PASS_HASH, passwordHash);
 
         serializer.write(FIELD_REGISTERED_BY, registeredBy);
+        serializer.write(FIELD_PARTIAL_REG, partialRegistration);
     }
 
     private InfoPattern getUserInfoPattern() {
@@ -618,7 +630,16 @@ public class User implements SerializableUpdatable {
     }
 
     public String getGreeting() {
-        return info.get(FIELD_NAME) + " " + info.get(FIELD_PATRONYMIC);
+        Object name = info.get(FIELD_NAME);
+        Object patronymic = info.get(FIELD_PATRONYMIC);
+
+        if (name != null && patronymic != null)
+            return name + " " + patronymic;
+
+        if (name != null)
+            return name.toString();
+
+        return null;
     }
 
     //registration info getters and setters

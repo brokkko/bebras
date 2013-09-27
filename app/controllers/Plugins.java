@@ -19,18 +19,16 @@ import plugins.Plugin;
 @LoadEvent
 public class Plugins extends Controller {
 
+    @Authenticated(redirectToLogin = false)
     public static Result doGet(String event, String plugin, String action, String params) {
-        AuthenticatedAction.doAuthenticate();
-
         Plugin p = Event.current().getPlugin(plugin);
         if (p == null)
             return notFound();
         return p.doGet(action, normalize(params));
     }
 
+    @Authenticated(redirectToLogin = false)
     public static Result doPost(String event, String plugin, String action, String params) {
-        AuthenticatedAction.doAuthenticate();
-
         Plugin p = Event.current().getPlugin(plugin);
         if (p == null)
             return notFound();

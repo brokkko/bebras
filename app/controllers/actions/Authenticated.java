@@ -19,4 +19,5 @@ import java.lang.annotation.Target;
 public @interface Authenticated {
     public boolean load() default true;
     public boolean admin() default false; //TODO make roles
+    public boolean redirectToLogin() default true;
 }

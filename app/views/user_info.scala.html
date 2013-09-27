@@ -9,7 +9,11 @@
     @if(otherUser) {
         <h1>Здесь вы можете посмотреть и изменить данные пользователя @user.getLogin</h1>
     } else {
-        <h1>Здесь вы можете посмотреть и изменить свои личные данные</h1>
+        @if(User.current.isPartialRegistration) {
+            <h1>Введите недостающие данные, чтобы продолжить работу</h1>
+        } else {
+            <h1>Здесь вы можете посмотреть и изменить свои личные данные</h1>
+        }
     }
 
     @Event.current.getHtmlBlock("user_info_up").format
@@ -22,7 +26,7 @@
 
     @Event.current.getHtmlBlock("user_info_down").format
 
-    @if(user.getRegisteredBy != null) {
+    @if(user.getRegisteredBy != null && user.getRegisteredByUser.getInfo.get("org_name") != null) {
         <div class='info-box'>
             <p>Зарегистрирован через: <b>@user.getRegisteredByUser.getInfo.get("org_name")</b></p>
         </div>

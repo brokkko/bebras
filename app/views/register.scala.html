@@ -3,9 +3,15 @@
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get)) { } {
     <h1>Регистрация: @role.getTitle</h1>
-    <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
-    После заполнения анкеты вы получите письмо с паролем, поэтому
-    убедитесь, что вы правильно указали email.
+    @if(byUser) {
+        <p class='warning'>Введите логин и email. Остальные поля, даже если они обязательные и отмечены звездочкой, можно пропустить. Если вы
+        оставите незаполненным обязательное поле, его будет предложено дозаполнить пользователю при первом входе в систему.</p>
+    } else {
+        <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
+            После заполнения анкеты вы получите письмо с паролем, поэтому
+            убедитесь, что вы правильно указали email.
+        </p>
+    }
     @if(byUser) {
         @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistrationByUser(Event.currentId, role.getName), false, "form.do_register_user")
     } else {

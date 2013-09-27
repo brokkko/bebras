@@ -108,8 +108,8 @@ public class Application extends Controller {
     }
 
     @LoadEvent
+    @Authenticated(redirectToLogin = false)
     public static Result enter(String eventId) {
-        AuthenticatedAction.doAuthenticate(); //TODO may be moved to DCES controller action
 
         String url = request().uri();
         int pos = url.lastIndexOf("/enter");

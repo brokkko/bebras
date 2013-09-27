@@ -71,6 +71,11 @@ public class Email {
     }
 
     public static void sendRegistrationConfirmationEmail(String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
+        if (greeting != null && !greeting.isEmpty())
+            greeting = ", " + greeting;
+        else
+            greeting = "";
+
         String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, false)
                 .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();
@@ -82,6 +87,11 @@ public class Email {
     }
 
     public static void sendPasswordRestoreEmail(String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
+        if (greeting != null && !greeting.isEmpty())
+            greeting = ", " + greeting;
+        else
+            greeting = "";
+
         String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, true)
                 .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();

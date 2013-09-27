@@ -49,8 +49,8 @@ public class Registration extends Controller {
         if (mayRegister.size() == 1) {
             String roleName = mayRegister.get(0);
             return byUser ?
-                    redirect(routes.Registration.roleRegistrationByUser(event.getId(), roleName)) :
-                    redirect(routes.Registration.roleRegistration(event.getId(), roleName, null));
+                           redirect(routes.Registration.roleRegistrationByUser(event.getId(), roleName)) :
+                           redirect(routes.Registration.roleRegistration(event.getId(), roleName, null));
         }
 
         return ok(views.html.registration_select.render(event, registerRole, byUser));
@@ -121,11 +121,17 @@ public class Registration extends Controller {
         FormDeserializer formDeserializer = new FormDeserializer(registrationForm);
         RawForm rawForm = formDeserializer.getRawForm();
 
+        boolean isPartialRegistration = false;
+
         if (rawForm.hasErrors())
-            return ok(views.html.register.render(rawForm, registeeRole, byUser, referrerUserId));
+            if (!byUser || !formDeserializer.isPartiallyFilled())
+                return ok(views.html.register.render(rawForm, registeeRole, byUser, referrerUserId));
+            else
+                isPartialRegistration = true;
 
         //add value for user role
         formDeserializer.addValue(User.FIELD_USER_ROLE, registeeRole.getName());
+        formDeserializer.addValue(User.FIELD_PARTIAL_REG, isPartialRegistration);
 
         User user = User.deserialize(formDeserializer);
 
@@ -170,8 +176,8 @@ public class Registration extends Controller {
         user.store();
 
         return needEmailConfirmation ?
-                redirect(routes.Registration.waitForEmail(event.getId(), registrationUUID, false)) :
-                ok(views.html.message.render("registration.ok.title", "registration.ok", null));
+                       redirect(routes.Registration.waitForEmail(event.getId(), registrationUUID, false)) :
+                       ok(views.html.message.render("registration.ok.title", "registration.ok", null));
     }
 
     private static boolean setRegisterBy(UserRole registeeRole, boolean byUser, String referrerUserId, User user) {
@@ -202,10 +208,10 @@ public class Registration extends Controller {
             return redirect(routes.Registration.login(eventId));
 
         Boolean restoreForEmail = user.isRestoreForEmail();
-        boolean isEmail = ! passwordRecovery || restoreForEmail == null || restoreForEmail;
+        boolean isEmail = !passwordRecovery || restoreForEmail == null || restoreForEmail;
 
         return ok(views.html.wait_for_email.render(
-                isEmail, isEmail ? user.getEmail() : user.getLogin()
+                                                          isEmail, isEmail ? user.getEmail() : user.getLogin()
         ));
     }
 
@@ -292,11 +298,11 @@ public class Registration extends Controller {
 
         try {
             Email.sendPasswordRestoreEmail(
-                    user.getGreeting(),
-                    user.getEmail(),
-                    user.getLogin(),
-                    newPassword,
-                    confirmationUUID
+                                                  user.getGreeting(),
+                                                  user.getEmail(),
+                                                  user.getLogin(),
+                                                  newPassword,
+                                                  confirmationUUID
             );
         } catch (EmailException e) {
             Logger.error("Failed to send email", e);
