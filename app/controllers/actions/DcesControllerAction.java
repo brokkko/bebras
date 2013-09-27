@@ -17,7 +17,7 @@ import views.html.error;
 public class DcesControllerAction extends Action<DcesController> {
 
     private static final String[] NOT_EVENT_ACTION = new String[] {
-            "/~res/", "/assets/", "/~global/", "/~dat/"
+            "/~res/", "/assets/", "/~global/", "/~dat/", "/bebras_training/" //TODO remove last
     };
 
     private boolean isEventAction() {
@@ -53,8 +53,6 @@ public class DcesControllerAction extends Action<DcesController> {
             if (event != Event.ERROR_EVENT)
                 for (Plugin plugin : event.getPlugins())
                     plugin.initPage();
-        } else {
-            Logger.info("not event action");
         }
 
         Result call = delegate.call(ctx);
