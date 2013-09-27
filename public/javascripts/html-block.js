@@ -13,6 +13,8 @@ $(function() {
         var is_edit = $this.hasClass('editing');
         var $block = $this.parents('.html-block');
 
+        //TODO use update selector: http://trac.wymeditor.org/trac/wiki/0.5/Customization.html
+
         if (is_edit) {
             //turn edit off
             $this.removeClass('editing');

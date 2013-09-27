@@ -41,7 +41,8 @@
                 <form id='edit-problem' method="POST" action="@routes.Problems.editProblem(Event.currentId, link.getLink)">
                     @editor
 
-                    <div class='change-problem'><input type='submit' value="Изменить задачу"></div>
+                    @* http://forum.wymeditor.org/forum/viewtopic.php?f=2&t=563 *@
+                    <div class='change-problem'><input type='submit' class='wymupdate' value="Изменить задачу"></div>
                 </form>
             </div>
         } else {

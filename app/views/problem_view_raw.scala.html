@@ -1,4 +1,5 @@
 @(pid:org.bson.types.ObjectId, problem:models.newproblems.Problem)
+@* TODO remove code duplication with problem_view.scala.html *@
 @import views.widgets.AdminWidget
 @import views.widgets.ResourceLink
 @import scala.List
@@ -41,7 +42,7 @@
                 <form id='edit-problem' method="POST""> @*todo make edit problem controller use pid instead of link*@
                     @editor
 
-                    <div class='change-problem'><input type='submit' value="Изменить задачу"></div>
+                    <div class='change-problem'><input type='submit' class='wymupdate' value="Изменить задачу"></div>
                 </form>
             </div>
         } else {
