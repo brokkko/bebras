@@ -51,6 +51,11 @@ public class BBTCProblem implements Problem {
     }
 
     @Override
+    public boolean editable() {
+        return false;
+    }
+
+    @Override
     public Html formatEditor() {
         return null;
     }

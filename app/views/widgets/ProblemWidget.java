@@ -18,13 +18,21 @@ public class ProblemWidget implements Widget {
     }
 
     private String problemType;
+    private boolean editable;
 
     public ProblemWidget(Problem problem) {
         problemType = problem.getType();
+        editable = problem.editable();
     }
 
     @Override
     public List<ResourceLink> links() {
-        return Arrays.asList(new ResourceLink(problemType + ".problem", "js"), new ResourceLink(problemType + ".problem", "css"));
+        ResourceLink js = new ResourceLink(problemType + ".problem", "js");
+        ResourceLink css = new ResourceLink(problemType + ".problem", "css");
+
+        if (editable)
+            return Arrays.asList(new ResourceLink(problemType + ".edit.problem", "js"), js, css);
+        else
+            return Arrays.asList(js, css);
     }
 }

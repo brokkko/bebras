@@ -12,4 +12,6 @@ $(function () {
         }
 
     });
+
+    $('.info-box.initially-open .info-box-cut-shower').click();
 });

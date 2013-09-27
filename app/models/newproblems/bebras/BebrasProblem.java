@@ -81,6 +81,11 @@ public class BebrasProblem implements Problem {
     }
 
     @Override
+    public boolean editable() {
+        return true;
+    }
+
+    @Override
     public Html formatEditor() {
         return views.html.bebras.bebras_editor.render(title, country, statement, question, answers, rightAnswer, answersLayout, explanation);
     }

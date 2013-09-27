@@ -38,14 +38,14 @@
         }
     </div>
 
-    <div class='info-box'>
+    <div class='info-box@if(create_folder_form.hasErrors){ initially-open}'>
         <h3 class='info-box-cut-shower'>Создать подкаталог...</h3>
         <div class='info-box-cut'>
         @Forms.getCreateFolderForm.formatExtended(create_folder_form, routes.Problems.createFolder(Event.currentId, folder.getLink), false, "form.do_add")
         </div>
     </div>
 
-    <div class='info-box'>
+    <div class='info-box@if(create_form.hasErrors){ initially-open}'>
         <h3 class='info-box-cut-shower'>Создать задание...</h3>
         <div class='info-box-cut'>
         @Forms.getCreateProblemForm.formatExtended(create_form, routes.Problems.createProblem(Event.currentId, folder.getLink), false, "form.do_add")

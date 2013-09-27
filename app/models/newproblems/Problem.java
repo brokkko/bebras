@@ -16,6 +16,8 @@ public interface Problem extends SerializableUpdatable {
 
     Html format(int index, boolean showSolutions);
 
+    boolean editable();
+
     Html formatEditor(); //TODO make it a usual form
 
     void updateProblem(RawForm form); //TODO make it a usual form
