@@ -1,6 +1,7 @@
 package views.widgets;
 
 import models.Event;
+import models.ServerConfiguration;
 import play.Play;
 
 import java.util.Arrays;
@@ -52,7 +53,7 @@ public class ResourceLink implements Widget {
                 localUrl = "javascripts/" + localUrl;
                 break;
             case "css":
-                String skin = Event.currentId().startsWith("bebras") ? "bebras" : "bbtc";
+                String skin = ServerConfiguration.getInstance().getSkin();
 
                 localUrl = "stylesheets/" + skin + "/" + localUrl;
                 break;

@@ -6,7 +6,7 @@
 <html>
     <head>
         <title>@title</title>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon." + ServerConfiguration.getInstance.getSkin + ".png")">
         <link media="screen" rel="stylesheet" media="screen" href="@ResourceLink.RESET">
         @for(widget <- widgets; link <- widget.links if link.getType == "css") {
             <link media="screen" rel="stylesheet" media="screen" href="@link">

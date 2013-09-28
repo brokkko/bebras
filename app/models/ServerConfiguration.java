@@ -167,4 +167,7 @@ public class ServerConfiguration {
         return new File(Play.application().getFile(base).getAbsolutePath() + "/" + name);
     }
 
+    public String getSkin() {
+        return Event.currentId().startsWith("bebras") ? "bebras" : "bbtc"; //TODO generalize //TODO currentId may lead to exception
+    }
 }
