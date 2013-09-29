@@ -127,6 +127,11 @@ public class Applications extends Plugin {
         return Controller.notFound();
     }
 
+    @Override
+    public boolean needsAuthorization() {
+        return true;
+    }
+
     private Application getApplicationByName(String name) {
         return getApplicationByName(name, User.current());
     }
@@ -326,7 +331,6 @@ public class Applications extends Plugin {
     public Call getDoPayCall(String name) {
         return getCall("do_payment", false, name);
     }
-
 
     public static InputForm getAddApplicationForm() {
         return addApplicationForm;

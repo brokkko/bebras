@@ -54,6 +54,11 @@ public abstract class Plugin implements SerializableUpdatable {
         return get ? routes.Plugins.doGet(currentId, ref, action, params) : routes.Plugins.doPost(currentId, ref, action, params); //TODO add params
     }
 
+    //intended to be overridden
+    public boolean needsAuthorization() {
+        return false;
+    }
+
     @Override
     public void serialize(Serializer serializer) {
         serializer.write("ref", ref);

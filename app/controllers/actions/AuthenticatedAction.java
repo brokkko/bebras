@@ -53,6 +53,10 @@ public class AuthenticatedAction extends Action<Authenticated> {
         return delegate.call(ctx);
     }
 
+    public static Date getRequestTime() {
+        return (Date) Http.Context.current().args.get("request time");
+    }
+
     private boolean needRedirectToFullRegistration(User user) {
         if (user.isPartialRegistration()) { //redirect to entering info
             //Redirect for all calls except "get | show user info" and "post | change user info"
@@ -69,10 +73,6 @@ public class AuthenticatedAction extends Action<Authenticated> {
     private static boolean compareCallWithCurrent(Call call) {
         Http.Request request = Http.Context.current().request();
         return request.method().equals(call.method()) && request.uri().equals(call.url()); //TODO not sure this works in all situations
-    }
-
-    public static Date getRequestTime() {
-        return (Date) Http.Context.current().args.get("request time");
     }
 
 }
