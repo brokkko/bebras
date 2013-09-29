@@ -152,6 +152,10 @@ public class Utils {
 
     public static String getResourceAsString(String name) throws IOException {
         InputStream inS = Application.class.getResourceAsStream(name);
+        return inputStreamToString(inS);
+    }
+
+    public static String inputStreamToString(InputStream inS) throws IOException {
         BufferedReader inR = new BufferedReader(new InputStreamReader(inS, "UTF8"));
         CharArrayWriter out = new CharArrayWriter();
         int r;
@@ -184,5 +188,14 @@ public class Utils {
         int res = process.waitFor();
         if (res != 0)
             throw new IOException("Non zero exit code of " + command[0]);
+    }
+
+    public static String getExtension(String name) {
+        if (name == null)
+            return null;
+        int pos = name.lastIndexOf('.');
+        if (pos < 0)
+            return null;
+        return name.substring(pos + 1);
     }
 }

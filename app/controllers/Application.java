@@ -5,7 +5,6 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import controllers.actions.Authenticated;
-import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.Event;
@@ -16,7 +15,6 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.Logger;
-import play.Play;
 import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
@@ -180,16 +178,15 @@ public class Application extends Controller {
 
         //test extension
         String uploadingName = picture.getFilename();
-        int dotPos = uploadingName.lastIndexOf('.');
-        if (dotPos < 0)
+        String extension = Utils.getExtension(uploadingName);
+        if (extension == null)
             return badRequest();
-        String extension = uploadingName.substring(dotPos + 1).toLowerCase();
+        extension = extension.toLowerCase();
         if (!imagesExtensions.contains(extension))
             return badRequest();
 
         File pictureFile = picture.getFile();
-        String destFileName = ServerConfiguration.getInstance().getRandomString(20) + System.currentTimeMillis() + '.' + extension;
-        File destFile = new File(ServerConfiguration.getInstance().getResourcesFolder(), destFileName);
+        File destFile = ServerConfiguration.getInstance().getNewResourceFile(extension);
 
         try {
             Files.move(
@@ -202,7 +199,7 @@ public class Application extends Controller {
         }
 
         result.put("original_filename", "an image");
-        result.put("thumbUrl", routes.Application.returnFile(destFileName).toString());
+        result.put("thumbUrl", routes.Application.returnFile(destFile.getName()).toString());
 
         ArrayNode arrayOfResults = (ArrayNode) Json.parse("[]");
         arrayOfResults.add(result);

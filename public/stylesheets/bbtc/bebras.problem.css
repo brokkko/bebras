@@ -1,3 +1,7 @@
+.problem {
+    background-color: white;
+}
+
 .statement {
     margin-bottom: 1em;
 }
@@ -60,7 +64,7 @@
 /*right and wrong answers*/
 
 .bebras-task-answer-selector.answer-right {
-    border-color: #33bb33;
+    border-color: #008000;
 }
 
 .bebras-task-answer-selector.answer-user-right {
@@ -88,7 +92,7 @@ u {
 .section-title {
     font-family : Arial,sans-serif;
     font-size : 1.5em;
-    color: #3366FF;
+    color: #5B5E35;
     margin-top: 0.3em;
     margin-bottom: 0.3em;
     clear: both;
@@ -142,6 +146,7 @@ textarea.bebras-editor {
     margin: 0;
     padding: 0;
 }
+
 
 /* editor, should probably be moved to editor css */
 

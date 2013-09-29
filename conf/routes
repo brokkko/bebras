@@ -113,3 +113,5 @@ GET         /bebras_training/*file                               controllers.App
 GET         /assets/*file                                        controllers.Assets.at(path="/public", file)
 GET         /~res/*file                                          controllers.Application.returnFile(file)
 GET         /:event/~dat/*file                                   controllers.Application.returnDataFile(event, file)
+
+GET         /convert_bebras_problems_HJKsdCVsdflQsWjhfJKweahfih  controllers.BebrasProblemsConverter.convertProblems()

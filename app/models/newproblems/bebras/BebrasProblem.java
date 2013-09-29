@@ -56,6 +56,20 @@ public class BebrasProblem implements Problem {
     private int rightAnswer; //1, 2, 3, 4
     private String explanation;
 
+    public BebrasProblem() {
+    }
+
+    public BebrasProblem(String title, String country, String statement, String question, List<String> answers, int answersLayout, int rightAnswer, String explanation) {
+        this.title = title;
+        this.country = country;
+        this.statement = statement;
+        this.question = question;
+        this.answers = answers;
+        this.answersLayout = answersLayout;
+        this.rightAnswer = rightAnswer;
+        this.explanation = explanation;
+    }
+
     @Override
     public Html format(int index, boolean showSolutions) {
         //render answers

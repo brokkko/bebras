@@ -1,5 +1,9 @@
 /*problem*/
 
+.problem {
+    background-color: #e0f1ff;
+}
+
 .answer {
     float: left;
     margin-bottom: 4px;

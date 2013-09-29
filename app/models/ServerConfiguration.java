@@ -126,6 +126,16 @@ public class ServerConfiguration {
         return Play.application().getFile("data/_resources");
     }
 
+    public File getNewResourceFile(String extension) {
+        if (extension == null || extension.isEmpty())
+            extension = "";
+        else
+            extension = "." + extension;
+
+        String destFileName = ServerConfiguration.getInstance().getRandomString(20) + System.currentTimeMillis() + extension;
+        return new File(ServerConfiguration.getInstance().getResourcesFolder(), destFileName);
+    }
+
     public long getRandomLong() {
         return random.nextLong();
     }
