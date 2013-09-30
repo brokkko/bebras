@@ -75,7 +75,7 @@ public class Menu {
     }
 
     private void fillMenuForAuthorizedUser(List<MenuItem> menu, Event event, String eventId, User user) {
-        if (event.getContestsAvailableForUser().size() > 0)
+        if (event.getContestsAvailableForUser().size() > 0 || User.current().hasEventAdminRight())
             menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
 
         addPersonalDataMenuItem(menu, eventId);

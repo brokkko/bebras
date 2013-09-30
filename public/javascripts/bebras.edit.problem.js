@@ -2,6 +2,31 @@ $(function() {
     $('form#edit-problem textarea').wymeditor({
         dialogImageUploadUrl:   '/wymupload',
 
+        classesItems: [
+            {'name': 'center', 'title': 'IMG: Center image', 'expr': 'img'},
+            {'name': 'float-left', 'title': 'IMG: Float left', 'expr': 'img'},
+            {'name': 'float-right', 'title': 'IMG: Float right', 'expr': 'img'},
+            {'name': 'clear', 'title': 'PARA: Clear both', 'expr': 'p'}
+        ],
+
+        styles: //TODO move this to original css
+            '/* IMG: Center image */                                             '+
+            'img.center {                                                        '+
+            '  /* display:block; margin-left:auto;margin-right:auto; */          '+
+            '}                                                                   '+
+            '/* IMG: Float left */                                               '+
+            'img.float-left {                                                    '+
+            '  /* float:left; */                                                 '+
+            '}                                                                   '+
+            '/* IMG: Float right */                                              '+
+            'img.float-right {                                                   '+
+            '  /* float:right; */                                                '+
+            '}                                                                   '+
+            '/* PARA: Clear both */                                              '+
+            'p.clear {                                                           '+
+            '  /* clear:both; */                                                 '+
+            '}                                                                   ',
+
         boxHtml:
             "<div class='wym_box'>"
             + "<div class='wym_area_top'>"
@@ -25,6 +50,8 @@ $(function() {
             wym.image_upload();
             //make classes dropdown
             wym._box.find('.wym_classes').removeClass('wym_panel').addClass('wym_dropdown');
+
+            $(wym._iframe).css('height', '400px');
         }
     });
 });
