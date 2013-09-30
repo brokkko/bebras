@@ -20,8 +20,7 @@
 
 .problem .problem-country img {
     vertical-align: baseline;
-    margin-bottom: -8px;
-    margin-right: 6px;
+    margin: 0 6px -8px 0;
 }
 
 .task-statement, .task-question, .task-answers, .task-explanation {
@@ -32,7 +31,7 @@
 /* editor styles */
 
 .problem img {
-    margin: 0.5em;
+    margin: 1em 0;
 }
 
 .problem img.center {
@@ -43,10 +42,12 @@
 
 .problem .float-left {
     float:left;
+    margin-right: 2em;
 }
 
 .problem .float-right {
     float:right;
+    margin-left: 2em;
 }
 
 .problem .clear {
