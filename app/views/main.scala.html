@@ -15,6 +15,7 @@
         @for(widget <- widgets; link <- widget.links if link.getType == "js") {
             <script src="@link" type="text/javascript"></script>
         }
+        @google_counter()
     </head>
     <body>
         <noscript>
