@@ -1,5 +1,5 @@
 @(value:Boolean, field: String, hint:String)
-<input class='input-checkbox' type="checkbox" value="1" name="@field" @if(value) { checked="checked" }>
+<input class='input-checkbox' type="checkbox" value="1" name="@field" @if(value != null && value) { checked="checked" }>
 @if(hint != null) {
     <span class="checkbox-hint">@Html(hint)</span>
 }

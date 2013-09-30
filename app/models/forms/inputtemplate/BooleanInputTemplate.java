@@ -17,6 +17,7 @@ public class BooleanInputTemplate extends InputTemplate<Boolean> {
 
     private String hint;
     private boolean defaultValue;
+    private boolean falseIsNull;
 
     @Override
     public Html render(RawForm form, String field) {
@@ -38,7 +39,10 @@ public class BooleanInputTemplate extends InputTemplate<Boolean> {
         if (formValue != null)
             value = formValue.equals("1");
 
-        return value;
+        if (falseIsNull)
+            return !value ? null : true;
+        else
+            return value;
     }
 
     @Override
@@ -51,6 +55,7 @@ public class BooleanInputTemplate extends InputTemplate<Boolean> {
         super.update(deserializer);
         hint = deserializer.readString("hint", "-");
         defaultValue = deserializer.readBoolean("default", false);
+        falseIsNull = deserializer.readBoolean("false is null", false);
     }
 
     @Override
@@ -58,5 +63,7 @@ public class BooleanInputTemplate extends InputTemplate<Boolean> {
         super.serialize(serializer);
         serializer.write("hint", hint);
         serializer.write("default", defaultValue);
+        if (falseIsNull)
+            serializer.write("false is null", true);
     }
 }
