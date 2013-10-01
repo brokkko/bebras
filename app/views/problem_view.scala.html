@@ -14,7 +14,13 @@
             @*<a href='#'>Переименовать</a>*@
         </div>
         <h2>Задание <span class='folder-name'>@link</span></h2>
-        <p>@problem_link(link.getParentLink, "на уровень выше: " + link.getParent)</p>
+        <p>
+            @problem_link(link.getParentLink, "на уровень выше: " + link.getParent)
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            Версия для печати:
+            <a target="_blank" href="@routes.Problems.viewPrintProblem(Event.currentId, link.getProblemId.toString, true)">с ответами</a>,
+            <a target="_blank" href="@routes.Problems.viewPrintProblem(Event.currentId, link.getProblemId.toString, false)">без ответов</a>
+        </p>
     </div>
 
     @* -- problem statement / answer -- *@

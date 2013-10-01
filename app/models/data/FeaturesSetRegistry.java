@@ -33,7 +33,7 @@ public class FeaturesSetRegistry {
 
         set.register("substring", new SubstringFunctionFeatures(set));
         set.register("const", new ConstFunctionFeatures());
-        set.register("excel", new ExcelFeatures(set));
+        set.register("excel", new UtilsFeatures(set));
         set.register("html", new HtmlFeatures(set));
 
         return set;

@@ -14,6 +14,7 @@ import models.newserialization.SerializationTypesRegistry;
 import org.bson.types.ObjectId;
 import play.mvc.Controller;
 import play.mvc.Result;
+import views.html.*;
 import views.html.error;
 import views.html.problem_view;
 import views.html.problem_view_raw;
@@ -46,13 +47,34 @@ public class Problems extends Controller {
     }
 
     public static Result viewRawProblem(String eventId, String pidAsString) {
-        ObjectId pid = new ObjectId(pidAsString);
+        ObjectId pid;
+        try {
+            pid = new ObjectId(pidAsString);
+        } catch (IllegalArgumentException ignored) {
+            return notFound(error.render("Не удается найти задачу", new String[0]));
+        }
+
         ProblemInfo info = ProblemInfo.get(pid);
 
         if (info == null)
             return notFound(error.render("Не удается найти задачу", new String[0]));
 
         return ok(problem_view_raw.render(pid, info.getProblem()));
+    }
+
+    public static Result viewPrintProblem(String eventId, String pidAsString, boolean answers) {
+        ObjectId pid;
+        try {
+            pid = new ObjectId(pidAsString);
+        } catch (IllegalArgumentException ignored) {
+            return notFound(error.render("Не удается найти задачу", new String[0]));
+        }
+
+        ProblemInfo pi = ProblemInfo.get(pid);
+        if (pi == null)
+            return notFound(error.render("Не удается найти задачу", new String[0]));
+
+        return ok(views.html.problem_view_print.render(pid, pi.getProblem(), answers));
     }
 
     public static Result removeLink(String eventId, String path) {

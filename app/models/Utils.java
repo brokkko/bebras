@@ -14,6 +14,7 @@ import java.util.*;
  */
 public class Utils {
 
+    public static final SimpleDateFormat createdDateTimeFormat = new SimpleDateFormat("dd.MM.YY HH:mm");
     public static final SimpleDateFormat contestDateFormat = new SimpleDateFormat("d MMMM YYYY, HH:mm");
     public static final SimpleDateFormat inputDateTimeFormat = new SimpleDateFormat("YYYY-MM-dd, HH:mm");
 
@@ -68,6 +69,10 @@ public class Utils {
 
     public static String formatContestDate(Date date) {
         return contestDateFormat.format(date);
+    }
+
+    public static String formatObjectCreationTime(Date date) {
+        return createdDateTimeFormat.format(date);
     }
 
     public static String scoresWord(int scores) {
