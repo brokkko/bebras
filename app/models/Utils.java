@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class Utils {
 
-    public static final SimpleDateFormat createdDateTimeFormat = new SimpleDateFormat("dd.MM.YY HH:mm");
+    public static final SimpleDateFormat createdDateTimeFormat = new SimpleDateFormat("YY.MM.dd HH:mm");
     public static final SimpleDateFormat contestDateFormat = new SimpleDateFormat("d MMMM YYYY, HH:mm");
     public static final SimpleDateFormat inputDateTimeFormat = new SimpleDateFormat("YYYY-MM-dd, HH:mm");
 
