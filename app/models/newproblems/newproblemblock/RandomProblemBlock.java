@@ -9,6 +9,7 @@ import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
 import models.results.Info;
 import org.bson.types.ObjectId;
+import play.Logger;
 
 import java.util.*;
 
@@ -80,6 +81,12 @@ public class RandomProblemBlock extends ProblemBlock {
         List<ConfiguredProblem> result = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             ProblemInfo info = ProblemInfo.get(pids.get(i));
+
+            if (info == null) {
+                Logger.error("Problem Block with null pid");
+                continue;
+            }
+
             ObjectId pid = info.getId();
             result.add(new ConfiguredProblem(pid, info.getProblem(), contest.getProblemName(pid), getConfiguration()));
         }

@@ -35,7 +35,7 @@ public class IntegerInputTemplate extends InputTemplate<Integer> {
     @Override
     public Integer read(String field, RawForm form) {
         String value = form.get(field);
-        if (value == null)
+        if (value == null || value.isEmpty())
             return null;
 
         try {

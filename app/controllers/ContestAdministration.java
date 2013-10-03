@@ -8,12 +8,10 @@ import models.newproblems.newproblemblock.ProblemBlock;
 import models.newproblems.newproblemblock.ProblemBlockFactory;
 import models.newserialization.FormDeserializer;
 import models.results.Info;
-import models.results.InfoPattern;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.Results;
 import views.html.contest_admin;
 
 import java.util.ArrayList;
@@ -72,7 +70,7 @@ public class ContestAdministration extends Controller {
         RawForm rawForm = deserializer.getRawForm();
 
         if (rawForm.hasErrors())
-            ok(contest_admin.render(contest, new RawForm(), rawForm));
+            return ok(contest_admin.render(contest, new RawForm(), rawForm));
 
         String configuration = deserializer.readString("_config");
         Info translatorConfiguration = contest.getResultTranslator().getConfigInfoPattern().read(deserializer);
@@ -81,7 +79,7 @@ public class ContestAdministration extends Controller {
 
         if (block == null) {
             rawForm.reject("_config", "Ошибка в строке конфигурации");
-            ok(contest_admin.render(contest, new RawForm(), rawForm));
+            return ok(contest_admin.render(contest, new RawForm(), rawForm));
         }
 
         contest.getProblemBlocks().add(block);

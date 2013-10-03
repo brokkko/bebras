@@ -150,6 +150,10 @@ public class Contest {
         return id;
     }
 
+    public Event getEvent() {
+        return event;
+    }
+
     public boolean isAllowRestart() {
         return allowRestart;
     }

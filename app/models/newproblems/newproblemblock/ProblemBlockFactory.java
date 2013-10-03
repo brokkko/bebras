@@ -19,9 +19,11 @@ import java.util.regex.Pattern;
  */
 public class ProblemBlockFactory {
 
-    private static final Pattern ONE_PROBLEM = Pattern.compile("problem /(.*)");
-    private static final Pattern FOLDER = Pattern.compile("folder /(.*)");
-    private static final Pattern RANDOM = Pattern.compile("(\\d+) (first )?random <- /(.*)");
+    private static final Pattern ONE_PROBLEM = Pattern.compile("problem (.*)");                            //problem /PROB
+    private static final Pattern FOLDER = Pattern.compile("folder (.*)");                                  //folder  /FOLDER
+    private static final Pattern RANDOM_FOLDER = Pattern.compile("(\\d+) (first )?random <- (.*)");        //2 random <- /FOLDER
+    private static final Pattern RANDOM = Pattern.compile("(\\d+) random from (.*?)( in (.*))?");           //5 random from [] [] [] [] (in [])
+    private static final Pattern DIRECT = Pattern.compile("problems (.*?)( in (.*))?");                     //problems [] [] [] [] (in [])
 
     public static ProblemBlock getBlock(Contest contest, String configuration, Info translatorConfiguration) {
         Matcher matcher;
@@ -34,9 +36,17 @@ public class ProblemBlockFactory {
         if (matcher.matches())
             return folder(contest, matcher.group(1), translatorConfiguration);
 
+        matcher = RANDOM_FOLDER.matcher(configuration);
+        if (matcher.matches())
+            return randomFolder(contest, Integer.parseInt(matcher.group(1)), matcher.group(2), matcher.group(3), translatorConfiguration);
+
         matcher = RANDOM.matcher(configuration);
         if (matcher.matches())
-            return random(contest, Integer.parseInt(matcher.group(1)), matcher.group(2), matcher.group(3), translatorConfiguration);
+            return random(contest, Integer.parseInt(matcher.group(1)), matcher.group(2), matcher.group(4), translatorConfiguration);
+
+        matcher = DIRECT.matcher(configuration);
+        if (matcher.matches())
+            return direct(contest, matcher.group(1), matcher.group(3), translatorConfiguration);
 
         return null;
     }
@@ -55,6 +65,8 @@ public class ProblemBlockFactory {
     }
 
     private static ProblemBlock oneProblem(Contest contest, String link, Info translatorConfiguration) {
+        link = absoluteLink(contest, link);
+
         ProblemLink problemLink = new ProblemLink(link);
 
         ObjectId pid = problemLink.getProblemId();
@@ -65,6 +77,8 @@ public class ProblemBlockFactory {
     }
 
     private static ProblemBlock folder(Contest contest, String link, Info translatorConfiguration) {
+        link = absoluteLink(contest, link);
+
         ProblemLink problemLink = new ProblemLink(link);
 
         List<ProblemLink> list = problemLink.listProblems();
@@ -80,8 +94,55 @@ public class ProblemBlockFactory {
         return new DirectProblemBlock(contest, pids, translatorConfiguration);
     }
 
-    private static ProblemBlock random(Contest contest, int count, String takeOnlyFirst, String link, Info translatorConfiguration) {
-        //warning. code duplication with method folder()
+    private static ProblemBlock random(Contest contest, int count, String problemsList, String folder, Info translatorConfiguration) {
+        if (folder == null)
+            folder = contestFolder(contest);
+        else
+            folder = absoluteLink(contest, folder);
+
+        List<ObjectId> pids = new ArrayList<>();
+        String[] problems = problemsList.split(" ");
+
+        for (String problem : problems) {
+            ProblemLink pl = new ProblemLink(absoluteLink(folder, problem.trim()));
+            ObjectId pid = pl.getProblemId();
+
+            if (pid == null)
+                continue;
+
+            contest.registerProblemName(pid, pl.getName());
+            pids.add(pid);
+        }
+
+        return new RandomProblemBlock(contest, count, false, pids, translatorConfiguration);
+    }
+
+    private static ProblemBlock direct(Contest contest, String problemsList, String folder, Info translatorConfiguration) {
+        if (folder == null)
+            folder = contestFolder(contest);
+        else
+            folder = absoluteLink(contest, folder);
+
+        List<ObjectId> pids = new ArrayList<>();
+        String[] problems = problemsList.split(" ");
+
+        for (String problem : problems) {
+            ProblemLink pl = new ProblemLink(absoluteLink(folder, problem.trim()));
+            ObjectId pid = pl.getProblemId();
+
+            if (pid == null)
+                continue;
+
+            contest.registerProblemName(pid, pl.getName());
+            pids.add(pid);
+        }
+
+        return new DirectProblemBlock(contest, pids, translatorConfiguration);
+    }
+
+    private static ProblemBlock randomFolder(Contest contest, int count, String takeOnlyFirst, String link, Info translatorConfiguration) {
+        link = absoluteLink(contest, link);
+
         ProblemLink problemLink = new ProblemLink(link);
 
         List<ProblemLink> list = problemLink.listProblems();
@@ -95,6 +156,22 @@ public class ProblemBlockFactory {
         }
 
         return new RandomProblemBlock(contest, count, takeOnlyFirst != null, pids, translatorConfiguration);
+    }
+
+    private static String contestFolder(Contest contest) {
+        return contest.getEvent().getId() + '/' + contest.getId();
+    }
+
+    private static String absoluteLink(Contest contest, String link) {
+        return absoluteLink(contestFolder(contest), link);
+    }
+
+    private static String absoluteLink(String base, String link) {
+        if (link.startsWith("/"))
+            link = link.substring(1);
+        else
+            link = base + '/' + link;
+        return link;
     }
 
 }
