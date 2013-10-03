@@ -231,6 +231,9 @@ public class User implements SerializableUpdatable {
                 return null;
             user = getInstance(FIELD_LOGIN, username);
 
+            if (user == null) //this can occur if the user was removed; usually in debugging situations
+                return null;
+
             checkUserActivity(user);
 
             contextArgs.put("user", user);

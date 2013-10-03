@@ -35,14 +35,16 @@ var submit_answer; //function (problem_id, answer)
         select_page(clicked_page_index);
     }
 
-    function animate_substitute($div_to_hide, $div_to_show) {
+    function animate_substitute($div_to_hide, $div_to_show, complete) {
         $div_to_hide.animate({
             opacity: 0
-        }, 200, function () {
+        }, 200, "swing", function () {
             $div_to_hide.css('opacity', 1).hide();
             $div_to_show.css('opacity', 0).show().animate({
                 'opacity': 1
             }, 200);
+            if (complete)
+                complete();
         });
     }
 
@@ -62,10 +64,11 @@ var submit_answer; //function (problem_id, answer)
         var allPages = $('.page');
         var $current_page = $(allPages.get(current_page));
         var $new_page = $(allPages.get(page));
-        animate_substitute($current_page, $new_page);
+        animate_substitute($current_page, $new_page, function() {
+            window.scrollTo(0, $selectors.offset().top - 10);
+        });
 
         current_page = page;
-        window.scrollTo(0, $selectors.offset().top - 10);
     }
 
     //problem info
