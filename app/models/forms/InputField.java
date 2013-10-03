@@ -27,6 +27,21 @@ public class InputField implements SerializableUpdatable {
     private boolean extra; //do not create form entry for it
     private List<Validator> validators;
 
+    public InputField() {
+        //emtpy constructor
+    }
+
+    public InputField(String name, InputTemplate inputTemplate, boolean required, List<Validator> validators) {
+        this.name = name;
+        this.inputTemplate = inputTemplate;
+        this.required = required;
+        this.validators = validators;
+
+        this.store = true;
+        this.skipForEdit = false;
+        this.extra = false;
+    }
+
     public String getName() {
         return name;
     }

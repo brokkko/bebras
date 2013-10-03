@@ -22,6 +22,10 @@ public class MemoryDeserializer extends Deserializer {
         this.map = map;
     }
 
+    public void put(String field, Object value) {
+        map.put(field, value);
+    }
+
     @Override
     public Byte readByte(String field) {
         return (Byte) map.get(field);
@@ -99,5 +103,9 @@ public class MemoryDeserializer extends Deserializer {
     @Override
     public boolean isNull(String field) {
         return map.get(field) == null;
+    }
+
+    public Map<String, Object> getMap() {
+        return map;
     }
 }

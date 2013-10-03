@@ -44,15 +44,15 @@ public class Migrator3 extends Migrator {
 
         contest = event.getContestById("express");
         for (int i = 1; i <= 10; i++)
-            contest.getProblemBlocks().add(ProblemBlockFactory.getBlock(contest, "5 first random <- /bbtc/express/"  + i));
+            contest.getProblemBlocks().add(ProblemBlockFactory.getBlock(contest, "5 first random <- /bbtc/express/"  + i, null));
 
         contest = event.getContestById("hard");
         for (int i = 1; i <= 10; i++)
-            contest.getProblemBlocks().add(ProblemBlockFactory.getBlock(contest, "5 first random <- /bbtc/hard/"  + i));
+            contest.getProblemBlocks().add(ProblemBlockFactory.getBlock(contest, "5 first random <- /bbtc/hard/"  + i, null));
 
         contest = event.getContestById("explore");
         for (int i = 1; i <= 5; i++)
-            contest.getProblemBlocks().add(ProblemBlockFactory.getBlock(contest, "2 first random <- /bbtc/explore/"  + i));
+            contest.getProblemBlocks().add(ProblemBlockFactory.getBlock(contest, "2 first random <- /bbtc/explore/"  + i, null));
 
         event.store();
     }

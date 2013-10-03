@@ -5,11 +5,15 @@ import models.*;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newproblems.newproblemblock.ProblemBlock;
+import models.newproblems.newproblemblock.ProblemBlockFactory;
 import models.newserialization.FormDeserializer;
+import models.results.Info;
+import models.results.InfoPattern;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Results;
 import views.html.contest_admin;
 
 import java.util.ArrayList;
@@ -62,15 +66,23 @@ public class ContestAdministration extends Controller {
     }
 
     public static Result doAddBlock(String eventId, String contestId) {
-        FormDeserializer deserializer = new FormDeserializer(Forms.getAddBlockForm());
-        RawForm rawForm = deserializer.getRawForm();
-
         Contest contest = Contest.current();
 
-        if (rawForm.hasErrors())
-            return ok(contest_admin.render(contest, new RawForm(), rawForm));
+        FormDeserializer deserializer = new FormDeserializer(contest.getAddBlockInputForm());
+        RawForm rawForm = deserializer.getRawForm();
 
-        ProblemBlock block = (ProblemBlock) deserializer.getValidationData("config");
+        if (rawForm.hasErrors())
+            ok(contest_admin.render(contest, new RawForm(), rawForm));
+
+        String configuration = deserializer.readString("_config");
+        Info translatorConfiguration = contest.getResultTranslator().getConfigInfoPattern().read(deserializer);
+
+        ProblemBlock block = ProblemBlockFactory.getBlock(contest, configuration, translatorConfiguration);
+
+        if (block == null) {
+            rawForm.reject("_config", "Ошибка в строке конфигурации");
+            ok(contest_admin.render(contest, new RawForm(), rawForm));
+        }
 
         contest.getProblemBlocks().add(block);
 

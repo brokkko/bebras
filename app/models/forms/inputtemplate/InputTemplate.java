@@ -1,11 +1,9 @@
 package models.forms.inputtemplate;
 
+import models.forms.InputTemplateSerializationType;
 import models.forms.RawForm;
 import models.newforms.blocks.InputBlock;
-import models.newserialization.Deserializer;
-import models.newserialization.SerializableUpdatable;
-import models.newserialization.SerializationType;
-import models.newserialization.Serializer;
+import models.newserialization.*;
 import play.api.templates.Html;
 import play.i18n.Messages;
 
@@ -49,4 +47,10 @@ public abstract class InputTemplate<T> implements SerializableUpdatable { //Obje
         return null;
     }
 
+    public static InputTemplate get(String type, Object... values) {
+        MemoryDeserializer md = new MemoryDeserializer(values);
+        md.put("type", type);
+
+        return SerializationTypesRegistry.INPUT_TEMPLATE.read(new MemoryDeserializer("x", md.getMap()), "x");
+    }
 }

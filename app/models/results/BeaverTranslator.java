@@ -33,21 +33,23 @@ public class BeaverTranslator implements Translator {
 
             int result = problemResult == null ? 0 : (Integer) problemResult.get("result");
 //            String answer = problemResult == null ? "." : (String) problemResult.get("answer");
-            if (problemSettings == null) {
-                if (result < 0) {
-                    result = -penalty * result;
+
+            int localScores = problemSettings == null ? 1 : problemSettings.get("r") == null ? 1 : (Integer) problemSettings.get("r");
+            int localPenalty = problemSettings == null ? -1 : problemSettings.get("w") == null ? -1 : (Integer) problemSettings.get("w");
+
+            if (result < 0) {
+                result = penalty * localPenalty * result;
 //                    ans.append(answer.toLowerCase());
-                    w++;
-                } else if (result > 0) {
-                    result = scores * result;
+                w++;
+            } else if (result > 0) {
+                result = scores * localScores * result;
 //                    ans.append(answer.toUpperCase());
-                    r++;
-                } else {
-                    result = noAnswerPenalty;
+                r++;
+            } else {
+                result = noAnswerPenalty;
 //                    ans.append('.');
-                    n++;
-                }
-            } // TODO implement else
+                n++;
+            }
 
             sum += result;
         }
@@ -75,6 +77,14 @@ public class BeaverTranslator implements Translator {
     }
 
     @Override
+    public InfoPattern getConfigInfoPattern() {
+        return new InfoPattern(
+                                      "r", new BasicSerializationType<>(int.class), "Баллов за правильный ответ",
+                                      "w", new BasicSerializationType<>(int.class), "Баллов за неправильный ответ"
+        );
+    }
+
+    @Override
     public void serialize(Serializer serializer) {
         serializer.write("scores", scores);
         serializer.write("penalty", penalty);
@@ -84,7 +94,7 @@ public class BeaverTranslator implements Translator {
     @Override
     public void update(Deserializer deserializer) {
         scores = deserializer.readInt("scores", 1);
-        penalty = deserializer.readInt("penalty", 1);
+        penalty = deserializer.readInt("penalty", -1);
         noAnswerPenalty = deserializer.readInt("no ans", 0);
     }
 }

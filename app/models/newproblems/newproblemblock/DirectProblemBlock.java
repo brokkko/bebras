@@ -7,6 +7,7 @@ import models.newproblems.ProblemInfo;
 import models.newserialization.Deserializer;
 import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
+import models.results.Info;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -22,14 +23,22 @@ public class DirectProblemBlock extends ProblemBlock {
 
     private List<ObjectId> pids;
 
-    public DirectProblemBlock() {
+    public DirectProblemBlock(Contest contest, Deserializer deserializer) {
+        super(contest, deserializer);
+        pids = SerializationTypesRegistry.list(ObjectId.class).read(deserializer, "pids");
     }
 
-    public DirectProblemBlock(List<ObjectId> pids) {
+    public DirectProblemBlock(Contest contest, Info configuration) {
+        super(contest, configuration);
+    }
+
+    public DirectProblemBlock(Contest contest, List<ObjectId> pids, Info configuration) {
+        super(contest, configuration);
         this.pids = pids;
     }
 
-    public DirectProblemBlock(ObjectId problemId) {
+    public DirectProblemBlock(Contest contest, ObjectId problemId, Info configuration) {
+        super(contest, configuration);
         pids = new ArrayList<>();
         pids.add(problemId);
     }
@@ -55,7 +64,7 @@ public class DirectProblemBlock extends ProblemBlock {
                 continue;
 
             ObjectId pid = info.getId();
-            result.add(new ConfiguredProblem(pid, info.getProblem(), contest.getProblemName(pid), null)); //TODO now settings are null, load settings from deserializer, take infopattern from
+            result.add(new ConfiguredProblem(pid, info.getProblem(), contest.getProblemName(pid), getConfiguration())); //TODO now settings are null, load settings from deserializer, take infopattern from
         }
 
         return result;
@@ -68,11 +77,8 @@ public class DirectProblemBlock extends ProblemBlock {
 
     @Override
     public void serialize(Serializer serializer) {
+        super.serialize(serializer);
+        serializer.write("type", "direct");
         SerializationTypesRegistry.list(ObjectId.class).write(serializer, "pids", pids);
-    }
-
-    @Override
-    public void update(Deserializer deserializer) {
-        pids = SerializationTypesRegistry.list(ObjectId.class).read(deserializer, "pids");
     }
 }

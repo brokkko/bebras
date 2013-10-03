@@ -18,7 +18,6 @@ public class ValidatorSerializationType extends SerializableTreeSerializationTyp
         registerClass("user field", UserFieldValidator.class);
         registerClass("int", IntegerValidator.class);
         registerClass("boolean", BooleanValidator.class);
-        registerClass("problem block configuration", ProblemBlockConfigurationValidator.class);
         registerClass("event has contest", CurrentEventHasContestValidator.class);
         registerClass("event id", EventIdValidator.class);
     }

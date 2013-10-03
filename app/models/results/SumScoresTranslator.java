@@ -36,6 +36,11 @@ public class SumScoresTranslator implements Translator {
     }
 
     @Override
+    public InfoPattern getConfigInfoPattern() {
+        return new InfoPattern(); //TODO allow weight for scores
+    }
+
+    @Override
     public void serialize(Serializer serializer) {
         //do nothing
     }

@@ -2,7 +2,9 @@ package models.newserialization;
 
 import org.bson.types.ObjectId;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by ilya
@@ -27,6 +29,10 @@ public class BasicSerializationType<T> extends SerializationType<T> {
         }
 
         this.className = className;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     @Override
@@ -116,21 +122,4 @@ public class BasicSerializationType<T> extends SerializationType<T> {
 
         return null;
     }
-
-    /*//TODO report required type == found type
-    public List<Feature<T>> getFeatures() {
-        return Arrays.asList(
-                new Feature<T>() {
-                    @Override
-                    public String name() {
-                        return null;
-                    }
-
-                    @Override
-                    public String eval(T object) {
-                        return null;
-                    }
-                }
-        );
-    }*/
 }

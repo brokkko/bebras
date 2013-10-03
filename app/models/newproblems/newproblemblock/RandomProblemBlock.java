@@ -7,6 +7,7 @@ import models.newproblems.ProblemInfo;
 import models.newserialization.Deserializer;
 import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
+import models.results.Info;
 import org.bson.types.ObjectId;
 
 import java.util.*;
@@ -23,10 +24,20 @@ public class RandomProblemBlock extends ProblemBlock {
     private boolean takeOnlyFirst;
     private List<ObjectId> pids;
 
-    public RandomProblemBlock() {
+    public RandomProblemBlock(Contest contest, Deserializer deserializer) {
+        super(contest, deserializer);
+
+        count = deserializer.readInt("cnt");
+        takeOnlyFirst = deserializer.readBoolean("tof", false);
+        pids = SerializationTypesRegistry.list(ObjectId.class).read(deserializer, "pids");
     }
 
-    public RandomProblemBlock(int count, boolean takeOnlyFirst, List<ObjectId> pids) {
+    public RandomProblemBlock(Contest contest, Info configuration) {
+        super(contest, configuration);
+    }
+
+    public RandomProblemBlock(Contest contest, int count, boolean takeOnlyFirst, List<ObjectId> pids, Info configuration) {
+        super(contest, configuration);
         this.count = count;
         this.takeOnlyFirst = takeOnlyFirst;
         this.pids = pids;
@@ -70,7 +81,7 @@ public class RandomProblemBlock extends ProblemBlock {
         for (int i = 0; i < n; i++) {
             ProblemInfo info = ProblemInfo.get(pids.get(i));
             ObjectId pid = info.getId();
-            result.add(new ConfiguredProblem(pid, info.getProblem(), contest.getProblemName(pid), null));
+            result.add(new ConfiguredProblem(pid, info.getProblem(), contest.getProblemName(pid), getConfiguration()));
         }
 
         return result;
@@ -83,15 +94,11 @@ public class RandomProblemBlock extends ProblemBlock {
 
     @Override
     public void serialize(Serializer serializer) {
+        super.serialize(serializer);
+
+        serializer.write("type", "random");
         serializer.write("cnt", count);
         serializer.write("tof", takeOnlyFirst);
         SerializationTypesRegistry.list(ObjectId.class).write(serializer, "pids", pids);
-    }
-
-    @Override
-    public void update(Deserializer deserializer) {
-        count = deserializer.readInt("cnt");
-        takeOnlyFirst = deserializer.readBoolean("tof", false);
-        pids = SerializationTypesRegistry.list(ObjectId.class).read(deserializer, "pids");
     }
 }

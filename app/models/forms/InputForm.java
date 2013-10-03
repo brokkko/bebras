@@ -25,6 +25,15 @@ public class InputForm implements SerializableUpdatable {
     private LinkedHashMap<String, InputField> fields = new LinkedHashMap<>();
     private List<Validator> validators = new ArrayList<>();
 
+    public InputForm() {
+        //empty constructor
+    }
+
+    public InputForm(List<InputField> fieldsList, List<Validator> validators) {
+        this.validators = validators;
+        setupFields(fieldsList);
+    }
+
     public InputField getField(String fieldName) {
         return fields.get(fieldName);
     }
@@ -79,5 +88,17 @@ public class InputForm implements SerializableUpdatable {
 
     public static interface FieldFilter {
         boolean accept(InputField field);
+    }
+
+    public static InputForm union(InputForm first, InputForm second) {
+        List<InputField> fields = new ArrayList<>();
+        List<Validator> validators = new ArrayList<>();
+
+        fields.addAll(first.fields.values());
+        fields.addAll(second.fields.values());
+        validators.addAll(first.validators);
+        validators.addAll(second.validators);
+        
+        return new InputForm(fields, validators);
     }
 }

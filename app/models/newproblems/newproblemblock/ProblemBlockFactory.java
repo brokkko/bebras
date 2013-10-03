@@ -2,6 +2,8 @@ package models.newproblems.newproblemblock;
 
 import models.Contest;
 import models.newproblems.ProblemLink;
+import models.newserialization.Deserializer;
+import models.results.Info;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -21,35 +23,48 @@ public class ProblemBlockFactory {
     private static final Pattern FOLDER = Pattern.compile("folder /(.*)");
     private static final Pattern RANDOM = Pattern.compile("(\\d+) (first )?random <- /(.*)");
 
-    public static ProblemBlock getBlock(Contest contest, String configuration) {
+    public static ProblemBlock getBlock(Contest contest, String configuration, Info translatorConfiguration) {
         Matcher matcher;
 
         matcher = ONE_PROBLEM.matcher(configuration);
         if (matcher.matches())
-            return oneProblem(contest, matcher.group(1));
+            return oneProblem(contest, matcher.group(1), translatorConfiguration);
 
         matcher = FOLDER.matcher(configuration);
         if (matcher.matches())
-            return folder(contest, matcher.group(1));
+            return folder(contest, matcher.group(1), translatorConfiguration);
 
         matcher = RANDOM.matcher(configuration);
         if (matcher.matches())
-            return random(contest, Integer.parseInt(matcher.group(1)), matcher.group(2), matcher.group(3));
+            return random(contest, Integer.parseInt(matcher.group(1)), matcher.group(2), matcher.group(3), translatorConfiguration);
 
         return null;
     }
 
-    private static ProblemBlock oneProblem(Contest contest, String link) {
+    public static ProblemBlock getBlock(Contest contest, Deserializer deserializer) {
+        String type = deserializer.readString("type");
+
+        switch (type) {
+            case "random":
+                return new RandomProblemBlock(contest, deserializer);
+            case "direct":
+                return new DirectProblemBlock(contest, deserializer);
+        }
+
+        throw new IllegalArgumentException("Unknown type for problem block: " + type);
+    }
+
+    private static ProblemBlock oneProblem(Contest contest, String link, Info translatorConfiguration) {
         ProblemLink problemLink = new ProblemLink(link);
 
         ObjectId pid = problemLink.getProblemId();
 
         contest.registerProblemName(pid, problemLink.getName());
 
-        return new DirectProblemBlock(pid);
+        return new DirectProblemBlock(contest, pid, translatorConfiguration);
     }
 
-    private static ProblemBlock folder(Contest contest, String link) {
+    private static ProblemBlock folder(Contest contest, String link, Info translatorConfiguration) {
         ProblemLink problemLink = new ProblemLink(link);
 
         List<ProblemLink> list = problemLink.listProblems();
@@ -62,10 +77,10 @@ public class ProblemBlockFactory {
             pids.add(pid);
         }
 
-        return new DirectProblemBlock(pids);
+        return new DirectProblemBlock(contest, pids, translatorConfiguration);
     }
 
-    private static ProblemBlock random(Contest contest, int count, String takeOnlyFirst, String link) {
+    private static ProblemBlock random(Contest contest, int count, String takeOnlyFirst, String link, Info translatorConfiguration) {
         //warning. code duplication with method folder()
         ProblemLink problemLink = new ProblemLink(link);
 
@@ -79,7 +94,7 @@ public class ProblemBlockFactory {
             pids.add(pid);
         }
 
-        return new RandomProblemBlock(count, takeOnlyFirst != null, pids);
+        return new RandomProblemBlock(contest, count, takeOnlyFirst != null, pids, translatorConfiguration);
     }
 
 }

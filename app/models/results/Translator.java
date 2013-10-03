@@ -12,5 +12,6 @@ public interface Translator extends SerializableUpdatable {
 
     Info translate(List<Info> from, List<Info> settings, User user);
     InfoPattern getInfoPattern();
+    InfoPattern getConfigInfoPattern();
 
 }

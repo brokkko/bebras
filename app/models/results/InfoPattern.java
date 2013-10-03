@@ -1,6 +1,11 @@
 package models.results;
 
+import models.forms.InputField;
+import models.forms.InputForm;
+import models.forms.inputtemplate.InputTemplate;
+import models.forms.validators.Validator;
 import models.newserialization.*;
+import play.api.templates.Html;
 
 import java.util.*;
 
@@ -171,5 +176,54 @@ public class InfoPattern extends SerializationType<Info> {
         }
 
         return new InfoPattern(field2type, field2title);
+    }
+
+    public InputForm getInputForm() {
+        List<InputField> fieldsList = new ArrayList<>();
+
+        List<Validator> emptyImmutableValidatorsList = Collections.emptyList();
+
+        for (String field : field2type.keySet()) {
+            SerializationType<?> type = field2type.get(field);
+            String title = field2title.get(field);
+            fieldsList.add(new InputField(field, getInputFieldByType(type, title), false, emptyImmutableValidatorsList));
+        }
+
+        return new InputForm(fieldsList, emptyImmutableValidatorsList);
+    }
+
+    private InputTemplate getInputFieldByType(SerializationType<?> type, String title) {
+        if (!(type instanceof BasicSerializationType))
+            throw new IllegalArgumentException("failed to get editor for type");
+
+        String className = ((BasicSerializationType) type).getClassName();
+
+        switch (className) {
+            case "string":
+                return InputTemplate.get("string", "title", title, "placeholder", title);
+            case "int":
+                return InputTemplate.get("int", "title", title, "placeholder", title);
+            case "boolean":
+                return InputTemplate.get("boolean", "title");
+        }
+
+        throw new IllegalArgumentException("failed to get editor for type");
+    }
+
+    public Html simpleFormat(Info info) {
+        StringBuilder result = new StringBuilder();
+
+        for (String field : field2title.keySet()) {
+            Object value = info.get(field);
+            if (result.length() > 0)
+                result.append(", ");
+            result
+                    .append(views.html.htmlfeatures.string2html.render(field2title.get(field)))
+                    .append(": ").append("<b>")
+                    .append(value == null ? "-" : views.html.htmlfeatures.string2html.render(value.toString()))
+                    .append("</b>");
+        }
+
+        return Html.apply(result.toString());
     }
 }

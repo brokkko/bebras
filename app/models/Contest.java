@@ -8,6 +8,7 @@ import models.data.TableDescription;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newproblems.newproblemblock.ProblemBlock;
+import models.newproblems.newproblemblock.ProblemBlockFactory;
 import models.newserialization.*;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
@@ -72,8 +73,6 @@ public class Contest {
 
         pageSizes = SerializationTypesRegistry.list(int.class).read(deserializer, "page sizes");
 
-        problemBlocks = SerializationTypesRegistry.list(SerializationTypesRegistry.PROBLEM_BLOCK).read(deserializer, "blocks");
-
         //read results translator
 
         List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
@@ -82,6 +81,12 @@ public class Contest {
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
 
         pid2name = SerializationTypesRegistry.map(String.class).read(deserializer, "pid2name");
+
+        //read problem blocks
+        ListDeserializer blocksDeserializer = deserializer.getListDeserializer("blocks");
+        problemBlocks = new ArrayList<>();
+        while (blocksDeserializer.hasMore())
+            problemBlocks.add(ProblemBlockFactory.getBlock(this, blocksDeserializer.getDeserializer()));
     }
 
     public static Contest deserialize(Event event, Deserializer deserializer) {
@@ -102,7 +107,11 @@ public class Contest {
         serializer.write("allow restart", allowRestart);
 
         SerializationTypesRegistry.list(int.class).write(serializer, "page sizes", pageSizes);
-        SerializationTypesRegistry.list(SerializationTypesRegistry.PROBLEM_BLOCK).write(serializer, "blocks", problemBlocks);
+
+        //write problem blocks
+        ListSerializer blocksSerializer = serializer.getListSerializer("blocks");
+        for (ProblemBlock problemBlock : problemBlocks)
+            problemBlock.serialize(blocksSerializer.getSerializer());
 
         SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).write(serializer, "results translators", resultTranslator.getTranslators());
 
@@ -311,6 +320,11 @@ public class Contest {
         FormSerializer serializer = new FormSerializer(form);
         serialize(serializer);
         return serializer.getRawForm();
+    }
+
+    public InputForm getAddBlockInputForm() {
+        InputForm configForm = resultTranslator.getConfigInfoPattern().getInputForm();
+        return InputForm.union(Forms.getAddBlockForm(), configForm);
     }
 
     // statistics

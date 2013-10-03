@@ -31,6 +31,11 @@ public class TransferTranslator implements Translator {
     }
 
     @Override
+    public InfoPattern getConfigInfoPattern() {
+        return new InfoPattern();
+    }
+
+    @Override
     public void serialize(Serializer serializer) {
         if (userField != null && userField.equals(infoField))
             serializer.write("field", userField);

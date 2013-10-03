@@ -281,7 +281,7 @@ public class Forms {
                     "fields",
                     Utils.listify(
                             Utils.mapify(
-                                    "name", "config",
+                                    "name", "_config",
                                     "view", Utils.mapify(
                                             "type", "string",
                                             "title", "Строка конфигурации",
@@ -289,9 +289,6 @@ public class Forms {
                                     ),
                                     "required", true,
                                     "validators", Utils.listify(
-                                            Utils.mapify(
-                                                "type", "problem block configuration"
-                                            )
                                     )
                             )
                     ),

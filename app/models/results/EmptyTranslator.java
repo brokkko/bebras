@@ -21,6 +21,11 @@ public class EmptyTranslator implements Translator {
     }
 
     @Override
+    public InfoPattern getConfigInfoPattern() {
+        return new InfoPattern();
+    }
+
+    @Override
     public void serialize(Serializer serializer) {
         //do nothing
     }

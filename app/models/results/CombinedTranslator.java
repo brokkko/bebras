@@ -60,6 +60,25 @@ public class CombinedTranslator implements Translator {
     }
 
     @Override
+    public InfoPattern getConfigInfoPattern() {
+        if (translators == null)
+            return new InfoPattern();
+
+        InfoPattern result = null;
+
+        for (Translator translator : translators) {
+            InfoPattern next = translator.getConfigInfoPattern();
+
+            if (result == null)
+                result = next;
+            else
+                result = InfoPattern.union(result, next);
+        }
+
+        return result == null ? new InfoPattern() : result;
+    }
+
+    @Override
     public void serialize(Serializer serializer) {
         //do nothing //TODO implement, we don't need this functionality now
     }

@@ -18,3 +18,7 @@ a.submit:hover {
     border: 1px solid black;
     padding: 4px 8px;
 }
+
+.block-config-info {
+    color: #888;
+}

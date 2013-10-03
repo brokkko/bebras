@@ -4,7 +4,6 @@ import models.data.ObjectsProviderFactorySerializationType;
 import models.forms.InputTemplateSerializationType;
 import models.forms.validators.ValidatorSerializationType;
 import models.newproblems.ProblemSerializationType;
-import models.newproblems.newproblemblock.ProblemBlockSerializationType;
 import models.results.TranslatorSerializationType;
 import plugins.PluginSerializationType;
 
@@ -22,8 +21,6 @@ public class SerializationTypesRegistry {
     public static final ObjectsProviderFactorySerializationType OBJECTS_PROVIDER_FACTORY = new ObjectsProviderFactorySerializationType();
 
     public static final ProblemSerializationType PROBLEM = new ProblemSerializationType();
-
-    public static final ProblemBlockSerializationType PROBLEM_BLOCK = new ProblemBlockSerializationType();
 
     public static final PluginSerializationType PLUGIN = new PluginSerializationType();
 

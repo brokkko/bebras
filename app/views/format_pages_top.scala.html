@@ -1,6 +1,6 @@
 @(pagesCount:Int, extra_class:String)
 <div class='page-selectors @extra_class'>
     @for(page <- 0 until pagesCount) {
-        <span class='page-selector page-button@if(page == 0){ active}'><span class='hidden'>@page</span>Блок @(page + 1)</span>
+        <span class='page-selector page-button@if(page == 0){ active}'><span class='hidden'>@page</span>Блок&nbsp;@(page + 1)</span>
     }
 </div>

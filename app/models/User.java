@@ -720,15 +720,18 @@ public class User implements SerializableUpdatable {
         List<Info> problemsSettingsInfo = new ArrayList<>(size);
 
         for (int i = 0; i < size; i++) {
-            Problem problem = problems.get(i).getProblem();
+            ConfiguredProblem configuredProblem = problems.get(i);
+            Problem problem = configuredProblem.getProblem();
 
             Submission submission = submissions.get(i);
-            if (submission != null)
+            if (submission != null) {
                 problemsInfo.add(problem.check(submission.getAnswer())); //TODO implement remote check, online check
-            else
+                problemsSettingsInfo.add(configuredProblem.getSettings());
+            } else {
                 problemsInfo.add(null);
+                problemsSettingsInfo.add(null);
+            }
 
-            problemsSettingsInfo.add(null);
         }
 
         return contest.getResultTranslator().translate(problemsInfo, problemsSettingsInfo, this);
