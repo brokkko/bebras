@@ -5,7 +5,9 @@ import models.ServerConfiguration;
 import play.Play;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,6 +16,11 @@ import java.util.List;
  * Time: 22:00
  */
 public class ResourceLink implements Widget {
+
+    private static final Set<String> SKINNED_CSS = new HashSet<String>() {{
+        add("main_with_menu.css");
+        add("forms.css");
+    }};
 
     public static final ResourceLink JQUERY = new ResourceLink(
             "jquery-1.7.2.min",
@@ -53,9 +60,12 @@ public class ResourceLink implements Widget {
                 localUrl = "javascripts/" + localUrl;
                 break;
             case "css":
-                String skin = ServerConfiguration.getInstance().getSkin();
+                if (SKINNED_CSS.contains(localUrl) || SKINNED_CSS.contains(localUrl + ".css")) {
+                    String skin = ServerConfiguration.getInstance().getSkin();
+                    localUrl = skin + '/' + localUrl;
+                }
 
-                localUrl = "stylesheets/" + skin + "/" + localUrl;
+                localUrl = "stylesheets/" + localUrl;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown resource link type '" + type + "'");
