@@ -3,11 +3,12 @@ form.actions {
 }
 
 a.submit {
-    color: blue;
     text-decoration: none;
 }
 
-/*files list table*/
+a.submit:hover {
+    text-decoration: underline;
+}
 
 .files-list {
     margin-bottom: 1em;
