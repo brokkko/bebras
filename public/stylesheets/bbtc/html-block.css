@@ -1,20 +1,17 @@
-.html-block .contents.admin {
-    border-top: 1px solid black;
+.html-block-actions a {
+    display: inline-block;
 }
 
 .html-block-edit-action, .html-block-undo-action {
     /*display: block;*/
     /*border: 1px solid #000000;*/
-    /*padding: 2px 4px;*/
+    border: 1px solid black;
+    padding: 2px 4px;
     /*position: absolute;*/
     /*right: 0;*/
     /*top: -1.4em;*/
     /*text-align: right;*/
     text-decoration: none;
-}
-
-.html-block-actions {
-
 }
 
 .html-block-edit-action:hover, .html-block-undo-action:hover {
