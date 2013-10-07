@@ -1,6 +1,8 @@
 @(pagesCount:Int, extra_class:String)
 <div class='page-selectors @extra_class'>
-    @for(page <- 0 until pagesCount) { @*
-        *@<span class='page-selector page-button@if(page == 0){ active}'><span class='hidden'>@page</span>Блок&nbsp;@(page + 1)</span>@*
-    *@}
+    @defining(Contest.current.getBlockTitle) { title =>
+        @for(page <- 0 until pagesCount) { @*
+            *@<span class='page-selector page-button@if(page == 0){ active}'><span class='hidden'>@page</span>@if(title != null){Блок&nbsp;}@(page + 1)</span>@*
+        *@}
+    }
 </div>

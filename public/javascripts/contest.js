@@ -151,6 +151,11 @@ var submit_answer; //function (problem_id, answer)
 
                 break;
         }
+
+        //split pages if needed
+        if ($('.contest-is-scrolling').size() > 0) {
+            $('#all-problems-in-pages').splitPages('page', $('.content-footer'));
+        }
     });
 
     //stopping contest
@@ -190,6 +195,7 @@ var submit_answer; //function (problem_id, answer)
         $('#time-info').hide();
         $('#stop-contest').hide();
         $('#stop-confirmation').hide();
+        $('.content-footer').hide();
 
         //show last screen
         animate_substitute($('#all-problems-in-pages'), $('#contest-finished-info'));

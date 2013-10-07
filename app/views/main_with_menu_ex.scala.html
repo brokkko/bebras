@@ -1,4 +1,4 @@
-@(title: String)(widgets:scala.List[views.widgets.Widget])(show_header:Boolean, show_footer:Boolean, show_menu:Boolean, content_autosize:Boolean, menu_to_left:Boolean)(content_footer:Html)(extra_navigation:Html)(content: Html)
+@(title: String)(widgets:scala.List[views.widgets.Widget])(show_header:Boolean, show_footer:Boolean, show_menu:Boolean, content_autosize:Boolean, menu_to_left:Boolean)(content_header:Html)(content_footer:Html)(extra_navigation:Html)(content: Html)
 @import views.widgets.ResourceLink
 @import views.widgets.CssJsWidget
 @import scala.List
@@ -27,10 +27,13 @@
             </div>
             <div style="height:2em">@*pusher*@</div>
         </div>
+        @if(content_header != null && content_header.body.trim != "") {
+            <div class='content-header'>@content_header</div>
+        }
         <div class="content@if(content_autosize){ auto-size}">
         @content
         </div>
-        @if(content_footer != null) {
+        @if(content_footer != null && content_footer.body.trim != "") {
             <div class='content-footer'>@content_footer</div>
         }
         @if(show_footer) {

@@ -162,6 +162,10 @@ public class Contest {
         return tables;
     }
 
+    public String getBlockTitle() {
+        return Event.currentId().startsWith("bebras") ? null : "Блок";
+    }
+
     public TableDescription getTable(int index) {
         return index < 0 || index >= tables.size() ? null : tables.get(index);
     }

@@ -77,10 +77,10 @@ header {
     overflow: hidden;
 }
 
-.content-footer {
+.content-footer, .content-header {
     margin: 0 0 0 284px;
     /*border-left: 2px solid #f5972d;*/
-    padding: 8px;
+    padding: 2px 0 4px 0;
     /*background-color: white;*/
     /*background: #01a1de url(../../images/header02.png);*/
 }
@@ -98,7 +98,7 @@ header {
     border-right: 2px solid #f5972d;
 }
 
-.wrapper.menu-to-right .content, .wrapper.menu-to-right .content-footer {
+.wrapper.menu-to-right .content, .wrapper.menu-to-right .content-footer, .wrapper.menu-to-right .content-header {
     margin-left: 0;
     margin-right: 284px;
 }

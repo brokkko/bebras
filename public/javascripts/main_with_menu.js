@@ -3,10 +3,11 @@ $(function () {
         var window_height = $window.height();
         var header_height = $('header').outerHeight();
         var footer_height = $('footer').outerHeight();
+        var content_header_height = $('.content-header').outerHeight();
         var content_footer_height = $('.content-footer').outerHeight();
         console.log(header_height, footer_height, content_footer_height);
         //padding: 16 10, margin: 4 4, border 2 2
-        $('.content.auto-size').height(window_height - 16 - 10 - content_footer_height - 2 - 2 - 4 - 4 - footer_height - header_height);
+        $('.content.auto-size').height(window_height - 16 - 10 - content_footer_height - content_header_height - 2 - 2 - 4 - 4 - footer_height - header_height);
     };
 
     //allow info-boxes show and hide

@@ -19,6 +19,7 @@ public class ResourceLink implements Widget {
 
     private static final Set<String> SKINNED_CSS = new HashSet<String>() {{
         add("main_with_menu.css");
+        add("contest.css");
         add("forms.css");
     }};
 

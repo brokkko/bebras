@@ -1,35 +1,30 @@
 .page-selectors {
     text-align: center;
     line-height: 2;
-    margin: 0.5em 0;
 }
 
 .page-button {
-    padding: 0.3em;
+    padding: 0.3em 0.5em;
+    border: 1px solid #5b5e35;
     margin: 0 0.2em;
-    /*border: 1px solid #834E1B;*/
+    font-weight: bold;
+    border-radius: 4px;
     background-color: #f5e7cb;
-    box-shadow: 1px 1px 1px 1px #dfd1b5;
-    color: #00008b;
+    box-shadow: 1px 1px 1px 1px #008000;
+    color: #5b5e35;
     cursor: pointer;
 
     /*don't allow to select TODO */
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -o-user-select: none;
-    user-select: none;
 }
 
-.page-button:hover {
-    color: blue;
+.page-button:hover:not(.active) {
+    color: #77873b;
+    background-color: #f5c593;
 }
 
 .page-button.active {
     background-color: #f5c593;
-    box-shadow: 1px 1px 1px #f5972d;
+    box-shadow: 1px 1px 1px #008000;
     /*border-color: #f5972d;*/
 }
 
@@ -43,10 +38,6 @@
     text-align: center;
 }
 
-#time-status-info {
-
-}
-
 #time-info {
     font-weight: bold;
 }
@@ -57,26 +48,6 @@
 
 #stop-confirmation {
     margin-top: 0.4em;
-}
-
-/* contest finished and results */
-
-#contest-results {
-    background-color: #e0f1ff;
-    padding: 1em 1em 1em;
-    margin-bottom: 1em;
-}
-
-#contest-results h1 {
-    margin-top: 0;
-}
-
-#contest-results tr td:nth-child(even) {
-    font-weight: bold;
-}
-
-#contest-results tr td:nth-child(odd) {
-    padding-right: 1em;
 }
 
 /*Текст об отсылке данных на сервер*/
@@ -106,4 +77,24 @@
 
 .exit-button {
     text-align: center;
+}
+
+/* contest finished and results */
+
+#contest-results {
+    background-color: #e0f1ff;
+    padding: 1em 1em 1em;
+    margin-bottom: 1em;
+}
+
+#contest-results h1 {
+    margin-top: 0;
+}
+
+#contest-results tr td:nth-child(even) {
+    font-weight: bold;
+}
+
+#contest-results tr td:nth-child(odd) {
+    padding-right: 1em;
 }
