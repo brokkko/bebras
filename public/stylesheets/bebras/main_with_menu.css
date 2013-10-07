@@ -26,6 +26,10 @@ html, body {
     height: 100%;
 }
 
+html.no-scroll, body.no-scroll {
+    overflow: hidden;
+}
+
 header {
     background: #01a1de url(../../images/header02.png);
     border-bottom: 2px #646c37 solid;
@@ -39,6 +43,8 @@ header {
     height: 34px; /*2em + 2px*/
 }
 
+/* wrapper, content, navigation */
+
 .navigation {
     float: left;
     width: 284px;
@@ -47,6 +53,10 @@ header {
     margin: 0 0 -32000px;
 
     line-height: 1.5;
+}
+
+.wrapper.menu-to-right .navigation {
+    float: right;
 }
 
 .wrapper {
@@ -66,6 +76,39 @@ header {
     border-left: 2px solid #f5972d;
     overflow: hidden;
 }
+
+.content-footer {
+    margin: 0 0 0 284px;
+    /*border-left: 2px solid #f5972d;*/
+    padding: 8px;
+    /*background-color: white;*/
+    /*background: #01a1de url(../../images/header02.png);*/
+}
+
+.content.auto-size {
+    margin: 4px 4px 4px 284px;
+    padding: 16px 16px 10px;
+    border: 2px solid #f5972d;
+    border-radius: 10px;
+    overflow: auto;
+}
+
+.wrapper.menu-to-right .content:not(.auto-size) {
+    border-left: 0;
+    border-right: 2px solid #f5972d;
+}
+
+.wrapper.menu-to-right .content, .wrapper.menu-to-right .content-footer {
+    margin-left: 0;
+    margin-right: 284px;
+}
+
+.wrapper.menu-to-right .content.auto-size {
+    margin-left: 4px;
+    margin-right: 284px;
+}
+
+/* footer */
 
 footer {
     text-align: center;
@@ -295,4 +338,15 @@ a:hover {
 
 #su-exit-form {
     padding: 0 1em;
+}
+
+.link-button {
+    display: inline-block;
+    text-decoration: none;
+    font-weight: bold;
+    border: 1px solid black;
+    margin-top: 0.9em;
+    background-color: #01a1de;
+    padding: 0.4em 0.8em;
+    color: white !important;
 }

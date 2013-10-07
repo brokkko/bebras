@@ -49,7 +49,8 @@ public class Event {
     private Map<String, UserRole> roles;
     private LinkedHashMap<String, Plugin> plugins; //linked map is needed because plugins initialization may matter
 
-    private Map<String, InfoPattern> right2extraFields = new HashMap<>();
+    private Map<String, InfoPattern> right2extraFields = new HashMap<>(); //extra fields for users
+    private Map<String, Object> extraFields = new HashMap<>(); //extra fields for the event itself
 
     private String domain;
 
@@ -380,6 +381,19 @@ public class Event {
         }
 
         return pattern;
+    }
+
+    public void setExtraField(String field, Object value) {
+        extraFields.put(field, value);
+    }
+
+    public Object getExtraField(String field) {
+        return extraFields.get(field);
+    }
+
+    public Object getExtraField(String field, Object defaultValue) {
+        Object result = extraFields.get(field);
+        return result == null ? defaultValue : result;
     }
 
     //TODO move to settings

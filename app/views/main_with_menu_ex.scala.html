@@ -1,0 +1,48 @@
+@(title: String)(widgets:scala.List[views.widgets.Widget])(show_header:Boolean, show_footer:Boolean, show_menu:Boolean, content_autosize:Boolean, menu_to_left:Boolean)(content_footer:Html)(extra_navigation:Html)(content: Html)
+@import views.widgets.ResourceLink
+@import views.widgets.CssJsWidget
+@import scala.List
+@main(title)(CssJsWidget.get("main_with_menu") :: widgets)(content_autosize) {
+    <div class="wrapper@if(!menu_to_left){ menu-to-right}">
+        @if(show_header) {
+            <header>
+                @Event.current.getTitle
+            </header>
+        }
+        <div class='navigation'>
+            <nav>
+                <div class='contest-logo'></div>
+                @if(show_menu) {
+                    @for(menu_item <- views.Menu.current.items) {
+                        @if(menu_item.isCurrent) {
+                            <span class='menu-item'>@menu_item.getTitle</span>
+                        } else {
+                            <a class='menu-item' href="@menu_item.getLink">@menu_item.getTitle</a>
+                        }
+                    }
+                }
+            </nav>
+            <div class='extra-navigation'>
+            @extra_navigation
+            </div>
+            <div style="height:2em">@*pusher*@</div>
+        </div>
+        <div class="content@if(content_autosize){ auto-size}">
+        @content
+        </div>
+        @if(content_footer != null) {
+            <div class='content-footer'>@content_footer</div>
+        }
+        @if(show_footer) {
+            <div class="push"></div>
+        }
+    </div>
+    @if(show_footer) {
+        <footer>
+            <p class='developed-in-kio'>Разработано в <a target="blank" href="http://ipo.spb.ru">АНО «КИО»</a></p>
+            <p class="copyright">
+                © 2013 @Event.getOrganizationName. Все права защищены <br>@*·*@ Перепечатка материалов с разрешения администрации сайта
+            </p>
+        </footer>
+    }
+}

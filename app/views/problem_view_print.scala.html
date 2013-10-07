@@ -7,7 +7,7 @@
 @import org.bson.types.ObjectId
 @import models.newproblems.Problem
 @import views.widgets.ProblemWidget
-@main("Задача " + pid.toString)(List(WymEditorWidget.get, new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), ProblemWidget get problem, AdminWidget.get)) {
+@main("Задача " + pid.toString)(List(WymEditorWidget.get, new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), ProblemWidget get problem, AdminWidget.get))(false) {
     @if(showAnswers) {
     <div class='problem'>
         @problem.format(0, true)

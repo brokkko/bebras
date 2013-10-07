@@ -1,9 +1,9 @@
-@(title: String)(widgets:scala.List[views.widgets.Widget])(content: Html)
+@(title: String)(widgets:scala.List[views.widgets.Widget])(no_scroll:Boolean)(content: Html)
 @import views.widgets.ResourceLink
 @import scala.List
 <!DOCTYPE html>
 
-<html>
+<html@if(no_scroll){ class="no-scroll"}>
     <head>
         <title>@title</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon." + ServerConfiguration.getInstance.getSkin + ".png")">
@@ -17,7 +17,7 @@
         }
         @google_counter()
     </head>
-    <body>
+    <body@if(no_scroll){ class="no-scroll"}>
         <noscript>
         <div class="noscript">
         Для полной функциональности этого сайта необходимо включить JavaScript.

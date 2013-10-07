@@ -2,6 +2,7 @@ package controllers;
 
 import controllers.actions.*;
 import models.Contest;
+import models.Event;
 import models.Submission;
 import models.User;
 import models.newproblems.Problem;
@@ -43,6 +44,8 @@ public class Contests extends Controller {
         User user = User.current();
 
         Contest contest = Contest.current();
+
+        Event event = Event.current();
 
         int status = user.getContestStatus(contest);
         if (status == 6 || status == 7)
@@ -107,7 +110,20 @@ public class Contests extends Controller {
             textStatus = "results";
         contestInfoSerializer.write("status", textStatus);
 
-        return ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), getProblemsWidgets(pagedUserProblems)));
+        return ok(views.html.contest.render(
+                                                   textStatus,
+                                                   pagedUserProblems,
+                                                   problem2index,
+                                                   contestInfoSerializer.getNode().toString(), getProblemsWidgets(pagedUserProblems),
+                                                   event.getExtraField("contests_no_header", false) == Boolean.FALSE,
+                                                   event.getExtraField("contests_no_footer", false) == Boolean.FALSE,
+                                                   event.getExtraField("contests_scrolling", false) == Boolean.TRUE,
+                                                   event.getExtraField("contests_menu_to_right", false) == Boolean.FALSE,
+                                                   event.getExtraField("contests_no_menu", false) == Boolean.FALSE,
+                                                   event.getExtraField("contests_no_top_pages", false) == Boolean.FALSE,
+                                                   event.getExtraField("contests_no_bottom_pages", false) == Boolean.FALSE,
+                                                   event.getExtraField("contests_no_next_buttons", false) == Boolean.FALSE
+        ));
     }
 
     @SuppressWarnings("UnusedParameters")

@@ -1,11 +1,18 @@
-@(status:String, pagedUserProblems:List[List[models.newproblems.Problem]], problem2index:Map[models.newproblems.Problem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)
+@(status:String, pagedUserProblems:List[List[models.newproblems.Problem]], problem2index:Map[models.newproblems.Problem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)(show_header:Boolean, show_footer:Boolean, scrolling:Boolean, menu_to_left:Boolean, show_menu:Boolean, top_pages:Boolean, bottom_pages:Boolean, next_buttons:Boolean)
 @import views.widgets.CssJsWidget
 @import models.Contest
 @import models.Event
+@import views.widgets.ResourceLink
 @import models.User
 @import scala.List
 @import models.Utils
-@main_with_menu(Event.current.getTitle)(List(CssJsWidget get "contest", problemsWidgets)) {
+@main_with_menu_ex(Event.current.getTitle)(List(CssJsWidget get "contest", problemsWidgets))(show_header, show_footer, show_menu, scrolling, menu_to_left)(
+if (scrolling && bottom_pages) {
+    if(next_buttons) {
+        format_pages_bottom() += format_pages_top(pagedUserProblems.length, "")
+    } else
+        format_pages_top(pagedUserProblems.length, "")
+} else null){
     <div id='contest-time'>
         @if(Contest.current.isUnlimitedTime) {
             <div id='time-status-info'>Время не ограничено</div>
@@ -17,6 +24,9 @@
         }
         <div id='stop-confirmation' class='hidden'><span class='page-button active'>Подтвердите</span></div>
     </div>
+    @if(status != "going" && !show_menu) {
+        <nav><a class='menu-item' href="@routes.Application.enter(Event.currentId)">Назад</a></nav>
+    }
 } {
     <div id='all-problems-in-pages'>
 
@@ -25,8 +35,13 @@
             <h1>Результаты соревнования:</h1>
             <div id='contest-results'>@info(User.current.getContestResults(Contest.current), Contest.current.getResultsInfoPattern, null)</div>
         }
-        @format_pages_top(pagedUserProblems.length, "dont-move-down")
-        @format_pages_bottom()
+
+        @if(top_pages) {
+            @format_pages_top(pagedUserProblems.length, "dont-move-down")
+            @if(next_buttons) {
+                @format_pages_bottom()
+            }
+        }
         @for((page, pageIndex) <- pagedUserProblems.zipWithIndex) {
             <div class='page@if(pageIndex > 0){ hidden}'>
             @for(problem <- page) {
@@ -37,16 +52,19 @@
             }
             </div>
         }
-        @format_pages_bottom()
-        @format_pages_top(pagedUserProblems.length, "")
-
+        @if(bottom_pages && !scrolling) {
+            @if(next_buttons) {
+                @format_pages_bottom()
+            }
+            @format_pages_top(pagedUserProblems.length, "")
+        }
     </div>
 
     <div id='contest-finished-info' class="hidden">
         <h1>Соревнование завершено</h1>
         <p class='warning'>
         @if(Contest.current.resultsAvailableImmediately()) {
-                Результаты и правильные ответы доступны: <a href="@routes.Contests.contest(Event.currentId, Contest.current.getId)">просмотреть результаты</a>.
+                Результаты и правильные ответы доступны: <a class='link-button' href="@routes.Contests.contest(Event.currentId, Contest.current.getId)">Просмотреть результаты</a>
         } else {
             @if(Contest.current.resultsNotAvailableAtAll) {
                 Результаты и правильные ответы будут доступны позже.
@@ -55,9 +73,13 @@
             }
         }
         </p>
-        <p id='answer-sending-info-do' class='hidden answer-sending-info'>Отсылка ответов...</p>
-        <p id='answer-sending-info-ok' class='hidden answer-sending-info'>Все ваши ответы отосланы на проверку</p>
-        <p id='answer-sending-info-fail' class='hidden answer-sending-info warning'>ВНИМАНИЕ! В данный момент связь с Интернетом отсутствует, поэтому некоторые ваши ответы сохранены на этом компьютере,
+        <p class='hidden answer-sending-info answer-sending-info-do'>Отсылка ответов...</p>
+        <p class='hidden answer-sending-info answer-sending-info-ok'>Все ваши ответы отосланы на проверку</p>
+        <p class='hidden answer-sending-info answer-sending-info-fail warning'>ВНИМАНИЕ! В данный момент связь с Интернетом отсутствует, поэтому некоторые ваши ответы сохранены на этом компьютере,
             но не отосланы на проверку. Зайдите на эту страницу позже, когда появится связь, и ответы будут отосланы.</p>
+
+        @if(!Contest.current.resultsAvailableImmediately()) {
+            <p class='exit-button'><a class='link-button' href="@routes.Application.enter(Event.currentId)">Выход</a></p>
+        }
     </div>
 }

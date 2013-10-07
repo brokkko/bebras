@@ -61,10 +61,6 @@
 
 /* contest finished and results */
 
-#contest-finished-info a {
-    color: blue;
-}
-
 #contest-results {
     background-color: #e0f1ff;
     padding: 1em 1em 1em;
@@ -85,11 +81,11 @@
 
 /*Текст об отсылке данных на сервер*/
 
-#answer-sending-info-do {
+.answer-sending-info-do {
     color: blue;
 }
 
-#answer-sending-info-ok {
+.answer-sending-info-ok {
     color: green;
 }
 
@@ -106,4 +102,8 @@
 .change-problem input {
     margin-top: 0.5em;
     font-size: 1.2em;
+}
+
+.exit-button {
+    text-align: center;
 }

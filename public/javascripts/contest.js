@@ -130,12 +130,6 @@ var submit_answer; //function (problem_id, answer)
                 if (contest_info.duration > 0)
                     timer();
 
-                //if user stopped manually, but server did not get this
-                if (hasLocalStorage() && localStorage.getItem(local_storage_key_stop()) == "stopped") {
-                    localStorage.removeItem(local_storage_key_stop());
-                    stop_contest(true);
-                }
-
                 break;
             case "wait":
                 stop_contest(false);
@@ -262,6 +256,12 @@ var submit_answer; //function (problem_id, answer)
         //if we show results then refresh page to display new results from server
         if (contest_info.status == 'results')
             window.location = window.location; //TODO refresh
+
+        //if user stopped manually, but server did not get this
+        if (hasLocalStorage() && localStorage.getItem(local_storage_key_stop()) == "stopped") {
+            localStorage.removeItem(local_storage_key_stop());
+            stop_contest(true);
+        }
     }
 
     function answers_error() {
@@ -292,7 +292,7 @@ var submit_answer; //function (problem_id, answer)
 
     function answer_sending_info_show(id) {
         $('.answer-sending-info').hide();
-        $('#answer-sending-info-' + id).show();
+        $('.answer-sending-info-' + id).show();
     }
 
     function give_answer(problem_id, answer) {

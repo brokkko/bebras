@@ -12,19 +12,6 @@ p.time iframe {
     text-align: center;
 }
 
-.contest-select a {
-    display: inline-block;
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: bold;
-    border: 1px solid black;
-    margin-top: 0.9em;
-    background-color: #01a1de;
-    /*text-shadow: 1px 1px 1px #00008b;*/
-    padding: 0.4em 0.8em;
-    /*border-radius: 3px;*/
-}
-
 .contest-select a:visited {
     color: #ffffff;
 }

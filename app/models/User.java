@@ -436,7 +436,7 @@ public class User implements SerializableUpdatable {
         store();
     }
 
-    private ContestInfoForUser getContestInfoCreateIfNeeded(String contestId) {
+    public ContestInfoForUser getContestInfoCreateIfNeeded(String contestId) {
         ContestInfoForUser contestInfo = contest2info.get(contestId);
         if (contestInfo == null) {
             contestInfo = new ContestInfoForUser(event.getContestById(contestId));
