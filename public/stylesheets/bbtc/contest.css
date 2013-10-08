@@ -96,3 +96,7 @@
 #contest-results tr td:nth-child(odd) {
     padding-right: 1em;
 }
+
+#contest-finished-info {
+    margin: 1em;
+}

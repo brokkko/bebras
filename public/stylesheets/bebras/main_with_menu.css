@@ -1,23 +1,27 @@
 /* text on page */
-.content h1 {
+h1 {
     font-size: 2em;
     margin: 0.5em 0;
 }
 
-.content h2 {
+h2 {
     font-size: 1.5em;
     margin: 0.3em 0;
 }
 
-.content p {
+p {
     padding-bottom: 1em;
 }
 
-.content pre {
+footer p {
+    padding-bottom: 0;
+}
+
+pre {
     padding-bottom: 1em;
 }
 
-.content p.warning {
+p.warning {
     color: #d22100;
 }
 
@@ -80,7 +84,7 @@ header {
 .content-footer, .content-header {
     margin: 0 0 0 284px;
     /*border-left: 2px solid #f5972d;*/
-    padding: 2px 0 4px 0;
+    padding: 2px 4px 4px 4px;
     /*background-color: white;*/
     /*background: #01a1de url(../../images/header02.png);*/
 }

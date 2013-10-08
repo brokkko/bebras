@@ -82,7 +82,7 @@
 /* contest finished and results */
 
 #contest-results {
-    background-color: #e0f1ff;
+    background-color: #F3A25F;
     padding: 1em 1em 1em;
     margin-bottom: 1em;
 }
@@ -97,4 +97,8 @@
 
 #contest-results tr td:nth-child(odd) {
     padding-right: 1em;
+}
+
+#contest-finished-info {
+    margin: 1em;
 }
