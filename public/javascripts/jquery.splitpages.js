@@ -5,24 +5,18 @@
         var task = tasks.find('.' + pages_class);
         task.show();
 
-        var switcher = $('<div class="switcher">');
-
         var i = 0;
 
-        var page_selectors = switchers_container.find('.page-selector'); //TODO generalize class
+        var page_selectors = switchers_container.find('.page-selector'); //TODO generalize class .page-selector
 
         task.each(function () {
             var el = $(this);
             el.data('height', el.outerHeight(true));
 
             task.slice(i, i + 1).wrapAll('<div class="swPage" />');
-            $(page_selectors.get(i)).append("<span class='-info hidden'>" + i + "</span>");
 
             i++;
         });
-
-
-        switchers_container.append(switcher);
 
         var maxHeight = 0;
         var totalWidth = 0;
@@ -40,7 +34,19 @@
             elem.css('float', 'left').width(tasks.width());
         });
 
-        swPage.wrapAll('<div class="swSlider" />');
+        swPage.wrapAll('<div class="swSlider" />').css('overflow', 'auto');
+
+        var resize_action = function(){
+            var $content = $('.content');
+            var content_width = $content.width();
+            var content_height = $content.height();
+            swPage.width(content_width);
+            swPage.height(content_height);
+
+            //scroll to current problem
+            var $active = page_selectors.filter('.active');
+            $active.click();
+        };
 
         tasks.height(maxHeight);
 
@@ -48,18 +54,16 @@
         swSlider.append('<div class="clear" />').width(totalWidth);
 
         page_selectors.click(function (e) {
-//            $(this).addClass('active').siblings().removeClass('active');
-            var page_num = parseInt($(this).find('.-info').text());
+            var page_num = parseInt($(this).find('.-info').text()); //TODO generalize class .-info
             swSlider.stop().animate({'margin-left': - page_num * tasks.width()}, 'slow');
+            $('.content.auto-size').scrollTop(0);
             e.preventDefault();
             if (extra_page_action)
                 extra_page_action();
         });
 
-        swPage.each(function () {
-            var elem = $(this);
-            elem.attr("id", "id");
-        });
+        resize_action();
+        $(window).resize(resize_action);
 
         return this;
     }

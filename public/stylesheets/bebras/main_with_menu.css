@@ -87,10 +87,9 @@ header {
 
 .content.auto-size {
     margin: 4px 4px 4px 284px;
-    padding: 16px 16px 10px;
+    padding: 0;
     border: 2px solid #f5972d;
     border-radius: 10px;
-    overflow: auto;
 }
 
 .wrapper.menu-to-right .content:not(.auto-size) {

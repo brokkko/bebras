@@ -31,7 +31,7 @@ var submit_answer; //function (problem_id, answer)
 
     function page_selector_click() {
         var $this = $(this);
-        var clicked_page_index = +$this.find('span').text();
+        var clicked_page_index = +$this.find('span.-info').text();
         select_page(clicked_page_index);
     }
 
@@ -61,12 +61,14 @@ var submit_answer; //function (problem_id, answer)
         });
 
         //show a page
-        var allPages = $('.page');
-        var $current_page = $(allPages.get(current_page));
-        var $new_page = $(allPages.get(page));
-        animate_substitute($current_page, $new_page, function() {
-            window.scrollTo(0, $selectors.offset().top - 10);
-        });
+        if (!scrolling_problem_change_regime()) {
+            var allPages = $('.page');
+            var $current_page = $(allPages.get(current_page));
+            var $new_page = $(allPages.get(page));
+            animate_substitute($current_page, $new_page, function() {
+                window.scrollTo(0, $selectors.offset().top - 10);
+            });
+        }
 
         current_page = page;
     }
@@ -79,6 +81,10 @@ var submit_answer; //function (problem_id, answer)
 
     function get_problem_div(pid) {
         return $($('.problem').get(pid));
+    }
+
+    function scrolling_problem_change_regime() {
+        return $('.contest-is-scrolling').size() > 0;
     }
 
     //loading user answers to problems
@@ -108,7 +114,7 @@ var submit_answer; //function (problem_id, answer)
         pages_count = $('.page').length;
 
         $('.page-selector').click(page_selector_click);
-        $('.page-back').click(function(){select_page(current_page - 1);});
+        $('.page-back').click(function(){select_page(current_page - 1);}); //TODO in scrolling regime this should also work
         $('.page-forward').click(function(){select_page(current_page + 1);});
         $('#stop-contest').click(stop_contest_click);
         $('#stop-confirmation').click(stop_confirmation_click);
@@ -153,9 +159,8 @@ var submit_answer; //function (problem_id, answer)
         }
 
         //split pages if needed
-        if ($('.contest-is-scrolling').size() > 0) {
+        if (scrolling_problem_change_regime())
             $('#all-problems-in-pages').splitPages('page', $('.content-footer'));
-        }
     });
 
     //stopping contest
