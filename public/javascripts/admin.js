@@ -12,10 +12,19 @@ $(function(){
         var $this = $(this);
         var cls = get_class_that_starts_with($this, 'actions-');
 
-        if (!confirm("Подтвердите выполнение операции: " + $this.attr("title")))
+        var $form = $('form.' + cls);
+        var $extra_input = $form.find('.extra-value');
+        var title = $this.attr("title");
+
+        if ($extra_input.size() > 0) {
+            var extra_value = prompt(title, $extra_input.val());
+            if (extra_value == null || extra_value == "")
+                return false;
+            $extra_input.val(extra_value);
+        } else if (!confirm("Подтвердите выполнение операции: " + title))
             return false;
 
-        $('form.' + cls).submit();
+        $form.submit();
         return false;
     });
 });

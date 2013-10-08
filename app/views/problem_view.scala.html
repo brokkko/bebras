@@ -9,9 +9,12 @@
     @* -- header -- *@
     <div class='info-box'>
         <div class='folder-actions'>
+            <form action="@routes.Problems.renameProblem(Event.currentId(), link.getLink)" method="POST" class='submit actions-rename-problem'>
+                <input class='extra-value' type='hidden' name='extra-value' value="@link.getName">
+            </form>
             <form action="@routes.Problems.removeLink(Event.currentId(), link.getLink)" method="POST" class='submit actions-remove-problem'></form>
+            <a class='submit actions-rename-problem' title='Переименовать задачу' href='#'>Переименовать</a>
             <a class='submit actions-remove-problem' title='Удалить задачу' href='#'>Удалить</a>
-            @*<a href='#'>Переименовать</a>*@
         </div>
         <h2>Задание <span class='folder-name'>@link</span></h2>
         <p>

@@ -5,6 +5,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import models.Utils;
+import models.forms.RawForm;
 import models.newserialization.Deserializer;
 import models.newserialization.MongoDeserializer;
 import org.bson.types.ObjectId;
@@ -204,6 +205,20 @@ public class ProblemLink {
         res.put(FIELD_LINK, link);
         res.put(FIELD_PROBLEM, pid);
         MongoConnection.getProblemDirsCollection().save(res);
+
+        Cache.remove(cacheKey());
+    }
+
+    public void move(String newPath) {
+        if (!exists())
+            return;
+        if (!isProblem())
+            return;
+
+        MongoConnection.getProblemDirsCollection().update(
+                                                                 new BasicDBObject("link", link),
+                                                                 new BasicDBObject("$set", new BasicDBObject("link", newPath))
+        );
 
         Cache.remove(cacheKey());
     }

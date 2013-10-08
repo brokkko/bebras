@@ -77,6 +77,24 @@ public class Problems extends Controller {
         return ok(views.html.problem_view_print.render(pid, pi.getProblem(), answers));
     }
 
+    //TODO generalize to move to other folders
+    public static Result renameProblem(String eventId, String path) {
+        ProblemLink link = new ProblemLink(path);
+        ProblemLink parent = link.getParentLink();
+
+        RawForm form = new RawForm();
+        form.bindFromRequest();
+        String newPath = form.get("extra-value");
+        if (!newPath.startsWith("/"))
+            newPath = parent.getLink() + '/' + newPath;
+        else
+            newPath = newPath.substring(1);
+
+        link.move(newPath);
+
+        return redirect(routes.Problems.viewProblem(eventId, newPath));
+    }
+
     public static Result removeLink(String eventId, String path) {
         removeLinksSubtree(path);
 
