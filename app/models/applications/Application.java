@@ -1,11 +1,25 @@
 package models.applications;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+import controllers.MongoConnection;
+import models.Event;
 import models.User;
+import models.UserRole;
 import models.newserialization.Deserializer;
 import models.newserialization.SerializableUpdatable;
+import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
+import models.results.Info;
+import play.Logger;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,22 +29,9 @@ import java.util.Date;
  */
 public class Application implements SerializableUpdatable {
 
-    public static int NEW = 0;
-    public static int PAYED = 1;
-    public static int CONFIRMED = 2;
+    private static final Pattern CODE_PATTERN = Pattern.compile(".*-([0-9a-zA-Z]+)-.*");
 
-    private String name;
-    private int size;
-    private int state;
-    private int number;
-    private Date created;
-    private String comment;
-    private boolean kio;
-
-    public Application() {
-    }
-
-    private String hexBytes(int x, int halfBytes) {
+    private static String hexBytes(int x, int halfBytes) {
         String s = Integer.toHexString(x).toUpperCase();
         while (s.length() < halfBytes)
             s = '0' + s;
@@ -40,13 +41,33 @@ public class Application implements SerializableUpdatable {
         return s;
     }
 
+    public static String getCodeForUser(User user) {
+        int inc = user.getId().getInc();
+        int machine = user.getId().getMachine();
+
+        return hexBytes(machine, 2) + hexBytes(inc, 4);
+    }
+
+    public static int NEW = 0;
+    public static int PAYED = 1;
+
+    public static int CONFIRMED = 2;
+    private String name;
+    private int size;
+    private int state;
+    private int number;
+    private Date created;
+    private String comment;
+    private List<String> logins = new ArrayList<>();
+
+    private boolean kio;
+
+    public Application() {
+    }
+
     //TODO name generation may produce colliding ids
     public Application(User organizer, int size, int number, boolean kio) {
-        int inc = organizer.getId().getInc();
-        int machine = organizer.getId().getMachine();
-        String code = hexBytes(machine, 2) + hexBytes(inc, 4);
-
-        this.name = organizer.getInfo().get("region") + "-" + code + "-" + number + (kio ? "bk" : "b");
+        this.name = organizer.getInfo().get("region") + "-" + getCodeForUser(organizer) + "-" + number + (kio ? "bk" : "b");
         this.number = number;
         this.size = size;
         this.kio = kio;
@@ -89,6 +110,13 @@ public class Application implements SerializableUpdatable {
         return size * (kio ? 100 : 50);
     }
 
+    public String getCode() {
+        Matcher matcher = CODE_PATTERN.matcher(name);
+        if (!matcher.matches())
+            return "";
+        return matcher.group(1);
+    }
+
     public boolean isKio() {
         return kio;
     }
@@ -102,6 +130,7 @@ public class Application implements SerializableUpdatable {
         serializer.write("created", created);
         serializer.write("comment", comment);
         serializer.write("kio", kio);
+        SerializationTypesRegistry.list(String.class).write(serializer, "logins", logins);
     }
 
     @Override
@@ -113,5 +142,52 @@ public class Application implements SerializableUpdatable {
         created = deserializer.readDate("created");
         comment = deserializer.readString("comment");
         kio = deserializer.readBoolean("kio");
+        logins = SerializationTypesRegistry.list(String.class).read(deserializer, "logins");
+    }
+
+    public boolean createUsers(Event event, User user, UserRole role) {
+        String prefix = getCodeForUser(user).toLowerCase() + number + ".";
+        int index = 1;
+        int skipped = 0;
+
+        while (index <= size) {
+            String login = prefix + index;
+            index ++;
+
+            String password = User.generatePassword();
+            Info info = new Info();
+            info.put(User.FIELD_LOGIN, login);
+            info.put(User.FIELD_RAW_PASS, password);
+
+            boolean userCreated = event.createUser(password, role, info, user);
+            if (!userCreated) {
+                skipped++;
+
+                if (skipped == 100)
+                    return false;
+            }
+
+            logins.add(login);
+        }
+
+        return true;
+    }
+
+    public boolean removeUsers(Event event) {
+        BasicDBList dbList = new BasicDBList();
+        dbList.addAll(logins);
+        DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
+        query.put(User.FIELD_LOGIN, new BasicDBObject("$in", dbList));
+
+        try {
+            MongoConnection.getUsersCollection().remove(query);
+        } catch (MongoException exception) {
+            Logger.warn("Failed to remove users from application", exception);
+            return false;
+        }
+
+        logins = new ArrayList<>();
+
+        return true;
     }
 }

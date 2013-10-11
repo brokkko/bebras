@@ -23,6 +23,7 @@ public class TableDescription<T> implements SerializableUpdatable {
     private String right;
     private String filename;
     private boolean showAsTable; //false by default
+    private boolean showSearch;
 
     public TableDescription() {
     }
@@ -77,6 +78,10 @@ public class TableDescription<T> implements SerializableUpdatable {
         return showAsTable;
     }
 
+    public boolean isShowSearch() {
+        return showSearch;
+    }
+
     @Override
     public void update(Deserializer deserializer) {
         this.title = deserializer.readString("title");
@@ -111,6 +116,8 @@ public class TableDescription<T> implements SerializableUpdatable {
         this.filename = deserializer.readString("filename");
 
         this.showAsTable = deserializer.readBoolean("show as table", false);
+
+        this.showSearch = deserializer.readBoolean("show search", true);
     }
 
     @Override
@@ -136,5 +143,8 @@ public class TableDescription<T> implements SerializableUpdatable {
 
         if (showAsTable)
             serializer.write("show as table", showAsTable);
+
+        if (!showSearch)
+            serializer.write("show search", showSearch);
     }
 }

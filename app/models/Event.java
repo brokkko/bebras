@@ -3,14 +3,12 @@ package models;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import controllers.MongoConnection;
 import controllers.actions.AuthenticatedAction;
 import models.data.TableDescription;
 import models.newserialization.*;
-import models.results.CombinedTranslator;
-import models.results.EmptyTranslator;
-import models.results.InfoPattern;
-import models.results.Translator;
+import models.results.*;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
@@ -402,6 +400,28 @@ public class Event {
         if (event != null && event.getId().startsWith("bebras"))
             return "Центр информатизации образования «КИО»";
         return "Центр продуктивного обучения";
+    }
+
+    public boolean createUser(String password, UserRole role, Info info, User register) {
+        User user = new User();
+        if (info == null)
+            info = new Info();
+        user.setInfo(info);
+        user.setEvent(this);
+        user.setPasswordHash(User.passwordHash(password));
+        user.setConfirmed(true);
+        user.setPartialRegistration(true);
+        user.setRole(role);
+        user.setRegisteredBy(register.getId());
+
+        try {
+            user.serialize();
+        } catch (MongoException exception) {
+            Logger.warn("Failed to create user " + info.get("login"), exception);
+            return false;
+        }
+
+        return true;
     }
 
 }

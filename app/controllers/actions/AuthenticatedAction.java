@@ -62,8 +62,9 @@ public class AuthenticatedAction extends Action<Authenticated> {
             //Redirect for all calls except "get | show user info" and "post | change user info"
             Call userInfo = routes.UserInfo.info(Event.currentId(), null);
             Call userChangeInfo = routes.UserInfo.doChangeInfo(Event.currentId(), null);
+            Call suExit = routes.Application.substituteUserExit(Event.currentId());
 
-            if (!compareCallWithCurrent(userInfo) && !compareCallWithCurrent(userChangeInfo))
+            if (!compareCallWithCurrent(userInfo) && !compareCallWithCurrent(userChangeInfo) && !compareCallWithCurrent(suExit))
                 return true;
         }
 

@@ -2,15 +2,13 @@ package plugins;
 
 import models.Event;
 import models.User;
+import models.UserRole;
 import models.Utils;
 import models.applications.Application;
 import models.applications.Kvit;
 import models.forms.InputForm;
 import models.forms.RawForm;
-import models.newserialization.FormDeserializer;
-import models.newserialization.MemoryDeserializer;
-import models.newserialization.SerializableSerializationType;
-import models.newserialization.SerializationTypesRegistry;
+import models.newserialization.*;
 import org.bson.types.ObjectId;
 import play.api.templates.Html;
 import play.libs.Akka;
@@ -18,6 +16,7 @@ import play.libs.F;
 import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Results;
 import views.Menu;
 
 import java.io.File;
@@ -32,7 +31,9 @@ import java.util.concurrent.Callable;
  */
 public class Applications extends Plugin {
 
-    private final String RIGHT = "school org";
+    private String right = "school org";
+    private String userField = "apps";
+    private String participantRole = "PARTICIPANT";
 
     @SuppressWarnings("unchecked")
     private static InputForm addApplicationForm = InputForm.deserialize(
@@ -84,16 +85,16 @@ public class Applications extends Plugin {
 
     @Override
     public void initPage() {
-        Menu.addMenuItem("Заявки", getCall("apps"), RIGHT);
+        Menu.addMenuItem("Заявки", getCall("apps"), right);
     }
 
     @Override
     public void initEvent(Event event) {
         event.registerExtraUserField(
-                RIGHT,
-                "apps", //TODO take this field from plugin configuration
-                SerializationTypesRegistry.list(new SerializableSerializationType<>(Application.class)),
-                "Заявки"
+                                            right,
+                                            userField, //TODO take this field from plugin configuration
+                                            SerializationTypesRegistry.list(new SerializableSerializationType<>(Application.class)),
+                                            "Заявки"
         );
     }
 
@@ -108,7 +109,7 @@ public class Applications extends Plugin {
                 return showPdfKvit(params);
         }
 
-        return Controller.notFound();
+        return Results.notFound();
     }
 
     @Override
@@ -187,7 +188,7 @@ public class Applications extends Plugin {
     private Result addApplication() {
         User user = User.current();
 
-        if (!User.currentRole().hasRight(RIGHT))
+        if (!User.currentRole().hasRight(right))
             return Controller.forbidden();
 
         List<Application> applications = getApplications(user);
@@ -238,37 +239,52 @@ public class Applications extends Plugin {
         if (userAndName.length != 2)
             return Controller.badRequest();
 
+        String userId = userAndName[0];
+        String appName = userAndName[1];
+
+        User user;
         try {
-            String userId = userAndName[0];
-            String appName = userAndName[1];
-
-            User user = User.getInstance("_id", new ObjectId(userId));
-
-            Application application = getApplicationByName(appName, user);
-
-            if (application == null)
-                return Controller.notFound();
-
-            int state = application.getState();
-            if (state == Application.NEW)
-                return Controller.badRequest();
-
-            application.setState(state == Application.CONFIRMED ? Application.PAYED : Application.CONFIRMED);
-
-            user.store();
-
+            user = User.getInstance("_id", new ObjectId(userId));
         } catch (IllegalArgumentException ignored) { //failed to instantiate Object id
             return Controller.badRequest();
         }
 
-        return Controller.redirect(returnTo);
+        Application application = getApplicationByName(appName, user);
+
+        if (application == null)
+            return Results.notFound();
+
+        int state = application.getState();
+        if (state == Application.NEW)
+            return Results.badRequest();
+
+        int newState = state == Application.CONFIRMED ? Application.PAYED : Application.CONFIRMED;
+        application.setState(newState);
+
+        Event event = Event.current();
+        UserRole participantRole = event.getRole(getParticipantRole());
+        if (participantRole == UserRole.EMPTY)
+            Controller.badRequest();
+
+        boolean usersManipulationResult;
+        if (newState == Application.CONFIRMED)
+            usersManipulationResult = application.createUsers(event, user, participantRole);
+        else
+            usersManipulationResult = application.removeUsers(event);
+
+        if (!usersManipulationResult)
+            return Results.internalServerError();
+
+        user.store();
+
+        return Results.redirect(returnTo);
     }
 
     private Result removeApplication(String name) {
         User user = User.current();
 
-        if (!User.currentRole().hasRight(RIGHT))
-            return Controller.forbidden();
+        if (!User.currentRole().hasRight(right))
+            return Results.forbidden();
 
         List<Application> applications = getApplications(user);
 
@@ -295,7 +311,7 @@ public class Applications extends Plugin {
         User user = User.current();
         Kvit kvit = Kvit.getKvitForUser(user);
 
-        if (!User.currentRole().hasRight(RIGHT))
+        if (!User.currentRole().hasRight(right))
             return Controller.forbidden();
 
         List<Application> applications = getApplications(user);
@@ -305,7 +321,7 @@ public class Applications extends Plugin {
 
     private List<Application> getApplications(User user) { //TODO report: extract method does not extract //noinspection
         //noinspection unchecked
-        return (List<Application>) user.getInfo().get("apps");
+        return (List<Application>) user.getInfo().get(userField);
     }
 
     public Call getRemoveCall(String appName) {
@@ -334,5 +350,33 @@ public class Applications extends Plugin {
 
     public static InputForm getAddApplicationForm() {
         return addApplicationForm;
+    }
+
+    public String getRight() {
+        return right;
+    }
+
+    public String getUserField() {
+        return userField;
+    }
+
+    public String getParticipantRole() {
+        return participantRole;
+    }
+
+    @Override
+    public void serialize(Serializer serializer) {
+        super.serialize(serializer);
+        serializer.write("user field", userField);
+        serializer.write("right", right);
+        serializer.write("participant role", participantRole);
+    }
+
+    @Override
+    public void update(Deserializer deserializer) {
+        super.update(deserializer);
+        userField = deserializer.readString("user field", "apps");
+        right = deserializer.readString("right", "school org");
+        participantRole = deserializer.readString("participant role", "PARTICIPANT");
     }
 }

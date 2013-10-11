@@ -1,4 +1,4 @@
-@(titles:java.util.List[String], data:java.util.List[Array[Object]], tableIndex:Int, viewAsTable:Boolean,
+@(tableTitle:String, showSearch:Boolean, titles:java.util.List[String], data:java.util.List[Array[Object]], tableIndex:Int, viewAsTable:Boolean,
         searchTitles:java.util.List[String], searchFields:java.util.List[String], searchValues:java.util.List[String],
         fullTextSearchValue:String, inside:Boolean)
 @import views.widgets.ResourceLink
@@ -6,34 +6,38 @@
 @main_with_menu(Event.current.getTitle)(scala.List(new ResourceLink("tables.css"), AdminWidget.get)) { } {
     <p><a href="@routes.Tables.csvTable(Event.currentId, tableIndex)">загрузить csv</a></p>
 
+    <h1>@tableTitle</h1>
+
     @*display search table*@
-    <div class='fast-search'>
-        <h2>Поиск</h2>
+    @if(showSearch) {
+        <div class='fast-search'>
+            <h2>Поиск</h2>
 
-        <form method="post" class='data-search-table'>
-            <table>
-            @for((sf, si) <- searchFields.zipWithIndex) {
-                <tr>
-                    <td><label for="t@tableIndex-@sf">@searchTitles(si)</label></td>
-                    <td><input id='t@tableIndex-@sf' type='text' name='@sf' value='@searchValues(si)'></td>
-                </tr>
-            }
-            </table>
-            <input type='submit' value='Искать'>
-            &nbsp;&nbsp;&nbsp;
-            <a href='@routes.Tables.showTable(Event.currentId, tableIndex)'>Очистить</a>
-        </form>
-    </div>@* no space here *@<div class='universal-search'>
-        <h2>Полнотекстовый поиск</h2>
+            <form method="post" class='data-search-table'>
+                <table>
+                @for((sf, si) <- searchFields.zipWithIndex) {
+                    <tr>
+                        <td><label for="t@tableIndex-@sf">@searchTitles(si)</label></td>
+                        <td><input id='t@tableIndex-@sf' type='text' name='@sf' value='@searchValues(si)'></td>
+                    </tr>
+                }
+                </table>
+                <input type='submit' value='Искать'>
+                &nbsp;&nbsp;&nbsp;
+                <a href='@routes.Tables.showTable(Event.currentId, tableIndex)'>Очистить</a>
+            </form>
+        </div>@* no space here *@<div class='universal-search'>
+            <h2>Полнотекстовый поиск</h2>
 
-        <form method="post" class='data-search-table'>
-            <input class='long' type='text' name='-full-text-search' value='@fullTextSearchValue' autofocus="autofocus">
-            <input type='submit' value='Искать'>&nbsp;&nbsp;&nbsp;&nbsp;<input name='-full-text-search-inside' type='checkbox' value="1"@if(!inside){ checked}>&nbsp;только полные совпадения
-        </form>
-        <p class='warning'>* этот вид поиска универсален, но работает медленно</p>
-    </div>
+            <form method="post" class='data-search-table'>
+                <input class='long' type='text' name='-full-text-search' value='@fullTextSearchValue' autofocus="autofocus">
+                <input type='submit' value='Искать'>&nbsp;&nbsp;&nbsp;&nbsp;<input name='-full-text-search-inside' type='checkbox' value="1"@if(!inside){ checked}>&nbsp;только полные совпадения
+            </form>
+            <p class='warning'>* этот вид поиска универсален, но работает медленно</p>
+        </div>
 
-    <br>
+        <br>
+    }
 
     @if(data.size() == 0) {
         <p class='warning'>Данных нет</p>

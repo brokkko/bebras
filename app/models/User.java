@@ -48,13 +48,14 @@ public class User implements SerializableUpdatable {
     public static final String FIELD_NAME = "name";
     public static final String FIELD_PATRONYMIC = "patronymic";
     public static final String FIELD_EMAIL = "email";
+    public static final String FIELD_RAW_PASS = "raw_pass";
 
     private static final PasswordGenerator passwordGenerator = new PasswordGenerator();
 
     private Info info = null;
     private Event event = null; // should be substituted at update
     private String passwordHash;
-    private ObjectId id;
+    private ObjectId id = new ObjectId();
 
     //TODO move this all to some extra classes
     public static final String FIELD_REGISTRATION_UUID = "_registration_uuid";
@@ -200,6 +201,10 @@ public class User implements SerializableUpdatable {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public void setInfo(Info info) {
+        this.info = info;
     }
 
     public boolean testPassword(String password) {

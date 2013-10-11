@@ -26,6 +26,7 @@ public class FeaturesSetRegistry {
             set.register("user", (FeaturesSet<T>) new UserFeatures());
             set.register("contest", (FeaturesSet<T>) new ContestHistoryFeatures());
             set.register("user_action", (FeaturesSet<T>) new UserActionsFeatures((FeaturesSet<User>) set));
+            set.register("user_apps", (FeaturesSet<T>) new UserApplicationsFeatures());
         }
 
         if (clazz.equals(ApplicationWithUser.class))

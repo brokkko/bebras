@@ -220,6 +220,8 @@ public class ProblemLink {
                                                                  new BasicDBObject("$set", new BasicDBObject("link", newPath))
         );
 
+        //TODO change current link, add unique index for link, catch error: link already exists
+
         Cache.remove(cacheKey());
     }
 

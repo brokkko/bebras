@@ -286,6 +286,11 @@ public class Registration extends Controller {
             return ok(views.html.remind.render(form));
         }
 
+        if (user.getEmail() == null) {
+            form.reject("password_remind.no_email");
+            return ok(views.html.remind.render(form));
+        }
+
         String newPassword = User.generatePassword();
 
         String recoveryUUID = user.getRegistrationUUID();

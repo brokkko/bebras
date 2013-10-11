@@ -1,6 +1,7 @@
 package models.data;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import models.Event;
 import models.User;
 import models.newserialization.Deserializer;
@@ -23,6 +24,7 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
 
     private String role;
     private boolean loadEventResults;
+    private String sortField;
     //TODO load results for separate contests
 
     @Override
@@ -54,7 +56,11 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
             query.put(field, value);
         }
 
-        return new UsersProvider(loadEventResults, query, null);
+        DBObject sort = null;
+        if (sortField != null)
+            sort = new BasicDBObject(sortField, 1);
+
+        return new UsersProvider(loadEventResults, query, sort);
     }
 
     @Override
@@ -76,11 +82,13 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
     public void serialize(Serializer serializer) {
         serializer.write("role", role);
         serializer.write("load event results", loadEventResults);
+        serializer.write("sort", sortField);
     }
 
     @Override
     public void update(Deserializer deserializer) {
         role = deserializer.readString("role");
         loadEventResults = deserializer.readBoolean("load event results", false);
+        sortField = deserializer.readString("sort");
     }
 }
