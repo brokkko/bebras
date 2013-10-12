@@ -16,6 +16,7 @@ import java.util.List;
  */
 public interface ObjectsProviderFactory<T> extends SerializableUpdatable {
 
+    //must work with searchFields = null, searchValues = null
     ObjectsProvider<T> get(Event currentEvent, User currentUser, List<String> searchFields, List<String> searchValues);
 
     Class<T> getObjectsClass();

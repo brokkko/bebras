@@ -8,6 +8,7 @@ import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,6 +29,9 @@ public class ApplicationsProviderFactory implements ObjectsProviderFactory<Appli
         int state = -1;
         String name = null;
         String login = null;
+
+        if (searchFields == null)
+            searchFields = Collections.emptyList();
 
         for (int i = 0; i < searchFields.size(); i++) {
             String searchField = searchFields.get(i);

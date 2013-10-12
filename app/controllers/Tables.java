@@ -16,6 +16,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.tables_list;
 import views.html.view_table;
+import views.html.view_table_print;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class Tables extends Controller {
         final String finalFileName = fileName;
 
         final List<String> el = Collections.emptyList();
-        final FeaturesContext context = new FeaturesContext(currentEvent, false, currentCall);
+        final FeaturesContext context = new FeaturesContext(currentEvent, FeaturesContestType.CSV, currentCall);
 
         F.Promise<byte[]> promiseOfVoid = Akka.future(
                 new Callable<byte[]>() {
@@ -126,7 +127,7 @@ public class Tables extends Controller {
         final String finalFullTextSearch = fullTextSearch;
         final boolean finalInside = inside;
 
-        final FeaturesContext context = new FeaturesContext(currentEvent, true, controllers.routes.Tables.showTable(eventId, tableIndex));
+        final FeaturesContext context = new FeaturesContext(currentEvent, FeaturesContestType.INTERFACE, controllers.routes.Tables.showTable(eventId, tableIndex));
         final Table table = tableDescription.getTable(context);
 
         F.Promise<MemoryDataWriter> promiseOfVoid = Akka.future(
@@ -162,6 +163,54 @@ public class Tables extends Controller {
                             }
                         }
                 )
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Result showTablePrint(final String eventId, final Integer tableIndex) {
+        List<TableDescription<?>> tables = User.current().getTables();
+        if (tableIndex < 0 || tableIndex >= tables.size())
+            return notFound();
+
+        final TableDescription tableDescription = tables.get(tableIndex);
+
+        final Event currentEvent = Event.current();
+        final User currentUser = User.current();
+
+        final ObjectsProviderFactory objectsProviderFactory = tableDescription.getObjectsProviderFactory();
+
+        final FeaturesContext context = new FeaturesContext(currentEvent, FeaturesContestType.PRINT, routes.Tables.showTablePrint(eventId, tableIndex));
+        final Table table = tableDescription.getTable(context);
+
+        F.Promise<MemoryDataWriter> promiseOfVoid = Akka.future(
+                new Callable<MemoryDataWriter>() {
+                    public MemoryDataWriter call() throws Exception {
+
+                        try (
+                                    ObjectsProvider objectsProvider = objectsProviderFactory.get(currentEvent, currentUser, null, null);
+                                    MemoryDataWriter dataWriter = new MemoryDataWriter(table, null, false)
+                        ) {
+                            dataWriter.writeObjects(objectsProvider, context);
+
+                            return dataWriter;
+                        }
+                    }
+                }
+        );
+
+        return async(
+                    promiseOfVoid.map(
+                             new F.Function<MemoryDataWriter, Result>() {
+                                 public Result apply(MemoryDataWriter dataWriter) {
+                                     return ok(view_table_print.render(
+                                                  tableDescription.getTitle(),
+                                                  table.getTitles(),
+                                                  dataWriter.getList(),
+                                                  tableDescription.isShowAsTable()
+                                     ));
+                                 }
+                             }
+                    )
         );
     }
 

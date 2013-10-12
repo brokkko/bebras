@@ -3,6 +3,7 @@ package controllers;
 import controllers.actions.DcesController;
 import models.Event;
 import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.SimpleEmail;
 import play.Configuration;
 import play.Logger;
@@ -23,10 +24,34 @@ import java.util.Arrays;
 @DcesController
 public class Email {
 
-    private static String sendEmail(String to, String subject, String message) throws EmailException {
+    public static String sendEmail(String to, String subject, String message) throws EmailException {
+        return sendEmail(to, subject, message, null);
+    }
+
+    public static String sendEmail(String to, String subject, String message, String htmlMessage) throws EmailException {
+        boolean isHtml = htmlMessage == null;
+
+        if (isHtml) {
+            HtmlEmail email = new HtmlEmail();
+
+            prepareEmail(to, subject, email);
+
+            email.setHtmlMsg(htmlMessage);
+            email.setTextMsg(message);
+            return email.send();
+        } else {
+            SimpleEmail email = new SimpleEmail();
+
+            prepareEmail(to, subject, email);
+
+            email.setMsg(message);
+            return email.send();
+        }
+    }
+
+    private static void prepareEmail(String to, String subject, org.apache.commons.mail.Email email) throws EmailException {
         Configuration cfg = Play.application().configuration().getConfig("mail");
 
-        SimpleEmail email = new SimpleEmail();
         email.setHostName(cfg.getString("host"));
         email.setSmtpPort(cfg.getInt("port"));
 
@@ -65,9 +90,6 @@ public class Email {
 
         email.setCharset("UTF8");
         email.setSubject(subject);
-        email.setMsg(message);
-
-        return email.send();
     }
 
     public static void sendRegistrationConfirmationEmail(String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
@@ -77,12 +99,12 @@ public class Email {
             greeting = "";
 
         String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, false)
-                .absoluteURL(Http.Context.current().request());
+                                          .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();
         sendEmail(
-                email,
-                Messages.get("mail.registration.subject", title),
-                createLineBreaks(Messages.get("mail.registration.body", greeting, title, registrationLink, login, password))
+                         email,
+                         Messages.get("mail.registration.subject", title),
+                         createLineBreaks(Messages.get("mail.registration.body", greeting, title, registrationLink, login, password))
         );
     }
 
@@ -93,12 +115,12 @@ public class Email {
             greeting = "";
 
         String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, true)
-                .absoluteURL(Http.Context.current().request());
+                                          .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();
         sendEmail(
-                email,
-                Messages.get("mail.password_remind.subject", title),
-                createLineBreaks(Messages.get("mail.password_remind.body", greeting, title, registrationLink, login, password))
+                         email,
+                         Messages.get("mail.password_remind.subject", title),
+                         createLineBreaks(Messages.get("mail.password_remind.body", greeting, title, registrationLink, login, password))
         );
     }
 

@@ -3,6 +3,7 @@ package models.data.features;
 import models.Utils;
 import models.applications.Application;
 import models.applications.ApplicationWithUser;
+import models.data.FeaturesContestType;
 import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.data.WrappedFeatureValue;
@@ -35,7 +36,7 @@ public class ApplicationsFeatures implements FeaturesSet<ApplicationWithUser> {
 
         switch (featureName) {
             case "confirm":
-                if (!context.isScreen())
+                if (context.getType() != FeaturesContestType.INTERFACE)
                     return "-";
 
                 if (state == Application.NEW)
@@ -53,7 +54,7 @@ public class ApplicationsFeatures implements FeaturesSet<ApplicationWithUser> {
                 return userId;
             case "login":
                 String login = applicationWithUser.getLogin();
-                if (!context.isScreen())
+                if (context.getType() != FeaturesContestType.INTERFACE)
                     return login;
                 return new WrappedFeatureValue(
                         login,

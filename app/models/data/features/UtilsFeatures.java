@@ -1,10 +1,7 @@
 package models.data.features;
 
 import models.Utils;
-import models.data.FeaturesContext;
-import models.data.FeaturesSet;
-import models.data.FunctionFeaturesSet;
-import models.data.WrappedFeatureValue;
+import models.data.*;
 import org.bson.types.ObjectId;
 
 import java.util.Date;
@@ -28,7 +25,7 @@ public class UtilsFeatures<T> extends FunctionFeaturesSet<T> {
 
         switch (function) {
             case "=":
-                if (context.isScreen())
+                if (context.getType() != FeaturesContestType.CSV)
                     return feature;
                 return new WrappedFeatureValue(feature, "=\"" + feature + "\"");
             case "id_to_date":

@@ -4,6 +4,20 @@
 /*dl - data line*/
 /*dli - data inline*/
 
+.data-table-print {
+    font-size: 14pt;
+    /*border-collapse: collapse;*/
+}
+
+.data-table-print td {
+    border: 1pt solid black;
+    padding: 3pt 6pt 3pt 3pt;
+}
+
+.data-table-print thead {
+    font-weight: bold;
+}
+
 .data-table {
     border-bottom: 1px solid black;
 }

@@ -4,9 +4,9 @@
 @import views.widgets.ResourceLink
 @import views.widgets.AdminWidget
 @main_with_menu(Event.current.getTitle)(scala.List(new ResourceLink("tables.css"), AdminWidget.get)) { } {
-    <p><a href="@routes.Tables.csvTable(Event.currentId, tableIndex)">загрузить csv</a></p>
-
     <h1>@tableTitle</h1>
+    <p><a target="_blank" href="@routes.Tables.showTablePrint(Event.currentId, tableIndex)">Распечатать</a></p>
+    <p><a href="@routes.Tables.csvTable(Event.currentId, tableIndex)">Загрузить в формате для Excel</a></p>
 
     @*display search table*@
     @if(showSearch) {

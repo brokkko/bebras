@@ -14,7 +14,7 @@ import java.util.List;
 public class TableDescription<T> implements SerializableUpdatable {
 
     public static final String HTML_POSTFIX = "<html>";
-    public static final String CSS_POSTFIX = "<css>";
+    public static final String CSV_POSTFIX = "<csv>";
 
     private String title;
     private ObjectsProviderFactory<T> objectsProviderFactory;
@@ -47,16 +47,16 @@ public class TableDescription<T> implements SerializableUpdatable {
 
             //check HTML_POSTFIX and remove if needed
             if (title.endsWith(HTML_POSTFIX)) {
-                if (!context.isScreen())
+                if (context.getType() != FeaturesContestType.INTERFACE)
                     continue;
                 title = title.substring(0, title.length() - HTML_POSTFIX.length());
             }
 
-            //check CSS_POSTFIX and remove if needed
-            if (title.endsWith(CSS_POSTFIX)) {
-                if (context.isScreen())
+            //check CSV_POSTFIX and remove if needed
+            if (title.endsWith(CSV_POSTFIX)) {
+                if (context.getType() != FeaturesContestType.CSV)
                     continue;
-                title = title.substring(0, title.length() - CSS_POSTFIX.length());
+                title = title.substring(0, title.length() - CSV_POSTFIX.length());
             }
 
             filteredTitles.add(title);

@@ -49,6 +49,7 @@ POST        /:event/admin                                        controllers.Eve
 GET         /:event/:table/csv_table                             controllers.Tables.csvTable(event, table:Integer)
 GET         /:event/:table/show_table                            controllers.Tables.showTable(event, table:Integer)
 POST        /:event/:table/show_table                            controllers.Tables.showTableSearch(event, table:Integer)
+GET         /:event/:table/show_table_print                      controllers.Tables.showTablePrint(event, table:Integer)
 GET         /:event/:contest/:table/csv_table                    controllers.Tables.csvTableForContest(event, contest, table:Integer)
 GET         /:event/tables_list                                  controllers.Tables.tablesList(event)
 POST        /:event/add_contest                                  controllers.EventAdministration.addContest(event)

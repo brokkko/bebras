@@ -9,6 +9,7 @@ import models.newserialization.Serializer;
 import org.bson.types.ObjectId;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,6 +30,9 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
 
     @Override
     public ObjectsProvider<User> get(Event currentEvent, User currentUser, List<String> searchFields, List<String> searchValues) {
+        if (searchFields == null)
+            searchFields = Collections.emptyList();
+
         BasicDBObject query = new BasicDBObject(User.FIELD_EVENT, currentEvent.getId());
         if (role != null)
             query.put(User.FIELD_USER_ROLE, role);

@@ -1,10 +1,7 @@
 package models.data.features;
 
 import models.User;
-import models.data.FeaturesContext;
-import models.data.FeaturesSet;
-import models.data.FunctionFeaturesSet;
-import models.data.WrappedFeatureValue;
+import models.data.*;
 import org.bson.types.ObjectId;
 
 /**
@@ -28,7 +25,7 @@ public class UserActionsFeatures extends FunctionFeaturesSet<User> {
 
     @Override
     protected Object function(String function, Object feature, FeaturesContext context) {
-        if (!context.isScreen())
+        if (context.getType() != FeaturesContestType.INTERFACE)
             return feature;
 
         if (feature == null)

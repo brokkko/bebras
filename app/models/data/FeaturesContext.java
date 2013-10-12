@@ -12,12 +12,12 @@ import play.mvc.Call;
 public class FeaturesContext {
 
     private Event event;
-    private boolean screen;
+    private FeaturesContestType type;
     private Call currentCall;
 
-    public FeaturesContext(Event event, boolean screen, Call currentCall) {
+    public FeaturesContext(Event event, FeaturesContestType type, Call currentCall) {
         this.event = event;
-        this.screen = screen;
+        this.type = type;
         this.currentCall = currentCall;
     }
 
@@ -25,8 +25,8 @@ public class FeaturesContext {
         return event;
     }
 
-    public boolean isScreen() {
-        return screen;
+    public FeaturesContestType getType() {
+        return type;
     }
 
     public Call getCurrentCall() {

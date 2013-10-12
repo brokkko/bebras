@@ -1,0 +1,38 @@
+@(tableTitle:String, titles:java.util.List[String], data:java.util.List[Array[Object]], viewAsTable:Boolean)
+@import views.widgets.ResourceLink
+@main(Event.current.getTitle)(scala.List(new ResourceLink("main_with_menu.css"), new ResourceLink("tables.css")))(false) {
+    <h1>@tableTitle</h1>
+
+    @if(data.size() == 0) {
+        <p class='warning'>Данных нет</p>
+    } else {
+        @if(viewAsTable) {
+            <table class='data-table-print'>
+                <thead><tr>
+                @for(title <- titles) {
+                    <td>@title</td>
+                }
+                </tr></thead>
+                <tbody>
+                @for(line <- data) {
+                    <tr>
+                    @for(element <- line) {
+                        <td>@element</td>
+                    }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        } else {
+            <div class='data-table-print'>
+                @for((line, line_ind) <- data.zipWithIndex) {<div class='dl'><div class='de' title='№'><b>@(line_ind + 1)</b></div>@for((element, ind) <- line.zipWithIndex) {<div class='de' title="@titles.get(ind)">@element</div>}</div>}
+            </div>
+        }
+    }
+
+    <script type="text/javascript">
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+}

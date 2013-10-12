@@ -1,9 +1,6 @@
 package models.data.features;
 
-import models.data.FeaturesContext;
-import models.data.FeaturesSet;
-import models.data.FunctionFeaturesSet;
-import models.data.WrappedFeatureValue;
+import models.data.*;
 import play.api.templates.Html;
 
 /**
@@ -20,7 +17,7 @@ public class HtmlFeatures<T> extends FunctionFeaturesSet<T> {
 
     @Override
     protected Object function(String function, Object feature, FeaturesContext context) {
-        if (!context.isScreen())
+        if (context.getType() != FeaturesContestType.INTERFACE)
             return feature;
 
         if (feature == null)
