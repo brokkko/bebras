@@ -339,3 +339,21 @@ a, a:visited {
     padding: 0.4em 0.8em;
     color: white !important;
 }
+
+/* table actions */
+.table-actions {
+    float: right;
+}
+
+.table-actions img {
+    vertical-align: middle;
+}
+
+.table-actions a {
+    margin-left: 1em;
+}
+
+.table-actions.small img {
+    width: 24px;
+    height: 24px;
+}

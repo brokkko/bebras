@@ -9,10 +9,9 @@
             <div class='link'>
                 <p><a href="@routes.Tables.showTable(Event.currentId, ind)">@table.getTitle</a></p>
             </div>
-            <div class='additional'>
-                <p>
-                    <a href="@routes.Tables.csvTable(Event.currentId, ind)">загрузить в формате для Excel</a>
-                </p>
+            <div class='additional table-actions small'>
+                <a target="_blank" href="@routes.Tables.showTablePrint(Event.currentId, ind)"><img src='@routes.Assets.at("images/gnome_text_x_generic.png")'>Распечатать</a>
+                <a href="@routes.Tables.csvTable(Event.currentId, ind)"><img src='@routes.Assets.at("images/excel.png")'>Загрузить в формате Excel</a>
             </div>
             <div class='footer'></div>
         </div>

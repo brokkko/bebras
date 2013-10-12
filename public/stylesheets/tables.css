@@ -4,6 +4,8 @@
 /*dl - data line*/
 /*dli - data inline*/
 
+/* print */
+
 .data-table-print {
     font-size: 14pt;
     /*border-collapse: collapse;*/
@@ -17,6 +19,24 @@
 .data-table-print thead {
     font-weight: bold;
 }
+
+.data-table-print {
+    border-bottom: 1px solid black;
+}
+
+.data-table-print .de {
+    display: inline-block;
+    padding: 4px;
+    border-right: 1px solid #aaa;
+}
+
+.data-table-print .dl {
+    border-left: 1px solid black;
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+}
+
+/* screen */
 
 .data-table {
     border-bottom: 1px solid black;

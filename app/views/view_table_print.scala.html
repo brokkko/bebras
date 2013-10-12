@@ -3,6 +3,7 @@
 @main(Event.current.getTitle)(scala.List(new ResourceLink("main_with_menu.css"), new ResourceLink("tables.css")))(false) {
     <h1>@tableTitle</h1>
 
+    @*TODO this is code duplication with view_table.scala.html*@
     @if(data.size() == 0) {
         <p class='warning'>Данных нет</p>
     } else {
