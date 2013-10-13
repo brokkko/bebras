@@ -1,4 +1,4 @@
-@(status:String, pagedUserProblems:List[List[models.newproblems.Problem]], problem2index:Map[models.newproblems.Problem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)
+@(status:String, pagedUserProblems:java.util.List[java.util.List[models.newproblems.Problem]], problem2index:Map[models.newproblems.Problem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)
 @import views.widgets.CssJsWidget
 @import models.Contest
 @import models.Event
@@ -7,7 +7,7 @@
 @import scala.List
 @import models.Utils
 @main(Event.current.getTitle)(List(CssJsWidget get "contest", problemsWidgets))(false) {
-    <div id='all-problems-in-pages'>
+    <div id='all-problems-in-pages-print'>
         <div class='contest-info hidden'>@Html(jsonContestInfo)</div>
         @for((page, pageIndex) <- pagedUserProblems.zipWithIndex) {
             <div class='page'>

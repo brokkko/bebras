@@ -14,6 +14,7 @@ import models.results.Info;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -119,11 +120,9 @@ public class Contests extends Controller {
 
         if (printing) {
             String needStatus = displayType.equals("print") ? "going" : "results";
-
-            if (user.hasEventAdminRight())
-                textStatus = needStatus;
-            else if (!needStatus.equals(textStatus))
+            if (!user.hasEventAdminRight() && !textStatus.equals("results") && !needStatus.equals(textStatus))
                 return forbidden();
+            textStatus = needStatus;
         }
 
         contestInfoSerializer.write("status", textStatus);
