@@ -11,7 +11,12 @@
         <p class='warning'>@flash.get("message")</p>
     }
 
-    @models.Forms.getEventChangeForm.formatExtended(eventForm, controllers.routes.EventAdministration.admin(Event.currentId), true, "form.do_change")
+    <div class='info-box@if(eventForm.hasErrors){ initially-open}'>
+        <h3 class='info-box-cut-shower'>Изменить настройки...</h3>
+        <div class='info-box-cut'>
+            @models.Forms.getEventChangeForm.formatExtended(eventForm, controllers.routes.EventAdministration.admin(Event.currentId), true, "form.do_change")
+        </div>
+    </div>
 
     <h2>Список школ</h2>
     <form enctype="multipart/form-data" method="POST" action="@routes.EventAdministration.uploadKenguruSchoolCodes(Event.currentId)">
@@ -41,8 +46,13 @@
     <form action="@routes.EventAdministration.doInvalidateContestsAndEventResults(Event.currentId())" method="POST" class='submit actions-invalidate-all-event-results'></form>
     <form action="@routes.EventAdministration.doRemoveAllRegisteredByRole(Event.currentId(), "PARTICIPANT")" method="POST" class='submit actions-remove-all-participants'></form>
 
-    <h2>Клонировать событие</h2>
-    @models.Forms.getCloneEventForm.formatExtended(eventForm, controllers.routes.EventAdministration.doClone(Event.currentId), false, "form.do_add")
+
+    <div class='info-box@if(cloneForm.hasErrors){ initially-open}'>
+        <h3 class='info-box-cut-shower'>Клонировать событие...</h3>
+        <div class='info-box-cut'>
+        @models.Forms.getCloneEventForm.formatExtended(cloneForm, controllers.routes.EventAdministration.doClone(Event.currentId), false, "form.do_add")
+        </div>
+    </div>
 
     <h2>Удаление события</h2>
 

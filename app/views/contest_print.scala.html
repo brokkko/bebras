@@ -1,0 +1,23 @@
+@(status:String, pagedUserProblems:List[List[models.newproblems.Problem]], problem2index:Map[models.newproblems.Problem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)
+@import views.widgets.CssJsWidget
+@import models.Contest
+@import models.Event
+@import views.widgets.ResourceLink
+@import models.User
+@import scala.List
+@import models.Utils
+@main(Event.current.getTitle)(List(CssJsWidget get "contest", problemsWidgets))(false) {
+    <div id='all-problems-in-pages'>
+        <div class='contest-info hidden'>@Html(jsonContestInfo)</div>
+        @for((page, pageIndex) <- pagedUserProblems.zipWithIndex) {
+            <div class='page'>
+            @for(problem <- page) {
+                <div class='problem'><span class='hidden pid'>@problem2index(problem)</span>
+                    @problem.format(problem2index(problem), status == "results")
+                    <div class='footer'></div>
+                </div>
+            }
+            </div>
+        }
+    </div>
+}

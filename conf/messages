@@ -139,3 +139,6 @@ results_translator.beaver.title.answers=Ответы
 results_translator.beaver.title.max=Максимум баллов
 
 results_translator.sum_scores.title.scores=Баллов
+
+actions.unknown_event=Неизвестное событие
+actions.unknown_contest=Неизвестное соревнование

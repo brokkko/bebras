@@ -1,7 +1,6 @@
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
-import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
 

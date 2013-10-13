@@ -90,7 +90,8 @@ public class Problems extends Controller {
         else
             newPath = newPath.substring(1);
 
-        link.move(newPath);
+        if (!link.move(newPath))
+            return redirect(routes.Problems.viewProblem(eventId, path));
 
         return redirect(routes.Problems.viewProblem(eventId, newPath));
     }

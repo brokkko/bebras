@@ -1,5 +1,6 @@
 @(contest:models.Contest)
 @import models.Contest
+<p>id: @contest.getId</p>
 <p>Данные о соревновании:</p>
 К соревнованию приступили: @contest.getNumStarted
 @for((table, ind) <- contest.getTables.zipWithIndex) {

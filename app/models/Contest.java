@@ -83,10 +83,13 @@ public class Contest {
         pid2name = SerializationTypesRegistry.map(String.class).read(deserializer, "pid2name");
 
         //read problem blocks
-        ListDeserializer blocksDeserializer = deserializer.getListDeserializer("blocks");
         problemBlocks = new ArrayList<>();
-        while (blocksDeserializer.hasMore())
-            problemBlocks.add(ProblemBlockFactory.getBlock(this, blocksDeserializer.getDeserializer()));
+
+        ListDeserializer blocksDeserializer = deserializer.getListDeserializer("blocks");
+        if (blocksDeserializer != null) {
+            while (blocksDeserializer.hasMore())
+                problemBlocks.add(ProblemBlockFactory.getBlock(this, blocksDeserializer.getDeserializer()));
+        }
     }
 
     public static Contest deserialize(Event event, Deserializer deserializer) {

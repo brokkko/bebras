@@ -17,10 +17,13 @@
     <h2>Информация</h2>
     @contest_info(contest)
 
-    <h2>Основные настройки</h2>
-    <p>id: @contest.getId</p>
-    @models.Forms.getContestChangeForm.formatExtended(changeContestForm, controllers.routes.ContestAdministration.doUpdateContest(Event.currentId, contest.getId), true, "form.do_change")
-    <p></p>
+    <div class='info-box@if(changeContestForm.hasErrors){ initially-open}'>
+        <h3 class='info-box-cut-shower'>Основные настройки...</h3>
+        <div class='info-box-cut'>
+            @models.Forms.getContestChangeForm.formatExtended(changeContestForm, controllers.routes.ContestAdministration.doUpdateContest(Event.currentId, contest.getId), true, "form.do_change")
+        </div>
+    </div>
+
     @defining("/" + Event.currentId + "/" + contest.getId) { folder_link =>
         <h2>Загрузить задачи для соревнования (в @problem_link(new ProblemLink(folder_link), folder_link))</h2>
     }

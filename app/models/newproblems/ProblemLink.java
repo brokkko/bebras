@@ -209,11 +209,15 @@ public class ProblemLink {
         Cache.remove(cacheKey());
     }
 
-    public void move(String newPath) {
+    public boolean move(String newPath) {
         if (!exists())
-            return;
+            return false;
         if (!isProblem())
-            return;
+            return false;
+
+        ProblemLink newLink = new ProblemLink(newPath);
+        if (newLink.exists())
+            return false;
 
         MongoConnection.getProblemDirsCollection().update(
                                                                  new BasicDBObject("link", link),
@@ -223,6 +227,9 @@ public class ProblemLink {
         //TODO change current link, add unique index for link, catch error: link already exists
 
         Cache.remove(cacheKey());
+        Cache.remove(newLink.cacheKey());
+
+        return true;
     }
 
     public void remove() {
