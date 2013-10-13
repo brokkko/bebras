@@ -49,6 +49,10 @@ public class UserFeatures implements FeaturesSet<User> {
                     User regUser = regBy2user.get(regBy);
                     if (regUser == null) {
                         regUser = User.getInstance("_id", regBy, context.getEvent().getId());
+                        if (regUser == null) {
+                            regBy = null;
+                            return null;
+                        }
                         regBy2user.put(regBy, regUser);
                     }
 
