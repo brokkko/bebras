@@ -59,6 +59,9 @@ public class Kvit {
     }
 
     public static Kvit getKvitFromUserDescription(User user) {
+        if (user == null)
+            return DEFAULT_KVIT;
+
         Info info = user.getInfo();
 
         String kvitFileName = (String) info.get("kvit file");

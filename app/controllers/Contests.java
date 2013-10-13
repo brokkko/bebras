@@ -41,7 +41,7 @@ public class Contests extends Controller {
         return ok(views.html.start_contest_confirmation.render());
     }
 
-    public static Result contest(String eventId, String contestId) {
+    public static Result contest(String eventId, String contestId, String displayType) {
         User user = User.current();
 
         Contest contest = Contest.current();
@@ -52,9 +52,16 @@ public class Contests extends Controller {
         if (status == 6 || status == 7)
             return forbidden();
 
+        boolean printing = !displayType.equals("normal");
+
         List<List<Problem>> pagedUserProblems = contest.getPagedUserProblems(user);
 
-        List<Info> answersForContest = user.getAnswersForContest(contest);
+//        List<Info> answersForContest = printing ? (List<Info>) Collections.emptyList() : user.getAnswersForContest(contest); //TODO report: removing of redundant cast leads to error
+        List<Info> answersForContest;
+        if (printing)
+            answersForContest = Collections.nCopies(contest.getUserProblems(user).size(), null);
+        else
+            answersForContest = user.getAnswersForContest(contest);
 
         //fill json info with user answers
         JSONSerializer contestInfoSerializer = new JSONSerializer();
@@ -109,22 +116,42 @@ public class Contests extends Controller {
             textStatus = "results";
         if (status == 3 && user.resultsAvailable(contest))
             textStatus = "results";
+
+        if (printing) {
+            String needStatus = displayType.equals("print") ? "going" : "results";
+
+            if (user.hasEventAdminRight())
+                textStatus = needStatus;
+            else if (!needStatus.equals(textStatus))
+                return forbidden();
+        }
+
         contestInfoSerializer.write("status", textStatus);
 
-        return ok(views.html.contest.render(
-                                                   textStatus,
-                                                   pagedUserProblems,
-                                                   problem2index,
-                                                   contestInfoSerializer.getNode().toString(), getProblemsWidgets(pagedUserProblems),
-                                                   event.getExtraField("contests_no_header", false) == Boolean.FALSE,
-                                                   event.getExtraField("contests_no_footer", false) == Boolean.FALSE,
-                                                   event.getExtraField("contests_scrolling", false) == Boolean.TRUE,
-                                                   event.getExtraField("contests_menu_to_right", false) == Boolean.FALSE,
-                                                   event.getExtraField("contests_no_menu", false) == Boolean.FALSE,
-                                                   event.getExtraField("contests_no_top_pages", false) == Boolean.FALSE,
-                                                   event.getExtraField("contests_no_bottom_pages", false) == Boolean.FALSE,
-                                                   event.getExtraField("contests_no_next_buttons", false) == Boolean.FALSE
-        ));
+        if (printing)
+            return ok(views.html.contest_print.render(
+                                                             textStatus,
+                                                             pagedUserProblems,
+                                                             problem2index,
+                                                             contestInfoSerializer.getNode().toString(),
+                                                             getProblemsWidgets(pagedUserProblems)
+            ));
+        else
+            return ok(views.html.contest.render(
+                                                       textStatus,
+                                                       pagedUserProblems,
+                                                       problem2index,
+                                                       contestInfoSerializer.getNode().toString(),
+                                                       getProblemsWidgets(pagedUserProblems),
+                                                       event.getExtraField("contests_no_header", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_no_footer", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_scrolling", false) == Boolean.TRUE,
+                                                       event.getExtraField("contests_menu_to_right", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_no_menu", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_no_top_pages", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_no_bottom_pages", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_no_next_buttons", false) == Boolean.FALSE
+            ));
     }
 
     @SuppressWarnings("UnusedParameters")

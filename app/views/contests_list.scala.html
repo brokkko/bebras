@@ -80,7 +80,7 @@
                 <p class='contest-select'>
                     @User.current().getContestStatus(contest) match {
                     case 1 | 2 | 3 | 4 => {
-                    <a class='link-button' href='@routes.Contests.contest(Event.current.getId, contest.getId)'>Перейти</a>
+                    <a class='link-button' href='@routes.Contests.contest(Event.current.getId, contest.getId, "normal")'>Перейти</a>
                     }
                     case 5 => {
                     <a class='link-button' href='@routes.Contests.startContest(Event.current.getId, contest.getId)'>Начать</a>

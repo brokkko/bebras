@@ -692,6 +692,7 @@ public class User implements SerializableUpdatable {
         this.newRecoveryPassword = newRecoveryPassword;
     }
 
+    //may return not null even if getRegisteredByUser() returns null, because the user was removed
     public ObjectId getRegisteredBy() {
         return registeredBy;
     }
