@@ -123,7 +123,7 @@ public class Event {
                 }
             }, 0);
         } catch (Exception e) {
-            Logger.error("Error while getting event '" + eventId + "'", e);
+            Logger.warn("Error while getting event '" + eventId + "'", e);
             return null;
         }
     }

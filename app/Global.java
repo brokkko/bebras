@@ -22,11 +22,11 @@ public class Global extends GlobalSettings {
     public void onStart(Application app) {
     }
 
-    @Override
+    /*@Override
     public Action onRequest(Http.Request request, Method method) {
         Logger.info("Request: " + request + " -> " + request.remoteAddress() + " " + Arrays.toString(request.headers().get("User-Agent")));
         return super.onRequest(request, method);
-    }
+    }*/
 
     @Override
     public Result onHandlerNotFound(Http.RequestHeader requestHeader) {

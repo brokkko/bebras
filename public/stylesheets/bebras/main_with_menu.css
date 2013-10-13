@@ -165,11 +165,11 @@ nav img {
 /*menu items*/
 nav .menu-item {
     display: block;
-    margin: 8px 0.5em;
+    margin: 2px 0.5em;
     line-height: 1;
     /*border: 2px solid #f5972d;*/
     text-decoration: none;
-    padding: 6px 4px 6px 8px;
+    padding: 4px 4px 4px 8px;
     /*text-shadow: 1px 1px 1px #01a1de;*/
     text-align: center;
 }
