@@ -29,7 +29,7 @@ public class Email {
     }
 
     public static String sendEmail(String to, String subject, String message, String htmlMessage) throws EmailException {
-        boolean isHtml = htmlMessage == null;
+        boolean isHtml = htmlMessage != null;
 
         if (isHtml) {
             HtmlEmail email = new HtmlEmail();
@@ -72,8 +72,8 @@ public class Email {
 
         email.addTo(to);
 
-        String from = Event.currentId().startsWith("bebras") ? "noreply@bebras.ru" : cfg.getString("from"); //TODO get rid of bebras
-        String fromName = Event.currentId().startsWith("bebras") ? "Bebras contest" : cfg.getString("from_name"); //TODO get rid of bebras
+        String from = Event.currentId().startsWith("bebras") && !Play.isDev() ? "noreply@bebras.ru" : cfg.getString("from"); //TODO get rid of bebras
+        String fromName = Event.currentId().startsWith("bebras") && !Play.isDev() ? "Bebras contest" : cfg.getString("from_name"); //TODO get rid of bebras
         if (fromName == null)
             email.setFrom(from);
         else

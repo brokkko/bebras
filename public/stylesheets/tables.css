@@ -8,6 +8,7 @@
 
 .data-table-print {
     font-size: 14pt;
+    margin-left: 3pt;
     /*border-collapse: collapse;*/
 }
 

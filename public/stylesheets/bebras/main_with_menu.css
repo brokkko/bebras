@@ -35,7 +35,7 @@ html.no-scroll, body.no-scroll {
 }
 
 header {
-    background: #01a1de url(../../images/header02.png);
+    background: #646c37 url(../../images/header02.png);
     border-bottom: 2px #646c37 solid;
     font-size: 2em;
     color: #fff0b2;
@@ -64,7 +64,7 @@ header {
 }
 
 .wrapper {
-    background: #2993dd url(../../images/nav01.png) repeat;
+    background: #fceaa4 url(../../images/nav01.png) repeat;
     /*background-color: #2993dd;*/
     min-height: 100%;
     height: auto !important;
@@ -361,7 +361,6 @@ a:hover {
 
 .table-actions img {
     vertical-align: middle;
-
 }
 
 .table-actions a {

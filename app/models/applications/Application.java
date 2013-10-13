@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
+import controllers.Email;
 import controllers.MongoConnection;
 import models.Event;
 import models.User;
@@ -13,7 +14,10 @@ import models.newserialization.SerializableUpdatable;
 import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
 import models.results.Info;
+import org.apache.commons.mail.EmailException;
 import play.Logger;
+import play.i18n.Messages;
+import play.mvc.Http;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -170,7 +174,30 @@ public class Application implements SerializableUpdatable {
             logins.add(login);
         }
 
+        try {
+            sendEmailAboutCreatedUsers(user);
+        } catch (EmailException e) {
+            Logger.error("Failed to send email with application confirmation", e);
+        }
+
         return true;
+    }
+
+    private void sendEmailAboutCreatedUsers(User user) throws EmailException {
+        String title = Event.current().getTitle();
+        String subject = Messages.get("mail.application_confirm.subject", title);
+
+        String greeting = user.getGreeting();
+        if (greeting == null)
+            greeting = "";
+        if (!greeting.isEmpty())
+            greeting = ", " + greeting;
+
+        int size = getSize();
+        String message = Messages.get("mail.application_confirm.body", greeting, getName(), size, size == 1 ? "а" : "", title, "Мои участники",
+                                             controllers.routes.Application.enter(Event.currentId()).absoluteURL(Http.Context.current().request()));
+
+        Email.sendEmail(user.getEmail(), subject, message);
     }
 
     public boolean removeUsers(Event event) {
