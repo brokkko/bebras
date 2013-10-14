@@ -12,7 +12,6 @@
         task.wrap('<div class="swPage" />');
 
         var maxHeight = 0;
-        var totalWidth = 0;
 
         var swPage = tasks.find('.swPage');
         swPage.each(function () {
@@ -20,7 +19,6 @@
             var tmpHeight = elem.find('.' + pages_class).outerHeight(true);
             if (tmpHeight > maxHeight)
                 maxHeight = tmpHeight;
-            totalWidth += elem.outerWidth();
             elem.css('float', 'left').width(tasks.width());
         });
 
@@ -29,7 +27,7 @@
         tasks.height(maxHeight);
 
         var swSlider = tasks.find('.swSlider');
-        swSlider.append('<div class="clear" />').width(totalWidth);
+        swSlider.append('<div class="clear" />');
 
         page_selectors.click(function (e) {
             var page_num = parseInt($(this).find('.-info').text()); //TODO generalize class .-info
@@ -46,7 +44,13 @@
             var content_height = $content.height();
             swPage.width(content_width);
             swPage.height(content_height);
-            swSlider.width(tasks.width() * swPage.length);
+
+            var totalWidth = 0;
+            swPage.each(function () {
+                totalWidth += $(this).outerWidth(true) + 1; // 1 to fight with rounding problems
+            });
+
+            swSlider.width(totalWidth);
 
             //scroll to current problem
             var $active = page_selectors.filter('.active');
