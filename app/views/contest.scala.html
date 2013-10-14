@@ -40,11 +40,6 @@
     @if(status != "going" && !show_menu) {
         <nav><a class='menu-item' href="@routes.Application.enter(Event.currentId)">Назад</a></nav>
     }
-    @if(User.current.hasEventAdminRight) {
-        <br>
-        <nav><a class='menu-item' target="_blank" href="@routes.Contests.contest(Event.currentId, Contest.current.getId, "print")">Печать</a></nav>
-        <nav><a class='menu-item' target="_blank" href="@routes.Contests.contest(Event.currentId, Contest.current.getId, "print ans")">Печать с ответами</a></nav>
-    }
 } {
     <div id='all-problems-in-pages'>
 
