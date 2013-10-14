@@ -64,17 +64,17 @@ public class Application implements SerializableUpdatable {
     private String comment;
     private List<String> logins = new ArrayList<>();
 
-    private boolean kio;
+    private String type;
 
     public Application() {
     }
 
     //TODO name generation may produce colliding ids
-    public Application(User organizer, int size, int number, boolean kio) {
-        this.name = organizer.getInfo().get("region") + "-" + getCodeForUser(organizer) + "-" + number + (kio ? "bk" : "b");
+    public Application(User organizer, int size, int number, String type) {
+        this.name = organizer.getInfo().get("region") + "-" + getCodeForUser(organizer) + "-" + number + type;
         this.number = number;
         this.size = size;
-        this.kio = kio;
+        this.type = type;
         this.created = new Date();
     }
 
@@ -110,10 +110,6 @@ public class Application implements SerializableUpdatable {
         return number;
     }
 
-    public int getPrice() {
-        return size * (kio ? 100 : 50);
-    }
-
     public String getCode() {
         Matcher matcher = CODE_PATTERN.matcher(name);
         if (!matcher.matches())
@@ -121,8 +117,8 @@ public class Application implements SerializableUpdatable {
         return matcher.group(1);
     }
 
-    public boolean isKio() {
-        return kio;
+    public String getType() {
+        return type;
     }
 
     @Override
@@ -133,7 +129,7 @@ public class Application implements SerializableUpdatable {
         serializer.write("number", number);
         serializer.write("created", created);
         serializer.write("comment", comment);
-        serializer.write("kio", kio);
+        serializer.write("type", type);
         SerializationTypesRegistry.list(String.class).write(serializer, "logins", logins);
     }
 
@@ -145,7 +141,7 @@ public class Application implements SerializableUpdatable {
         number = deserializer.readInt("number");
         created = deserializer.readDate("created");
         comment = deserializer.readString("comment");
-        kio = deserializer.readBoolean("kio");
+        type = deserializer.readString("type");
         logins = SerializationTypesRegistry.list(String.class).read(deserializer, "logins");
     }
 

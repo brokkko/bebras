@@ -4,7 +4,6 @@ import models.User;
 import models.applications.Application;
 import models.data.FeaturesContext;
 import models.data.FeaturesSet;
-import org.bson.types.ObjectId;
 
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +48,7 @@ public class UserApplicationsFeatures implements FeaturesSet<User> {
 
         for (Application application : getApplications())
             ids.add(application.getCode());
-        ids.add(new Application(user, 0, 0, false).getCode());
+        ids.add(Application.getCodeForUser(user));
 
         String result = "";
 

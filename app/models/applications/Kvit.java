@@ -4,6 +4,7 @@ import models.User;
 import models.Utils;
 import models.results.Info;
 import org.bson.types.ObjectId;
+import plugins.Applications;
 
 import java.io.File;
 import java.io.IOException;
@@ -137,7 +138,7 @@ public class Kvit {
         return kvitFileName.substring(dotPos + 1).toUpperCase();
     }
 
-    public File generatePdfKvit(Application application) throws IOException, InterruptedException {
+    public File generatePdfKvit(Applications plugin, Application application) throws IOException, InterruptedException {
         File page1 = File.createTempFile("pdf-kvit-", "-pd4-1.html");
         File page2 = File.createTempFile("pdf-kvit-", "-pd4-2.html");
         File css = File.createTempFile("pdf-kvit-", "-pd4.css");
@@ -145,8 +146,8 @@ public class Kvit {
 
         Map<Object, Object> subs = Utils.mapify(
                 "{css}", css.getName(),
-                "{price}", application.getPrice(),
-                "{pay_for}", "Регистрационный взнос Бобёр" + (application.isKio() ? " и КИО" : "") + " 2013", //TODO use about
+                "{price}", plugin.getApplicationPrice(application),
+                "{pay_for}", "Регистрационный взнос " + plugin.getTypeByName(application.getType()).getDescription(),
                 "{packet_name}", application.getName(),
 
                 "{org}", getOrganization(),

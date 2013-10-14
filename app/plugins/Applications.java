@@ -20,6 +20,7 @@ import play.mvc.Results;
 import views.Menu;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -34,54 +35,7 @@ public class Applications extends Plugin {
     private String right = "school org";
     private String userField = "apps";
     private String participantRole = "PARTICIPANT";
-
-    @SuppressWarnings("unchecked")
-    private static InputForm addApplicationForm = InputForm.deserialize(
-            new MemoryDeserializer(
-                    "fields",
-                    Utils.listify(
-                            Utils.mapify(
-                                    "name", "size",
-                                        "view", Utils.mapify(
-                                        "type", "int",
-                                        "title", "Количество участников",
-                                        "placeholder", "Введите количество участников"
-                                    ),
-                                    "required", true,
-                                    "validators", Utils.listify(
-                                            Utils.mapify(
-                                                    "type", "int",
-                                                    "compare", "<=100"
-                                            ),
-                                            Utils.mapify(
-                                                    "type", "int",
-                                                    "compare", ">0"
-                                            )
-                                    )
-                            ),
-                            Utils.mapify(
-                                    "name", "kio",
-                                    "view", Utils.mapify(
-                                            "type", "dropdown",
-                                            "title", "Тип заявки",
-                                            "placeholder", "Выберите тип",
-                                            "titles", Utils.listify(
-                                                "Конкурс Бобёр (50 р.)",
-                                                "Конкурсы Бобёр и КИО (100 р.)"
-                                            ),
-                                            "variants", Utils.listify("b", "bk")
-                                    ),
-                                    "required", true,
-                                    "validators", Utils.listify(
-                                    )
-                            )
-                    ),
-                    "validators",
-                    Utils.listify(
-
-                    )
-            )
-    );
+    private List<ApplicationType> applicationTypes;
 
     @Override
     public void initPage() {
@@ -147,6 +101,10 @@ public class Applications extends Plugin {
         return null;
     }
 
+    public int getApplicationPrice(Application application) {
+        return application.getSize() * getTypeByName(application.getType()).getPrice();
+    }
+
     private Result showKvit(String name) {
         Kvit kvit = Kvit.getKvitForUser(User.current());
         Application application = getApplicationByName(name);
@@ -168,7 +126,7 @@ public class Applications extends Plugin {
         F.Promise<File> promiseOfVoid = Akka.future(
                 new Callable<File>() {
                     public File call() throws Exception {
-                        return kvit.generatePdfKvit(application);
+                        return kvit.generatePdfKvit(Applications.this, application);
                     }
                 }
         );
@@ -203,7 +161,7 @@ public class Applications extends Plugin {
         if (appsSize != 0)
             number = applications.get(appsSize - 1).getNumber() + 1;
 
-        applications.add(new Application(user, deserializer.readInt("size"), number, "bk".equals(deserializer.readString("kio"))));
+        applications.add(new Application(user, deserializer.readInt("size"), number, deserializer.readString("type")));
         user.store();
 
         return Controller.redirect(getCall("apps"));
@@ -348,8 +306,61 @@ public class Applications extends Plugin {
         return getCall("do_payment", false, name);
     }
 
-    public static InputForm getAddApplicationForm() {
-        return addApplicationForm;
+    public InputForm getAddApplicationForm() {
+        List<String> titlesList = new ArrayList<>();
+        List<String> typesList = new ArrayList<>();
+
+        for (ApplicationType applicationType : applicationTypes) {
+            String description = applicationType.getDescription();
+
+            if (applicationType.getPrice() > 0)
+                description += " (" + applicationType.getPrice() + "р.)";
+            else
+                description += " (бесплатно)";
+
+            titlesList.add(description);
+            typesList.add(applicationType.getTypeName());
+        }
+
+        return InputForm.deserialize(
+                                            new MemoryDeserializer(
+                                                                          "fields",
+                                                                          Utils.listify(
+                                                                                               Utils.mapify(
+                                                                                                                   "name", "size",
+                                                                                                                   "view", Utils.mapify(
+                                                                                                                                               "type", "int",
+                                                                                                                                               "title", "Количество участников",
+                                                                                                                                               "placeholder", "Введите количество участников"
+                                                                                               ),
+                                                                                                                   "required", true,
+                                                                                                                   "validators", Utils.listify(
+                                                                                                                                                      Utils.mapify(
+                                                                                                                                                                          "type", "int",
+                                                                                                                                                                          "compare", "<=100"
+                                                                                                                                                      ),
+                                                                                                                                                      Utils.mapify(
+                                                                                                                                                                          "type", "int",
+                                                                                                                                                                          "compare", ">0"
+                                                                                                                                                      )
+                                                                                               )
+                                                                                               ),
+                                                                                               Utils.mapify(
+                                                                                                                   "name", "type",
+                                                                                                                   "view", Utils.mapify(
+                                                                                                                                               "type", "dropdown",
+                                                                                                                                               "title", "Тип заявки",
+                                                                                                                                               "placeholder", "Выберите тип",
+                                                                                                                                               "titles", titlesList,
+                                                                                                                                               "variants", typesList
+                                                                                               ),
+                                                                                                                   "required", true,
+                                                                                                                   "validators", Utils.listify()
+                                                                                               )
+                                                                          ),
+                                                                          "validators", Utils.listify()
+                                            )
+        );
     }
 
     public String getRight() {
@@ -364,12 +375,21 @@ public class Applications extends Plugin {
         return participantRole;
     }
 
+    public ApplicationType getTypeByName(String typeName) {
+        for (ApplicationType applicationType : applicationTypes)
+            if (applicationType.getTypeName().equals(typeName))
+                return applicationType;
+
+        return null;
+    }
+
     @Override
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
         serializer.write("user field", userField);
         serializer.write("right", right);
         serializer.write("participant role", participantRole);
+        SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).write(serializer, "types", applicationTypes);
     }
 
     @Override
@@ -378,5 +398,6 @@ public class Applications extends Plugin {
         userField = deserializer.readString("user field", "apps");
         right = deserializer.readString("right", "school org");
         participantRole = deserializer.readString("participant role", "PARTICIPANT");
+        applicationTypes = SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).read(deserializer, "types");
     }
 }

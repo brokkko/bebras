@@ -76,8 +76,8 @@ public class ApplicationsFeatures implements FeaturesSet<ApplicationWithUser> {
                     return "подтверждено";
             case "comment":
                 return application.getComment();
-            case "kio":
-                return application.isKio();
+            case "type":
+                return application.getType();
         }
 
         return "";
