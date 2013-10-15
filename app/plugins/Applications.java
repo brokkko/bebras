@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import controllers.routes;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
@@ -63,10 +65,21 @@ public class Applications extends Plugin { //TODO test for right in all calls
         switch (action) {
             case "apps":
                 return organizerApplications();
+
             case "kvit":
+                if (!level1)
+                    return Results.forbidden();
                 return showKvit(params);
+
             case "pdfkvit":
+                if (!level1)
+                    return Results.forbidden();
                 return showPdfKvit(params);
+
+            case "kvit_example":
+                if (!level2)
+                    return Results.forbidden();
+                return showKvit();
         }
 
         return Results.notFound();
@@ -116,6 +129,16 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     public int getApplicationPrice(Application application) {
         return application.getSize() * getTypeByName(application.getType()).getPrice();
+    }
+
+    private Result showKvit() {
+        User user = User.current();
+        Kvit kvit = Kvit.getKvitFromUserDescription(user);
+
+        if (kvit.isGenerated())
+            return Results.ok(views.html.applications.kvit.render(null, this, kvit));
+        else
+            return Results.redirect(routes.Application.returnFile(kvit.getKvitFileName()));
     }
 
     private Result showKvit(String name) {

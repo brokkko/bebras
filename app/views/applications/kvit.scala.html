@@ -5,9 +5,11 @@
 @main_with_menu(Event.current.getTitle)(scala.List(HtmlBlockWidget.get)) { } {
 <h2>Квитанция для оплаты конкурса Бобёр-2013</h2>
 
-<a href="@plugin.getAppsCall">&larr; Список заявок</a><br /><br />
+@if(app != null) {
+    <a href="@plugin.getAppsCall">&larr; Список заявок</a><br /><br />
 
-Вы можете <a href="@plugin.getPdfKvitCall(app.getName)">скачать и распечатать квитанцию</a> (для просмотра необходимо использовать программу <a href="http://www.foxitsoftware.com/downloads/">Foxit PDF Reader</a> или <a href="http://get.adobe.com/reader/">Adobe Reader</a>), а затем вписать в неё код пакета (см. в таблице ниже), либо предоставить данные из таблицы в Сбербанк.
+    Вы можете <a href="@plugin.getPdfKvitCall(app.getName)">скачать и распечатать квитанцию</a> (для просмотра необходимо использовать программу <a href="http://www.foxitsoftware.com/downloads/">Foxit PDF Reader</a> или <a href="http://get.adobe.com/reader/">Adobe Reader</a>), а затем вписать в неё код пакета (см. в таблице ниже), либо предоставить данные из таблицы в Сбербанк.
+}
 <br /><br />
 <table class='kvit-data' border="0" align="center">
     <tr>
@@ -26,13 +28,15 @@
         <td valign="top" style="padding-right: 1em"><b>Наименование банка и банковские реквизиты</b></td>
         <td valign="top">@kvit.getBankNameAndAccountAsOneLine</td>
     </tr>
-    <tr>
-        <td valign="top" style="padding-right: 1em"><b>Наименование платежа</b></td>
-        <td valign="top">Регистрационный взнос Бобёр-2013<br />Код заявки @app.getName</td>
-    </tr>
-    <tr>
-        <td valign="top" style="padding-right: 1em"><b>Сумма платежа</b></td>
-        <td valign="top">@plugin.getApplicationPrice(app) р.</td>
-    </tr>
+    @if(app != null) {
+        <tr>
+            <td valign="top" style="padding-right: 1em"><b>Наименование платежа</b></td>
+            <td valign="top">Регистрационный взнос Бобёр-2013<br />Код заявки @app.getName</td>
+        </tr>
+        <tr>
+            <td valign="top" style="padding-right: 1em"><b>Сумма платежа</b></td>
+            <td valign="top">@plugin.getApplicationPrice(app) р.</td>
+        </tr>
+    }
 </table>
 }
