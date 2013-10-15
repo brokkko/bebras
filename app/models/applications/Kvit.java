@@ -28,8 +28,7 @@ public class Kvit {
                     "Санкт-Петербургском ф-ле ОАО",
                     "«ФОНДСЕРВИСБАНК» г. Санкт-Петербург",
                     "к/с 30101810200000000717 БИК 044030717"
-            ),
-            "Регистрационный взнос Бобёр и КИО 2013"
+            )
     );
 
     private String kvitFileName;
@@ -38,18 +37,16 @@ public class Kvit {
     private String innAndKpp;
     private String account;
     private List<String> bankNameAndAccount; //at most 3 elements
-    private String about;
 
     public Kvit(String kvitFileName) {
         this.kvitFileName = kvitFileName;
     }
 
-    public Kvit(String organization, String innAndKpp, String account, List<String> bankNameAndAccount, String about) {
+    public Kvit(String organization, String innAndKpp, String account, List<String> bankNameAndAccount) {
         this.organization = organization;
         this.innAndKpp = innAndKpp;
         this.account = account;
         this.bankNameAndAccount = bankNameAndAccount;
-        this.about = about;
     }
 
     public static Kvit getKvitForUser(User user) {
@@ -74,9 +71,11 @@ public class Kvit {
         String account = (String) info.get("kvit acc");
         String bankAsString = (String) info.get("kvit bank");
         List<String> bankNameAndAccount = bankAsString == null ? null : Arrays.asList(bankAsString.split("\\|"));
-        String about = (String) info.get("kvit about");
 
-        return new Kvit(organization, innAndKpp, account, bankNameAndAccount, about);
+        if (organization == null || innAndKpp == null || account == null || bankNameAndAccount == null)
+            return DEFAULT_KVIT;
+
+        return new Kvit(organization, innAndKpp, account, bankNameAndAccount);
     }
 
     public String getKvitFileName() {
@@ -93,10 +92,6 @@ public class Kvit {
 
     public String getAccount() {
         return account == null ? "" : account;
-    }
-
-    public List<String> getBankNameAndAccount() {
-        return bankNameAndAccount;
     }
 
     public String getBankNameAndAccount(int line) {
@@ -117,10 +112,6 @@ public class Kvit {
         }
 
         return result;
-    }
-
-    public String getAbout() {
-        return about == null ? "" : about;
     }
 
     public boolean isGenerated() {

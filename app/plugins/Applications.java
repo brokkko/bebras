@@ -34,6 +34,7 @@ import java.util.concurrent.Callable;
 public class Applications extends Plugin { //TODO test for right in all calls
 
     private String right = "school org";
+    private String adminRight = "region org";
     private String userField = "apps";
     private List<ApplicationType> applicationTypes;
 
@@ -54,7 +55,9 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     @Override
     public Result doGet(String action, String params) {
-        if (!User.currentRole().hasRight(right))
+        boolean level1 = User.currentRole().hasRight(right);
+        boolean level2 = User.currentRole().hasRight(adminRight);
+        if (!level1 && !level2)
             return Results.forbidden();
 
         switch (action) {
@@ -71,7 +74,9 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     @Override
     public Result doPost(String action, String params) {
-        if (!User.currentRole().hasRight(right))
+        boolean level1 = User.currentRole().hasRight(right);
+        boolean level2 = User.currentRole().hasRight(adminRight);
+        if (!level1 && !level2)
             return Results.forbidden();
 
         switch (action) {
@@ -82,6 +87,8 @@ public class Applications extends Plugin { //TODO test for right in all calls
             case "do_payment":
                 return doPayment(params);
             case "confirm_app":
+                if (!level2)
+                    return Results.forbidden();
                 return confirmApplication(params);
         }
 
@@ -427,6 +434,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         super.serialize(serializer);
         serializer.write("user field", userField);
         serializer.write("right", right);
+        serializer.write("admin right", adminRight);
         SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).write(serializer, "types", applicationTypes);
     }
 
@@ -435,6 +443,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         super.update(deserializer);
         userField = deserializer.readString("user field", "apps");
         right = deserializer.readString("right", "school org");
+        adminRight = deserializer.readString("admin right", "region org");
         applicationTypes = SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).read(deserializer, "types");
     }
 }
