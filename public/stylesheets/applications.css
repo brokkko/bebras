@@ -11,6 +11,9 @@ table.applications td {
 table.applications thead td {
     font-weight: bold;
     color: #000000;
+    text-align: center;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
 }
 
 table.applications tbody td {
