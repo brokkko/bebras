@@ -160,6 +160,16 @@ public class Forms {
                                     "required", true
                             ),
                             Utils.mapify(
+                                    "name", "rights",
+                                    "view", Utils.mapify(
+                                            "type", "json list",
+                                            "placeholder", "Перечислите права для участия",
+                                            "title", "Права для участия",
+                                            "small", true
+                                    ),
+                                    "required", true //TODO allow json deserializers to be not required
+                            ),
+                            Utils.mapify(
                                     "name", "allow restart",
                                     "view", Utils.mapify(
                                             "type", "boolean",

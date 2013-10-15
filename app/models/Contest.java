@@ -42,6 +42,7 @@ public class Contest {
     private Date finish;
     private Date results;
     private int duration;
+    private List<String> rights;
     private boolean onlyAdmin = false;
     private boolean allowRestart; //TODO make this allowed restarts count
 
@@ -66,6 +67,7 @@ public class Contest {
         results = deserializer.readDate("results");
 
         onlyAdmin = deserializer.readBoolean("only admin", true);
+        rights = SerializationTypesRegistry.list(String.class).read(deserializer, "rights");
 
         duration = deserializer.readInt("duration");
 
@@ -105,6 +107,7 @@ public class Contest {
         serializer.write("finish", finish);
         serializer.write("results", results);
 
+        SerializationTypesRegistry.list(String.class).write(serializer, "rights", rights);
         serializer.write("only admin", onlyAdmin);
         serializer.write("duration", duration);
         serializer.write("allow restart", allowRestart);
@@ -165,8 +168,22 @@ public class Contest {
         return tables;
     }
 
+    public boolean isAvailableForUser(User user) {
+        if (user == null)
+            return false;
+        if (rights.isEmpty())
+            return true;
+
+        //user should have all the specified rights
+        for (String right : rights)
+            if (user.hasRight(right))
+                return true;
+
+        return false;
+    }
+
     public String getBlockTitle() {
-        return Event.currentId().startsWith("bebras") ? null : "Блок";
+        return Event.currentId().startsWith("bebras") ? null : "Блок"; //TODO get rid of this bebras
     }
 
     public TableDescription getTable(int index) {
@@ -316,6 +333,7 @@ public class Contest {
         results = deserializer.readDate("results");
         duration = deserializer.readInt("duration", 0);
         description = deserializer.readString("description", null);
+        rights = SerializationTypesRegistry.list(String.class).read(deserializer, "rights");
         onlyAdmin = deserializer.readBoolean("only admin", false);
         allowRestart = deserializer.readBoolean("allow restart", false);
 

@@ -787,7 +787,29 @@ public class User implements SerializableUpdatable {
     //rights
 
     public boolean hasRight(String right) {
+        int tildePos = right.indexOf("~");
+        if (tildePos >= 0) {
+            String virtualRight = right.substring(tildePos + 1);
+            if (!hasVirtualRight(virtualRight))
+                return false;
+
+            right = right.substring(0, tildePos);
+        }
+
         return role.hasRight(right);
+    }
+
+    private boolean hasVirtualRight(String right) {
+        //virtual right may be of form id=value
+        String[] fieldAndValue = right.split("=");
+        if (fieldAndValue.length != 2)
+            return false;
+        String field = fieldAndValue[0].trim();
+        String value = fieldAndValue[1].trim();
+
+        Object realValue = getInfo().get(field);
+
+        return realValue != null && realValue.toString().equals(value);
     }
 
     public boolean hasEventAdminRight() {

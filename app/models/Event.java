@@ -259,9 +259,12 @@ public class Event {
             return getContests();
 
         List<Contest> c = new ArrayList<>(contests.size());
-        for (Contest contest : contests.values())
-            if (!contest.isOnlyAdmin())
+        for (Contest contest : contests.values()) {
+            if (contest.isOnlyAdmin())
+                continue;
+            if (contest.isAvailableForUser(user))
                 c.add(contest);
+        }
 
         return c;
     }
