@@ -55,7 +55,7 @@
                         }
                     </td>
                     <td class='remove'>
-                        @if(application.getState != 2) {
+                        @if(plugin.mayRemoveApplication(application)) {
                             <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
                             <a href="#" class="submit actions-remove-app-@ind" title="Удалить заявку @application.getName">Удалить</a>
                         } else {

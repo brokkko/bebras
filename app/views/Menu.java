@@ -90,8 +90,12 @@ public class Menu {
         List<TableDescription<?>> tables = user.getTables();
         if (tables.size() == 1)
             menu.add(new MenuItem(tables.get(0).getTitle(), routes.Tables.showTable(eventId, 0)));
-        else if (tables.size() > 1)
-            menu.add(new MenuItem("Данные", routes.Tables.tablesList(eventId)));
+        else if (tables.size() > 1) {
+            String tablesTitle = user.getRole().getTablesMenuTitle();
+            if (tablesTitle == null)
+                tablesTitle = "Данные";
+            menu.add(new MenuItem(tablesTitle, routes.Tables.tablesList(eventId)));
+        }
 
         if (user.hasEventAdminRight())
             menu.add(new MenuItem("База заданий", routes.Problems.viewFolder(eventId, eventId)));

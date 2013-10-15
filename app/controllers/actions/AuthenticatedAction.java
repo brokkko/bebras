@@ -1,5 +1,6 @@
 package controllers.actions;
 
+import controllers.MongoConnection;
 import controllers.routes;
 import models.Event;
 import models.User;

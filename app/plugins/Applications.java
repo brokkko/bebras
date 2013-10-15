@@ -10,6 +10,7 @@ import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newserialization.*;
 import org.bson.types.ObjectId;
+import play.Logger;
 import play.api.templates.Html;
 import play.libs.Akka;
 import play.libs.F;
@@ -30,11 +31,10 @@ import java.util.concurrent.Callable;
  * Date: 15.09.13
  * Time: 14:29
  */
-public class Applications extends Plugin {
+public class Applications extends Plugin { //TODO test for right in all calls
 
     private String right = "school org";
     private String userField = "apps";
-    private String participantRole = "PARTICIPANT";
     private List<ApplicationType> applicationTypes;
 
     @Override
@@ -54,6 +54,9 @@ public class Applications extends Plugin {
 
     @Override
     public Result doGet(String action, String params) {
+        if (!User.currentRole().hasRight(right))
+            return Results.forbidden();
+
         switch (action) {
             case "apps":
                 return organizerApplications();
@@ -68,6 +71,9 @@ public class Applications extends Plugin {
 
     @Override
     public Result doPost(String action, String params) {
+        if (!User.currentRole().hasRight(right))
+            return Results.forbidden();
+
         switch (action) {
             case "remove_app":
                 return removeApplication(params);
@@ -106,7 +112,9 @@ public class Applications extends Plugin {
     }
 
     private Result showKvit(String name) {
-        Kvit kvit = Kvit.getKvitForUser(User.current());
+        User user = User.current();
+
+        Kvit kvit = Kvit.getKvitForUser(user);
         Application application = getApplicationByName(name);
         if (application == null)
             return Controller.notFound();
@@ -145,9 +153,7 @@ public class Applications extends Plugin {
 
     private Result addApplication() {
         User user = User.current();
-
-        if (!User.currentRole().hasRight(right))
-            return Controller.forbidden();
+        Event event = Event.current();
 
         List<Application> applications = getApplications(user);
 
@@ -161,7 +167,28 @@ public class Applications extends Plugin {
         if (appsSize != 0)
             number = applications.get(appsSize - 1).getNumber() + 1;
 
-        applications.add(new Application(user, deserializer.readInt("size"), number, deserializer.readString("type")));
+        String type = deserializer.readString("type");
+        ApplicationType appType = getTypeByName(type);
+        if (appType == null) {
+            Logger.warn("Adding application with unknown type " + type);
+            return Results.badRequest();
+        }
+
+        Application newApplication = new Application(user, deserializer.readInt("size"), number, type);
+
+        if (!appType.isNeedsConfirmation()) {
+            newApplication.setState(Application.CONFIRMED);
+            String participantRoleName = appType.getParticipantRole();
+            if (participantRoleName != null) {
+                UserRole participantRole = event.getRole(participantRoleName);
+                if (participantRole == UserRole.EMPTY)
+                    Controller.badRequest();
+
+                newApplication.createUsers(event, user, participantRole);
+            }
+        }
+
+        applications.add(newApplication);
         user.store();
 
         return Controller.redirect(getCall("apps"));
@@ -216,39 +243,53 @@ public class Applications extends Plugin {
         if (state == Application.NEW)
             return Results.badRequest();
 
+        ApplicationType appType = getTypeByName(application.getType());
+        if (appType == null)
+            return Results.badRequest();
+
         int newState = state == Application.CONFIRMED ? Application.PAYED : Application.CONFIRMED;
         application.setState(newState);
 
         Event event = Event.current();
-        UserRole participantRole = event.getRole(getParticipantRole());
-        if (participantRole == UserRole.EMPTY)
-            Controller.badRequest();
 
-        boolean usersManipulationResult;
-        if (newState == Application.CONFIRMED)
-            usersManipulationResult = application.createUsers(event, user, participantRole);
-        else
-            usersManipulationResult = application.removeUsers(event);
+        String participantRoleName = appType.getParticipantRole();
 
-        if (!usersManipulationResult)
-            return Results.internalServerError();
+        //test that this applicationType has users
+        if (participantRoleName != null) {
+            UserRole participantRole = event.getRole(participantRoleName);
+            if (participantRole == UserRole.EMPTY)
+                Controller.badRequest();
+
+            boolean usersManipulationResult;
+            if (newState == Application.CONFIRMED)
+                usersManipulationResult = application.createUsers(event, user, participantRole);
+            else
+                usersManipulationResult = application.removeUsers(event);
+
+            if (!usersManipulationResult)
+                return Results.internalServerError();
+        }
 
         user.store();
 
         return Results.redirect(returnTo);
     }
 
+    public boolean mayRemoveApplication(Application application) {
+        ApplicationType applicationType = getTypeByName(application.getType());
+        return applicationType == null || !applicationType.isNeedsConfirmation() || application.getState() != Application.CONFIRMED;
+    }
+
     private Result removeApplication(String name) {
         User user = User.current();
-
-        if (!User.currentRole().hasRight(right))
-            return Results.forbidden();
+        Event event = Event.current();
 
         List<Application> applications = getApplications(user);
 
         for (int i = 0; i < applications.size(); i++) {
             Application application = applications.get(i);
             if (application.getName().equals(name)) {
+                application.removeUsers(event);
                 applications.remove(i);
                 user.store();
 
@@ -260,6 +301,11 @@ public class Applications extends Plugin {
     }
 
     public Html getKvitHtml(User user, Application app, Kvit kvit) {
+        ApplicationType appType = getTypeByName(app.getType());
+
+        if (appType == null || appType.getPrice() == 0) //no confirmation
+            return Html.apply("&nbsp;");
+
         if (kvit.isGenerated())
             return views.html.applications.type_generated.render(app, this, kvit);
         return views.html.applications.type_file.render(app, kvit);
@@ -268,9 +314,6 @@ public class Applications extends Plugin {
     private Result organizerApplications() {
         User user = User.current();
         Kvit kvit = Kvit.getKvitForUser(user);
-
-        if (!User.currentRole().hasRight(right))
-            return Controller.forbidden();
 
         List<Application> applications = getApplications(user);
 
@@ -371,10 +414,6 @@ public class Applications extends Plugin {
         return userField;
     }
 
-    public String getParticipantRole() {
-        return participantRole;
-    }
-
     public ApplicationType getTypeByName(String typeName) {
         for (ApplicationType applicationType : applicationTypes)
             if (applicationType.getTypeName().equals(typeName))
@@ -388,7 +427,6 @@ public class Applications extends Plugin {
         super.serialize(serializer);
         serializer.write("user field", userField);
         serializer.write("right", right);
-        serializer.write("participant role", participantRole);
         SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).write(serializer, "types", applicationTypes);
     }
 
@@ -397,7 +435,6 @@ public class Applications extends Plugin {
         super.update(deserializer);
         userField = deserializer.readString("user field", "apps");
         right = deserializer.readString("right", "school org");
-        participantRole = deserializer.readString("participant role", "PARTICIPANT");
         applicationTypes = SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).read(deserializer, "types");
     }
 }

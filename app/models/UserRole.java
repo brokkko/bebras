@@ -30,6 +30,7 @@ public class UserRole implements SerializableUpdatable {
 
     private String title;
     private String description;
+    private String tablesMenuTitle;
 
     private String enterUrl;
 
@@ -97,6 +98,10 @@ public class UserRole implements SerializableUpdatable {
         return !mayRegister.isEmpty();
     }
 
+    public String getTablesMenuTitle() {
+        return tablesMenuTitle;
+    }
+
     @Override
     public void serialize(Serializer serializer) {
         serializer.write("name", name);
@@ -108,6 +113,8 @@ public class UserRole implements SerializableUpdatable {
 
         serializer.write("title", title);
         serializer.write("description", description);
+        if (tablesMenuTitle != null)
+            serializer.write("tables menu", tablesMenuTitle);
 
         if (!DEFAULT_ENTER_URL.equals(enterUrl))
             serializer.write("enter", enterUrl);
@@ -125,6 +132,7 @@ public class UserRole implements SerializableUpdatable {
 
         title = deserializer.readString("title", name);
         description = deserializer.readString("description");
+        tablesMenuTitle = deserializer.readString("tables menu");
 
         enterUrl = deserializer.readString("enter", DEFAULT_ENTER_URL);
     }
