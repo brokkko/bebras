@@ -19,7 +19,7 @@
                 <tr>
                     <td>№</td>
                     <td>Идентификатор</td>
-                    <td>Кол-во участников</td>
+                    <td>Участников</td>
                     <td>Статус оплаты</td>
                     <td>Квитанция</td>
                     <td>Дата оплаты</td>
@@ -28,41 +28,43 @@
             </thead>
             <tbody>
             @for((application, ind) <- applications.zipWithIndex) {
-                <tr@if(application.getState != 0){ class='no_button'}>
-                    <td class='number'>@(ind + 1)</td>
-                    <td>@application.getName</td>
-                    <td>@application.getSize</td>
-                    <td class="@application.getState match {
-                            case 0 => {app-new}
-                            case 1 => {app-pay}
-                            case 2 => {app-acc}
-                    }">
-                        @application.getState match {
-                            case 0 => {-}
-                            case 1 => {+}
-                            case 2 => {@*Подтврждено*@&#x2714;}
-                        }
-                    </td>
-                    <td>@plugin.getKvitHtml(User.current, application, kvit)</td>
-                    <td>
-                        @if(application.getState != Application.NEW) {
-                            @application.getComment
-                        } else {
-                            <form method="POST" action="@plugin.getDoPayCall(application.getName)">
-                                <input type='submit' class='input-payment form-button small' value='Ввести'>
-                                <input type='hidden' class='payment-comment' name='comment'>
-                            </form>
-                        }
-                    </td>
-                    <td class='remove'>
-                        @if(plugin.mayRemoveApplication(application)) {
-                            <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
-                            <a href="#" class="submit actions-remove-app-@ind" title="Удалить заявку @application.getName">Удалить</a>
-                        } else {
-                            &nbsp;
-                        }
-                    </td>
-                </tr>
+                @defining(plugin.getTypeByName(application.getType)) { app_type =>
+                    <tr class="@if(application.getState != 0){app-no-button} else {app-has-button} @if(app_type != null && app_type.isNeedsConfirmation){app-need-confirm} else {app-no-confirm}">
+                        <td class='number'>@(ind + 1)</td>
+                        <td>@application.getName@if(app_type != null){<span class='app-type'>@app_type.getDescription</span>}</td>
+                        <td>@application.getSize</td>
+                        <td class="@application.getState match {
+                                case 0 => {app-new}
+                                case 1 => {app-pay}
+                                case 2 => {app-acc}
+                        }">
+                            @application.getState match {
+                                case 0 => {-}
+                                case 1 => {+}
+                                case 2 => {@*Подтврждено*@&#x2714;}
+                            }
+                        </td>
+                        <td>@plugin.getKvitHtml(User.current, application, kvit)</td>
+                        <td>
+                            @if(application.getState != Application.NEW) {
+                                @application.getComment
+                            } else {
+                                <form method="POST" action="@plugin.getDoPayCall(application.getName)">
+                                    <input type='submit' class='input-payment form-button small' value='Ввести'>
+                                    <input type='hidden' class='payment-comment' name='comment'>
+                                </form>
+                            }
+                        </td>
+                        <td class='remove'>
+                            @if(plugin.mayRemoveApplication(application)) {
+                                <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
+                                <a href="#" class="submit actions-remove-app-@ind" title="Удалить заявку @application.getName">Удалить</a>
+                            } else {
+                                &nbsp;
+                            }
+                        </td>
+                    </tr>
+                }
             }
             </tbody>
         </table>
