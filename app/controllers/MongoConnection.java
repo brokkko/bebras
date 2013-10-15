@@ -156,18 +156,18 @@ public class MongoConnection {
         }
     }
 
-    private static Mongo getMongo() {
+    private static MongoClient getMongo() {
         try {
-            return Cache.getOrElse("mongo", new Callable<Mongo>() {
+            return Cache.getOrElse("mongo", new Callable<MongoClient>() {
                 @Override
-                public Mongo call() throws Exception {
+                public MongoClient call() throws Exception {
                     Configuration configuration = Play.application().configuration();
 
                     final String host = configuration.getString("mongodb.host");
                     final Integer configPort = configuration.getInt("mongodb.port");
                     final int port = configPort == null ? 27017 : configPort;
 
-                    return new Mongo(host, port);
+                    return new MongoClient(host, port);
                 }
             }, 0);
         } catch (Exception e) {
@@ -180,7 +180,7 @@ public class MongoConnection {
                 final Integer configPort = configuration.getInt("mongodb.port");
                 final int port = configPort == null ? 27017 : configPort;
 
-                return new Mongo(host, port);
+                return new MongoClient(host, port);
             } catch (UnknownHostException e1) {
                 Logger.error("Failed to get mongo DB", e1);
                 return null;

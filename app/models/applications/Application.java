@@ -149,8 +149,9 @@ public class Application implements SerializableUpdatable {
         String prefix = getCodeForUser(user).toLowerCase() + number + ".";
         int index = 1;
         int skipped = 0;
+        int created = 0;
 
-        while (index <= size) {
+        while (created < size) {
             String login = prefix + index;
             index ++;
 
@@ -165,9 +166,12 @@ public class Application implements SerializableUpdatable {
 
                 if (skipped == 100)
                     return false;
+
+                continue;
             }
 
             logins.add(login);
+            created ++;
         }
 
         try {
