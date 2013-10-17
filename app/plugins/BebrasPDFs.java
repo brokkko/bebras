@@ -48,6 +48,9 @@ public class BebrasPDFs extends Plugin {
     private int getParticipants() {
         User user = User.current();
 
+        if (user == null)
+            return 0;
+
         //noinspection unchecked
         List<Application> apps = (List<Application>) user.getInfo().get("apps"); //get apps from config
 
