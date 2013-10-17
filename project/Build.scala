@@ -14,10 +14,12 @@ object ApplicationBuild extends Build {
       "org.apache.commons" % "commons-email" % "1.2", //simple email wrapper
       "javax.mail" % "mail" % "1.4.5",  //not sure this needed, it may already be in dependencies
       "net.sf.opencsv" % "opencsv" % "2.3" // CSV reader and writer http://opencsv.sourceforge.net
+//      "com.github.mumoshu" %% "play2-memcached" % "0.3.0.2"
     )
 
     val main = play.Project(appName, appVersion, appDependencies).settings(
-      // Add your own project settings here      
+      // Add your own project settings here
+//      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
     )
 
 }

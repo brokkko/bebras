@@ -46,7 +46,7 @@ public class BBTCProblem implements Problem {
     }
 
     @Override
-    public Html format(int index, boolean showSolutions) {
+    public Html format(int index, boolean showSolutions, Info settings) {
         return views.html.bbtc.bbtc_problem.render(index, showSolutions, question, answers, rightAnswer);
     }
 

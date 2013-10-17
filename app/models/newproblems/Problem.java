@@ -14,7 +14,7 @@ import play.api.templates.Html;
  */
 public interface Problem extends SerializableUpdatable {
 
-    Html format(int index, boolean showSolutions);
+    Html format(int index, boolean showSolutions, Info settings);
 
     boolean editable();
 

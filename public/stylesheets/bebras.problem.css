@@ -11,11 +11,20 @@
 }
 
 .problem-title {
-    margin-right: 1em;
+    margin-right: 0.5em;
 }
 
 .problem .problem-country {
-    font-size: 18px;
+    font-size: 0.8em;
+}
+
+.problem .problem-scores {
+    margin-right: 0.5em;
+    font-size: 0.8em;
+    /*font-weight: bold;*/
+    /*border: 2px solid #5B5E35;*/
+    /*border-radius: 20em;*/
+    /*padding: 0 0.2em;*/
 }
 
 .problem .problem-country img {

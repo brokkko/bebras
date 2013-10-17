@@ -23,11 +23,11 @@
     <div class='problem-statement-answer'>
         <div class='problem hidden'><span class='hidden pr_type'>@problem.getType</span>
             <p>Предварительный просмотр: <a href='#' class='switch-problem'>переключить на ответ</a></p>
-            @problem.format(0, false)
+            @problem.format(0, false, null)
         </div>
         <div class='problem'><span class='hidden pr_type'>@problem.getType</span>
             <p>Предварительный просмотр: <a href='#' class='switch-problem'>переключить на условие</a></p>
-            @problem.format(0, true)
+            @problem.format(0, true, null)
         </div>
     </div>
 

@@ -269,8 +269,8 @@ public class Contest {
         return problems;
     }
 
-    public List<List<Problem>> getPagedUserProblems(User user) {
-        List<List<Problem>> pages = new ArrayList<>();
+    public List<List<ConfiguredProblem>> getPagedUserProblems(User user) {
+        List<List<ConfiguredProblem>> pages = new ArrayList<>();
         List<ConfiguredProblem> userProblems = getUserProblems(user);
 
         int pageIndex = 0;
@@ -287,9 +287,9 @@ public class Contest {
 
             block = Math.min(block, indexesLeft);
             int nextIndex = index + block;
-            List<Problem> aPage = new ArrayList<>(block);
+            List<ConfiguredProblem> aPage = new ArrayList<>(block);
             for (; index < nextIndex; index++)
-                aPage.add(userProblems.get(index).getProblem());
+                aPage.add(userProblems.get(index));
 
             pages.add(aPage);
         }

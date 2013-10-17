@@ -71,7 +71,7 @@ public class BebrasProblem implements Problem {
     }
 
     @Override
-    public Html format(int index, boolean showSolutions) {
+    public Html format(int index, boolean showSolutions, Info settings) {
         //render answers
         Html answersHtml;
         switch (answersLayout) {
@@ -91,7 +91,14 @@ public class BebrasProblem implements Problem {
                 answersHtml = views.html.bebras.answers_5x1.render(answers);
         }
 
-        return views.html.bebras.bebras_problem.render(index, showSolutions, title, country, COUNTRY_TO_NAME.get(country), statement, question, answersHtml, rightAnswer, explanation);
+        int scores = 0;
+        if (settings != null) {
+            Object oScores = settings.get("r");
+            if (oScores != null && oScores instanceof Integer)
+                scores = (Integer) oScores;
+        }
+
+        return views.html.bebras.bebras_problem.render(index, scores, showSolutions, title, country, COUNTRY_TO_NAME.get(country), statement, question, answersHtml, rightAnswer, explanation);
     }
 
     @Override

@@ -5,6 +5,7 @@ import models.Contest;
 import models.Event;
 import models.Submission;
 import models.User;
+import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
 import models.newserialization.JSONDeserializer;
 import models.newserialization.JSONSerializer;
@@ -55,7 +56,7 @@ public class Contests extends Controller {
 
         boolean printing = !displayType.equals("normal");
 
-        List<List<Problem>> pagedUserProblems = contest.getPagedUserProblems(user);
+        List<List<ConfiguredProblem>> pagedUserProblems = contest.getPagedUserProblems(user);
 
 //        List<Info> answersForContest = printing ? (List<Info>) Collections.emptyList() : user.getAnswersForContest(contest); //TODO report: removing of redundant cast leads to error
         List<Info> answersForContest;
@@ -68,10 +69,11 @@ public class Contests extends Controller {
         JSONSerializer contestInfoSerializer = new JSONSerializer();
         ListSerializer problemsInfoSerializer = contestInfoSerializer.getListSerializer("problems");
 
-        Map<Problem, Integer> problem2index = new HashMap<>();
+        Map<ConfiguredProblem, Integer> problem2index = new HashMap<>();
         int index = 0;
-        for (List<Problem> page : pagedUserProblems)
-            for (Problem problem : page) {
+        for (List<ConfiguredProblem> page : pagedUserProblems)
+            for (ConfiguredProblem configuredProblem : page) {
+                Problem problem = configuredProblem.getProblem();
                 Serializer problemInfoSerializer = problemsInfoSerializer.getSerializer();
                 Info answer = answersForContest.get(index);
 
@@ -81,7 +83,7 @@ public class Contests extends Controller {
                     problem.getAnswerPattern().write(problemInfoSerializer, "ans", answer);
                 problemInfoSerializer.write("type", problem.getType());
 
-                problem2index.put(problem, index);
+                problem2index.put(configuredProblem, index);
 
                 index++;
             }
@@ -224,12 +226,12 @@ public class Contests extends Controller {
         return redirect(routes.UserInfo.contestsList(eventId));
     }
 
-    private static Widget getProblemsWidgets(List<List<Problem>> pagedUserProblems) {
+    private static Widget getProblemsWidgets(List<List<ConfiguredProblem>> pagedUserProblems) {
         Set<String> links = new HashSet<>();
 
-        for (List<Problem> page : pagedUserProblems)
-            for (Problem problem : page)
-                links.add(problem.getType() + ".problem"); //TODO this ".problem" is not DRY, cf. ProblemWidget
+        for (List<ConfiguredProblem> page : pagedUserProblems)
+            for (ConfiguredProblem problem : page)
+                links.add(problem.getProblem().getType() + ".problem"); //TODO this ".problem" is not DRY, cf. ProblemWidget
 
         List<ResourceLink> linksList = new ArrayList<>();
         for (String link : links) {

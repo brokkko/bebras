@@ -1,4 +1,4 @@
-@(status:String, pagedUserProblems:java.util.List[java.util.List[models.newproblems.Problem]], problem2index:Map[models.newproblems.Problem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)
+@(status:String, pagedUserProblems:java.util.List[java.util.List[models.newproblems.ConfiguredProblem]], problem2index:java.util.Map[models.newproblems.ConfiguredProblem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)
 @import views.widgets.CssJsWidget
 @import models.Contest
 @import models.Event
@@ -13,7 +13,7 @@
             <div class='page'>
             @for(problem <- page) {
                 <div class='problem'><span class='hidden pid'>@problem2index(problem)</span>
-                    @problem.format(problem2index(problem), status == "results")
+                    @problem.getProblem.format(problem2index(problem), status == "results", problem.getSettings)
                     <div class='footer'></div>
                 </div>
             }

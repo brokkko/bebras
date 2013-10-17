@@ -1,10 +1,12 @@
-@(index:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, question:String, answersHtml:Html, rightAnswer:Int, explanation:String)
+@(index:Int, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, question:String, answersHtml:Html, rightAnswer:Int, explanation:String)
 @import scala.List
 @import models.newproblems.bbtc.BBTCProblem
 <div class='task-title section-title'>
     <span class='problem-index'>Задача @(index + 1).</span>
     <span class='problem-title'>@Html(title)</span>
-    <span class='problem-scores'>@*TODO scores *@</span>
+    @if(scores != 0) {
+        <span class='problem-scores'>@scores&nbsp;баллов</span>
+    }
     <span class='problem-country'><img alt="@country" src="@routes.Assets.at("images/flags/" + country + ".png")">@countryName</span>
 </div>
 <div class='task-statement'>
