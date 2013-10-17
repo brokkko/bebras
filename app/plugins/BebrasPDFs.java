@@ -59,7 +59,7 @@ public class BebrasPDFs extends Plugin {
 
         int cnt = 0;
         for (Application app : apps)
-            if (app.getType().equals("pdf"))//get apps from
+            if ("pdf".equals(app.getType()))//get apps from
                 cnt += app.getSize();
 
         return cnt;
