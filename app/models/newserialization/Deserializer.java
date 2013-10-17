@@ -97,7 +97,7 @@ public abstract class Deserializer {
     //null default value means now
     public Date readDate(String field, Date defaultValue) {
         Date result = readDate(field);
-        return result == null ? null : (
+        return result != null ? result : (
                 defaultValue == null ? new Date() : defaultValue
         );
     }

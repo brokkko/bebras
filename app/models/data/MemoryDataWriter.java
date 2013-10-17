@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  */
 public class MemoryDataWriter<T> implements AutoCloseable {
 
-    public static final int MAX_SIZE = 200;
+    public static final int MAX_SIZE = 500;
 
     private final Table<T> table;
     private String fullTextSearch;

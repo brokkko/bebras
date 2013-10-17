@@ -88,10 +88,9 @@ public class Contest {
         problemBlocks = new ArrayList<>();
 
         ListDeserializer blocksDeserializer = deserializer.getListDeserializer("blocks");
-        if (blocksDeserializer != null) {
+        if (blocksDeserializer != null)
             while (blocksDeserializer.hasMore())
                 problemBlocks.add(ProblemBlockFactory.getBlock(this, blocksDeserializer.getDeserializer()));
-        }
     }
 
     public static Contest deserialize(Event event, Deserializer deserializer) {

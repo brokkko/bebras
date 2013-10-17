@@ -16,6 +16,7 @@ public class PluginSerializationType extends SerializableTreeSerializationType<P
         registerClass("applications", Applications.class);
         registerClass("link", LinkPlugin.class);
         registerClass("flags", EventFlagsPlugin.class);
+        registerClass("bebras pdf", BebrasPDFs.class);
     }
 
 }

@@ -203,4 +203,20 @@ public class Utils {
             return null;
         return name.substring(pos + 1);
     }
+
+    public static byte[] readFileAsBytes(File file) throws IOException {
+        final int BUFFER_SIZE = 10240;
+        try (
+                FileInputStream fis = new FileInputStream(file);
+                BufferedInputStream in = new BufferedInputStream(fis, BUFFER_SIZE);
+                ByteArrayOutputStream out = new ByteArrayOutputStream(BUFFER_SIZE)
+        ) {
+            int read;
+            byte[] buffer = new byte[BUFFER_SIZE];
+            while ((read = in.read(buffer)) >= 0)
+                out.write(buffer, 0, read);
+
+            return out.toByteArray();
+        }
+    }
 }

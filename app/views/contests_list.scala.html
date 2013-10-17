@@ -54,7 +54,7 @@
                     </span></p>
                     @if((contest.isAllowRestart || User.current.hasEventAdminRight) && User.current.userParticipatedAndFinished(contest)) {
                         <form class='invisible-form' action="@routes.Contests.restart(Event.current.getId, contest.getId)" method="POST">
-                            <p class='contest-action'><a href='#' onclick="$(this).parents('form').submit(); return false;">Сбросить результаты, чтобы попробовать еще раз</a></p>
+                            <p class='contest-action'><a href='#'>Сбросить результаты, чтобы попробовать еще раз</a></p>
                         </form>
                     }
                     <p class='skip'>&nbsp;</p>

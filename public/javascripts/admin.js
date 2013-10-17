@@ -27,4 +27,12 @@ $(function(){
         $form.submit();
         return false;
     });
+
+    //TODO move somewhere else or rename
+    $('.contest-action').click(function() {
+        if (!confirm("Вы действительно хотите сбросить результаты?"))
+            return false;
+        $(this).parents('form').submit();
+        return false;
+    });
 });

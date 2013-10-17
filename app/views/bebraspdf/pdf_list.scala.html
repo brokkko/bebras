@@ -1,0 +1,15 @@
+@(plugin:plugins.BebrasPDFs)
+@import views.htmlblocks.HtmlBlockWidget
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List(HtmlBlockWidget.get)) { } {
+    @Event.current.getHtmlBlock("bebras_pdf_block_top").format
+
+    <p><a href="@plugin.getPdfFileCall("bobrik")">Бобрик 1-2 классы</a></p>
+    <p><a href="@plugin.getPdfFileCall("bebras_3_4")">Бобёр 3-4 классы</a></p>
+    <p><a href="@plugin.getPdfFileCall("bebras_5_6")">Бобёр 5-6 классы</a></p>
+    <p><a href="@plugin.getPdfFileCall("bebras_7_8")">Бобёр 7-8 классы</a></p>
+    <p><a href="@plugin.getPdfFileCall("bebras_9_10")">Бобёр 9-10 классы</a></p>
+    <p><a href="@plugin.getPdfFileCall("bebras_11")">Бобёр 11 класс</a></p>
+
+    @Event.current.getHtmlBlock("bebras_pdf_block_bottom").format
+}
