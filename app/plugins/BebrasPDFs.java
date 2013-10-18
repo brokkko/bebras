@@ -32,17 +32,18 @@ import java.util.zip.ZipOutputStream;
 public class BebrasPDFs extends Plugin {
 
     private Date time;
+    private String applicantRole = "school org";
 
     @Override
     public void initPage() {
-        if (!User.currentRole().hasRight("school org"))
+        if (!User.currentRole().hasRight(applicantRole))
             return;
 
         if (new Date().before(time) && !User.current().hasEventAdminRight())
             return;
 
         if (getParticipants() > 0 || User.current().hasEventAdminRight())
-            Menu.addMenuItem("PDF условия задач", getCall(), "school org");
+            Menu.addMenuItem("PDF условия задач", getCall(), applicantRole);
     }
 
     private int getParticipants() {
@@ -71,7 +72,7 @@ public class BebrasPDFs extends Plugin {
 
     @Override
     public Result doGet(String action, String params) {
-        if (!User.currentRole().hasRight("school org"))
+        if (!User.currentRole().hasRight(applicantRole))
             return Results.forbidden();
 
         if (new Date().before(time) && !User.current().hasEventAdminRight())
@@ -156,4 +157,7 @@ public class BebrasPDFs extends Plugin {
         super.serialize(serializer);    //To change body of overridden methods use File | Settings | File Templates.
         serializer.write("time", Utils.formatDateTimeForInput(time));
     }
+
+    // upload files
+
 }

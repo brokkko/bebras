@@ -1,5 +1,7 @@
 package controllers;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
@@ -88,6 +90,24 @@ public class UserInfo extends Controller {
 
     private static boolean mayChange(User user, User userToChange) {
         return user == userToChange || user.hasEventAdminRight() || user.getId().equals(userToChange.getRegisteredBy());
+    }
+
+    public static Result removeUser(String eventId, String userId) {
+        User adminUser = User.current();
+
+        RawForm form = new RawForm();
+        form.bindFromRequest();
+        String returnTo = form.get("-return-to");
+
+        ObjectId user = new ObjectId(userId);
+        DBObject query = new BasicDBObject("_id", user);
+
+        if (!adminUser.hasEventAdminRight())
+            query.put(User.FIELD_REGISTERED_BY, adminUser.getId());
+
+        query.put("event_id", eventId); //for any case, ensure not to delete a user from another event
+        MongoConnection.getUsersCollection().remove(query);
+        return redirect(returnTo);
     }
 
 }

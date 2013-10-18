@@ -43,7 +43,7 @@ public class UserActionsFeatures extends FunctionFeaturesSet<User> {
                         views.html.htmlfeatures.action.render(
                                 "remove-user-" + userId,
                                 "Удалить пользователя",
-                                controllers.routes.EventAdministration.removeUser(context.getEvent().getId(), userId.toString()),
+                                controllers.routes.UserInfo.removeUser(context.getEvent().getId(), userId.toString()),
                                 context.getCurrentCall(),
                                 feature
                         )
