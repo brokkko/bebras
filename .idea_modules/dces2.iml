@@ -120,6 +120,7 @@
     <orderEntry type="library" scope="TEST" name="SBT: org.easytesting:fest-assert:1.4" level="project" />
     <orderEntry type="library" scope="TEST" name="SBT: org.easytesting:fest-util:1.1.6" level="project" />
     <orderEntry type="library" name="Scala 2.10.0" level="project" />
+    <orderEntry type="library" name="itextpdf-5.4.4" level="project" />
   </component>
 </module>
 

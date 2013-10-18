@@ -1,6 +1,7 @@
 package plugins;
 
 import models.newserialization.SerializableTreeSerializationType;
+import plugins.bebraspdf.BebrasPDFs;
 
 /**
  * Created with IntelliJ IDEA.

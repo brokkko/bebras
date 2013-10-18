@@ -1,4 +1,4 @@
-package plugins;
+package plugins.bebraspdf;
 
 import models.Event;
 import models.User;
@@ -13,6 +13,7 @@ import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
+import plugins.Plugin;
 import views.Menu;
 
 import java.io.ByteArrayOutputStream;
