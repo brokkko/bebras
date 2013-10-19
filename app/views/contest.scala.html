@@ -81,7 +81,7 @@
         <h1>Соревнование завершено</h1>
         <p class='warning'>
         @if(Contest.current.resultsAvailableImmediately()) {
-                Результаты и правильные ответы доступны: <a class='link-button' href="@routes.Contests.contest(Event.currentId, Contest.current.getId, "normal")">Просмотреть результаты</a>
+                Результаты и правильные ответы доступны:&nbsp;&nbsp;&nbsp;<a class='link-button' href="@routes.Contests.contest(Event.currentId, Contest.current.getId, "normal")">Просмотреть результаты</a>
         } else {
             @if(Contest.current.resultsNotAvailableAtAll) {
                 Результаты и правильные ответы будут доступны позже.

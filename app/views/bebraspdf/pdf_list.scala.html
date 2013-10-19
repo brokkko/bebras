@@ -1,5 +1,6 @@
 @(plugin:plugins.bebraspdf.BebrasPDFs)
 @import plugins.bebraspdf.BebrasPDFs
+@import play.i18n.Messages
 @import views.htmlblocks.HtmlBlockWidget
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List(HtmlBlockWidget.get)) { } {
@@ -11,6 +12,29 @@
     <p><a href="@plugin.getPdfFileCall("bebras_7_8")">Бобёр 7-8 классы</a></p>
     <p><a href="@plugin.getPdfFileCall("bebras_9_10")">Бобёр 9-10 классы</a></p>
     <p><a href="@plugin.getPdfFileCall("bebras_11")">Бобёр 11 класс</a></p>
+
+    <h2 class='select-file'>Загрузка файлов с ответами на задачи</h2>
+    <ul>
+        <li>Вы можете загрузить либо один PDF файл, либо несколько PDF файлов, запакованных в ZIP архив</li>
+        <li>Вы можете загружать файлы с ответами произвольное количество раз. Это может понадобиться, если вы, например, забыли послать
+        несколько файлов. Или хотите посылать файлы постепенно.</li>
+        <li>Если в результате вы загрузите два файла, в которых совпадают имя, фамилия и класс участника,
+            мы будем считать, что этот файл принадлежит одному участнику.</li>
+        <li>Просмотреть загруженных участников вы можете в таблице из раздела "Мои участники".</li>
+        <li>Если какие-то участники загружены по ошибке, вы можете удалить их в разделе "Мои участники.</li>
+    </ul>
+    @defining(Controller.flash("pdf_upload_message")) { message =>
+        <form enctype="multipart/form-data" class='file-upload-form@if(message != null && message.startsWith("bebraspdf.error.")){ file-upload-form-error}' method="post" action="@plugin.getUploadPdfCall">
+            <span class="file-upload-label">Выбор файла</span>
+            <div class='file-upload-input'>
+                <input type='file' name='answers' value='Выберите файл' accept="application/zip,application/pdf"><br>
+                <input type='submit' value='Загрузить файл'>
+            </div>
+            @if(message != null) {
+                <p class='file-upload-form-message@if(message.startsWith("bebraspdf.error.")) { file-upload-form-message-error} else { file-upload-form-message-ok}'>@Messages.get(Controller.flash("pdf_upload_message"))</p>
+            }
+        </form>
+    }
 
     @Event.current.getHtmlBlock("bebras_pdf_block_bottom").format
 }

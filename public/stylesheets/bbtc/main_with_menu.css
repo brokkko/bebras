@@ -338,6 +338,7 @@ a, a:visited {
     background-color: #01a1de;
     padding: 0.4em 0.8em;
     color: white !important;
+    cursor: pointer;
 }
 
 /* table actions */
@@ -356,4 +357,18 @@ a, a:visited {
 .table-actions.small img {
     width: 24px;
     height: 24px;
+}
+
+/* lists */
+.content li {
+    margin-left: 2em;
+    margin-bottom: 0.5em;
+}
+
+.content ul li {
+    list-style: circle;
+}
+
+.content ol li {
+    list-style: decimal;
 }

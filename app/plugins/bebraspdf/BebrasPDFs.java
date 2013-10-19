@@ -6,14 +6,13 @@ import models.Utils;
 import models.applications.Application;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
+import play.Logger;
 import play.cache.Cache;
 import play.libs.Akka;
 import play.libs.F;
-import play.mvc.Call;
-import play.mvc.Controller;
-import play.mvc.Result;
-import play.mvc.Results;
+import play.mvc.*;
 import plugins.Plugin;
+import scala.concurrent.duration.Duration;
 import views.Menu;
 
 import java.io.ByteArrayOutputStream;
@@ -89,6 +88,61 @@ public class BebrasPDFs extends Plugin {
         return Results.notFound();
     }
 
+    @Override
+    public Result doPost(String action, String params) {
+        if (!User.currentRole().hasRight(applicantRole))
+            return Results.forbidden();
+
+        switch (action) {
+            case "upload_answers":
+                return uploadAnswers();
+        }
+
+        return Results.notFound();
+    }
+
+    private Result uploadAnswers() {
+        Http.MultipartFormData body = Controller.request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart answersFilePart = body.getFile("answers");
+        if (answersFilePart == null) {
+            Controller.flash("pdf_upload_message", "bebraspdf.error.no_file");
+            return Results.redirect(getCall("go"));
+        }
+
+        String fileName = answersFilePart.getFilename().toLowerCase();
+        final File file = answersFilePart.getFile();
+
+        final boolean isZip = fileName.endsWith(".zip");
+        final boolean isPdf = fileName.endsWith(".pdf");
+        if (isZip || isPdf) {
+            Akka.system().scheduler().scheduleOnce(
+                    Duration.Zero(),
+                    new Runnable() {
+                        public void run() {
+                            if (isZip)
+                                uploadZipFile(file);
+                            else
+                                uploadPdfFile(file);
+                        }
+                    },
+                    Akka.system().dispatcher()
+            );
+
+            Controller.flash("pdf_upload_message", "bebraspdf.ok.files_uploaded");
+        } else
+            Controller.flash("pdf_upload_message", "bebraspdf.error.format");
+
+        return Results.redirect(getCall("go"));
+    }
+
+    private void uploadZipFile(File file) {
+        Logger.info("in upload zip file");
+    }
+
+    private void uploadPdfFile(File file) {
+        Logger.info("in upload pdf file");
+    }
+
     private Result getPdf(final String fname) {
         final File pdf = new File(Event.current().getEventDataFolder(), fname + ".pdf");
         final int participants = getParticipants();
@@ -138,9 +192,8 @@ public class BebrasPDFs extends Plugin {
         return getCall("get-pdf-" + fileName);
     }
 
-    @Override
-    public Result doPost(String action, String params) {
-        return null;
+    public Call getUploadPdfCall() {
+        return getCall("upload_answers", false, "");
     }
 
     @Override
