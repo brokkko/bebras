@@ -1,6 +1,6 @@
 package models.newproblems.bebras;
 
-import models.Utils;
+import models.utils.Utils;
 import models.forms.RawForm;
 import models.newproblems.Problem;
 import models.newserialization.BasicSerializationType;

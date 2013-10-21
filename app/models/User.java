@@ -764,14 +764,14 @@ public class User implements SerializableUpdatable {
 
         Translator resultTranslator = event.getResultTranslator();
 
-        Collection<Contest> contests = event.getContests();
+        Collection<Contest> contests = event.getContestsAvailableForUser(this);
 
         List<Info> contestsInfo = new ArrayList<>(contests.size());
         List<Info> contestsSettings = new ArrayList<>(contests.size());
 
         for (Contest contest : contests) {
-            if (contest.isAllowRestart()) //TODO invent another method how to exclude test contests
-                continue;
+//            if (contest.isAllowRestart()) //TODO invent some method to exclude test contests
+//                continue;
 
             contestsInfo.add(getContestResults(contest));
             contestsSettings.add(null);

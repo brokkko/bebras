@@ -2,7 +2,7 @@ package controllers;
 
 import controllers.actions.DcesController;
 import models.ServerConfiguration;
-import models.Utils;
+import models.utils.Utils;
 import models.newproblems.ProblemInfo;
 import models.newproblems.ProblemLink;
 import models.newproblems.bebras.BebrasProblem;
@@ -17,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

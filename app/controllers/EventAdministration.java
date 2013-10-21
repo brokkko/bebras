@@ -7,10 +7,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
-import controllers.actions.LoadContest;
 import controllers.actions.LoadEvent;
 import models.*;
-import models.data.*;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.forms.validators.FileListValidator;
@@ -20,6 +18,7 @@ import models.newserialization.FormDeserializer;
 import models.newserialization.FormSerializer;
 import models.newserialization.JSONDeserializer;
 import models.newserialization.MongoSerializer;
+import models.utils.Utils;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
@@ -27,7 +26,6 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import play.Logger;
-import play.data.DynamicForm;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
@@ -41,10 +39,7 @@ import views.htmlblocks.HtmlBlock;
 
 import java.io.*;
 import java.nio.file.*;
-import java.util.ArrayList;
 import java.util.concurrent.Callable;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Created with IntelliJ IDEA.

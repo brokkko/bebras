@@ -1,11 +1,11 @@
 @(status:String, pagedUserProblems:java.util.List[java.util.List[models.newproblems.ConfiguredProblem]], problem2index:java.util.Map[models.newproblems.ConfiguredProblem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)
+@import models.utils.Utils
 @import views.widgets.CssJsWidget
 @import models.Contest
 @import models.Event
 @import views.widgets.ResourceLink
 @import models.User
 @import scala.List
-@import models.Utils
 @main(Event.current.getTitle)(List(CssJsWidget get "contest", problemsWidgets))(false) {
     <div id='all-problems-in-pages-print'>
         <div class='contest-info hidden'>@Html(jsonContestInfo)</div>

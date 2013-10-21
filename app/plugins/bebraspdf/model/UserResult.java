@@ -44,9 +44,7 @@ public class UserResult {
         return userClass;
     }
 
-    public List<TaskResult> getTaskResults() {
-        List<TaskResult> results = new ArrayList<TaskResult>();
-        Collections.copy(results, taskResults);
-        return results;
+    public List<? extends TaskResult> getTaskResults() {
+        return taskResults;
     }
 }

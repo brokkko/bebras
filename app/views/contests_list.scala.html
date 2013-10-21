@@ -1,4 +1,5 @@
 @(addContestForm:models.forms.RawForm)
+@import models.utils.Utils
 @import views.htmlblocks.HtmlBlockWidget
 @import views.widgets.ResourceLink
 @import views.widgets.FormsWidget
@@ -58,14 +59,14 @@
                         </form>
                     }
                     <p class='skip'>&nbsp;</p>
-                    <p><span class='title'>Начало:</span> <span class='data'>@models.Utils.formatContestDate(contest.getStart)</span></p>
-                    <p><span class='title'>Окончание:</span> <span class='data'>@models.Utils.formatContestDate(contest.getFinish)</span></p>
+                    <p><span class='title'>Начало:</span> <span class='data'>@models.utils.Utils.formatContestDate(contest.getStart)</span></p>
+                    <p><span class='title'>Окончание:</span> <span class='data'>@utils.Utils.formatContestDate(contest.getFinish)</span></p>
                     @if(!contest.resultsNotAvailableAtAll) {
                         <p><span class='title'>Результаты:</span> <span class='data'>
                             @if(contest.resultsAvailableImmediately) {
                                 доступны сразу
                             } else {
-                                @models.Utils.formatContestDate(contest.getResults)
+                                @utils.Utils.formatContestDate(contest.getResults)
                             }
                         </span></p>
                     }

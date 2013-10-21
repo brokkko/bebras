@@ -3,7 +3,7 @@ package models.data.features;
 import models.Contest;
 import models.Submission;
 import models.User;
-import models.Utils;
+import models.utils.Utils;
 import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.newproblems.ConfiguredProblem;

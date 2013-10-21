@@ -1,6 +1,6 @@
 package models.forms.inputtemplate;
 
-import models.Utils;
+import models.utils.Utils;
 import models.forms.RawForm;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.SerializationType;

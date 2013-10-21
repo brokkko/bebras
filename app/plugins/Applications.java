@@ -3,7 +3,7 @@ package plugins;
 import models.Event;
 import models.User;
 import models.UserRole;
-import models.Utils;
+import models.utils.Utils;
 import models.applications.Application;
 import models.applications.Kvit;
 import models.forms.InputForm;

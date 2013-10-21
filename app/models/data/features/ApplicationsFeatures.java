@@ -1,6 +1,6 @@
 package models.data.features;
 
-import models.Utils;
+import models.utils.Utils;
 import models.applications.Application;
 import models.applications.ApplicationWithUser;
 import models.data.FeaturesContestType;
@@ -9,7 +9,6 @@ import models.data.FeaturesSet;
 import models.data.WrappedFeatureValue;
 import play.api.templates.Html;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**

@@ -140,6 +140,7 @@ public class MongoConnection {
                 collection.createIndex(loginAndEventIndex, new BasicDBObject("unique", true));
                 collection.createIndex(new BasicDBObject(User.FIELD_CONFIRMATION_UUID, 1));
                 collection.createIndex(new BasicDBObject(User.FIELD_REGISTRATION_UUID, 1));
+                collection.createIndex(new BasicDBObject(User.FIELD_REGISTERED_BY, 1));
                 break;
             case COLLECTION_NAME_ACTIVITY:
                 collection.createIndex(new BasicDBObject(UserActivityEntry.FIELD_USER, 1));

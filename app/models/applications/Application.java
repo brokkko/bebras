@@ -160,8 +160,8 @@ public class Application implements SerializableUpdatable {
             info.put(User.FIELD_LOGIN, login);
             info.put(User.FIELD_RAW_PASS, password);
 
-            boolean userCreated = event.createUser(password, role, info, user);
-            if (!userCreated) {
+            User createdUser = event.createUser(password, role, info, user);
+            if (createdUser == null) {
                 skipped++;
 
                 if (skipped == 100)

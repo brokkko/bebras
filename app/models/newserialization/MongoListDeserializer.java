@@ -2,7 +2,7 @@ package models.newserialization;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
-import models.Utils;
+import models.utils.Utils;
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 

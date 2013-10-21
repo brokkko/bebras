@@ -29,7 +29,7 @@ public class Global extends GlobalSettings {
 
     @Override
     public Result onHandlerNotFound(Http.RequestHeader requestHeader) {
-        Logger.info("Handler not found: " + requestHeader.getHeader("User-Agent"));
+        Logger.info("Handler not found: " + requestHeader.host() + requestHeader.uri());
         return super.onHandlerNotFound(requestHeader);
     }
 

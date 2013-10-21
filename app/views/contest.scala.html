@@ -1,4 +1,6 @@
 @(status:String, pagedUserProblems:java.util.List[java.util.List[models.newproblems.ConfiguredProblem]], problem2index:java.util.Map[models.newproblems.ConfiguredProblem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)(show_header:Boolean, show_footer:Boolean, scrolling:Boolean, menu_to_left:Boolean, show_menu:Boolean, top_pages:Boolean, bottom_pages:Boolean, next_buttons:Boolean)
+@import models.utils.Utils
+@import models.utils.Utils
 @import views.widgets.CssJsWidget
 @import models.newproblems.ConfiguredProblem
 @import models.Contest
@@ -6,7 +8,6 @@
 @import views.widgets.ResourceLink
 @import models.User
 @import scala.List
-@import models.Utils
 @main_with_menu_ex(Event.current.getTitle)(List(new ResourceLink("jquery.splitpages.js"), CssJsWidget get "contest", problemsWidgets))(show_header, show_footer, show_menu, scrolling, menu_to_left){
     @if(scrolling && status == "results") {
         <h1>Результаты соревнования:</h1>

@@ -1,7 +1,7 @@
 package models.applications;
 
 import models.User;
-import models.Utils;
+import models.utils.Utils;
 import models.results.Info;
 import org.bson.types.ObjectId;
 import plugins.Applications;

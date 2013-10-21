@@ -1,5 +1,5 @@
 @(result:models.results.Info, resultPattern:models.results.InfoPattern, classes:String)
-@import models.Utils
+@import models.utils.Utils
 @*TODO think how to make title depend on elements in info, such as scores*@
 <table border="0" class="information@if(classes != null){ @classes}">
     @for(field <- resultPattern.getFields) {

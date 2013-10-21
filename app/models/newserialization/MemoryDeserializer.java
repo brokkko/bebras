@@ -1,6 +1,6 @@
 package models.newserialization;
 
-import models.Utils;
+import models.utils.Utils;
 
 import java.util.*;
 

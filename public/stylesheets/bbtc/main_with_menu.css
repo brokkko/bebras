@@ -372,3 +372,71 @@ a, a:visited {
 .content ol li {
     list-style: decimal;
 }
+
+/* file upload form */
+.file-upload-form {
+    margin: 1em 0;
+    padding: 1em;
+}
+
+.file-upload-form .file-upload-label {
+    margin-right: 0.5em;
+    font-weight: bold;
+}
+
+.file-upload-form .file-upload-input {
+    vertical-align: top;
+    display: inline-block;
+    width: 50%;
+}
+
+.file-upload-form input[type='file'] {
+    border: 2px solid #5b5e35;
+    padding: 0.2em 0.5em;
+    /*font-weight: bold;*/
+    /*background-color: #fceaa4;*/
+    width: 100%;
+    font-size: 1em;
+}
+
+.file-upload-form input[type='submit'] {
+    color: #5b5e35;
+    background-color: #fceaa4;
+    border: 2px solid #5b5e35;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    margin-top: 0.5em;
+}
+
+.file-upload-form-message {
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: -1em;
+}
+
+.file-upload-form-message-error {
+    color: #a40005;
+}
+
+.file-upload-form-message-ok {
+    color: #006a09;
+}
+
+.file-upload-form-error {
+    background-color: #ffa38c;
+}
+
+/* lists */
+.content li {
+    margin-left: 2em;
+    margin-bottom: 0.5em;
+}
+
+.content ul li {
+    list-style: circle;
+}
+
+.content ol li {
+    list-style: decimal;
+}

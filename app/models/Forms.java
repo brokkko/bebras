@@ -3,6 +3,7 @@ package models;
 import models.forms.InputForm;
 import models.newserialization.MemoryDeserializer;
 import models.newserialization.SerializationTypesRegistry;
+import models.utils.Utils;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,19 +25,19 @@ public class Forms {
                             Utils.mapify(
                                     "name", LOGIN_FORM_LOGIN,
                                     "view", Utils.mapify(
-                                            "type", "string",
-                                            "title", "Логин", //TODO do i18n
-                                            "placeholder", "Введите логин"
-                                    ),
+                                    "type", "string",
+                                    "title", "Логин", //TODO do i18n
+                                    "placeholder", "Введите логин"
+                            ),
                                     "required", true
                             ),
                             Utils.mapify(
                                     "name", LOGIN_FORM_PASSWORD,
                                     "view", Utils.mapify(
-                                            "type", "password",
-                                            "title", "Пароль",
-                                            "placeholder", "Введите пароль"
-                                    ),
+                                    "type", "password",
+                                    "title", "Пароль",
+                                    "placeholder", "Введите пароль"
+                            ),
                                     "required", true
                             )
                     ),

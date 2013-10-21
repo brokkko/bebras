@@ -1,6 +1,5 @@
 package models.forms.inputtemplate;
 
-import models.Utils;
 import models.forms.RawForm;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
@@ -8,8 +7,6 @@ import models.newserialization.SerializationType;
 import models.newserialization.Serializer;
 import play.api.templates.Html;
 import play.i18n.Messages;
-
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.

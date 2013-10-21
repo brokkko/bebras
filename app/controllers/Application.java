@@ -10,7 +10,7 @@ import controllers.actions.LoadEvent;
 import models.Event;
 import models.ServerConfiguration;
 import models.User;
-import models.Utils;
+import models.utils.Utils;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;

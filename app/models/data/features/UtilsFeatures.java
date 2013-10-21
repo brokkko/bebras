@@ -1,6 +1,6 @@
 package models.data.features;
 
-import models.Utils;
+import models.utils.Utils;
 import models.data.*;
 import org.bson.types.ObjectId;
 

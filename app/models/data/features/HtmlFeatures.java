@@ -17,7 +17,7 @@ public class HtmlFeatures<T> extends FunctionFeaturesSet<T> {
 
     @Override
     protected Object function(String function, Object feature, FeaturesContext context) {
-        if (context.getType() != FeaturesContestType.INTERFACE)
+        if (context.getType() == FeaturesContestType.CSV)
             return feature;
 
         if (feature == null)

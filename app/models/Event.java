@@ -255,6 +255,10 @@ public class Event {
 
     public Collection<Contest> getContestsAvailableForUser() {
         User user = User.current();
+        return getContestsAvailableForUser(user);
+    }
+
+    public Collection<Contest> getContestsAvailableForUser(User user) {
         if (user.hasEventAdminRight())
             return getContests();
 
@@ -405,7 +409,7 @@ public class Event {
         return "Центр продуктивного обучения";
     }
 
-    public boolean createUser(String password, UserRole role, Info info, User register) {
+    public User createUser(String password, UserRole role, Info info, User register) {
         User user = new User();
         if (info == null)
             info = new Info();
@@ -421,10 +425,10 @@ public class Event {
             user.serialize();
         } catch (MongoException exception) {
             Logger.warn("Failed to create user " + info.get("login"), exception);
-            return false;
+            return null;
         }
 
-        return true;
+        return user;
     }
 
 }

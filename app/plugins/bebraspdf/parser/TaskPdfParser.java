@@ -44,12 +44,9 @@ public class TaskPdfParser {
             TaskResult taskResult = new TaskResult(i, TaskAnswer.getTaskAnswerByPdfValue(form.getField(KeyFieldConsts.TASK + i)));
             userResult.addTaskResult(taskResult);
         }
+
         reader.close();
         return userResult;
-    }
-
-    public static final void main(String[] args) throws IOException, DocumentException {
-        new TaskPdfParser().getResult("D:\\contest\\contest\\3-4result.pdf");
     }
 
 }
