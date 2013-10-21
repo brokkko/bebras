@@ -29,13 +29,13 @@ public class Global extends GlobalSettings {
 
     @Override
     public Result onHandlerNotFound(Http.RequestHeader requestHeader) {
-        Logger.info("Handler not found: " + requestHeader.host() + requestHeader.uri());
+        Logger.info("Handler not found: " + requestHeader.method() + " " + requestHeader.host() + requestHeader.uri());
         return super.onHandlerNotFound(requestHeader);
     }
 
     @Override
     public Result onBadRequest(Http.RequestHeader requestHeader, String error) {
-        Logger.info("Bad request: " + requestHeader.getHeader("User-Agent") + " -> " + error);
+        Logger.info("Bad request: " + requestHeader.method() + " " + requestHeader.host() + requestHeader.uri());
         return super.onBadRequest(requestHeader, error);
     }
 }
