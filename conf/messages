@@ -145,4 +145,5 @@ actions.unknown_contest=Неизвестное соревнование
 
 bebraspdf.ok.files_uploaded=Файлы успешно загружены. По мере обработки файлов информация о результатах участников будет появляться в разделе "Мои участники"
 bebraspdf.error.format=Файл должен иметь формат ZIP или PDF
+bebraspdf.error.upload_error=Ошибка при загрузке файлов
 bebraspdf.error.no_file=Укажите файлы для загрузки

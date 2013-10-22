@@ -9,6 +9,7 @@ import models.utils.InputStreamWrapper;
 import models.utils.Utils;
 import models.applications.Application;
 import play.Logger;
+import play.Play;
 import play.cache.Cache;
 import play.libs.Akka;
 import play.libs.F;
@@ -137,11 +138,26 @@ public class BebrasPDFs extends Plugin {
         List<String> fileNames = new ArrayList<>(answersFilePart.size());
         List<File> files = new ArrayList<>(answersFilePart.size());
 
+        File uploadFolder = Play.application().getFile("_uploaded");
+
         for (Http.MultipartFormData.FilePart filePart : answersFilePart) {
-            String fileName = filePart.getFilename().toLowerCase();
-            File file = filePart.getFile();
-            fileNames.add(fileName);
-            files.add(file);
+            try {
+                String fileName = filePart.getFilename().toLowerCase();
+                File file = filePart.getFile();
+
+                File movedFile = new File(uploadFolder, file.getName());
+                Files.move(
+                        Paths.get(file.getAbsolutePath()),
+                        Paths.get(movedFile.getAbsolutePath())
+                );
+
+                fileNames.add(fileName);
+                files.add(movedFile);
+            } catch (IOException e) {
+                Logger.warn("Failed to copy file " + filePart.getFilename() + " % " + filePart.getFile(), e);
+                Controller.flash("pdf_upload_message", "bebraspdf.error.upload_error");
+                return Results.redirect(getCall("go"));
+            }
         }
 
         processFile(event, participantRole, user, fileNames, files);
@@ -163,16 +179,16 @@ public class BebrasPDFs extends Plugin {
                             File file = files.get(i);
 
                             if (fileName.endsWith(".zip"))
-                                uploadZipFile(file, user, event, participantRole, requestTime);
+                                uploadZipFile(file, fileName, user, event, participantRole, requestTime);
                             else if (fileName.endsWith(".pdf"))
-                                uploadPdfFile(file, user, event, participantRole, requestTime);
+                                uploadPdfFile(file, fileName, user, event, participantRole, requestTime);
                             else
                                 Logger.warn("Wrong pdf file extension: " + fileName);
 
                             try {
                                 Files.delete(Paths.get(file.getAbsolutePath()));
                             } catch (IOException e) {
-                                Logger.warn("Could not delete temporary file with uploaded pdf(s): " + file);
+                                Logger.warn("Could not delete temporary file with uploaded pdf(s): " + file, e);
                             }
                         }
                     }
@@ -345,28 +361,30 @@ public class BebrasPDFs extends Plugin {
         return event.getContestById(contestId);
     }
 
-    private void uploadPdfFile(File file, User organizer, Event event, UserRole participantRole, Date requestTime) {
+    private void uploadPdfFile(File file, String fileName, User organizer, Event event, UserRole participantRole, Date requestTime) {
         AllParticipants allUsers = new AllParticipants(participantRole.getName(), participantField, organizer.getId());
 
         try (InputStream fin = new FileInputStream(file)) {
             processUser(fin, allUsers, event, participantRole, organizer, requestTime);
         } catch (Exception e) {
-            Logger.error("Failed to upload pdf file with user solutions: " + file, e);
+            Logger.error("Failed to upload pdf file with user solutions: " + fileName, e);
         }
     }
 
-    private void uploadZipFile(File file, User organizer, Event event, UserRole participantRole, Date requestTime) {
+    private void uploadZipFile(File file, String fileName, User organizer, Event event, UserRole participantRole, Date requestTime) {
         AllParticipants allUsers = new AllParticipants(participantRole.getName(), participantField, organizer.getId());
 
         try (ZipInputStream in = new ZipInputStream(new FileInputStream(file))) {
             ZipEntry entry;
             while ((entry = in.getNextEntry()) != null) {
-                if (!entry.getName().toLowerCase().endsWith(".pdf"))
+                if (!entry.getName().toLowerCase().endsWith(".pdf")) {
                     Logger.info("User uploaded zip with not-pdf file: " + organizer.getId());
+                    continue;
+                }
                 processUser(new InputStreamWrapper(in), allUsers, event, participantRole, organizer, requestTime);
             }
         } catch (Exception e) {
-            Logger.error("Failed to upload zip file with user solutions: " + file, e);
+            Logger.error("Failed to upload zip file with user solutions: " + fileName, e);
         }
 
     }
