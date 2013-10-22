@@ -20,10 +20,9 @@ import plugins.bebraspdf.parser.TaskPdfParser;
 import scala.concurrent.duration.Duration;
 import views.Menu;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -131,11 +130,17 @@ public class BebrasPDFs extends Plugin {
             return Results.redirect(getCall("go"));
         }
 
+        final User user = User.current();
+
         String fileName = answersFilePart.getFilename().toLowerCase();
         final File file = answersFilePart.getFile();
 
-        final User user = User.current();
+        processFile(event, participantRole, user, fileName, file);
 
+        return Results.redirect(getCall("go"));
+    }
+
+    private void processFile(final Event event, final UserRole participantRole, final User user, String fileName, final File file) {
         final boolean isZip = fileName.endsWith(".zip");
         final boolean isPdf = fileName.endsWith(".pdf");
         final Date requestTime = AuthenticatedAction.getRequestTime();
@@ -148,6 +153,12 @@ public class BebrasPDFs extends Plugin {
                                 uploadZipFile(file, user, event, participantRole, requestTime);
                             else
                                 uploadPdfFile(file, user, event, participantRole, requestTime);
+
+                            try {
+                                Files.delete(Paths.get(file.getAbsolutePath()));
+                            } catch (IOException e) {
+                                Logger.warn("Could not delete temporary file with uploaded pdf(s): " + file);
+                            }
                         }
                     },
                     Akka.system().dispatcher()
@@ -156,8 +167,6 @@ public class BebrasPDFs extends Plugin {
             Controller.flash("pdf_upload_message", "bebraspdf.ok.files_uploaded");
         } else
             Controller.flash("pdf_upload_message", "bebraspdf.error.format");
-
-        return Results.redirect(getCall("go"));
     }
 
     private Result getPdf(final String fname) {
