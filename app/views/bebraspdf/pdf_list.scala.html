@@ -34,8 +34,8 @@
         <form enctype="multipart/form-data" class='file-upload-form@if(message != null && message.startsWith("bebraspdf.error.")){ file-upload-form-error}' method="post" action="@plugin.getUploadPdfCall">
             <span class="file-upload-label">Выбор файла</span>
             <div class='file-upload-input'>
-                <input type='file' name='answers' value='Выберите файл' accept="application/zip,application/pdf" onclick="$('.file-upload-form-message').hide()"><br>
-                <input type='submit' value='Загрузить файл'>
+                <input type='file' name='answers' value='Выберите файл' multiple='multiple' @*accept="application/zip,application/pdf"*@ onclick="$('.file-upload-form-message').hide()"><br>
+                <input type='submit' value='Загрузить'>
             </div>
             @if(message != null) {
                 <p class='file-upload-form-message@if(message.startsWith("bebraspdf.error.")) { file-upload-form-message-error} else { file-upload-form-message-ok}'>@Messages.get(Controller.flash("pdf_upload_message"))</p>

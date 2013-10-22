@@ -23,6 +23,7 @@ import views.Menu;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -124,35 +125,49 @@ public class BebrasPDFs extends Plugin {
             return Results.internalServerError("unknown user role");
 
         Http.MultipartFormData body = Controller.request().body().asMultipartFormData();
-        Http.MultipartFormData.FilePart answersFilePart = body.getFile("answers");
-        if (answersFilePart == null) {
+        List<Http.MultipartFormData.FilePart> answersFilePart = body.getFiles();
+
+        if (answersFilePart == null || answersFilePart.isEmpty()) {
             Controller.flash("pdf_upload_message", "bebraspdf.error.no_file");
             return Results.redirect(getCall("go"));
         }
 
         final User user = User.current();
 
-        String fileName = answersFilePart.getFilename().toLowerCase();
-        final File file = answersFilePart.getFile();
+        List<String> fileNames = new ArrayList<>(answersFilePart.size());
+        List<File> files = new ArrayList<>(answersFilePart.size());
 
-        processFile(event, participantRole, user, fileName, file);
+        for (Http.MultipartFormData.FilePart filePart : answersFilePart) {
+            String fileName = filePart.getFilename().toLowerCase();
+            File file = filePart.getFile();
+            fileNames.add(fileName);
+            files.add(file);
+        }
 
+        processFile(event, participantRole, user, fileNames, files);
+
+        Controller.flash("pdf_upload_message", "bebraspdf.ok.files_uploaded");
         return Results.redirect(getCall("go"));
     }
 
-    private void processFile(final Event event, final UserRole participantRole, final User user, String fileName, final File file) {
-        final boolean isZip = fileName.endsWith(".zip");
-        final boolean isPdf = fileName.endsWith(".pdf");
+    private void processFile(final Event event, final UserRole participantRole, final User user, final List<String> fileNames, final List<File> files) {
         final Date requestTime = AuthenticatedAction.getRequestTime();
-        if (isZip || isPdf) {
-            Akka.system().scheduler().scheduleOnce(
-                    Duration.Zero(),
-                    new Runnable() {
-                        public void run() {
-                            if (isZip)
+        Akka.system().scheduler().scheduleOnce(
+                Duration.Zero(),
+                new Runnable() {
+                    public void run() {
+                        int n = fileNames.size();
+
+                        for (int i = 0; i < n; i++) {
+                            String fileName = fileNames.get(i);
+                            File file = files.get(i);
+
+                            if (fileName.endsWith(".zip"))
                                 uploadZipFile(file, user, event, participantRole, requestTime);
-                            else
+                            else if (fileName.endsWith(".pdf"))
                                 uploadPdfFile(file, user, event, participantRole, requestTime);
+                            else
+                                Logger.warn("Wrong pdf file extension: " + fileName);
 
                             try {
                                 Files.delete(Paths.get(file.getAbsolutePath()));
@@ -160,13 +175,10 @@ public class BebrasPDFs extends Plugin {
                                 Logger.warn("Could not delete temporary file with uploaded pdf(s): " + file);
                             }
                         }
-                    },
-                    Akka.system().dispatcher()
-            );
-
-            Controller.flash("pdf_upload_message", "bebraspdf.ok.files_uploaded");
-        } else
-            Controller.flash("pdf_upload_message", "bebraspdf.error.format");
+                    }
+                },
+                Akka.system().dispatcher()
+        );
     }
 
     private Result getPdf(final String fname) {
@@ -339,7 +351,7 @@ public class BebrasPDFs extends Plugin {
         try (InputStream fin = new FileInputStream(file)) {
             processUser(fin, allUsers, event, participantRole, organizer, requestTime);
         } catch (Exception e) {
-            Logger.error("Failed to upload pdf file with user solutions", e);
+            Logger.error("Failed to upload pdf file with user solutions: " + file, e);
         }
     }
 
@@ -354,7 +366,7 @@ public class BebrasPDFs extends Plugin {
                 processUser(new InputStreamWrapper(in), allUsers, event, participantRole, organizer, requestTime);
             }
         } catch (Exception e) {
-            Logger.error("Failed to upload zip file with user solutions", e);
+            Logger.error("Failed to upload zip file with user solutions: " + file, e);
         }
 
     }

@@ -1,6 +1,5 @@
 package plugins.bebraspdf.parser;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
 import plugins.bebraspdf.model.KeyFieldConsts;
@@ -33,14 +32,13 @@ public class TaskPdfParser {
         PdfUser pdfUser = new PdfUser(form.getField(KeyFieldConsts.NAME), form.getField(KeyFieldConsts.SURNAME));
         PdfFile pdfFile = PdfFile.getFileByName(form.getField(KeyFieldConsts.YEAR_INTERVAL));
 
-        UserClass userClass=form.getField(KeyFieldConsts.CLASS).isEmpty()?
-                null:
-                UserClass.getUserClassByClassNumber(pdfFile.getStartClass() + Integer.parseInt(form.getField(KeyFieldConsts.CLASS)));
-
+        String fieldValue = form.getField(KeyFieldConsts.CLASS);
+        int fieldIntValue = fieldValue == null || fieldValue.isEmpty() ? 0 : Integer.parseInt(fieldValue);
+        UserClass userClass = UserClass.getUserClassByClassNumber(pdfFile.getStartClass() + fieldIntValue);
 
         UserResult userResult = new UserResult(pdfUser, pdfFile, userClass);
 
-        for(int i=1; i<KeyFieldConsts.TASK_AMOUNT+1; i++){
+        for (int i = 1; i < KeyFieldConsts.TASK_AMOUNT + 1; i++) {
             TaskResult taskResult = new TaskResult(i, TaskAnswer.getTaskAnswerByPdfValue(form.getField(KeyFieldConsts.TASK + i)));
             userResult.addTaskResult(taskResult);
         }

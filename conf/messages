@@ -143,6 +143,6 @@ results_translator.sum_scores.title.scores=Баллов
 actions.unknown_event=Неизвестное событие
 actions.unknown_contest=Неизвестное соревнование
 
-bebraspdf.ok.files_uploaded=Файл успешно загружен. По мере обработки файла информация о результатах участников будет появляться в разделе "Мои участники"
+bebraspdf.ok.files_uploaded=Файлы успешно загружены. По мере обработки файлов информация о результатах участников будет появляться в разделе "Мои участники"
 bebraspdf.error.format=Файл должен иметь формат ZIP или PDF
-bebraspdf.error.no_file=Укажите файл для загрузки
+bebraspdf.error.no_file=Укажите файлы для загрузки
