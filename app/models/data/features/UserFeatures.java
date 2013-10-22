@@ -1,5 +1,6 @@
 package models.data.features;
 
+import models.Contest;
 import models.User;
 import models.data.FeaturesContext;
 import models.data.FeaturesSet;
@@ -8,6 +9,7 @@ import models.newserialization.FlatSerializer;
 import org.bson.types.ObjectId;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Map;
  */
 public class UserFeatures implements FeaturesSet<User> {
 
+    private User user;
     private RawForm rawForm;
     private ObjectId id;
     private ObjectId regBy;
@@ -32,12 +35,39 @@ public class UserFeatures implements FeaturesSet<User> {
 
         id = user.getId();
         regBy = user.getRegisteredBy();
+
+        this.user = user;
     }
 
     @Override
     public Object getFeature(String featureName, FeaturesContext context) {
         if (rawForm == null)
             throw new IllegalStateException("Object not loaded");
+
+        if (featureName.startsWith("~contest#")) {
+            List<Contest> contests = context.getEvent().getContestsAvailableForUser(user);
+            featureName = featureName.substring("~contest#".length());
+            int dotPos = featureName.indexOf('.');
+
+            int contestInd;
+            String featureTail;
+            try {
+                if (dotPos < 0) {
+                    contestInd = Integer.parseInt(featureName);
+                    featureTail = "";
+                } else {
+                    contestInd = Integer.parseInt(featureName.substring(0, dotPos));
+                    featureTail = featureName.substring(dotPos);
+                }
+            } catch (NumberFormatException e) {
+                return null;
+            }
+
+            if (contestInd < 1 || contestInd > contests.size())
+                return null;
+
+            featureName = "_contests." + contests.get(contestInd - 1).getId() + featureTail;
+        }
 
         if (featureName.startsWith("~")) {
             switch (featureName) {
@@ -71,7 +101,7 @@ public class UserFeatures implements FeaturesSet<User> {
 
     @Override
     public void close() throws Exception {
-        if (rawForm != null)
-            rawForm = null;
+        user = null;
+        rawForm = null;
     }
 }

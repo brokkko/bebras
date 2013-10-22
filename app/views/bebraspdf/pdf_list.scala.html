@@ -6,28 +6,35 @@
 @main_with_menu(Event.current.getTitle)(List(HtmlBlockWidget.get)) { } {
     @Event.current.getHtmlBlock("bebras_pdf_block_top").format
 
+    @*
     <p><a href="@plugin.getPdfFileCall("bobrik")">Бобрик 1-2 классы</a></p>
     <p><a href="@plugin.getPdfFileCall("bebras_3_4")">Бобёр 3-4 классы</a></p>
     <p><a href="@plugin.getPdfFileCall("bebras_5_6")">Бобёр 5-6 классы</a></p>
     <p><a href="@plugin.getPdfFileCall("bebras_7_8")">Бобёр 7-8 классы</a></p>
     <p><a href="@plugin.getPdfFileCall("bebras_9_10")">Бобёр 9-10 классы</a></p>
     <p><a href="@plugin.getPdfFileCall("bebras_11")">Бобёр 11 класс</a></p>
+    *@
 
+    @*
     <h2 class='select-file'>Загрузка файлов с ответами на задачи</h2>
     <ul>
         <li>Вы можете загрузить либо один PDF файл, либо несколько PDF файлов, запакованных в ZIP архив</li>
-        <li>Вы можете загружать файлы с ответами произвольное количество раз. Это может понадобиться, если вы, например, забыли послать
-        несколько файлов. Или хотите посылать файлы постепенно.</li>
-        <li>Если в результате вы загрузите два файла, в которых совпадают имя, фамилия и класс участника,
+        <li>Вы можете загружать файлы с ответами произвольное количество раз, при этом загруженные ранее данные будут сохранены.
+            Это может понадобиться, если вы, например, забыли послать несколько файлов.
+            Или хотите посылать файлы не за один раз, а постепенно.</li>
+        <li>Если в результате вы загрузите один и тот же файл два раза, или если вы загрузите два файла, в которых совпадают имя, фамилия и класс участника,
             мы будем считать, что этот файл принадлежит одному участнику.</li>
         <li>Просмотреть загруженных участников вы можете в таблице из раздела "Мои участники".</li>
-        <li>Если какие-то участники загружены по ошибке, вы можете удалить их в разделе "Мои участники.</li>
+        <li>Если какие-то участники загружены с опечатками в именах и фамилиях,
+            вы можете исправить опечатки с помощью таблицы из раздела "Мои участники".</li>
+        <li>Если какие-то участники оказались загружены по ошибке, вы можете удалить их с помощью таблицы из раздела "Мои участники".</li>
     </ul>
+    *@
     @defining(Controller.flash("pdf_upload_message")) { message =>
         <form enctype="multipart/form-data" class='file-upload-form@if(message != null && message.startsWith("bebraspdf.error.")){ file-upload-form-error}' method="post" action="@plugin.getUploadPdfCall">
             <span class="file-upload-label">Выбор файла</span>
             <div class='file-upload-input'>
-                <input type='file' name='answers' value='Выберите файл' accept="application/zip,application/pdf"><br>
+                <input type='file' name='answers' value='Выберите файл' accept="application/zip,application/pdf" onclick="$('.file-upload-form-message').hide()"><br>
                 <input type='submit' value='Загрузить файл'>
             </div>
             @if(message != null) {

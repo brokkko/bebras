@@ -253,14 +253,14 @@ public class Event {
         return contests.values();
     }
 
-    public Collection<Contest> getContestsAvailableForUser() {
+    public List<Contest> getContestsAvailableForUser() {
         User user = User.current();
         return getContestsAvailableForUser(user);
     }
 
-    public Collection<Contest> getContestsAvailableForUser(User user) {
+    public List<Contest> getContestsAvailableForUser(User user) {
         if (user.hasEventAdminRight())
-            return getContests();
+            return new ArrayList<>(getContests());
 
         List<Contest> c = new ArrayList<>(contests.size());
         for (Contest contest : contests.values()) {

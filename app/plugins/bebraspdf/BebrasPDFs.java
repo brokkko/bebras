@@ -54,7 +54,7 @@ public class BebrasPDFs extends Plugin {
             return;
 
         if (getParticipants() > 0 || User.current().hasEventAdminRight())
-            Menu.addMenuItem("PDF условия задач", getCall(), applicantRight);
+            Menu.addMenuItem("PDF задания", getCall(), applicantRight);
     }
 
     private int getParticipants() {
@@ -246,6 +246,7 @@ public class BebrasPDFs extends Plugin {
                 info.put("name", result.getPdfUser().getName());
                 info.put("surname", result.getPdfUser().getSurname());
                 info.put("grade", result.getUserClass().getName());
+                info.put(User.FIELD_RAW_PASS, password);
 
                 user = event.createUser(password, participantRole, info, organizer);
 

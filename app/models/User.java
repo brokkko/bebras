@@ -818,7 +818,7 @@ public class User implements SerializableUpdatable {
 
     public void invalidateEventResults() {
         eventResults = null;
-        cachedAllSubmissions = null;
+        cachedAllSubmissions.clear();
         store();
     }
 
