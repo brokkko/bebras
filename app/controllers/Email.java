@@ -25,10 +25,10 @@ import java.util.Arrays;
 public class Email {
 
     public static String sendEmail(String to, String subject, String message) throws EmailException {
-        return sendEmail(to, subject, message, null);
+        return sendEmail(to, subject, message, null, null);
     }
 
-    public static String sendEmail(String to, String subject, String message, String htmlMessage) throws EmailException {
+    public static String sendEmail(String to, String subject, String message, String htmlMessage, String listUnsubscribe) throws EmailException {
         boolean isHtml = htmlMessage != null;
 
         if (isHtml) {
@@ -45,8 +45,16 @@ public class Email {
             prepareEmail(to, subject, email);
 
             email.setMsg(message);
+            if (listUnsubscribe != null)
+                email.addHeader("List-Unsubscribe", "<" + listUnsubscribe + ">");
             return email.send();
         }
+    }
+
+    public static String getFrom() {
+        Configuration cfg = Play.application().configuration().getConfig("mail");
+        return Event.currentId().startsWith("bebras") ? "org@bebras.ru" : cfg.getString("reply_to"); //TODO get rid of bebras
+        //TODO get rid of code duplication
     }
 
     private static void prepareEmail(String to, String subject, org.apache.commons.mail.Email email) throws EmailException {

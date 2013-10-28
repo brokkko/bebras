@@ -29,6 +29,7 @@ public class MongoConnection {
     public static final String COLLECTION_NAME_PROBLEMS = "problems";
     public static final String COLLECTION_NAME_ACTIVITY = "activity";
     public static final String COLLECTION_NAME_HTML_BLOCKS = "html_blocks";
+    public static final String COLLECTION_MAILING_LIST = "mail_list";
 
     private static final Migrator[] migrators = new Migrator[] {
             null, //0
@@ -69,6 +70,10 @@ public class MongoConnection {
 
     public static DBCollection getHtmlBlocksCollection() {
         return getCollection(COLLECTION_NAME_HTML_BLOCKS);
+    }
+
+    public static DBCollection getMailingListCollection() {
+        return getCollection(COLLECTION_MAILING_LIST);
     }
 
     public static List<DBCollection> getContestCollections() {

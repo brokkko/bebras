@@ -223,6 +223,10 @@ public class Event {
         return role == null ? UserRole.EMPTY : role;
     }
 
+    public Collection<UserRole> getRoles() {
+        return roles.values();
+    }
+
     public UserRole getAnonymousRole() {
         return getRole("ANONYMOUS");
     }

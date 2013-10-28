@@ -1,6 +1,7 @@
 package controllers;
 
 import controllers.actions.Authenticated;
+import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.*;
@@ -238,8 +239,12 @@ public class Registration extends Controller {
         return ok(views.html.login.render(new RawForm(), passwordRecovery ? "page.registration.password_recovered" : "page.registration.confirmed"));
     }
 
+    @Authenticated(redirectToLogin = false)
     @SuppressWarnings("UnusedParameters")
     public static Result login(String eventId) {
+        if (User.isAuthorized())
+            return redirect(routes.Application.enter(eventId));
+
         return ok(views.html.login.render(new RawForm(), null));
     }
 

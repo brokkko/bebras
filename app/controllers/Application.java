@@ -5,6 +5,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import controllers.actions.Authenticated;
+import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.Event;
@@ -21,7 +22,9 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.event_message;
 import views.html.list_events;
+import views.html.message;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,10 +33,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 @DcesController
@@ -247,6 +247,30 @@ public class Application extends Controller {
         session(User.getSuUsernameSessionKey(), user.getLogin());
 
         return redirect(routes.Application.enter(eventId));
+    }
+
+    @LoadEvent
+    @Authenticated(redirectToLogin = false)
+    public static Result setSubscription(String eventId, String userId, boolean subscription) {
+        ObjectId uid;
+        try {
+            uid = new ObjectId(userId);
+        } catch (IllegalArgumentException ignored) {
+            return notFound();
+        }
+        User user = User.getUserById(eventId, uid);
+        if (user == null)
+            return notFound();
+
+        user.setWantAnnouncements(subscription);
+        user.store();
+
+        String text = subscription ? "Вы успешно подписались на рассылку" : "Вы успешно отписались от рассылки";
+        text += " сообщений о событии " + Event.current().getTitle() + ".";
+        if (!subscription)
+            text += " Вернуть подписку вы можете в своем личном кабинете в разделе \"Личные данные\".";
+
+        return ok(event_message.render("Изменение статуса подписки", text));
     }
 
     @Authenticated

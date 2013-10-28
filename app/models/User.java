@@ -40,6 +40,7 @@ public class User implements SerializableUpdatable {
     public static final String FIELD_USER_ROLE = "_role";
     public static final String FIELD_REGISTERED_BY = "_reg_by";
     public static final String FIELD_PARTIAL_REG = "_p_reg";
+    public static final String FIELD_ANNOUNCEMENTS = "_ann";
 
     public static final String FIELD_LOGIN = "login";
     public static final String FIELD_NAME = "name";
@@ -67,6 +68,7 @@ public class User implements SerializableUpdatable {
     private boolean restoreForEmail;
     private String newRecoveryPassword;
     private boolean partialRegistration;
+    private boolean wantAnnouncements;
 
     private Map<String, ContestInfoForUser> contest2info = new HashMap<>();
     private Info eventResults = null;
@@ -120,6 +122,7 @@ public class User implements SerializableUpdatable {
 
         registeredBy = deserializer.readObjectId(FIELD_REGISTERED_BY);
         partialRegistration = deserializer.readBoolean(FIELD_PARTIAL_REG, false);
+        wantAnnouncements = deserializer.readBoolean(FIELD_ANNOUNCEMENTS, true);
 
         //TODO get rid of iposov
         if (getLogin().equals("iposov"))
@@ -386,6 +389,7 @@ public class User implements SerializableUpdatable {
 
         serializer.write(FIELD_REGISTERED_BY, registeredBy);
         serializer.write(FIELD_PARTIAL_REG, partialRegistration);
+        serializer.write(FIELD_ANNOUNCEMENTS, wantAnnouncements);
     }
 
     private InfoPattern getUserInfoPattern() {
@@ -700,6 +704,14 @@ public class User implements SerializableUpdatable {
 
     public void setRegisteredBy(ObjectId registeredBy) {
         this.registeredBy = registeredBy;
+    }
+
+    public boolean isWantAnnouncements() {
+        return wantAnnouncements;
+    }
+
+    public void setWantAnnouncements(boolean wantAnnouncements) {
+        this.wantAnnouncements = wantAnnouncements;
     }
 
     // tables

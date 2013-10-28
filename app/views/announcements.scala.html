@@ -1,0 +1,38 @@
+@(form:models.forms.RawForm, roles:java.util.List[models.UserRole])
+@import views.widgets.ResourceLink
+@import views.widgets.AdminWidget
+@import models.UserRole
+@import scala.List
+@import play.mvc.Controller
+@main_with_menu(Event.current.getTitle)(List(AdminWidget.get, new ResourceLink("announcements.css"))) { } {
+    <h1>Рассылка сообщений</h1>
+
+    @if(Controller.flash("announcement-prepare")) {
+        <p class='warning'>@Controller.flash("announcement-prepare")</p>
+    }
+
+    <form method="post" action="@routes.Announcements.doPrepareAnnouncement(Event.currentId)" class="announcement-form">
+        <label>
+            <span class='announcement-form-label'>Пользователи, для которых предназначена рассылка:</span>
+            <select name='role' class='announcement-form-row'>
+                <option @if(form.get("role") == null) { selected="selected" } disabled="disabled">Выберите роль</option>
+                @for(role <- roles) {
+                    <option value='@role.getName' @if(form.get("role") == role.getName) { selected="selected" }>@role.getTitle</option>
+                }
+            </select>
+        </label>
+        <label>
+            <span class='announcement-form-label'>Тема</span>
+            <input type='text' name='subject' class='announcement-form-subject' placeholder="Введите тему" @if(form.get("subject") != null) {value="@form.get("subject")"}>
+        </label>
+        <label>
+            <span class='announcement-form-label'>Текст сообщения</span>
+            <textarea name="message" class='announcement-form-message-text' placeholder="Введите текст сообщения" rows="12">@*
+                *@@if(form.get("message") != null) {@form.get("message")}@*
+            *@</textarea>
+        </label>
+        <input type="submit" value="Отправить" class="announcement-form-submit">
+        Отправленное письмо будет послано только вам на адрес @User.current.getEmail. Если полученное письмо будет корректным, вы сможете подтвердить его отправку
+        для всех.
+    </form>
+}

@@ -38,6 +38,10 @@ public class Menu {
         extraItems.add(new RestrictedAccessMenuItem(new MenuItem(title, call), right));
     }
 
+    public List<MenuItem> items() {
+        return items;
+    }
+
     private List<MenuItem> items = new ArrayList<>();
 
     private Menu() {
@@ -97,8 +101,10 @@ public class Menu {
             menu.add(new MenuItem(tablesTitle, routes.Tables.tablesList(eventId)));
         }
 
-        if (user.hasEventAdminRight())
+        if (user.hasEventAdminRight()) {
             menu.add(new MenuItem("База заданий", routes.Problems.viewFolder(eventId, eventId)));
+            menu.add(new MenuItem("Рассылка", routes.Announcements.prepareAnnouncement(eventId)));
+        }
 
         fillExtraItems(menu);
 
@@ -138,10 +144,6 @@ public class Menu {
             if ("anon".equals(right) || role.hasRight(right)) //TODO remove anon role
                 menu.add(extraItem.getItem());
         }
-    }
-
-    public List<MenuItem> items() {
-        return items;
     }
 
     private static class RestrictedAccessMenuItem {
