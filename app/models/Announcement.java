@@ -1,15 +1,23 @@
 package models;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import controllers.Email;
 import controllers.MongoConnection;
 import models.newserialization.*;
 import org.apache.commons.mail.EmailException;
 import org.bson.types.ObjectId;
 import play.Logger;
+import play.Play;
+import play.libs.Akka;
 import play.mvc.Call;
 import play.mvc.Http;
+import scala.concurrent.duration.Duration;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +26,8 @@ import play.mvc.Http;
  * Time: 17:53
  */
 public class Announcement implements SerializableUpdatable {
+
+    private static final int SEND_DELAY = 10;
 
     private ObjectId id;
     private String subject;
@@ -92,16 +102,91 @@ public class Announcement implements SerializableUpdatable {
     }
 
     public void sendEmails() {
-        try {
-            sendEmailForUser(User.current());
-        } catch (EmailException e) {
-            Logger.warn("Failed to send email in mailing list: " + User.current().getLogin() + "<" + User.current().getEmail() + ">");
-        }
+        final User adminUser = User.current();
+        Akka.system().scheduler().scheduleOnce(
+                Duration.Zero(),
+                new Runnable() {
+                    public void run() {
+                        boolean wasEmpty = queueIsEmpty();
+
+                        appendToQueue(adminUser.getLogin());
+
+                        DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
+                        query.put(User.FIELD_USER_ROLE, role.getName());
+                        query.put(User.FIELD_ANNOUNCEMENTS, new BasicDBObject("$ne", false));
+                        try (DBCursor cursor = MongoConnection.getUsersCollection().find()) {
+                            while (cursor.hasNext()) {
+                                DBObject next = cursor.next();
+                                String login = (String) next.get(User.FIELD_LOGIN);
+                                appendToQueue(login);
+                            }
+                        } catch (Exception e) {
+                            Logger.error("Failed to add users for mailing", e);
+                        }
+
+                        if (wasEmpty) //TODO not very good way to tell whether emailing scheduler is running
+                            scheduleOneSending(1);
+                    }
+                },
+                Akka.system().dispatcher()
+        );
+    }
+
+    private void scheduleOneSending(int seconds) {
+        Akka.system().scheduler().scheduleOnce(
+                Duration.create(seconds, TimeUnit.SECONDS),
+                new Runnable() {
+                    public void run() {
+                        DBCollection mailingListQueueCollection = MongoConnection.getMailingListQueueCollection();
+                        DBObject object = mailingListQueueCollection.findOne(new BasicDBObject(), new BasicDBObject(), new BasicDBObject("_id", 1));
+                        if (object == null)
+                            return;
+                        mailingListQueueCollection.remove(object);
+
+                        String login = (String) object.get("login");
+                        ObjectId annId = (ObjectId) object.get("ann_id");
+                        Announcement announcement = getInstance(annId);
+
+                        if (announcement == null) {
+                            Logger.warn("Unknown announcement while mailing: " + annId);
+                            return;
+                        }
+
+                        String eventId = announcement.getEvent().getId();
+
+                        User user = User.getInstance(User.FIELD_LOGIN, login, eventId);
+
+                        if (user == null) {
+                            Logger.warn("Unknown user while mailing: " + login + " in event " + eventId);
+                            return;
+                        }
+
+                        try {
+                            announcement.sendEmailForUser(user);
+                        } catch (EmailException e) {
+                            Logger.error("Failed to send email for user " + login + " in event " + eventId, e);
+                        }
+
+                        scheduleOneSending(SEND_DELAY);
+                    }
+                },
+                Akka.system().dispatcher()
+        );
+    }
+
+    private boolean queueIsEmpty() {
+        return MongoConnection.getMailingListQueueCollection().count() == 0;
+    }
+
+    private void appendToQueue(String login) {
+        DBObject object = new BasicDBObject("login", login);
+        object.put("ann_id", id);
+        MongoConnection.getMailingListQueueCollection().save(object);
     }
 
     private void sendEmailForUser(User user) throws EmailException {
         Call unsubscribeCall = controllers.routes.Application.setSubscription(event.getId(), user.getId().toString(), false);
-        String unsubscribeLink = unsubscribeCall.absoluteURL(Http.Context.current().request());
+        String unsubscribeLink = unsubscribeCall.absoluteURL(Http.Context.current().request()); //TODO think here!!
 
         StringBuilder message = new StringBuilder();
         message.append("Здравствуйте");
@@ -121,7 +206,12 @@ public class Announcement implements SerializableUpdatable {
         message.append(unsubscribeLink);
         message.append(".");
 
-        Email.sendEmail(user.getEmail(), subject, message.toString(), null, unsubscribeLink);
+        String to = user.getEmail();
+
+        if (Play.isDev())
+            to = "iposov+" + to.replaceAll("@", "__") + "@gmail.com";
+
+        Email.sendEmail(to, subject, message.toString(), null, unsubscribeLink);
     }
 
     public static Announcement getInstance(String aid) {
@@ -132,6 +222,10 @@ public class Announcement implements SerializableUpdatable {
             return null;
         }
 
+        return getInstance(id);
+    }
+
+    private static Announcement getInstance(ObjectId id) {
         DBObject object = MongoConnection.getMailingListCollection().findOne(new BasicDBObject("_id", id));
         if (object == null)
             return null;

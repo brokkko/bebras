@@ -29,7 +29,9 @@ public class MongoConnection {
     public static final String COLLECTION_NAME_PROBLEMS = "problems";
     public static final String COLLECTION_NAME_ACTIVITY = "activity";
     public static final String COLLECTION_NAME_HTML_BLOCKS = "html_blocks";
+
     public static final String COLLECTION_MAILING_LIST = "mail_list";
+    public static final String COLLECTION_MAILING_LIST_QUEUE = "mail_list_queue";
 
     private static final Migrator[] migrators = new Migrator[] {
             null, //0
@@ -74,6 +76,10 @@ public class MongoConnection {
 
     public static DBCollection getMailingListCollection() {
         return getCollection(COLLECTION_MAILING_LIST);
+    }
+
+    public static DBCollection getMailingListQueueCollection() {
+        return getCollection(COLLECTION_MAILING_LIST_QUEUE);
     }
 
     public static List<DBCollection> getContestCollections() {

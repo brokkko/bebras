@@ -7,10 +7,13 @@
 @main_with_menu(Event.current.getTitle)(List(AdminWidget.get, new ResourceLink("announcements.css"))) { } {
     <h1>Рассылка сообщений</h1>
 
+    <p>В данный момент в очереди на рассылку стоит пользователей: @MongoConnection.getMailingListQueueCollection.count()</p>
+
     @if(Controller.flash("announcement-prepare")) {
         <p class='warning'>@Controller.flash("announcement-prepare")</p>
     }
 
+    <h2>Новая рассылка</h2>
     <form method="post" action="@routes.Announcements.doPrepareAnnouncement(Event.currentId)" class="announcement-form">
         <label>
             <span class='announcement-form-label'>Пользователи, для которых предназначена рассылка:</span>
