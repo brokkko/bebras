@@ -51,10 +51,31 @@ public class Email {
         }
     }
 
-    public static String getFrom() {
+    public static String getFrom() { //TODO rewrite
         Configuration cfg = Play.application().configuration().getConfig("mail");
-        return Event.currentId().startsWith("bebras") ? "org@bebras.ru" : cfg.getString("reply_to"); //TODO get rid of bebras
-        //TODO get rid of code duplication
+        try {
+            return Event.currentId().startsWith("bebras") && !Play.isDev() ? "noreply@bebras.ru" : cfg.getString("from");
+        } catch (Exception e) {
+            return Play.isDev() ? cfg.getString("from") : "noreply@bebras.ru";
+        }
+    }
+
+    public static String getFormName() { //TODO rewrite
+        try {
+            Configuration cfg = Play.application().configuration().getConfig("mail");
+            return Event.currentId().startsWith("bebras") ? "Bebras contest" : cfg.getString("from_name");
+        } catch (Exception e) {
+            return "Bebras contest";
+        }
+    }
+
+    public static String getReplyTo() { //TODO rewrite
+        try {
+            Configuration cfg = Play.application().configuration().getConfig("mail");
+            return Event.currentId().startsWith("bebras") ? "org@bebras.ru" : cfg.getString("reply_to");
+        } catch (Exception e) {
+            return "org@bebras.ru";
+        }
     }
 
     private static void prepareEmail(String to, String subject, org.apache.commons.mail.Email email) throws EmailException {
@@ -80,14 +101,14 @@ public class Email {
 
         email.addTo(to);
 
-        String from = Event.currentId().startsWith("bebras") && !Play.isDev() ? "noreply@bebras.ru" : cfg.getString("from"); //TODO get rid of bebras
-        String fromName = Event.currentId().startsWith("bebras") && !Play.isDev() ? "Bebras contest" : cfg.getString("from_name"); //TODO get rid of bebras
+        String from = getFrom();
+        String fromName = getFormName();
         if (fromName == null)
             email.setFrom(from);
         else
             email.setFrom(from, fromName);
 
-        String replyTo = Event.currentId().startsWith("bebras") ? "org@bebras.ru" : cfg.getString("reply_to"); //TODO get rid of bebras
+        String replyTo = getReplyTo();
 
         if (replyTo != null)
             try {

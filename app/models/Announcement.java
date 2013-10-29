@@ -13,10 +13,6 @@ import play.mvc.Call;
 import play.mvc.Http;
 import scala.concurrent.duration.Duration;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -88,7 +84,7 @@ public class Announcement implements SerializableUpdatable {
 
         message.append(this.message).append("\n\n");
         message.append("--\nС уважением,\n    оргкомитет, ").append(Event.current().getTitle());
-        message.append(" ").append(Email.getFrom());
+        message.append(" ").append(Email.getReplyTo());
 
         message.append("\n\n");
         message.append("Рассылка предназначена для: ").append(role.getTitle());
@@ -103,22 +99,26 @@ public class Announcement implements SerializableUpdatable {
 
     public void sendEmails() {
         final User adminUser = User.current();
+        final Call unsubscribePatternCall = controllers.routes.Application.setSubscription(event.getId(), "__USER__ID__", false);
+        final String unsubscribePatternLink = unsubscribePatternCall.absoluteURL(Http.Context.current().request());
+
         Akka.system().scheduler().scheduleOnce(
                 Duration.Zero(),
                 new Runnable() {
                     public void run() {
                         boolean wasEmpty = queueIsEmpty();
 
-                        appendToQueue(adminUser.getLogin());
+                        appendToQueue(adminUser.getId(), adminUser.getLogin(), unsubscribePatternLink);
 
                         DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
                         query.put(User.FIELD_USER_ROLE, role.getName());
                         query.put(User.FIELD_ANNOUNCEMENTS, new BasicDBObject("$ne", false));
-                        try (DBCursor cursor = MongoConnection.getUsersCollection().find()) {
+                        try (DBCursor cursor = MongoConnection.getUsersCollection().find(query)) {
                             while (cursor.hasNext()) {
                                 DBObject next = cursor.next();
                                 String login = (String) next.get(User.FIELD_LOGIN);
-                                appendToQueue(login);
+                                ObjectId uid = (ObjectId) next.get("_id");
+                                appendToQueue(uid, login, unsubscribePatternLink);
                             }
                         } catch (Exception e) {
                             Logger.error("Failed to add users for mailing", e);
@@ -132,7 +132,7 @@ public class Announcement implements SerializableUpdatable {
         );
     }
 
-    private void scheduleOneSending(int seconds) {
+    public static void scheduleOneSending(int seconds) {
         Akka.system().scheduler().scheduleOnce(
                 Duration.create(seconds, TimeUnit.SECONDS),
                 new Runnable() {
@@ -162,7 +162,7 @@ public class Announcement implements SerializableUpdatable {
                         }
 
                         try {
-                            announcement.sendEmailForUser(user);
+                            announcement.sendEmailForUser(user, (String) object.get("un_lnk"));
                         } catch (EmailException e) {
                             Logger.error("Failed to send email for user " + login + " in event " + eventId, e);
                         }
@@ -178,16 +178,14 @@ public class Announcement implements SerializableUpdatable {
         return MongoConnection.getMailingListQueueCollection().count() == 0;
     }
 
-    private void appendToQueue(String login) {
+    private void appendToQueue(ObjectId uid, String login, String unsubscribePatternLink) {
         DBObject object = new BasicDBObject("login", login);
         object.put("ann_id", id);
+        object.put("un_lnk", unsubscribePatternLink.replaceAll("__USER__ID__", uid.toString()));
         MongoConnection.getMailingListQueueCollection().save(object);
     }
 
-    private void sendEmailForUser(User user) throws EmailException {
-        Call unsubscribeCall = controllers.routes.Application.setSubscription(event.getId(), user.getId().toString(), false);
-        String unsubscribeLink = unsubscribeCall.absoluteURL(Http.Context.current().request()); //TODO think here!!
-
+    private void sendEmailForUser(User user, String unsubscribeLink) throws EmailException {
         StringBuilder message = new StringBuilder();
         message.append("Здравствуйте");
         if (user.getGreeting() != null)
@@ -195,8 +193,8 @@ public class Announcement implements SerializableUpdatable {
         message.append("!\n\n");
 
         message.append(this.message).append("\n\n");
-        message.append("--\nС уважением,\n    оргкомитет, ").append(Event.current().getTitle());
-        message.append(" ").append(Email.getFrom());
+        message.append("--\nС уважением,\n    оргкомитет, ").append(event.getTitle());
+        message.append(" ").append(Email.getReplyTo());
 
         message.append("\n\n");
         message.append("Вы получили это письмо, потому что зарегистрированы как ").append(role.getTitle());

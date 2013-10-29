@@ -1,3 +1,4 @@
+import models.Announcement;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
@@ -19,6 +20,8 @@ public class Global extends GlobalSettings {
 
     @Override
     public void onStart(Application app) {
+        Logger.info("Application started");
+        Announcement.scheduleOneSending(1);
     }
 
     /*@Override
