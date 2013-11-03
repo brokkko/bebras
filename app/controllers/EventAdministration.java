@@ -18,6 +18,7 @@ import models.newserialization.FormDeserializer;
 import models.newserialization.FormSerializer;
 import models.newserialization.JSONDeserializer;
 import models.newserialization.MongoSerializer;
+import models.results.Info;
 import models.utils.Utils;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.JsonFactory;
@@ -32,6 +33,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
+import scala.concurrent.duration.Duration;
 import views.html.contests_list;
 import views.html.error;
 import views.html.event_admin;
@@ -299,22 +301,46 @@ public class EventAdministration extends Controller {
         Http.MultipartFormData body = Http.Context.current().request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart newFields = body.getFile("new-fields");
         if (newFields == null) {
-            flash("fields-upload-error", "Не выбран файл дял загрузки");
+            flash("fields-upload-error", "Не выбран файл для загрузки");
             return Results.redirect(routes.EventAdministration.admin(eventId));
         }
 
+        String[] regime = body.asFormUrlEncoded().get("regime");
+        if (regime == null || regime.length == 0 || regime[0] == null || regime[0].isEmpty()) {
+            flash("fields-upload-error", "Не выбран режим загрузки");
+            return Results.redirect(routes.EventAdministration.admin(eventId));
+        }
+
+        //possible regimes: create update create-update
+        final boolean createNew = regime[0].startsWith("create");
+        final boolean updateOld = regime[0].endsWith("update");
+
+        final Event event = Event.current();
+
         File fieldsFile = newFields.getFile();
         try {
-            loadFileWithNewUserFields(fieldsFile);
-
             //move file
             File destFolder = new File(Event.current().getEventDataFolder(), "user-data");
             destFolder.mkdir();
-            File destFile = new File(destFolder, newFields.getFilename());
+            final File destFile = new File(destFolder, newFields.getFilename());
 
             Files.move(Paths.get(fieldsFile.getAbsolutePath()), Paths.get(destFile.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
 
-            flash("fields-upload-ok", "Данные успешно загружены");
+            Akka.system().scheduler().scheduleOnce(
+                    Duration.Zero(),
+                    new Runnable() {
+                        public void run() {
+                            try {
+                                loadFileWithNewUserFields(event, destFile, createNew, updateOld);
+                            } catch (IOException e) {
+                                Logger.error("Error while uploading users or users fields", e);
+                            }
+                        }
+                    },
+                    Akka.system().dispatcher()
+            );
+
+            flash("fields-upload-ok", "Данные загружены и будут обработаны");
             return redirect(routes.EventAdministration.admin(eventId));
         } catch (Exception e) {
             flash("fields-upload-error", "При загрузке данных произошла ошибка: " + e.getMessage());
@@ -323,23 +349,208 @@ public class EventAdministration extends Controller {
         }
     }
 
-    private static void loadFileWithNewUserFields(File file) throws IOException {
+    private static void loadFileWithNewUserFields(Event event, File file, boolean createNew, boolean updateOld) throws IOException {
         CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(file), "windows-1251"), ';', '"');
         String[] title = reader.readNext();
         if (title == null)
             throw new IOException("No title in csv file");
+
+        String transformation = getUserFieldsTransformation(title);
+        title = transformUserFieldsTitle(title, transformation);
+
         //find _id index
+        int idInd = findIndexInArray(title, "_id");
+
+        System.out.println(idInd);
 
         String[] line;
         while ((line = reader.readNext()) != null) {
-            ObjectId id = new ObjectId(line[0]);
-            User user = User.getInstance("_id", id);
-            if (user == null)
-                continue;
-            for (int i = 0; i < Math.min(title.length, line.length); i++)
+            line = transformUserFieldsLine(line, transformation);
+
+            if (updateOld)
+                updateUser(title, idInd, line);
+
+            if (createNew)
+                createUser(event, title, line);
+        }
+    }
+
+    private static void updateUser(String[] title, int idInd, String[] line) {
+        ObjectId id = new ObjectId(line[idInd]);
+
+        User user = User.getInstance("_id", id);
+        if (user == null) {
+            Logger.warn("Failed to update user with id " + id);
+            return; //TODO create new, if it is appropriate
+        }
+
+        for (int i = 0; i < title.length; i++)
+            if (i != idInd)
                 user.getInfo().put(title[i], line[i]);
 
-            user.invalidateAllResults();
+        user.invalidateAllResults();
+    }
+
+    private static void createUser(Event event, String[] title, String[] line) {
+        String password = "1234";
+        User register = null;
+        Info info = new Info();
+        UserRole role = null;
+
+        for (int i = 0; i < title.length; i++) {
+            switch (title[i]) {
+                case User.FIELD_REGISTERED_BY:
+                    try {
+                        register = User.getInstance("_id", new ObjectId(line[i]), event.getId());
+                        if (register == null)
+                            throw new IllegalArgumentException();
+                    } catch (IllegalArgumentException e) {
+                        Logger.warn("Failed to find user with id" + line[i]);
+                        return;
+                    }
+                    break;
+                case "password":
+                    password = line[i];
+                    break;
+                case User.FIELD_USER_ROLE:
+                    role = event.getRole(line[i]);
+                    if (role == UserRole.EMPTY) {
+                        Logger.warn("Failed to find role " + line[i]);
+                        return;
+                    }
+                    break;
+                default:
+                    //TODO not very good. May be it is better to take InfoPattern from role
+                    switch (line[i]) {
+                        case "true":
+                            info.put(title[i], true);
+                            break;
+                        case "false":
+                            info.put(title[i], false);
+                            break;
+                        default:
+                            info.put(title[i], line[i]);
+                            break;
+                    }
+            }
         }
+
+        event.createUser(password, role, info, register);
+    }
+
+    private static String getUserFieldsTransformation(String[] title) {
+        if (findIndexInArray(title, "Ticher_f") >= 0)
+            return "novosib_tichers";
+
+        return null;
+    }
+
+    private static String[] transformUserFieldsTitle(String[] title, String transformation) {
+        switch (transformation) {
+            case "novosib_tichers":
+                return new String[]{
+                        "login",
+                        "password",
+                        "email",
+                        "surname",
+                        "name",
+                        "patronymic",
+                        "region",
+                        "phone",
+                        "school_name",
+                        "index",
+                        "address",
+                        "knew_from",
+                        "want_ad",
+                        User.FIELD_REGISTERED_BY,
+                        User.FIELD_USER_ROLE
+                };
+            default:
+                return title;
+        }
+    }
+
+    private static String[] transformUserFieldsLine(String[] line, String transformation) {
+        switch (transformation) {
+            case "novosib_tichers":
+                //get name and patronymic
+                String namePatro = line[charToIndex('K')].trim();
+                int spPos = namePatro.indexOf(' ');
+                String name = namePatro;
+                String patro = "";
+                if (spPos >= 0) {
+                    name = namePatro.substring(0, spPos);
+                    patro = namePatro.substring(spPos + 1);
+                }
+
+                //get region
+                String regionName = line[charToIndex('D')].trim();
+                String region = "";
+                switch (regionName) {
+                    case "Республика Хакасия":
+                        region = "HAK";
+                        break;
+                    case "Республика Бурятия":
+                        region = "BUR";
+                        break;
+                    case "Омская область":
+                        region = "OMS";
+                        break;
+                    case "Новосибирская область":
+                        region = "NVS";
+                        break;
+                    case "Магаданская область":
+                        region = "MAG";
+                        break;
+                    case "Красноярский край":
+                        region = "KRY";
+                        break;
+                    case "Иркутская область":
+                        region = "IRK";
+                        break;
+                    case "Приморский край":
+                        region = "PRI";
+                        break;
+                    default:
+                        region = "UNKN";
+                        Logger.warn("Unknown region "+ regionName);
+                }
+
+                return new String[] {
+                        line[charToIndex('N')],
+                        line[charToIndex('O')],
+                        line[charToIndex('L')],
+                        line[charToIndex('J')],
+                        name,
+                        patro,
+                        region,
+                        line[charToIndex('I')],
+                        line[charToIndex('C')],
+                        line[charToIndex('G')],
+                        line[charToIndex('H')],
+                        "От новосибиского рег.пр.",
+                        "false",
+                        "5249e727e4b045d4d8c3a841",
+                        "SCHOOL_ORG"
+                };
+            default:
+                return line;
+        }
+    }
+
+    private static int findIndexInArray(String[] title, String field) {
+        int idInd = -1;
+
+        for (int i = 0; i < title.length; i++)
+            if (title[i].equals(field)) {
+                idInd = i;
+                break;
+            }
+
+        return idInd;
+    }
+
+    private static int charToIndex(char c) {
+        return c - 'A';
     }
 }

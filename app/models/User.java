@@ -48,6 +48,8 @@ public class User implements SerializableUpdatable {
     public static final String FIELD_EMAIL = "email";
     public static final String FIELD_RAW_PASS = "raw_pass";
 
+    //TODO separate all user fields that are not from User.info
+
     private static final PasswordGenerator passwordGenerator = new PasswordGenerator();
 
     private Info info = null;

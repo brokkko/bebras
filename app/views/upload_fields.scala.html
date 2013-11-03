@@ -9,6 +9,11 @@
 }
 <form enctype="multipart/form-data" method="POST" action="@routes.EventAdministration.doLoadUserFields(Event.currentId)">
     <input type="file" name="new-fields">
+    <select name="regime">
+        <option selected="selected" value="" disabled="disabled">Выберите режим</option>
+        <option value="create">Создать</option>
+        <option value="update">Обновить</option>
+    </select>
     <input type="submit" value="Загрузить файл">
 </form>
 

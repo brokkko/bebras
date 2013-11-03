@@ -424,6 +424,7 @@ public class Event {
         user.setPartialRegistration(true);
         user.setRole(role);
         user.setRegisteredBy(register.getId());
+        user.setWantAnnouncements(false); //TODO allow to change this
 
         try {
             user.serialize();
