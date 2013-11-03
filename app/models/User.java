@@ -13,7 +13,9 @@ import models.results.Info;
 import models.results.InfoPattern;
 import models.results.Translator;
 import org.bson.types.ObjectId;
+import play.Logger;
 import play.Play;
+import play.cache.Cache;
 import play.mvc.Http;
 
 import javax.crypto.SecretKeyFactory;
@@ -219,7 +221,7 @@ public class User implements SerializableUpdatable {
             byte[] salt = new BigInteger(Play.application().configuration().getString("salt"), 16).toByteArray();
             SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
-            byte[] hash = f.generateSecret(spec).getEncoded();
+            byte[] hash = f.generateSecret(spec).getEncoded(); //TODO I didn't know this was so slow (~100ms)
             return new BigInteger(1, hash).toString(16);
         } catch (NoSuchAlgorithmException e) {
             return null;
@@ -282,7 +284,19 @@ public class User implements SerializableUpdatable {
         return getInstance(field, value, Event.current().getId());
     }
 
+    private static String getLoginCacheKey(String eventId, String login) {
+        return "user-cache-" + login + "~@-_" + eventId;
+    }
+
     public static User getInstance(String field, Object value, String eventId) {
+        boolean byLogin = FIELD_LOGIN.equals(field);
+
+        if (byLogin) {
+            User result = (User) Cache.get(getLoginCacheKey(eventId, (String) value));
+            if (result != null)
+                return result;
+        }
+
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
         DBObject query = new BasicDBObject(FIELD_EVENT, eventId);
@@ -290,10 +304,16 @@ public class User implements SerializableUpdatable {
         query.put(field, value);
 
         DBObject userObject = usersCollection.findOne(query);
+        User result;
         if (userObject == null)
-            return null;
+            result = null;
         else
-            return User.deserialize(new MongoDeserializer(userObject));
+            result = User.deserialize(new MongoDeserializer(userObject));
+
+        if (byLogin)
+            Cache.set(getLoginCacheKey(eventId, (String) value), result, 5 * 60); //5 minutes
+
+        return result;
     }
 
     public static User getUserById(ObjectId id) {
@@ -396,6 +416,8 @@ public class User implements SerializableUpdatable {
         serializer.write(FIELD_REGISTERED_BY, registeredBy);
         serializer.write(FIELD_PARTIAL_REG, partialRegistration);
         serializer.write(FIELD_ANNOUNCEMENTS, wantAnnouncements);
+
+        Cache.set(getLoginCacheKey(event.getId(), getLogin()), this, 5 * 60);
     }
 
     private InfoPattern getUserInfoPattern() {
@@ -888,6 +910,7 @@ public class User implements SerializableUpdatable {
         remove.put(FIELD_LOGIN, login);
 
         usersCollection.remove(remove);
+        Cache.remove(getLoginCacheKey(event.getId(), login));
     }
 
 }

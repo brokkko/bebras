@@ -96,14 +96,20 @@ public class MongoConnection {
         return contestCollections;
     }
 
-    public static DBCollection getCollection(String contestId) {
+    public static DBCollection getCollection(String collectionName) {
         DB answersDB = getDb();
 
-        DBCollection collection = answersDB.getCollection(contestId);
-        boolean needCreateIndexes = !answersDB.collectionExists(contestId);
+        DBCollection collection = answersDB.getCollection(collectionName);
+        Boolean collectionExists = (Boolean) Cache.get("collection-exists-" + collectionName);
+        if (collectionExists == null)
+            collectionExists = answersDB.collectionExists(collectionName);
 
-        if (needCreateIndexes) //TODO think about substitute with dbCollection.ensureIndex()
+        boolean needCreateIndexes = !collectionExists;
+
+        if (needCreateIndexes) //TODO think about substitute with dbCollection.ensureIndex() and do it only once
             createIndexes(collection);
+
+        Cache.set("collection-exists-" + collectionName, true);
 
         return collection;
     }

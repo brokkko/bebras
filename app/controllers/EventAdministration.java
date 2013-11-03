@@ -366,6 +366,7 @@ public class EventAdministration extends Controller {
         System.out.println(idInd);
 
         String[] line;
+
         while ((line = reader.readNext()) != null) {
             line = transformUserFieldsLine(line, transformation);
 
@@ -375,6 +376,8 @@ public class EventAdministration extends Controller {
             if (createNew)
                 createUser(event, title, line);
         }
+
+        Logger.info("Upload fields: finished");
     }
 
     private static void updateUser(String[] title, int idInd, String[] line) {
@@ -402,12 +405,9 @@ public class EventAdministration extends Controller {
         for (int i = 0; i < title.length; i++) {
             switch (title[i]) {
                 case User.FIELD_REGISTERED_BY:
-                    try {
-                        register = User.getUserById(event.getId(), new ObjectId(line[i]));
-                        if (register == null)
-                            throw new IllegalArgumentException();
-                    } catch (IllegalArgumentException e) {
-                        Logger.warn("Upload fields: Failed to find user with id" + line[i]);
+                    register = User.getUserByLogin(event.getId(), line[i]);
+                    if (register == null) {
+                        Logger.warn("Upload fields: Failed to find register user with login " + line[i]);
                         return;
                     }
                     break;
@@ -452,6 +452,9 @@ public class EventAdministration extends Controller {
         if (findIndexInArray(title, "Ticher_f") >= 0)
             return "novosib_tichers";
 
+        if (findIndexInArray(title, "klass_char") >= 0)
+            return "novosib_porticipants";
+
         return null;
     }
 
@@ -472,6 +475,18 @@ public class EventAdministration extends Controller {
                         "address",
                         "knew_from",
                         "want_ad",
+                        User.FIELD_REGISTERED_BY,
+                        User.FIELD_USER_ROLE
+                };
+            case "novosib_porticipants":
+                return new String[]{
+                        "login",
+                        "password",
+                        "surname",
+                        "name",
+                        "grade",
+                        "grade_letter",
+                        "raw_pass",
                         User.FIELD_REGISTERED_BY,
                         User.FIELD_USER_ROLE
                 };
@@ -540,8 +555,30 @@ public class EventAdministration extends Controller {
                         line[charToIndex('H')],
                         "От новосибиского рег.пр.",
                         "(boolean)false",
-                        "5249e727e4b045d4d8c3a841",
+                        "shkola-plus",
                         "SCHOOL_ORG"
+                };
+            case "novosib_porticipants":
+                //get name and patronymic
+                String nameSurname = line[charToIndex('K')].trim();
+                spPos = nameSurname.indexOf(' ');
+                name = nameSurname;
+                String surname = "";
+                if (spPos >= 0) {
+                    name = nameSurname.substring(0, spPos);
+                    surname = nameSurname.substring(spPos + 1);
+                }
+
+                return new String[] {
+                        line[charToIndex('I')],
+                        line[charToIndex('J')],
+                        surname,
+                        name,
+                        line[charToIndex('F')],
+                        line[charToIndex('G')],
+                        line[charToIndex('J')],
+                        line[charToIndex('B')] + "000",
+                        "PARTICIPANT"
                 };
             default:
                 return line;
