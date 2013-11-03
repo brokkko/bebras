@@ -565,8 +565,8 @@ public class EventAdministration extends Controller {
                 name = nameSurname;
                 String surname = "";
                 if (spPos >= 0) {
-                    surname = nameSurname.substring(0, spPos);
-                    name = nameSurname.substring(spPos + 1);
+                    surname = nameSurname.substring(0, spPos).trim();
+                    name = nameSurname.substring(spPos + 1).trim();
                 }
 
                 return new String[] {
