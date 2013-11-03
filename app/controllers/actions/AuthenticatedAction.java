@@ -40,8 +40,10 @@ public class AuthenticatedAction extends Action<Authenticated> {
         if (configuration.load()) {
             User user = User.current();
 
-            if (user == null) //call to current loads a user. And also tests if there is such a user
+            if (user == null) {//call to current loads a user. And also tests if there is such a user
+                ctx.session().remove(User.getUsernameSessionKey());
                 return loginRedirect;
+            }
 
             if (configuration.admin() && !user.hasEventAdminRight())
                 return loginRedirect;

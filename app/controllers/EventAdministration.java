@@ -560,13 +560,13 @@ public class EventAdministration extends Controller {
                 };
             case "novosib_porticipants":
                 //get name and patronymic
-                String nameSurname = line[charToIndex('K')].trim();
+                String nameSurname = line[charToIndex('H')].trim();
                 spPos = nameSurname.indexOf(' ');
                 name = nameSurname;
                 String surname = "";
                 if (spPos >= 0) {
-                    name = nameSurname.substring(0, spPos);
-                    surname = nameSurname.substring(spPos + 1);
+                    surname = nameSurname.substring(0, spPos);
+                    name = nameSurname.substring(spPos + 1);
                 }
 
                 return new String[] {
