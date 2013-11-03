@@ -285,7 +285,7 @@ public class BebrasPDFs extends Plugin {
                 info.put("grade", result.getUserClass().getName());
                 info.put(User.FIELD_RAW_PASS, password);
 
-                user = event.createUser(password, participantRole, info, organizer);
+                user = event.createUser(password, participantRole, info, organizer, true);
 
                 if (user == null)
                     throw new Exception("Failed to create user");

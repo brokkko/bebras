@@ -308,6 +308,10 @@ public class User implements SerializableUpdatable {
         return getInstance(FIELD_LOGIN, login);
     }
 
+    public static User getUserByLogin(String eventId, String login) {
+        return getInstance(FIELD_LOGIN, login, eventId);
+    }
+
     public static User getUserByEmail(String email) {
         return getInstance(FIELD_EMAIL, email);
     }

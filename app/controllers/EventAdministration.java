@@ -294,6 +294,8 @@ public class EventAdministration extends Controller {
         return redirect(routes.EventAdministration.admin(eventId));
     }
 
+    //upload users fields
+
     public static Result doLoadUserFields(String eventId) {
         if (!User.currentRole().hasRight("event admin"))
             return Results.forbidden();
@@ -333,7 +335,7 @@ public class EventAdministration extends Controller {
                             try {
                                 loadFileWithNewUserFields(event, destFile, createNew, updateOld);
                             } catch (IOException e) {
-                                Logger.error("Error while uploading users or users fields", e);
+                                Logger.error("Upload fields: Error while uploading users or users fields", e);
                             }
                         }
                     },
@@ -344,7 +346,7 @@ public class EventAdministration extends Controller {
             return redirect(routes.EventAdministration.admin(eventId));
         } catch (Exception e) {
             flash("fields-upload-error", "При загрузке данных произошла ошибка: " + e.getMessage());
-            Logger.error("error loading file " + fieldsFile, e);
+            Logger.error("Upload fields: error loading file " + fieldsFile, e);
             return redirect(routes.EventAdministration.admin(eventId));
         }
     }
@@ -380,7 +382,7 @@ public class EventAdministration extends Controller {
 
         User user = User.getInstance("_id", id);
         if (user == null) {
-            Logger.warn("Failed to update user with id " + id);
+            Logger.warn("Upload fields: Failed to update user with id " + id);
             return; //TODO create new, if it is appropriate
         }
 
@@ -401,11 +403,11 @@ public class EventAdministration extends Controller {
             switch (title[i]) {
                 case User.FIELD_REGISTERED_BY:
                     try {
-                        register = User.getInstance("_id", new ObjectId(line[i]), event.getId());
+                        register = User.getUserById(event.getId(), new ObjectId(line[i]));
                         if (register == null)
                             throw new IllegalArgumentException();
                     } catch (IllegalArgumentException e) {
-                        Logger.warn("Failed to find user with id" + line[i]);
+                        Logger.warn("Upload fields: Failed to find user with id" + line[i]);
                         return;
                     }
                     break;
@@ -415,17 +417,25 @@ public class EventAdministration extends Controller {
                 case User.FIELD_USER_ROLE:
                     role = event.getRole(line[i]);
                     if (role == UserRole.EMPTY) {
-                        Logger.warn("Failed to find role " + line[i]);
+                        Logger.warn("Upload fields: failed to find role " + line[i]);
                         return;
                     }
+                    break;
+                case User.FIELD_LOGIN:
+                    User oldUser = User.getUserByLogin(event.getId(), line[i]);
+                    if (oldUser != null) {
+                        Logger.warn("Upload fields: login already exists: " + line[i]);
+                        return;
+                    }
+                    info.put(User.FIELD_LOGIN, line[i]);
                     break;
                 default:
                     //TODO not very good. May be it is better to take InfoPattern from role
                     switch (line[i]) {
-                        case "true":
+                        case "(boolean)true":
                             info.put(title[i], true);
                             break;
-                        case "false":
+                        case "(boolean)false":
                             info.put(title[i], false);
                             break;
                         default:
@@ -435,7 +445,7 @@ public class EventAdministration extends Controller {
             }
         }
 
-        event.createUser(password, role, info, register);
+        event.createUser(password, role, info, register, false);
     }
 
     private static String getUserFieldsTransformation(String[] title) {
@@ -513,7 +523,7 @@ public class EventAdministration extends Controller {
                         break;
                     default:
                         region = "UNKN";
-                        Logger.warn("Unknown region "+ regionName);
+                        Logger.warn("Upload fields: Unknown region "+ regionName);
                 }
 
                 return new String[] {
@@ -529,7 +539,7 @@ public class EventAdministration extends Controller {
                         line[charToIndex('G')],
                         line[charToIndex('H')],
                         "От новосибиского рег.пр.",
-                        "false",
+                        "(boolean)false",
                         "5249e727e4b045d4d8c3a841",
                         "SCHOOL_ORG"
                 };

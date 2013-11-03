@@ -1,6 +1,5 @@
 package controllers.actions;
 
-import controllers.MongoConnection;
 import controllers.routes;
 import models.Event;
 import models.User;
@@ -64,8 +63,9 @@ public class AuthenticatedAction extends Action<Authenticated> {
             Call userInfo = routes.UserInfo.info(Event.currentId(), null);
             Call userChangeInfo = routes.UserInfo.doChangeInfo(Event.currentId(), null);
             Call suExit = routes.Application.substituteUserExit(Event.currentId());
+            Call logout = routes.Registration.logout(Event.currentId());
 
-            if (!compareCallWithCurrent(userInfo) && !compareCallWithCurrent(userChangeInfo) && !compareCallWithCurrent(suExit))
+            if (!compareCallWithCurrent(userInfo) && !compareCallWithCurrent(userChangeInfo) && !compareCallWithCurrent(suExit) && !compareCallWithCurrent(logout))
                 return true;
         }
 

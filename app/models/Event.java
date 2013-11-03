@@ -413,7 +413,7 @@ public class Event {
         return "Центр продуктивного обучения";
     }
 
-    public User createUser(String password, UserRole role, Info info, User register) {
+    public User createUser(String password, UserRole role, Info info, User register, boolean partialRegistration) {
         User user = new User();
         if (info == null)
             info = new Info();
@@ -421,7 +421,7 @@ public class Event {
         user.setEvent(this);
         user.setPasswordHash(User.passwordHash(password));
         user.setConfirmed(true);
-        user.setPartialRegistration(true);
+        user.setPartialRegistration(partialRegistration);
         user.setRole(role);
         user.setRegisteredBy(register.getId());
         user.setWantAnnouncements(false); //TODO allow to change this
