@@ -1,0 +1,23 @@
+@(title:String, country:String, statement:String, problemScript:String, imagesHtml:String, explanation:String)
+@import  models.newproblems.bebras.BebrasProblem
+<p><span class='bebras-editor-title'>Название:</span> <input class='bebras-editor' value="@title" name="title"></p>
+<p><span class='bebras-editor-title'>Страна:</span>
+<select class='bebras-editor' name="country">
+    @for((code, name ) <- BebrasProblem.COUNTRY_TO_NAME) {
+       <option value="@code"@if(country == code){ selected}>@code - @name</option>
+    }
+    </select>
+</p>
+
+<p class='bebras-editor-title'>Условие</p>
+<textarea rows=10 class='bebras-editor' name="statement">@statement</textarea>
+
+<p class='bebras-editor-title'>Изображения</p>
+<textarea rows=10 class='bebras-editor' name="images">@imagesHtml</textarea>
+
+<p class='bebras-editor-title'>Скрипт</p>
+<textarea rows=20 name="script">@problemScript</textarea>
+
+
+<p class='bebras-editor-title'>Объяснение</p>
+<textarea rows=10 class='bebras-editor' name="explanation">@explanation</textarea>

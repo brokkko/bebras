@@ -1,6 +1,7 @@
 package models.newproblems;
 
 import models.newproblems.bbtc.BBTCProblem;
+import models.newproblems.bebras.BebrasDynamicProblem;
 import models.newproblems.bebras.BebrasProblem;
 import models.newserialization.SerializableTreeSerializationType;
 
@@ -15,5 +16,6 @@ public class ProblemSerializationType extends SerializableTreeSerializationType<
     public ProblemSerializationType() {
         registerClass("bbtc", BBTCProblem.class);
         registerClass("bebras", BebrasProblem.class);
+        registerClass("bebras-dyn", BebrasDynamicProblem.class);
     }
 }

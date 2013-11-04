@@ -18,9 +18,7 @@ public class Utils {
     public static final SimpleDateFormat contestDateFormat = new SimpleDateFormat("d MMMM YYYY, HH:mm");
     public static final SimpleDateFormat inputDateTimeFormat = new SimpleDateFormat("YYYY-MM-dd, HH:mm");
 
-    public static <K, V> Map<K, V> mapify(Object... values) {
-        Map<K, V> map = new HashMap<>();
-
+    private static <K, V> Map<K, V> mapifyThisMap(Map<K, V> map, Object[] values) {
         if (values.length % 2 != 0)
             throw new IllegalArgumentException("Number of arguments must be even");
 
@@ -29,6 +27,18 @@ public class Utils {
             map.put((K) values[i], (V) values[i + 1]);
 
         return map;
+    }
+
+    public static <K, V> Map<K, V> mapify(Object... values) {
+        Map<K, V> map = new HashMap<>();
+
+        return mapifyThisMap(map, values);
+    }
+
+    public static <K, V> Map<K, V> linkedMapify(Object... values) {
+        Map<K, V> map = new LinkedHashMap<>();
+
+        return mapifyThisMap(map, values);
     }
 
     @SafeVarargs

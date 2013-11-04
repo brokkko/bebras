@@ -37,6 +37,10 @@
     line-height: 1.3;
 }
 
+.dyn-type {
+    display: none;
+}
+
 /* editor styles */
 
 .problem img {
@@ -152,14 +156,14 @@ u {
     font-size: 1.2em;
 }
 
-.bebras-editor {
+form#edit-problem .bebras-editor {
     padding: 4px;
     border: #3366FF 2px solid;
     margin: 2px 8px 2px 0;
     vertical-align: middle;
 }
 
-textarea.bebras-editor {
+form#edit-problem textarea {
     width: 100%;
 }
 
@@ -190,4 +194,8 @@ textarea.bebras-editor {
     width: 50%;
     display:inline-block;
     overflow: hidden;
+}
+
+.wym_area_top ul li {
+    list-style: none;
 }
