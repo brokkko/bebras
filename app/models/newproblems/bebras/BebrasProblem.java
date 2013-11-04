@@ -43,6 +43,7 @@ public class BebrasProblem implements Problem {
             "RU", "Россия",
             "SI", "Словения",
             "SK", "Словакия",
+            "TW", "Тайвань",
             "UA", "Украина",
             "US", "Америка"
     );
