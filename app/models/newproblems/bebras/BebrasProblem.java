@@ -10,6 +10,9 @@ import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
 import play.api.templates.Html;
+import views.widgets.ListWidget;
+import views.widgets.ResourceLink;
+import views.widgets.Widget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,7 @@ import java.util.Map;
  */
 public class BebrasProblem implements Problem {
 
-    private static Map<String, String> COUNTRY_TO_NAME = Utils.mapify(
+    public static Map<String, String> COUNTRY_TO_NAME = Utils.mapify(
             "AT", "Австрия",
             "BG", "Болгария",
             "CA", "Канада",
@@ -183,6 +186,21 @@ public class BebrasProblem implements Problem {
     @Override
     public String getType() {
         return "bebras";
+    }
+
+    @Override
+    public Widget getWidget(boolean editor) {
+        if (editor)
+            return new ListWidget(
+                    new ResourceLink("bebras.problem.css"),
+                    new ResourceLink("bebras.edit.problem.js"),
+                    new ResourceLink("bebras.problem.js")
+            );
+        else
+            return new ListWidget(
+                    new ResourceLink("bebras.problem.css"),
+                    new ResourceLink("bebras.problem.js")
+            );
     }
 
     @Override

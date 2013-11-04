@@ -4,8 +4,7 @@
 @import views.widgets.ResourceLink
 @import scala.List
 @import models.newproblems.Problem
-@import views.widgets.ProblemWidget
-@main_with_menu(Event.current.getTitle)(List(WymEditorWidget.get, new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), ProblemWidget get link.get, AdminWidget.get)) { } {
+@main_with_menu(Event.current.getTitle)(List(WymEditorWidget.get, new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), link.get.getWidget(true), AdminWidget.get)) { } {
     @* -- header -- *@
     <div class='info-box'>
         <div class='folder-actions'>

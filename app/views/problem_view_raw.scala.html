@@ -6,8 +6,7 @@
 @import scala.List
 @import org.bson.types.ObjectId
 @import models.newproblems.Problem
-@import views.widgets.ProblemWidget
-@main_with_menu(Event.current.getTitle)(List(WymEditorWidget.get, new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), ProblemWidget get problem, AdminWidget.get)) { } {
+@main_with_menu(Event.current.getTitle)(List(WymEditorWidget.get, new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), problem.getWidget(true), AdminWidget.get)) { } {
     @* -- header -- *@
     <div class='info-box'>
         @* TODO remove problem

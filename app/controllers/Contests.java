@@ -15,7 +15,6 @@ import models.results.Info;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
-import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -227,19 +226,13 @@ public class Contests extends Controller {
     }
 
     private static Widget getProblemsWidgets(List<List<ConfiguredProblem>> pagedUserProblems) {
-        Set<String> links = new HashSet<>();
+        Set<ResourceLink> links = new HashSet<>();
 
         for (List<ConfiguredProblem> page : pagedUserProblems)
             for (ConfiguredProblem problem : page)
-                links.add(problem.getProblem().getType() + ".problem"); //TODO this ".problem" is not DRY, cf. ProblemWidget
+                links.addAll(problem.getProblem().getWidget(false).links());
 
-        List<ResourceLink> linksList = new ArrayList<>();
-        for (String link : links) {
-            linksList.add(new ResourceLink(link, "js"));
-            linksList.add(new ResourceLink(link, "css"));
-        }
-
-        return new ListWidget(linksList);
+        return new ListWidget(new ArrayList<>(links));
     }
 
 }

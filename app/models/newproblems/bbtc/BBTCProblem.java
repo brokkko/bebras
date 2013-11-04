@@ -9,6 +9,9 @@ import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
 import play.api.templates.Html;
+import views.widgets.ListWidget;
+import views.widgets.ResourceLink;
+import views.widgets.Widget;
 
 import java.util.List;
 
@@ -113,6 +116,14 @@ public class BBTCProblem implements Problem {
     @Override
     public String getType() {
         return "bbtc";
+    }
+
+    @Override
+    public Widget getWidget(boolean editor) {
+        return new ListWidget(
+                new ResourceLink("bbtc.problem.css"),
+                new ResourceLink("bbtc.problem.js")
+        );
     }
 
     public static int stringAnswer2number(String answer) {

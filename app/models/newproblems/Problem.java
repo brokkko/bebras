@@ -5,6 +5,7 @@ import models.newserialization.SerializableUpdatable;
 import models.results.Info;
 import models.results.InfoPattern;
 import play.api.templates.Html;
+import views.widgets.Widget;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,4 +30,6 @@ public interface Problem extends SerializableUpdatable {
     InfoPattern getAnswerPattern();
 
     String getType();
+
+    Widget getWidget(boolean editor);
 }
