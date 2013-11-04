@@ -199,6 +199,7 @@ var App=function(elementID,_width,_height,_pictures,_places)
 		setEnabled:function(state)
 		{
 			enabled=state;
+            //TODO do not set visibility if layer is still not put on the stage
 			greyLayer.setVisible(!state);
 			return true;
 		},

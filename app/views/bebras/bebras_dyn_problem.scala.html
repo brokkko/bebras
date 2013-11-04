@@ -1,6 +1,5 @@
 @(index:Int, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, problemScript:String, images:java.util.Map[String, String], explanation:String, uniqueId:String)
 @import scala.List
-@import models.newproblems.bbtc.BBTCProblem
 <div class='task-title section-title'>
     <span class='problem-index'>Задача @(index + 1).</span>
     <span class='problem-title'>@Html(title)</span>
@@ -12,6 +11,7 @@
 <div class='dyn-type'>@uniqueId</div>
 <div class='task-statement'>
     <div id='container-@uniqueId'></div>
+    <span class='bebras-dyn-button'></span>
     @Html(statement)
 </div>
 @if(showSolutions) {
@@ -35,5 +35,5 @@
         @Html(problemScript)
     };
 
-    bebras_dyn_problem_init('@uniqueId', var_beb_dyn_class_@uniqueId, var_beb_dyn_images_@uniqueId);
+    add_bebras_dyn_problem('@uniqueId', var_beb_dyn_class_@uniqueId, var_beb_dyn_images_@uniqueId);
 </script>
