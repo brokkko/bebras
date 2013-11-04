@@ -118,7 +118,10 @@ public class ApplicationsProvider implements ObjectsProvider<ApplicationWithUser
         }
 
         DBObject nextObject = cursor.next();
-        BasicDBList apps = (BasicDBList) nextObject.get("apps");
+        BasicDBList apps = (BasicDBList) nextObject.get("apps"); //TODO not necessarily "apps"
+
+        if (apps == null)
+            apps = new BasicDBList();
 
         currentUserApplications = new MongoListDeserializer(apps);
         nextUserId = (ObjectId) nextObject.get("_id");
