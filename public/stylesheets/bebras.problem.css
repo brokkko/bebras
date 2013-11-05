@@ -185,6 +185,19 @@ form#edit-problem textarea {
     padding: 0;
 }
 
+/* dynamic */
+.bebras-dyn-button {
+    padding: 0.5em;
+    background-color: #008000;
+    color: white;
+    margin-bottom: 0.4em;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.bebras-dyn-button:hover {
+    color: yellow;
+}
 
 /* editor, should probably be moved to editor css */
 

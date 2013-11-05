@@ -1,31 +1,10 @@
 @(title:String, country:String, statement:String, question:String, answers:java.util.List[String], rightAnswer:Int, answersLayout:Int, explanation:String, informatics:String)
+@import models.newproblems.bebras.BebrasProblem
 <p><span class='bebras-editor-title'>Название:</span> <input class='bebras-editor' value="@title" name="title"></p>
 <p><span class='bebras-editor-title'>Страна:</span>
-<select class='bebras-editor' name="country">
-    @for((code, name) <- scala.List(
-        ("AT", "Австрия"),
-        ("BG", "Болгария"),
-        ("CA", "Канада"),
-        ("CH", "Швейцария"),
-        ("CZ", "Чехия"),
-        ("DE", "Германия"),
-        ("EE", "Эстония"),
-        ("ES", "Испания"),
-        ("FI", "Финляндия"),
-        ("FR", "Франция"),
-        ("HU", "Венгрия"),
-        ("IT", "Италия"),
-        ("JP", "Япония"),
-        ("LT", "Литва"),
-        ("NL", "Нидерланды"),
-        ("PL", "Польша"),
-        ("RU", "Россия"),
-        ("SI", "Словения"),
-        ("SK", "Словакия"),
-        ("UA", "Украина"),
-        ("US", "Америка")
-    )) {
-       <option value="@code"@if(country == code){ selected}>@code - @name</option>
+    <select class='bebras-editor' name="country">
+    @for((code, name ) <- BebrasProblem.COUNTRY_TO_NAME) {
+        <option value="@code"@if(country == code){ selected}>@code - @name</option>
     }
     </select>
 </p>
