@@ -16,6 +16,7 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.Logger;
+import play.cache.Cached;
 import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
@@ -141,6 +142,7 @@ public class Application extends Controller {
         return ok(resource).as(content);
     }
 
+//    @Cached(key = "resource-file", duration = 60)
     public static Result returnFile(String file) throws IOException {
         file = URLDecoder.decode(file, "UTF-8");
 
@@ -148,6 +150,14 @@ public class Application extends Controller {
 
         if (!resource.exists())
             return notFound();
+
+        if (file.endsWith(".png1")) {
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                Logger.warn("Failed to sleep :(");
+            }
+        }
 
         return ok(resource);
     }

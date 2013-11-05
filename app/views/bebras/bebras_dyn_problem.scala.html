@@ -10,7 +10,7 @@
 </div>
 <div class='dyn-type'>@uniqueId</div>
 <div class='task-statement'>
-    <div id='container-@uniqueId'></div>
+    <div id='container-@uniqueId' style='height:710px'></div>
     <span class='bebras-dyn-button'></span>
     @Html(statement)
 </div>
@@ -22,18 +22,20 @@
 }
 <div class='footer'></div>
 <script type="text/javascript">
-    var var_beb_dyn_images_@{uniqueId} = {
-    @for((imageId, imageUrl) <- images) {
-        '@imageId' : '@imageUrl',
-    }
-        '__delete__me__': 42
-    };
+    $(function() {
+        var var_beb_dyn_images_@{uniqueId} = {
+        @for((imageId, imageUrl) <- images) {
+            '@imageId' : '@imageUrl',
+        }
+            '__delete__me__': 42
+        };
 
-    delete var_beb_dyn_images_@{uniqueId}['__delete__me__'];
+        delete var_beb_dyn_images_@{uniqueId}['__delete__me__'];
 
-    var var_beb_dyn_class_@{uniqueId} = function (container, pictures) {
-        @Html(problemScript)
-    };
+        var var_beb_dyn_class_@{uniqueId} = function (container, pictures) {
+            @Html(problemScript)
+        };
 
-    add_bebras_dyn_problem('@uniqueId', var_beb_dyn_class_@uniqueId, var_beb_dyn_images_@uniqueId);
+        add_bebras_dyn_problem('@uniqueId', var_beb_dyn_class_@uniqueId, var_beb_dyn_images_@uniqueId);
+    });
 </script>
