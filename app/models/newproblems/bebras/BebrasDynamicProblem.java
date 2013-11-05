@@ -42,6 +42,7 @@ public class BebrasDynamicProblem implements Problem {
     private String imagesHtml;
     private String statement;
     private String explanation;
+    private String informatics;
 
     public BebrasDynamicProblem() {
     }
@@ -76,7 +77,7 @@ public class BebrasDynamicProblem implements Problem {
         return views.html.bebras.bebras_dyn_problem.render(
                 index, scores, showSolutions,
                 title, country, BebrasProblem.COUNTRY_TO_NAME.get(country),
-                statement, problemScript, imgLinks, explanation, uniqueId
+                statement, problemScript, imgLinks, explanation, informatics, uniqueId
         );
     }
 
@@ -88,7 +89,7 @@ public class BebrasDynamicProblem implements Problem {
     @Override
     public Html formatEditor() {
         return views.html.bebras.bebras_dyn_editor.render(
-                title, country, statement, problemScript, imagesHtml, explanation
+                title, country, statement, problemScript, imagesHtml, explanation, informatics
         );
     }
 
@@ -100,6 +101,7 @@ public class BebrasDynamicProblem implements Problem {
         problemScript = form.get("script");
         imagesHtml = form.get("images");
         explanation = form.get("explanation");
+        informatics = form.get("informatics");
     }
 
     @Override
@@ -173,6 +175,7 @@ public class BebrasDynamicProblem implements Problem {
         serializer.write("script", problemScript);
         serializer.write("images", imagesHtml);
         serializer.write("explanation", explanation);
+        serializer.write("informatics", informatics);
     }
 
     @Override
@@ -183,5 +186,6 @@ public class BebrasDynamicProblem implements Problem {
         problemScript = deserializer.readString("script", "");
         imagesHtml = deserializer.readString("images", "");
         explanation = deserializer.readString("explanation", "");
+        informatics = deserializer.readString("informatics", "");
     }
 }

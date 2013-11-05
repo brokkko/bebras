@@ -28,7 +28,9 @@ import java.util.Map;
 public class BebrasProblem implements Problem {
 
     public static Map<String, String> COUNTRY_TO_NAME = Utils.linkedMapify(
+            "_MARS", "Марс",
             "AT", "Австрия",
+            "BE", "Бельгия",
             "BG", "Болгария",
             "CA", "Канада",
             "CH", "Швейцария",
@@ -62,11 +64,12 @@ public class BebrasProblem implements Problem {
     private int answersLayout; //layout of answers, number of lines with answers:1,2,3,5
     private int rightAnswer; //1, 2, 3, 4
     private String explanation;
+    private String informatics;
 
     public BebrasProblem() {
     }
 
-    public BebrasProblem(String title, String country, String statement, String question, List<String> answers, int answersLayout, int rightAnswer, String explanation) {
+    public BebrasProblem(String title, String country, String statement, String question, List<String> answers, int answersLayout, int rightAnswer, String explanation, String informatics) {
         this.title = title;
         this.country = country;
         this.statement = statement;
@@ -75,6 +78,7 @@ public class BebrasProblem implements Problem {
         this.answersLayout = answersLayout;
         this.rightAnswer = rightAnswer;
         this.explanation = explanation;
+        this.informatics = informatics;
     }
 
     @Override
@@ -105,7 +109,7 @@ public class BebrasProblem implements Problem {
                 scores = (Integer) oScores;
         }
 
-        return views.html.bebras.bebras_problem.render(index, scores, showSolutions, title, country, COUNTRY_TO_NAME.get(country), statement, question, answersHtml, rightAnswer, explanation);
+        return views.html.bebras.bebras_problem.render(index, scores, showSolutions, title, country, COUNTRY_TO_NAME.get(country), statement, question, answersHtml, rightAnswer, explanation, informatics);
     }
 
     @Override
@@ -115,7 +119,7 @@ public class BebrasProblem implements Problem {
 
     @Override
     public Html formatEditor() {
-        return views.html.bebras.bebras_editor.render(title, country, statement, question, answers, rightAnswer, answersLayout, explanation);
+        return views.html.bebras.bebras_editor.render(title, country, statement, question, answers, rightAnswer, answersLayout, explanation, informatics);
     }
 
     @Override
@@ -138,6 +142,7 @@ public class BebrasProblem implements Problem {
         }
 
         explanation = form.get("explanation");
+        informatics = form.get("informatics");
     }
 
     @Override
@@ -216,6 +221,7 @@ public class BebrasProblem implements Problem {
         serializer.write("answers layout", answersLayout);
         serializer.write("right", rightAnswer);
         serializer.write("explanation", explanation);
+        serializer.write("informatics", informatics);
     }
 
     @Override
@@ -228,6 +234,7 @@ public class BebrasProblem implements Problem {
         answersLayout = deserializer.readInt("answers layout", 0);
         rightAnswer = deserializer.readInt("right", 0);
         explanation = deserializer.readString("explanation", "");
+        informatics = deserializer.readString("informatics", "");
 
         while (answers.size() < 4)
             answers.add("");

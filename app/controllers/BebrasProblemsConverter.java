@@ -104,7 +104,8 @@ public class BebrasProblemsConverter extends Controller {
                                             Arrays.asList(answers),
                                             answersLayout.charAt(0) - '0',
                                             correctAnswer,
-                                            uploadImages(explanation, problemFolder)
+                                            uploadImages(explanation, problemFolder),
+                                            ""
             );
 
         } catch (Exception e) {

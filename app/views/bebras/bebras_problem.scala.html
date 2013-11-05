@@ -1,4 +1,4 @@
-@(index:Int, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, question:String, answersHtml:Html, rightAnswer:Int, explanation:String)
+@(index:Int, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, question:String, answersHtml:Html, rightAnswer:Int, explanation:String, informatics:String)
 @import scala.List
 @import models.newproblems.bbtc.BBTCProblem
 <div class='task-title section-title'>
@@ -25,5 +25,11 @@
     <div class='task-explanation'>
         @Html(explanation)
     </div>
+    @if(informatics != null && informatics != "") {
+        <div class='section-title'>Это информатика!</div>
+        <div class='task-informatics'>
+            @Html(informatics)
+        </div>
+    }
 }
 <div class='footer'></div>
