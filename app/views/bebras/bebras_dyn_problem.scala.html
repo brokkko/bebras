@@ -1,4 +1,4 @@
-@(index:Int, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, problemScript:String, images:java.util.Map[String, String], explanation:String, informatics:String, uniqueId:String)
+@(index:Int, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, problemScript:String, images:java.util.Map[String, String], explanation:String, informatics:String, height:Int, uniqueId:String)
 @import scala.List
 <div class='task-title section-title'>
     <span class='problem-index'>Задача @(index + 1).</span>
@@ -9,10 +9,12 @@
     <span class='problem-country'><img alt="@country" src="@routes.Assets.at("images/flags/" + country + ".png")">@countryName</span>
 </div>
 <div class='dyn-type'>@uniqueId</div>
-<div class='task-statement'>
+<div class='task-statement dynamic'>
     @Html(statement)
-    <div id='container-@uniqueId' style='height:710px'></div>
-    <div class='bebras-dyn-button'></div>
+    <div id='container-@uniqueId' style='height:@{height}px'></div>
+    <div class='bebras-dyn-status'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-main'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-undo'>Загрузка...</div>
 </div>
 @if(showSolutions) {
     <div class='section-title clear'>Решение</div>

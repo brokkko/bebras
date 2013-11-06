@@ -32,6 +32,7 @@ var Place = function (_x, _y, _width, _height, _name, _type, _vObject, _beforeRe
     };
     return that;
 }
+
 /*
  Создает объект класса App, описывающий всё приложение
  elementId - id элемента холста

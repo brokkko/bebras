@@ -43,6 +43,7 @@ public class BebrasDynamicProblem implements Problem {
     private String statement;
     private String explanation;
     private String informatics;
+    private int height;
 
     public BebrasDynamicProblem() {
     }
@@ -77,7 +78,7 @@ public class BebrasDynamicProblem implements Problem {
         return views.html.bebras.bebras_dyn_problem.render(
                 index, scores, showSolutions,
                 title, country, BebrasProblem.COUNTRY_TO_NAME.get(country),
-                statement, problemScript, imgLinks, explanation, informatics, uniqueId
+                statement, problemScript, imgLinks, explanation, informatics, height, uniqueId
         );
     }
 
@@ -89,7 +90,7 @@ public class BebrasDynamicProblem implements Problem {
     @Override
     public Html formatEditor() {
         return views.html.bebras.bebras_dyn_editor.render(
-                title, country, statement, problemScript, imagesHtml, explanation, informatics
+                title, country, statement, problemScript, imagesHtml, explanation, informatics, height
         );
     }
 
@@ -102,6 +103,11 @@ public class BebrasDynamicProblem implements Problem {
         imagesHtml = form.get("images");
         explanation = form.get("explanation");
         informatics = form.get("informatics");
+        try {
+            height = Integer.parseInt(form.get("height"));
+        } catch (NumberFormatException e) {
+            height = 0;
+        }
     }
 
     @Override
@@ -176,6 +182,7 @@ public class BebrasDynamicProblem implements Problem {
         serializer.write("images", imagesHtml);
         serializer.write("explanation", explanation);
         serializer.write("informatics", informatics);
+        serializer.write("height", height);
     }
 
     @Override
@@ -187,5 +194,6 @@ public class BebrasDynamicProblem implements Problem {
         imagesHtml = deserializer.readString("images", "");
         explanation = deserializer.readString("explanation", "");
         informatics = deserializer.readString("informatics", "");
+        height = deserializer.readInt("height", 0);
     }
 }

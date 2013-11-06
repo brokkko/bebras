@@ -186,13 +186,33 @@ form#edit-problem textarea {
 }
 
 /* dynamic */
+.bebras-dyn-status {
+    display: inline-block;
+}
+
 .bebras-dyn-button {
-    padding: 0.5em;
+    padding: 0.5em 0.7em;
     background-color: #008000;
     color: white;
-    margin-bottom: 0.4em;
     display: inline-block;
     cursor: pointer;
+    border-radius: 4px;
+}
+
+.bebras-dyn-button.bebras-dyn-button-undo {
+    padding: 0.1em 0.4em;
+    background-color: #aaaaaa;
+    margin-left: 0.5em;
+}
+
+.bebras-dyn-status {
+    color: #008000;
+    font-weight: bold;
+    margin-right: 0.5em;
+}
+
+.bebras-dyn-status.answered {
+    color: #a00000;
 }
 
 .bebras-dyn-button:hover {
@@ -211,4 +231,8 @@ form#edit-problem textarea {
 
 .wym_area_top ul li {
     list-style: none;
+}
+
+.task-statement.dynamic {
+    font-size: 1.4em;
 }

@@ -1,14 +1,3 @@
-/*function bebras_dyn_problem_by_type(dyn_type) {
-    var $container = $('#container-' + dyn_type);
-    return $container.parents('.problem');
-}
-
-function bebras_dyn_problem_show_answers($problem) {
-    return $problem.find('.task-explanation').size() > 0;
-}
-
-*/
-
 var add_bebras_dyn_problem = (function(){
 
     var bebrasDynamicProblem = {}; //contains objects .problem, .problemClass, .images, .solution, .initialized
@@ -20,6 +9,10 @@ var add_bebras_dyn_problem = (function(){
         return bebrasDynamicProblem[dyn_type]
     }
 
+    function showing_answers($problem) {
+        return $problem.find('.task-explanation').size() > 0;
+    }
+
     function problem_to_type($problem) {
         return $problem.find('.dyn-type').text();
     }
@@ -28,34 +21,90 @@ var add_bebras_dyn_problem = (function(){
         return $('#container-' + dyn_type).parents('.problem');
     }
 
-    function problem_final_init(dyn_type) {
+    function update_controls($problem) {
         var giveAnswer = 'Дать ответ';
         var undoAnswer = 'Отменить ответ';
+        var resetAnswer = 'Сбросить решение';
+        var status0 = 'Ответ не указан';
+        var status1 = 'Ответ сохранен';
 
+        var $status = $problem.find('.bebras-dyn-status');
+        var $button_main = $problem.find('.bebras-dyn-button-main');
+        var $button_undo = $problem.find('.bebras-dyn-button-undo');
+
+        var dyn_type = problem_to_type($problem);
+        var info = getInfo(dyn_type);
+        var problem = info.problem;
+
+        if (showing_answers($problem)) {
+            problem.setEnabled(true);
+
+            var status_dont_know = 'Ответ: не знаю';
+            var status_answer_given = 'Ответ дан';
+            var status_answer_show = 'Показать ответ участника';
+
+            $button_main.hide();
+
+            if (info.initial_solution.r < 0) {
+                $status.text(status_dont_know);
+                $button_undo.hide();
+            } else {
+                $status.text(status_answer_given);
+                $button_undo.text(status_answer_show).show();
+            }
+
+            return;
+        }
+
+        if (problem.isEnabled()) {
+            $button_main.text(giveAnswer);
+            $status.text(status0).removeClass('answered');
+            problem.setEnabled(true);
+            $button_undo.show();
+        } else {
+            $button_main.text(undoAnswer);
+            $button_undo.hide();
+            $status.text(status1).addClass('answered');
+            problem.setEnabled(false);
+        }
+
+        $button_undo.text(resetAnswer);
+    }
+
+    function problem_final_init(dyn_type) {
         var $problem = type_to_problem(dyn_type);
 
-        var $button = $problem.find('.bebras-dyn-button');
+        var $button_main = $problem.find('.bebras-dyn-button-main');
+        var $button_undo = $problem.find('.bebras-dyn-button-undo');
 
         var info = getInfo(dyn_type);
 
         var problem = info.problem;
 
-        $button.text(giveAnswer).click(function() {
-            if (problem.isEnabled()) {
-                $button.text(undoAnswer);
-                problem.setEnabled(false);
+        $button_main.click(function() {
+            var enabled = problem.isEnabled();
+            problem.setEnabled(!enabled);
+
+            var pid = get_problem_index($problem);
+            if (enabled)
                 submit_answer(get_problem_index($problem), {
-                    'r' : problem.getAnswer(),
-                    's' : problem.getSolution()
+                    'r': problem.getAnswer(),
+                    's': problem.getSolution()
                 });
-            } else {
-                $button.text(giveAnswer);
-                problem.setEnabled(true);
+            else
                 submit_answer(get_problem_index($problem), {
-                    'r' : -1,
-                    's' : problem.getSolution()
+                    'r': -1,
+                    's': problem.getSolution()
                 });
-            }
+
+            update_controls($problem);
+        });
+
+        $button_undo.click(function() {
+            if (showing_answers($problem))
+                problem.loadSolution(info.initial_solution.s);
+            else
+                problem.loadSolution("");
         });
 
         info.initialized = true;
@@ -75,31 +124,19 @@ var add_bebras_dyn_problem = (function(){
     }
 
     function add_bebras_dyn_problem(dyn_type, problemInitializer, images) {
-        if (!(dyn_type in bebrasDynamicProblem))
-            bebrasDynamicProblem[dyn_type] = {}; //duplication because getInfo is not in scope
+        var info = getInfo(dyn_type);
 
-        var info = bebrasDynamicProblem[dyn_type];
+        if (info.problem) //add dyn problem may be called several times because document.ready is called several times
+            return;
+
         info.problem = null;
         info.problemClass = problemInitializer;
         info.images = images;
         info.initialized = false;
+        info.initial_solution = "";
 
         problem_init(dyn_type, problemInitializer, images);
     }
-
-/*
-    $(function() {
-        //find all problems
-        $('.problem').each(function() {
-            var $problem = $(this);
-            var dyn_type = problem_to_type($problem);
-            var dynamicProblemClass = getInfo(dyn_type).problemClass;
-            var dynamicProblemImages = getInfo(dyn_type).images;
-
-            problem_init(dyn_type, dynamicProblemClass, dynamicProblemImages);
-        });
-    });
-*/
 
     function load_solution($problem, solution) {
         if (!solution)
@@ -118,6 +155,10 @@ var add_bebras_dyn_problem = (function(){
             var res = solution.r;
             problem.setEnabled(res < 0);
             problem.loadSolution(solution.s);
+
+            info.initial_solution = solution;
+
+            update_controls($problem);
         }
     }
 
