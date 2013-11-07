@@ -16,6 +16,7 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.Logger;
+import play.cache.Cache;
 import play.cache.Cached;
 import play.libs.Akka;
 import play.libs.F;
@@ -123,23 +124,33 @@ public class Application extends Controller {
         return redirect(routes.Application.enter(defaultEvent));
     }
 
-    public static Result returnResource(String file, String base) throws IOException {
-        InputStream resource = Application.class.getResourceAsStream(base + "/" + file);
+    public static Result returnResource(final String file, final String base) throws IOException {
+        String cacheId = "resource-file-" + base + "/" + file;
+        try {
+            return Cache.getOrElse(cacheId, new Callable<Result>() {
+                @Override
+                public Result call() throws Exception {
+                    InputStream resource = Application.class.getResourceAsStream(base + "/" + file);
 
-        if (resource == null)
-            return notFound();
+                    if (resource == null)
+                        return notFound();
 
-        String content = "text/plain";
-        if (file.endsWith(".html"))
-            content = "text/html";
-        else if (file.endsWith(".css"))
-            content = "text/css";
-        else if (file.endsWith(".js"))
-            content = "text/javascript";
-        else if (file.endsWith(".png"))
-            content = "image/png";
+                    String content = "text/plain";
+                    if (file.endsWith(".html"))
+                        content = "text/html";
+                    else if (file.endsWith(".css"))
+                        content = "text/css";
+                    else if (file.endsWith(".js"))
+                        content = "text/javascript";
+                    else if (file.endsWith(".png"))
+                        content = "image/png";
 
-        return ok(resource).as(content);
+                    return ok(resource).as(content);
+                }
+            }, 30 * 60); //30 minutes
+        } catch (Exception e) {
+            return internalServerError();
+        }
     }
 
 //    @Cached(key = "resource-file", duration = 60)
