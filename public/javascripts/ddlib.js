@@ -31,7 +31,10 @@ var Place = function (_x, _y, _width, _height, _name, _type, _vObject, _beforeRe
         beforeRender: (_beforeRender ? _beforeRender : false),
     };
     return that;
-}
+};
+
+var cntcnt1 = 0;
+var cntcnt2 = 0;
 
 /*
  Создает объект класса App, описывающий всё приложение
@@ -106,8 +109,10 @@ var App = function (elementID, _width, _height, _pictures, _places) {
             if (place.getType() == 2) {
                 object.setDraggable("true");
                 object.ref = place;
+                object.is_dragging = false;
                 object.on('dragstart', function () {
                     console.log("Dragging place #" + this.ref.id);
+                    object.is_dragging = true;
                     this.setZIndex(1000);
                     if (this.ref.current) {
                         magnetPlaces[this.ref.current].current = false;
@@ -116,6 +121,10 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                     }
                 });
                 object.on('dragend', function () {
+                    if (!object.is_dragging) //TODO find out why 'dragend' is called several times
+                        return;
+                    object.is_dragging = false;
+                    console.log('drag end #' + this.ref.id);
                     var minDist = -1;
                     var minPlace = false;
                     var x = this.getX();
@@ -259,4 +268,4 @@ var App = function (elementID, _width, _height, _pictures, _places) {
 
     };
     return that;
-}
+};
