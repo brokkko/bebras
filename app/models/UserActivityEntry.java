@@ -86,14 +86,13 @@ public class UserActivityEntry {
 
         UserActivityEntry that = (UserActivityEntry) o;
 
-        return ip.equals(that.ip) && ua.equals(that.ua);
-
+        return !(ip != null ? !ip.equals(that.ip) : that.ip != null) && !(ua != null ? !ua.equals(that.ua) : that.ua != null);
     }
 
     @Override
     public int hashCode() {
-        int result = ip.hashCode();
-        result = 31 * result + ua.hashCode();
+        int result = ip != null ? ip.hashCode() : 0;
+        result = 31 * result + (ua != null ? ua.hashCode() : 0);
         return result;
     }
 }
