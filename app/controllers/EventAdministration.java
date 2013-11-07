@@ -362,6 +362,7 @@ public class EventAdministration extends Controller {
 
         //find _id index
         int idInd = findIndexInArray(title, "_id");
+        int loginInd = findIndexInArray(title, User.FIELD_LOGIN);
 
         System.out.println(idInd);
 
@@ -371,7 +372,7 @@ public class EventAdministration extends Controller {
             line = transformUserFieldsLine(line, transformation);
 
             if (updateOld)
-                updateUser(title, idInd, line);
+                updateUser(event, title, line, idInd, loginInd);
 
             if (createNew)
                 createUser(event, title, line);
@@ -380,17 +381,33 @@ public class EventAdministration extends Controller {
         Logger.info("Upload fields: finished");
     }
 
-    private static void updateUser(String[] title, int idInd, String[] line) {
-        ObjectId id = new ObjectId(line[idInd]);
+    private static void updateUser(Event event, String[] title, String[] line, int idInd, int loginInd) {
+        User user = null;
+        boolean byLogin = false; //update by login or by id
+        if (idInd >= 0) {
+            try {
+                ObjectId id = new ObjectId(line[idInd]);
+                user = User.getInstance("_id", id, event.getId());
+            } catch (IllegalArgumentException ignored) {
+            }
+        } else if (loginInd >= 0) {
+            user = User.getInstance(User.FIELD_LOGIN, line[loginInd], event.getId());
+            byLogin = true;
+        }
 
-        User user = User.getInstance("_id", id);
         if (user == null) {
-            Logger.warn("Upload fields: Failed to update user with id " + id);
+            if (idInd >= 0)
+                Logger.warn("Upload fields: Failed to update user with id " + line[idInd]);
+            if (loginInd >= 0)
+                Logger.warn("Upload fields: Failed to update user with login " + line[loginInd]);
             return; //TODO create new, if it is appropriate
         }
 
         for (int i = 0; i < title.length; i++)
-            if (i != idInd)
+            if (i != idInd && !byLogin || i != loginInd && byLogin)
+//                Object oldValue = user.getInfo().get(title[i]);
+//                if (!line[i].equals(oldValue))
+//                    Logger.info("Updated value " + title[i] + " for user " + user.getLogin() + ": was " + oldValue + " now " + line[i]);
                 user.getInfo().put(title[i], line[i]);
 
         user.invalidateAllResults();
@@ -459,6 +476,8 @@ public class EventAdministration extends Controller {
     }
 
     private static String[] transformUserFieldsTitle(String[] title, String transformation) {
+        if (transformation == null)
+            return title;
         switch (transformation) {
             case "novosib_tichers":
                 return new String[]{
@@ -496,6 +515,8 @@ public class EventAdministration extends Controller {
     }
 
     private static String[] transformUserFieldsLine(String[] line, String transformation) {
+        if (transformation == null)
+            return line;
         switch (transformation) {
             case "novosib_tichers":
                 //get name and patronymic
@@ -509,32 +530,54 @@ public class EventAdministration extends Controller {
                 }
 
                 //get region
-                String regionName = line[charToIndex('D')].trim();
+                String regionName = line[charToIndex('D')].trim().replaceAll("\\s+", "");
                 String region = "";
                 switch (regionName) {
-                    case "Республика Хакасия":
+                    case "РеспубликаХакасия":
                         region = "HAK";
                         break;
-                    case "Республика Бурятия":
+                    case "РеспубликаБурятия":
                         region = "BUR";
                         break;
                     case "Омская область":
                         region = "OMS";
                         break;
-                    case "Новосибирская область":
+                    case "Новосибирскаяобласть":
+                    case "г.Новосибирск":
                         region = "NVS";
                         break;
-                    case "Магаданская область":
+                    case "Магаданскаяобласть":
                         region = "MAG";
                         break;
-                    case "Красноярский край":
+                    case "Красноярскийкрай":
                         region = "KRY";
                         break;
-                    case "Иркутская область":
+                    case "Иркутскаяобласть":
                         region = "IRK";
                         break;
-                    case "Приморский край":
+                    case "Приморскийкрай":
                         region = "PRI";
+                        break;
+                    case "РеспубликаАлтай":
+                        region = "ALR";
+                        break;
+                    case "Алтайскийкрай":
+                        region = "ALT";
+                        break;
+                    case "ХМАО":
+                    case "ХМАО-Югра":
+                        region = "HAO";
+                        break;
+                    case "ЯНАО":
+                        region = "YNO";
+                        break;
+                    case "Тюменскаяобласть":
+                    case "Тюменскаяобл.":
+                        region = "TUM";
+                        break;
+                    case "РеспубликаСаха(Якутия)":
+                    case "РеспубликаСаха(Яутия)":
+                        region = "SAH";
                         break;
                     default:
                         region = "UNKN";
