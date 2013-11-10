@@ -575,6 +575,9 @@ public class EventAdministration extends Controller {
                     case "Тюменскаяобл.":
                         region = "TUM";
                         break;
+                    case "Кемеровскаяобласть":
+                        region = "KEM";
+                        break;
                     case "РеспубликаСаха(Якутия)":
                     case "РеспубликаСаха(Яутия)":
                         region = "SAH";

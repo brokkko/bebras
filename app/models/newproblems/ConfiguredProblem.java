@@ -1,5 +1,6 @@
 package models.newproblems;
 
+import models.User;
 import models.results.Info;
 import org.bson.types.ObjectId;
 
