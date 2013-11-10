@@ -771,7 +771,7 @@ public class User implements SerializableUpdatable {
 
             Submission submission = submissions.get(i);
             if (submission != null) {
-                problemsInfo.add(problem.check(submission.getAnswer())); //TODO implement remote check, online check
+                problemsInfo.add(problem.check(submission.getAnswer(), getContestRandSeed(contest.getId()))); //TODO implement remote check, online check
                 problemsSettingsInfo.add(configuredProblem.getSettings());
             } else {
                 problemsInfo.add(null);

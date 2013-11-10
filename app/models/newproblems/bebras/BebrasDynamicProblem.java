@@ -58,7 +58,7 @@ public class BebrasDynamicProblem implements Problem {
     }
 
     @Override
-    public Html format(int index, boolean showSolutions, Info settings) {
+    public Html format(int index, boolean showSolutions, Info settings, long randSeed) {
         int scores = 0;
         if (settings != null) {
             Object oScores = settings.get("r");
@@ -111,7 +111,7 @@ public class BebrasDynamicProblem implements Problem {
     }
 
     @Override
-    public String answerToString(Info answer) {
+    public String answerToString(Info answer, long randSeed) {
         if (answer == null)
             return "-";
 
@@ -125,7 +125,7 @@ public class BebrasDynamicProblem implements Problem {
     }
 
     @Override
-    public Info check(Info answer) {
+    public Info check(Info answer, long randSeed) {
         Info result = new Info();
 
         Integer res = (Integer) answer.get("r");

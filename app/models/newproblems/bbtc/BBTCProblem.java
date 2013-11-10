@@ -49,7 +49,7 @@ public class BBTCProblem implements Problem {
     }
 
     @Override
-    public Html format(int index, boolean showSolutions, Info settings) {
+    public Html format(int index, boolean showSolutions, Info settings, long randSeed) {
         return views.html.bbtc.bbtc_problem.render(index, showSolutions, question, answers, rightAnswer);
     }
 
@@ -69,7 +69,7 @@ public class BBTCProblem implements Problem {
     }
 
     @Override
-    public String answerToString(Info answer) {
+    public String answerToString(Info answer, long randSeed) {
         if (answer == null)
             return "-";
 
@@ -77,7 +77,7 @@ public class BBTCProblem implements Problem {
         if (ansInt < 0)
             return ".";
 
-        Info check = check(answer);
+        Info check = check(answer, randSeed);
         int res = (Integer) check.get("result");
 
         if (res < 0)
@@ -94,7 +94,7 @@ public class BBTCProblem implements Problem {
     }
 
     @Override
-    public Info check(Info answer) {
+    public Info check(Info answer, long randSeed) {
         Info result = new Info();
 
         Integer ans = (Integer) answer.get("a");

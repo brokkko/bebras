@@ -90,7 +90,7 @@ public class ContestHistoryFeatures implements FeaturesSet<User> {
                     result.append(".");
                 else {
                     Info answer = submission.getAnswer();
-                    result.append(p.answerToString(answer));
+                    result.append(p.answerToString(answer, user.getContestRandSeed(contest.getId())));
                 }
             }
         }
@@ -122,7 +122,7 @@ public class ContestHistoryFeatures implements FeaturesSet<User> {
                 continue;
             Info answer = submission.getAnswer();
             Problem problem = ProblemInfo.get(pid).getProblem();
-            String strAns = problem == null ? "?" : problem.answerToString(answer); //TODO think what to do with absent problems
+            String strAns = problem == null ? "?" : problem.answerToString(answer, user.getContestRandSeed(contest.getId())); //TODO think what to do with absent problems
             long localTime = submission.getLocalTime();
 
             result

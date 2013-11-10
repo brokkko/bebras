@@ -15,9 +15,9 @@ import views.widgets.ResourceLink;
 import views.widgets.Widget;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,7 +62,7 @@ public class BebrasProblem implements Problem {
     private String question;
     private List<String> answers;
     private int answersLayout; //layout of answers, number of lines with answers:1,2,3,5
-    private int rightAnswer; //1, 2, 3, 4
+    private int rightAnswer; //0, 1, 2, 3
     private String explanation;
     private String informatics;
 
@@ -82,24 +82,25 @@ public class BebrasProblem implements Problem {
     }
 
     @Override
-    public Html format(int index, boolean showSolutions, Info settings) {
+    public Html format(int index, boolean showSolutions, Info settings, long randSeed) {
         //render answers
         Html answersHtml;
+        List<String> userAnswers = getUserAnswers(randSeed);
         switch (answersLayout) {
             case 1:
-                answersHtml = views.html.bebras.answers_1x5.render(answers);
+                answersHtml = views.html.bebras.answers_1x5.render(userAnswers);
                 break;
             case 2:
-                answersHtml = views.html.bebras.answers_2x3.render(answers);
+                answersHtml = views.html.bebras.answers_2x3.render(userAnswers);
                 break;
             case 3:
-                answersHtml = views.html.bebras.answers_3x2.render(answers);
+                answersHtml = views.html.bebras.answers_3x2.render(userAnswers);
                 break;
             case 5:
-                answersHtml = views.html.bebras.answers_5x1.render(answers);
+                answersHtml = views.html.bebras.answers_5x1.render(userAnswers);
                 break;
             default:
-                answersHtml = views.html.bebras.answers_5x1.render(answers);
+                answersHtml = views.html.bebras.answers_5x1.render(userAnswers);
         }
 
         int scores = 0;
@@ -109,7 +110,12 @@ public class BebrasProblem implements Problem {
                 scores = (Integer) oScores;
         }
 
-        return views.html.bebras.bebras_problem.render(index, scores, showSolutions, title, country, COUNTRY_TO_NAME.get(country), statement, question, answersHtml, rightAnswer, explanation, informatics);
+        return views.html.bebras.bebras_problem.render(
+                index, scores, showSolutions, title, country,
+                COUNTRY_TO_NAME.get(country), statement, question,
+                answersHtml, realAnswerToUserAnswer(rightAnswer, randSeed),
+                explanation, informatics
+        );
     }
 
     @Override
@@ -146,7 +152,7 @@ public class BebrasProblem implements Problem {
     }
 
     @Override
-    public String answerToString(Info answer) {
+    public String answerToString(Info answer, long randSeed) {
         if (answer == null)
             return "-";
 
@@ -154,7 +160,9 @@ public class BebrasProblem implements Problem {
         if (ansInt < 0)
             return ".";
 
-        Info check = check(answer);
+        ansInt = userAnswerToRealAnswer(ansInt, randSeed);
+
+        Info check = check(answer, randSeed);
         int res = (Integer) check.get("result");
 
         //далее русские А
@@ -167,7 +175,7 @@ public class BebrasProblem implements Problem {
     }
 
     @Override
-    public Info check(Info answer) {
+    public Info check(Info answer, long randSeed) {
         Info result = new Info();
 
         Integer ans = (Integer) answer.get("a");
@@ -179,6 +187,7 @@ public class BebrasProblem implements Problem {
             result.put("result", 0);
             result.put("answer", ".");
         } else {
+            ans = userAnswerToRealAnswer(ans, randSeed);
             result.put("result", ans == rightAnswer ? 1 : -1);
             result.put("answer", numberAnswer2string(ans));
         }
@@ -244,5 +253,48 @@ public class BebrasProblem implements Problem {
         if (answer < 0)
             return "";
         return String.valueOf((char)('А' + answer)); //русское А
+    }
+
+    // shuffling answers
+
+    private int[] userAnswerToRealAnswerPermutation(long randSeed) {
+        Random random = new Random(randSeed);
+        int[] result = new int[4];
+        for (int i = 0; i < 4; i++) {
+            result[i] = i;
+            int j = random.nextInt(i + 1); //0 .. i
+
+            int tmp = result[i];
+            result[i] = result[j];
+            result[j] = tmp;
+        }
+
+        return result;
+    }
+
+    private List<String> getUserAnswers(long randSeed) {
+        int[] f = userAnswerToRealAnswerPermutation(randSeed);
+        List<String> result = new ArrayList<>(4);
+
+        result.add(answers.get(f[0]));
+        result.add(answers.get(f[1]));
+        result.add(answers.get(f[2]));
+        result.add(answers.get(f[3]));
+
+        return result;
+    }
+
+    private int userAnswerToRealAnswer(int userAnswer, long randSeed) {
+        int[] f = userAnswerToRealAnswerPermutation(randSeed);
+        return f[userAnswer];
+    }
+
+    private int realAnswerToUserAnswer(int realAnswer, long randSeed) {
+        int[] f = userAnswerToRealAnswerPermutation(randSeed);
+        int[] g = new int[4]; //we do not really need this array, but we will probably use it later
+        for (int i = 0; i < 4; i++)
+            g[f[i]] = i;
+
+        return g[realAnswer];
     }
 }
