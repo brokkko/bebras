@@ -17,6 +17,7 @@ public class TableDescription<T> implements SerializableUpdatable {
     public static final String CSV_POSTFIX = "<csv>";
 
     private String title;
+    private String comment;
     private ObjectsProviderFactory<T> objectsProviderFactory;
     private List<String> titles;
     private List<String> featureNames;
@@ -66,6 +67,10 @@ public class TableDescription<T> implements SerializableUpdatable {
         return new Table<>(filteredTitles, filteredFeatureNames, featuresSet, context);
     }
 
+    public String getComment() {
+        return comment;
+    }
+
     public String getRight() {
         return right;
     }
@@ -113,6 +118,8 @@ public class TableDescription<T> implements SerializableUpdatable {
             featureNames.add(feature);
         }
 
+        this.comment = deserializer.readString("comment");
+
         this.filename = deserializer.readString("filename");
 
         this.showAsTable = deserializer.readBoolean("show as table", false);
@@ -137,6 +144,9 @@ public class TableDescription<T> implements SerializableUpdatable {
 
             columnsSerializer.write(title + " -> " + featureName);
         }
+
+        if (comment != null)
+            serializer.write("comment", comment);
 
         if (filename != null)
             serializer.write("filename", filename);

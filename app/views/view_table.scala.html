@@ -1,4 +1,4 @@
-@(tableTitle:String, showSearch:Boolean, titles:java.util.List[String], data:java.util.List[Array[Object]], tableIndex:Int, viewAsTable:Boolean,
+@(tableTitle:String, showSearch:Boolean, comment:String, titles:java.util.List[String], data:java.util.List[Array[Object]], tableIndex:Int, viewAsTable:Boolean,
         searchTitles:java.util.List[String], searchFields:java.util.List[String], searchValues:java.util.List[String],
         fullTextSearchValue:String, inside:Boolean)
 @import views.widgets.ResourceLink
@@ -40,6 +40,10 @@
         </div>
 
         <br>
+    }
+
+    @if(comment != null) {
+        @Html(comment)
     }
 
     @if(data.size() == 0) {

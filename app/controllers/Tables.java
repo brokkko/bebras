@@ -153,6 +153,7 @@ public class Tables extends Controller {
                                 return ok(view_table.render(
                                         tableDescription.getTitle(),
                                         tableDescription.isShowSearch(),
+                                        tableDescription.getComment(),
                                         table.getTitles(), dataWriter.getList(), tableIndex, tableDescription.isShowAsTable(),
                                         objectsProviderFactory.getTitles(),
                                         objectsProviderFactory.getFields(),
