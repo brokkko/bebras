@@ -21,43 +21,43 @@ public class JSONDeserializer extends Deserializer {
     @Override
     public Integer readInt(String field) {
         JsonNode sub = node.get(field);
-        return sub == null ? null : sub.getIntValue();
+        return sub == null || sub.isNull() ? null : sub.getIntValue();
     }
 
     @Override
     public Long readLong(String field) {
         JsonNode sub = node.get(field);
-        return sub == null ? null : sub.getLongValue();
+        return sub == null || sub.isNull() ? null : sub.getLongValue();
     }
 
     @Override
     public Double readDouble(String field) {
         JsonNode sub = node.get(field);
-        return sub == null ? null : sub.getDoubleValue();
+        return sub == null || sub.isNull() ? null : sub.getDoubleValue();
     }
 
     @Override
     public Boolean readBoolean(String field) {
         JsonNode sub = node.get(field);
-        return sub == null ? null : sub.getBooleanValue();
+        return sub == null || sub.isNull() ? null : sub.getBooleanValue();
     }
 
     @Override
     public String readString(String field) {
         JsonNode sub = node.get(field);
-        return sub == null ? null : sub.getTextValue();
+        return sub == null || sub.isNull() ? null : sub.getTextValue();
     }
 
     @Override
     public Deserializer getDeserializer(String field) {
         ObjectNode subNode = (ObjectNode) node.get(field);
-        return subNode == null ? null : new JSONDeserializer(subNode);
+        return subNode == null || subNode.isNull() ? null : new JSONDeserializer(subNode);
     }
 
     @Override
     public ListDeserializer getListDeserializer(String field) {
         ArrayNode subNode = (ArrayNode) node.get(field);
-        return subNode == null ? null : new JSONListDeserializer(subNode);
+        return subNode == null || subNode.isNull() ? null : new JSONListDeserializer(subNode);
     }
 
     @Override

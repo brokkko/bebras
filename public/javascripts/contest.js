@@ -27,12 +27,13 @@ var submit_answer; //function (problem_id, answer)
 
     var current_page = 0;
     var pages_count;
-    var start_time;
+    var start_time = null;
 
     function page_selector_click() {
         var $this = $(this);
         var clicked_page_index = +$this.find('span.-info').text();
         select_page(clicked_page_index);
+        submit_system_message("page", "" + clicked_page_index);
     }
 
     function animate_substitute($div_to_hide, $div_to_show, complete) {
@@ -108,7 +109,31 @@ var submit_answer; //function (problem_id, answer)
         }
     }
 
+    function ensure_timer_is_going() {
+        if (start_time !== null)
+            return;
+
+        var stored_time = localStorage.getItem(local_storage_key_start_time());
+        var now = new Date().getTime();
+
+        if (stored_time === null) {
+            var real_start_time = now - contest_info.passed;
+            stored_time = contest_info.passed == 0 ? now : real_start_time;
+            localStorage.setItem(local_storage_key_start_time(), stored_time);
+            submit_system_message("start_time", "" + now);
+        }
+
+        start_time = stored_time;
+
+        if (contest_info.status == "going" && contest_info.duration > 0)
+            timer();
+    }
+
     //page loaded
+
+    $(window).load(function() {
+        ensure_timer_is_going();
+    });
 
     $(function() {
         pages_count = $('.page').length;
@@ -128,13 +153,11 @@ var submit_answer; //function (problem_id, answer)
                 load_list();
                 load_all_user_answers();
 
-                start_time = new Date().getTime() - contest_info.passed;
+                if (contest_info.passed == 0) //if contest just started,
+                    localStorage.removeItem(local_storage_key_start_time());
 
                 if (answers_list.length > 0)
                     send_answers_now();
-
-                if (contest_info.duration > 0)
-                    timer();
 
                 break;
             case "wait":
@@ -310,6 +333,8 @@ var submit_answer; //function (problem_id, answer)
         if (contest_info.status != "going") //should not occur, but anyway
             return;
 
+        ensure_timer_is_going();
+
         var time = new Date().getTime() - start_time;
 
         var duration = contest_info.duration;
@@ -325,6 +350,19 @@ var submit_answer; //function (problem_id, answer)
 
     submit_answer = give_answer;
 
+    function submit_system_message(field, value) {
+        ensure_timer_is_going();
+
+        var time = new Date().getTime() - start_time;
+
+        var ans = {"lt": time, "pn": null, "a": {
+            "f": field,
+            "v": value
+        }};
+
+        push_answer_to_list(ans);
+    }
+
     //local storage
 
     function hasLocalStorage() {
@@ -339,12 +377,17 @@ var submit_answer; //function (problem_id, answer)
         return "stop-" + contest_info.storage_id;
     }
 
+    function local_storage_key_start_time() {
+        return "start-" + contest_info.storage_id;
+    }
+
     //clock
     function timer() {
         var time = new Date().getTime() - start_time;
 
         var millisecondsLeft = contest_info.duration - time;
         if (millisecondsLeft <= 0) {
+//            console.log(new Date().getTime(), start_time, new Date().getTime() - start_time);
             stop_contest(false);
             return;
         }

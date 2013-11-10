@@ -14,10 +14,6 @@ import java.util.*;
  */
 public class Utils {
 
-    public static final SimpleDateFormat createdDateTimeFormat = new SimpleDateFormat("YYYY.MM.dd HH:mm");
-    public static final SimpleDateFormat contestDateFormat = new SimpleDateFormat("d MMMM YYYY, HH:mm");
-    public static final SimpleDateFormat inputDateTimeFormat = new SimpleDateFormat("YYYY-MM-dd, HH:mm");
-
     private static <K, V> Map<K, V> mapifyThisMap(Map<K, V> map, Object[] values) {
         if (values.length % 2 != 0)
             throw new IllegalArgumentException("Number of arguments must be even");
@@ -74,15 +70,15 @@ public class Utils {
     }
 
     public static String formatDateTimeForInput(Date date) {
-        return inputDateTimeFormat.format(date);
+        return new SimpleDateFormat("YYYY-MM-dd, HH:mm").format(date);
     }
 
     public static String formatContestDate(Date date) {
-        return contestDateFormat.format(date);
+        return new SimpleDateFormat("d MMMM YYYY, HH:mm").format(date);
     }
 
     public static String formatObjectCreationTime(Date date) {
-        return createdDateTimeFormat.format(date);
+        return new SimpleDateFormat("YYYY.MM.dd HH:mm").format(date);
     }
 
     public static String scoresWord(int scores) {

@@ -40,7 +40,8 @@ var add_bebras_dyn_problem = (function(){
             problem.setEnabled(true);
 
             var status_dont_know = 'Ответ: не знаю';
-            var status_answer_given = 'Ответ дан';
+            var status_answer_given_right = 'Дан правильный ответ';
+            var status_answer_given_wrong = 'Дан неправильный ответ';
             var status_answer_show = 'Показать ответ участника';
 
             $button_main.hide();
@@ -49,7 +50,12 @@ var add_bebras_dyn_problem = (function(){
                 $status.text(status_dont_know);
                 $button_undo.hide();
             } else {
-                $status.text(status_answer_given);
+                var is_right = info.initial_solution.r > 0;
+                $status.text(is_right ? status_answer_given_right : status_answer_given_wrong);
+                if (is_right)
+                    $status.removeClass('answered'); //TODO make extra class: wrong
+                else
+                    $status.addClass('answered');
                 $button_undo.text(status_answer_show).show();
             }
 

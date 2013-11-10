@@ -5,7 +5,6 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import controllers.actions.Authenticated;
-import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.Event;
@@ -17,7 +16,6 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.Logger;
 import play.cache.Cache;
-import play.cache.Cached;
 import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
@@ -26,12 +24,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 import views.html.event_message;
 import views.html.list_events;
-import views.html.message;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -125,52 +119,80 @@ public class Application extends Controller {
     }
 
     public static Result returnResource(final String file, final String base) throws IOException {
-        String cacheId = "resource-file-" + base + "/" + file;
-        try {
-            return Cache.getOrElse(cacheId, new Callable<Result>() {
-                @Override
-                public Result call() throws Exception {
-                    InputStream resource = Application.class.getResourceAsStream(base + "/" + file);
+        InputStream resource = Application.class.getResourceAsStream(base + "/" + file);
 
-                    if (resource == null)
-                        return notFound();
-
-                    String content = "text/plain";
-                    if (file.endsWith(".html"))
-                        content = "text/html";
-                    else if (file.endsWith(".css"))
-                        content = "text/css";
-                    else if (file.endsWith(".js"))
-                        content = "text/javascript";
-                    else if (file.endsWith(".png"))
-                        content = "image/png";
-
-                    return ok(resource).as(content);
-                }
-            }, 30 * 60); //30 minutes
-        } catch (Exception e) {
-            return internalServerError();
-        }
-    }
-
-//    @Cached(key = "resource-file", duration = 60)
-    public static Result returnFile(String file) throws IOException {
-        file = URLDecoder.decode(file, "UTF-8");
-
-        File resource = ServerConfiguration.getInstance().getResource(file);
-
-        if (!resource.exists())
+        if (resource == null)
             return notFound();
 
-        if (file.endsWith(".png1")) {
-            try {
-                Thread.sleep(1500);
-            } catch (InterruptedException e) {
-                Logger.warn("Failed to sleep :(");
-            }
+        String content = determineContentType(file);
+
+        return ok(resource).as(content);
+    }
+
+    private static String determineContentType(String fileName) {
+        fileName = fileName.toLowerCase();
+
+        String content = "text/plain";
+
+        if (fileName.endsWith(".html"))
+            content = "text/html";
+        else if (fileName.endsWith(".css"))
+            content = "text/css";
+        else if (fileName.endsWith(".js"))
+            content = "text/javascript";
+        else if (fileName.endsWith(".png"))
+            content = "image/png";
+        else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg"))
+            content = "image/jpeg";
+        else if (fileName.endsWith(".doc"))
+            content = "application/msword";
+        else if (fileName.endsWith(".pdf"))
+            content = "application/pdf";
+
+        return content;
+    }
+
+    public static Result returnFile(String file) throws IOException {
+//        String s = "abc";
+//        for (int i = 0; i < 30000000; i++)
+//            s = s.substring(1) + "a";
+
+        String cacheKey = "resource-file-" + file;
+
+        final String decodedFile = URLDecoder.decode(file, "UTF-8");
+
+        byte[] content = null;
+        try {
+            content = Cache.getOrElse(cacheKey, new Callable<byte[]>() {
+                @Override
+                public byte[] call() throws Exception {
+                    File resource = ServerConfiguration.getInstance().getResource(decodedFile);
+                    if (!resource.exists())
+                        return null;
+
+                    //read file to byte array
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[1024 * 8];
+                    try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(resource))) {
+                        int read;
+                        while ((read = in.read(buffer)) > 0)
+                            baos.write(buffer, 0, read);
+                    } catch (Exception e) {
+                        Logger.warn("Failed to read resource " + decodedFile, e);
+                        return null;
+                    }
+
+                    return baos.toByteArray();
+                }
+            }, 30 * 60);  //30 minutes
+        } catch (Exception ignored) {
         }
 
-        return ok(resource);
+        if (content == null)
+            return notFound();
+
+        String contentType = determineContentType(file);
+        return ok(content).as(contentType);
     }
 
     @Authenticated(admin = true)

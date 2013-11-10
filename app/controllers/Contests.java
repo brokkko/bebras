@@ -15,6 +15,7 @@ import models.results.Info;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -176,6 +177,9 @@ public class Contests extends Controller {
             if (!contest.isUnlimitedTime() && submission.getLocalTime() > contest.getDurationInMs())
                 continue;
 
+            if (submission.isSystem())
+                processSystemSubmission(submission);
+
             submissions.add(submission);
         }
 
@@ -187,6 +191,13 @@ public class Contests extends Controller {
             submission.serialize();
 
         return ok();
+    }
+
+    private static void processSystemSubmission(Submission submission) {
+//        if ("page".equals(submission.getSystemField())) {
+//            Logger.info("user moved to page " + submission.getSystemValue());
+//        }
+        //TODO do something
     }
 
     @SuppressWarnings("UnusedParameters")

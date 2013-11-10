@@ -599,7 +599,7 @@ public class User implements SerializableUpdatable {
             Submission s = li.previous();
 
             ObjectId pid = s.getProblemId();
-            if (!problem2lastSubmission.containsKey(pid))
+            if (pid != null && !problem2lastSubmission.containsKey(pid))
                 problem2lastSubmission.put(pid, s);
         }
 

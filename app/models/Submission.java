@@ -7,8 +7,8 @@ import models.newproblems.Problem;
 import models.newproblems.ProblemInfo;
 import models.newserialization.*;
 import models.results.Info;
+import models.results.InfoPattern;
 import org.bson.types.ObjectId;
-import play.Logger;
 
 import java.util.*;
 
@@ -26,6 +26,11 @@ public class Submission implements Serializable {
     public static final String ANSWER_FIELD = "a";
     public static final String PROBLEM_ID_FIELD = "pid";
     public static final String PROBLEM_NUM_FIELD = "pn";
+
+    private static final InfoPattern systemPattern = new InfoPattern(
+            "f", new BasicSerializationType<>(String.class), "field",
+            "v", new BasicSerializationType<>(String.class), "value"
+    );
 
     public static enum TimeType {
         LOCAL,
@@ -102,12 +107,11 @@ public class Submission implements Serializable {
         populateAbsentData(contest, problemNumber);
 
         //load answer
-        Problem problem = ProblemInfo.get(problemId).getProblem();
+        Problem problem = problemId == null ? null : ProblemInfo.get(problemId).getProblem();
 
-        if (problem == null) { //TODO null means DB problems .... what to do ...
-            Logger.error("unknown problem");
-            answer = new Info();
-        } else
+        if (problem == null) //means system message
+            answer = systemPattern.read(deserializer, ANSWER_FIELD);
+        else
             answer = problem.getAnswerPattern().read(deserializer, ANSWER_FIELD);
     }
 
@@ -120,10 +124,7 @@ public class Submission implements Serializable {
         if (serverTime == null)
             serverTime = AuthenticatedAction.getRequestTime();
 
-        if (problemId == null && problemNumber == null)
-            throw new IllegalArgumentException("submission without problem id");
-
-        if (problemId == null) {
+        if (problemId == null && problemNumber != null) {
             int pid = problemNumber;
             ConfiguredProblem problem = contest.getUserProblems(User.current()).get(pid);
 
@@ -138,8 +139,11 @@ public class Submission implements Serializable {
         serializer.write(SERVER_TIME_FIELD, serverTime);
         serializer.write(PROBLEM_ID_FIELD, problemId);
 
-        Problem problem = ProblemInfo.get(problemId).getProblem();
-        problem.getAnswerPattern().write(serializer, ANSWER_FIELD, answer);
+        if (problemId != null) {
+            Problem problem = ProblemInfo.get(problemId).getProblem();
+            problem.getAnswerPattern().write(serializer, ANSWER_FIELD, answer);
+        } else
+            systemPattern.write(serializer, ANSWER_FIELD, answer);
     }
 
     public void serialize() {
@@ -171,6 +175,18 @@ public class Submission implements Serializable {
 
     public Info getAnswer() {
         return answer;
+    }
+
+    public boolean isSystem() {
+        return problemId == null;
+    }
+
+    public String getSystemField() {
+        return (String) answer.get("f");
+    }
+
+    public String getSystemValue() {
+        return (String) answer.get("v");
     }
 
     public static void removeAllAnswersForUser(ObjectId userId, Contest contest) {

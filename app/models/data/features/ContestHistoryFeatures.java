@@ -118,6 +118,8 @@ public class ContestHistoryFeatures implements FeaturesSet<User> {
         StringBuilder result = new StringBuilder();
         for (Submission submission : allSubmissions) {
             ObjectId pid = submission.getProblemId();
+            if (pid == null)
+                continue;
             Info answer = submission.getAnswer();
             Problem problem = ProblemInfo.get(pid).getProblem();
             String strAns = problem == null ? "?" : problem.answerToString(answer); //TODO think what to do with absent problems
