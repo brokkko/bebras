@@ -257,7 +257,12 @@ public class BebrasProblem implements Problem {
 
     // shuffling answers
 
+    private static final int[] idPermutation = {0, 1, 2, 3};
+
     private int[] userAnswerToRealAnswerPermutation(long randSeed) {
+        if (randSeed == 0)
+            return idPermutation;
+
         Random random = new Random(randSeed);
         int[] result = new int[4];
         for (int i = 0; i < 4; i++) {
