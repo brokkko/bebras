@@ -1,12 +1,12 @@
 .content p {
-    line-height: 1.6;
+    line-height: 1.8;
     font-size: 1.2em;
 }
 
 .content select {
     font-size: 1em;
     padding: 0 0.3em;
-    border: 0;
+    border: 1px solid #f3a25f;
     background-color: #fff6c2;
 }
 
