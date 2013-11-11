@@ -113,17 +113,8 @@ var submit_answer; //function (problem_id, answer)
         if (start_time !== null)
             return;
 
-        var stored_time = localStorage.getItem(local_storage_key_start_time());
         var now = new Date().getTime();
-
-        if (stored_time === null) {
-            var real_start_time = now - contest_info.passed;
-            stored_time = contest_info.passed == 0 ? now : real_start_time;
-            localStorage.setItem(local_storage_key_start_time(), stored_time);
-            submit_system_message("start_time", "" + now);
-        }
-
-        start_time = stored_time;
+        start_time = now - contest_info.passed;
 
         if (contest_info.status == "going" && contest_info.duration > 0)
             timer();
@@ -155,6 +146,8 @@ var submit_answer; //function (problem_id, answer)
 
                 if (contest_info.passed == 0) //if contest just started,
                     localStorage.removeItem(local_storage_key_start_time());
+
+                ensure_timer_is_going();
 
                 if (answers_list.length > 0)
                     send_answers_now();

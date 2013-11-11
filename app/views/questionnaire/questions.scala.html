@@ -1,0 +1,19 @@
+@(blocks:java.util.List[plugins.questionnaire.QuestionBlock], filled:Boolean, info:models.results.Info, call:play.mvc.Call)
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List()) { } {
+    @if(filled) {
+        <h1>Спасибо за рассказ о своих впечатлениях о конкурсе!</h1>
+    } else {
+        <h1>Расскажите самому главному бобру свои впечатления от конкурса</h1>
+    }
+    <form action="@call" method="post">
+        <p>
+        @for(block <- blocks) {
+            @block.render(if (block.getName == null) {null} else {info.get(block.getName)})
+        }
+        </p>
+        @if(!filled) {
+            <input value="Рассказать!" type="submit">
+        }
+    </form>
+}
