@@ -92,10 +92,12 @@ public class Menu {
             menu.add(new MenuItem("Администрирование", routes.EventAdministration.admin(eventId)));
 
         List<TableDescription<?>> tables = user.getTables();
-        if (tables.size() == 1)
-            menu.add(new MenuItem(tables.get(0).getTitle(), routes.Tables.showTable(eventId, 0)));
-        else if (tables.size() > 1) {
-            String tablesTitle = user.getRole().getTablesMenuTitle();
+        String tablesTitle = user.getRole().getTablesMenuTitle();
+        if (tables.size() == 1) {
+            if (tablesTitle == null)
+                tablesTitle = tables.get(0).getTitle();
+            menu.add(new MenuItem(tablesTitle, routes.Tables.showTable(eventId, 0)));
+        } else if (tables.size() > 1) {
             if (tablesTitle == null)
                 tablesTitle = "Данные";
             menu.add(new MenuItem(tablesTitle, routes.Tables.tablesList(eventId)));

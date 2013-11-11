@@ -56,8 +56,10 @@ public class RandomProblemBlock extends ProblemBlock {
     public List<ConfiguredProblem> getProblems(Contest contest, User user) {
         List<ConfiguredProblem> problems = getAllPossibleProblems(contest);
 
+        int cnt = Math.min(count, problems.size());
+
         if (takeOnlyFirst) {
-            problems = problems.subList(0, count);
+            problems = problems.subList(0, cnt);
 
             Random random = new Random(user.getContestRandSeed(contest.getId()));
             Collections.shuffle(problems, random);
@@ -69,7 +71,7 @@ public class RandomProblemBlock extends ProblemBlock {
             Random random = new Random(user.getContestRandSeed(contest.getId()) + hash); //does not really matters what to hash
             Collections.shuffle(problems, random);
 
-            problems = problems.subList(0, count);
+            problems = problems.subList(0, cnt);
         }
 
         return problems;

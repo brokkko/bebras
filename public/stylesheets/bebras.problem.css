@@ -32,7 +32,7 @@
     margin: 0 6px -8px 0;
 }
 
-.task-statement, .task-question, .task-answers, .task-explanation {
+.task-statement, .task-question, .task-answers, .task-explanation, .task-informatics {
     font-family: "tahoma", "arial", "verdana", "Lucida Sans", sans-serif;
     line-height: 1.3;
 }

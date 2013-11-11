@@ -30,11 +30,11 @@ public class Global extends GlobalSettings {
         return super.onRequest(request, method);
     }*/
 
-    @Override
+    /*@Override
     public Result onHandlerNotFound(Http.RequestHeader requestHeader) {
         Logger.info("Handler not found: " + requestHeader.method() + " " + requestHeader.host() + requestHeader.uri());
         return super.onHandlerNotFound(requestHeader);
-    }
+    }*/
 
     @Override
     public Result onBadRequest(Http.RequestHeader requestHeader, String error) {
