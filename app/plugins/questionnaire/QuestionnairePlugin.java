@@ -3,7 +3,7 @@ package plugins.questionnaire;
 import models.Contest;
 import models.Event;
 import models.User;
-import models.applications.Application;
+import models.forms.RawForm;
 import models.newserialization.*;
 import models.results.Info;
 import models.results.InfoPattern;
@@ -81,7 +81,11 @@ public class QuestionnairePlugin extends Plugin {
         if (filled == null)
             filled = false;
 
-        return Results.ok(views.html.questionnaire.questions.render(blocks, filled, (Info) info.get("ans"), getCall("go", false, "")));
+        Info answers = (Info) info.get("ans");
+        if (answers == null)
+            answers = new Info();
+
+        return Results.ok(views.html.questionnaire.questions.render(blocks, filled, answers, getCall("go", false, "")));
     }
 
     @Override
@@ -89,18 +93,35 @@ public class QuestionnairePlugin extends Plugin {
         if (!User.currentRole().hasRight(right))
             return Results.forbidden();
 
-        return Results.ok();
+        RawForm form = new RawForm();
+        form.bindFromRequest();
+
+        Info info = new Info();
+        for (String key : getKeys()) {
+            String value = form.get(key);
+            info.put(key, value);
+        }
+
+        Info userValue = new Info("f", true, "ans", info);
+
+        User user = User.current();
+        user.getInfo().put(userField, userValue);
+        user.store();
+
+        return Results.redirect(getCall());
     }
 
     @Override
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
 
-        if (!needAllFinished)
+        if (needAllFinished)
             serializer.write("finish all", needAllFinished);
         serializer.write("right", right);
         if (!"questionnaire".equals(userField))
             serializer.write("user field", userField);
+
+        SerializationTypesRegistry.list(new QuestionBlockSerializationType()).write(serializer, "blocks", blocks);
     }
 
     @Override
@@ -110,6 +131,8 @@ public class QuestionnairePlugin extends Plugin {
         needAllFinished = deserializer.readBoolean("finish all", false);
         right = deserializer.readString("right", "questionnaire");
         userField = deserializer.readString("user field", "questionnaire");
+
+        blocks = SerializationTypesRegistry.list(new QuestionBlockSerializationType()).read(deserializer, "blocks");
 
         initPatterns();
     }

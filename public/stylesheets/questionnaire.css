@@ -1,0 +1,15 @@
+.content p {
+    line-height: 1.6;
+    font-size: 1.2em;
+}
+
+.content select {
+    font-size: 1em;
+    padding: 0 0.3em;
+    border: 0;
+    background-color: #fceaa4;
+}
+
+.content .link-button {
+    font-size: 1.2em;
+}

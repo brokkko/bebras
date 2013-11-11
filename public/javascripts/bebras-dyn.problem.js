@@ -22,10 +22,10 @@ var add_bebras_dyn_problem = (function(){
     }
 
     function update_controls($problem) {
-        var giveAnswer = 'Дать ответ';
-        var undoAnswer = 'Отменить ответ';
+        var giveAnswer = 'Сохранить ответ';
+        var undoAnswer = 'Изменить ответ';
         var resetAnswer = 'Сбросить решение';
-        var status0 = 'Ответ не указан';
+        var status0 = 'Не забудьте сохранить ответ';
         var status1 = 'Ответ сохранен';
 
         var $status = $problem.find('.bebras-dyn-status');

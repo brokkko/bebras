@@ -2,6 +2,7 @@ package plugins;
 
 import models.newserialization.SerializableTreeSerializationType;
 import plugins.bebraspdf.BebrasPDFs;
+import plugins.questionnaire.QuestionnairePlugin;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +19,7 @@ public class PluginSerializationType extends SerializableTreeSerializationType<P
         registerClass("link", LinkPlugin.class);
         registerClass("flags", EventFlagsPlugin.class);
         registerClass("bebras pdf", BebrasPDFs.class);
+        registerClass("questionnaire", QuestionnairePlugin.class);
     }
 
 }

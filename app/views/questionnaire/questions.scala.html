@@ -1,10 +1,11 @@
 @(blocks:java.util.List[plugins.questionnaire.QuestionBlock], filled:Boolean, info:models.results.Info, call:play.mvc.Call)
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List()) { } {
+@import views.widgets.ResourceLink
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("questionnaire.css"))) { } {
     @if(filled) {
-        <h1>Спасибо за рассказ о своих впечатлениях о конкурсе!</h1>
+        <h1>Спасибо, что поделились впечатлениями о конкурсе!</h1>
     } else {
-        <h1>Расскажите самому главному бобру свои впечатления от конкурса</h1>
+        <h1>Поделитесь с самым главном бобром своими впечатлениями от конкурса</h1>
     }
     <form action="@call" method="post">
         <p>
@@ -13,7 +14,7 @@
         }
         </p>
         @if(!filled) {
-            <input value="Рассказать!" type="submit">
+            <input value="Рассказать!" type="submit" class='link-button'>
         }
     </form>
 }
