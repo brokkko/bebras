@@ -12,6 +12,7 @@
 
 .content .link-button {
     font-size: 1.2em;
+    margin-top: -1em;
 }
 
 .content select option.disabled {

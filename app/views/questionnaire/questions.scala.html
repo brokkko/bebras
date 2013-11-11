@@ -13,6 +13,10 @@
             @block.render(if (block.getName == null) {null} else {info.get(block.getName)})
         }
         </p>
-            <input value="@if(filled){Исправить рассказ!} else {Рассказать!}" type="submit" class='link-button'>
+
+        @if(filled) {
+            <p class="warning">Спасибо! Ваш рассказ сохранён. Но, если хотите, можете его исправить.</p>
+        }
+        <input value="@if(filled){Сохранить рассказ} else {Рассказать!}" type="submit" class='link-button'>
     </form>
 }
