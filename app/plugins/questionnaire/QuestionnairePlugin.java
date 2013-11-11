@@ -97,12 +97,16 @@ public class QuestionnairePlugin extends Plugin {
         form.bindFromRequest();
 
         Info info = new Info();
+        boolean allEmpty = true;
         for (String key : getKeys()) {
             String value = form.get(key);
             info.put(key, value);
+
+            if (value != null && !value.equals(""))
+                allEmpty = false;
         }
 
-        Info userValue = new Info("f", true, "ans", info);
+        Info userValue = new Info("f", !allEmpty, "ans", info);
 
         User user = User.current();
         user.getInfo().put(userField, userValue);

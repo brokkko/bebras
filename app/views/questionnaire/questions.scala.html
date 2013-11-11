@@ -13,8 +13,6 @@
             @block.render(if (block.getName == null) {null} else {info.get(block.getName)})
         }
         </p>
-        @if(!filled) {
-            <input value="Рассказать!" type="submit" class='link-button'>
-        }
+            <input value="@if(filled){Исправить рассказ!} else {Рассказать!}" type="submit" class='link-button'>
     </form>
 }
