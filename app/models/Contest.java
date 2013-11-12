@@ -11,7 +11,6 @@ import models.newproblems.newproblemblock.ProblemBlock;
 import models.newproblems.newproblemblock.ProblemBlockFactory;
 import models.newserialization.*;
 import models.newproblems.ConfiguredProblem;
-import models.newproblems.Problem;
 import models.results.CombinedTranslator;
 import models.results.EmptyTranslator;
 import models.results.InfoPattern;
@@ -361,7 +360,7 @@ public class Contest {
         DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
 
         String sd = "_contests." + id + ".sd";
-        query.put(sd, new BasicDBObject(new BasicDBObject("$exists", true)));
+        query.put(sd, new BasicDBObject("$exists", true));
         query.put(sd, new BasicDBObject("$ne", null));
 
         return MongoConnection.getUsersCollection().count(query);

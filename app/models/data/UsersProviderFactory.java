@@ -26,6 +26,7 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
     private String role;
     private boolean loadEventResults;
     private String sortField;
+    private boolean onlySubUsers;
     //TODO load results for separate contests
 
     @Override
@@ -37,7 +38,7 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
         if (role != null)
             query.put(User.FIELD_USER_ROLE, role);
 
-        if (!currentUser.hasEventAdminRight())
+        if (!currentUser.hasEventAdminRight() && onlySubUsers)
             query.put(User.FIELD_REGISTERED_BY, currentUser.getId());
 
         for (int i = 0; i < searchFields.size(); i++) {
@@ -87,6 +88,7 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
         serializer.write("role", role);
         serializer.write("load event results", loadEventResults);
         serializer.write("sort", sortField);
+        serializer.write("only subusers", onlySubUsers);
     }
 
     @Override
@@ -94,5 +96,6 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
         role = deserializer.readString("role");
         loadEventResults = deserializer.readBoolean("load event results", false);
         sortField = deserializer.readString("sort");
+        onlySubUsers = deserializer.readBoolean("only subusers", true);
     }
 }
