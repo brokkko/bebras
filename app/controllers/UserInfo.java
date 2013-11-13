@@ -6,10 +6,13 @@ import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.User;
+import models.newserialization.BasicSerializationType;
 import models.newserialization.FormDeserializer;
 import models.newserialization.FormSerializer;
 import models.forms.InputForm;
 import models.forms.RawForm;
+import models.newserialization.SerializationType;
+import models.results.InfoPattern;
 import org.bson.types.ObjectId;
 import play.mvc.Controller;
 
@@ -107,6 +110,33 @@ public class UserInfo extends Controller {
 
         query.put("event_id", eventId); //for any case, ensure not to delete a user from another event
         MongoConnection.getUsersCollection().remove(query);
+        return redirect(returnTo);
+    }
+
+    //TODO generalize to changing of any field
+    //TODO generalize this user actions. This, for example, has some common code with remove User
+    public static Result swapFlag(String eventId, String userIdString, String flag) {
+        RawForm form = new RawForm();
+        form.bindFromRequest();
+        String returnTo = form.get("-return-to");
+
+        ObjectId userId = new ObjectId(userIdString);
+        User user = User.getInstance("_id", userId);
+
+        InfoPattern infoPattern = user.getRole().getUserInfoPattern();
+        SerializationType flagType = infoPattern.getType(flag);
+        if (!(flagType instanceof BasicSerializationType) || !((BasicSerializationType) flagType).getClassName().equals("java.lang.String"))
+            return badRequest();
+
+        //TODO test admin rights
+
+        if (!user.getEvent().getId().equals(eventId))
+            return badRequest();
+
+        String currentValue = (String) user.getInfo().get(flag);
+        user.getInfo().put(flag, currentValue == null ? "yes" : null);
+        user.store();
+
         return redirect(returnTo);
     }
 

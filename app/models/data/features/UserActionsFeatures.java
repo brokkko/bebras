@@ -31,6 +31,20 @@ public class UserActionsFeatures extends FunctionFeaturesSet<User> {
         if (feature == null)
             feature = new WrappedFeatureValue(null, "-");
 
+        if (function.startsWith("swap-flag-")) {
+            String flag = function.substring("swap-flag-".length());
+            return new WrappedFeatureValue(
+                    feature,
+                    views.html.htmlfeatures.action.render(
+                            "swap-flag-for-" + userId,
+                            "Изменить флаг " + flag + " для пользователя",
+                            controllers.routes.UserInfo.swapFlag(context.getEvent().getId(), userId.toString(), flag),
+                            context.getCurrentCall(),
+                            String.valueOf(feature)
+                    )
+            );
+        }
+
         switch (function) {
             case "view":
                 return new WrappedFeatureValue(

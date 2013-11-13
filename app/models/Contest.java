@@ -172,7 +172,7 @@ public class Contest {
         if (rights.isEmpty())
             return true;
 
-        //user should have all the specified rights
+        //user should have any of the specified rights
         for (String right : rights)
             if (user.hasRight(right))
                 return true;

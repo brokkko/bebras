@@ -830,13 +830,20 @@ public class User implements SerializableUpdatable {
         int tildePos = right.indexOf("~");
         if (tildePos >= 0) {
             String virtualRight = right.substring(tildePos + 1);
-            if (!hasVirtualRight(virtualRight))
+            if (!hasVirtualRights(virtualRight.split("~")))
                 return false;
 
             right = right.substring(0, tildePos);
         }
 
         return role.hasRight(right);
+    }
+
+    private boolean hasVirtualRights(String... rights) {
+        for (String right : rights)
+            if (!hasVirtualRight(right))
+                return false;
+        return true;
     }
 
     private boolean hasVirtualRight(String right) {

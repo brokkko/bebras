@@ -62,6 +62,7 @@ POST        /:event/:role/remove_registered                            controlle
 POST        /:event/invalidate_contests_and_event_results              controllers.EventAdministration.doInvalidateContestsAndEventResults(event)
 POST        /:event/load_user_fields                                   controllers.EventAdministration.doLoadUserFields(event)
 POST        /:event/:user/remove_user                                  controllers.UserInfo.removeUser(event, user)
+POST        /:event/:user/:flag/swap_flag                              controllers.UserInfo.swapFlag(event, user, flag)
 
 POST        /:event/:user/su                                           controllers.Application.substituteUser(event, user)
 GET         /:event/su_exit                                            controllers.Application.substituteUserExit(event)
