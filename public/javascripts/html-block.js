@@ -30,9 +30,6 @@ $(function() {
             $contents.addClass('admin');
             $contents.html(html);
 
-            console.log($form);
-            console.log($form.serialize());
-
             $.ajax({
                 type: "POST",
                 url: $form.attr('action'),

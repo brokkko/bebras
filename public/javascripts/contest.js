@@ -276,7 +276,8 @@ var submit_answer; //function (problem_id, answer)
         clear_list();
         sending_timeout_id = null;
         send_fails_count = 0;
-        console.log('sending success');
+        if (console)
+            console.log('sending success');
 
         answer_sending_info_show('ok');
 
@@ -296,7 +297,8 @@ var submit_answer; //function (problem_id, answer)
         undo_timeout();
         var delay = send_delay(send_fails_count);
         sending_timeout_id = setTimeout(send_answers_now, delay);
-        console.log('sending failed, delay for ' + delay);
+        if (console)
+            console.log('sending failed, delay for ' + delay);
 
         answer_sending_info_show('fail');
     }
@@ -380,7 +382,6 @@ var submit_answer; //function (problem_id, answer)
 
         var millisecondsLeft = contest_info.duration - time;
         if (millisecondsLeft <= 0) {
-//            console.log(new Date().getTime(), start_time, new Date().getTime() - start_time);
             stop_contest(false);
             return;
         }

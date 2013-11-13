@@ -76,7 +76,6 @@ var App = function (elementID, _width, _height, _pictures, _places) {
             objects[key] = new Image();
             objects[key].onload = pictureLoaded;
             objects[key].src = pictures[key];
-            console.log('loading picture', objects[key].src);
         }
     };
     var greyClicked = function () {
@@ -111,7 +110,6 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                 object.ref = place;
                 object.is_dragging = false;
                 object.on('dragstart', function () {
-                    console.log("Dragging place #" + this.ref.id);
                     object.is_dragging = true;
                     this.setZIndex(1000);
                     if (this.ref.current) {
@@ -124,7 +122,6 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                     if (!object.is_dragging) //TODO find out why 'dragend' is called several times
                         return;
                     object.is_dragging = false;
-                    console.log('drag end #' + this.ref.id);
                     var minDist = -1;
                     var minPlace = false;
                     var x = this.getX();
@@ -132,7 +129,6 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                     for (var key2 in magnetPlaces) {
                         var magnetPlace = magnetPlaces[key2];
                         if (!magnetPlace.current) {
-                            console.log("Found empty place #" + magnetPlace.id);
                             var dist = Math.sqrt((x - magnetPlace.x) * (x - magnetPlace.x) + (y - magnetPlace.y) * (y - magnetPlace.y));
                             if (dist < minDist || minDist == -1) {
                                 minDist = dist;
@@ -141,11 +137,9 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                         }
                     }
                     if (minDist != -1 && (minDist < this.getWidth() || minDist < this.getHeight())) {
-                        console.log("Found nearest place:" + minPlaceKey);
                         var magnetPlaceId = magnetPlaces[minPlaceKey].id;
                         var dstX = places[magnetPlaceId].x + places[magnetPlaceId].width / 2 - this.getWidth() / 2;
                         var dstY = places[magnetPlaceId].y + places[magnetPlaceId].height / 2 - this.getHeight() / 2;
-                        console.log("dstXm:" + (dstX - places[magnetPlaceId].x) + ";dstYm:" + (dstY - places[magnetPlaceId].y));
                         this.transitionTo({x: dstX, y: dstY, duration: 0.3});
                         magnetPlaces[minPlaceKey].current = this.ref.id;
                         this.ref.current = minPlaceKey;
@@ -153,7 +147,6 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                     else {
                         this.transitionTo({x: this.ref.x, y: this.ref.y, duration: 0.3});
                     }
-                    console.log("It was object with id: " + this.ref.id);
                 });
             }
             if (place.beforeRender) place.beforeRender(object);
@@ -215,7 +208,6 @@ var App = function (elementID, _width, _height, _pictures, _places) {
         loadSolution: function (solution) {
             for (var key in magnetPlaces) {
                 var currentMagnet = magnetPlaces[key];
-                console.log("Clearing place with id:" + currentMagnet.id);
                 if (currentMagnet.current) {
                     places[currentMagnet.current].current = false;
                     places[currentMagnet.current].screenObject.setX(places[currentMagnet.current].x);
