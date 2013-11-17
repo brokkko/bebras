@@ -39,11 +39,15 @@
 
     @Event.current.getHtmlBlock("user_info_down").format
 
-    @if(user.getRegisteredByUser != null/* && user.getRegisteredByUser.getInfo.get("org_name") != null*/) {
-        <div class='info-box'>
-            <p>Зарегистрирован через: @htmlfeatures.user_link(user.getRegisteredBy.toString, Event.currentId, user.getRegisteredByUser.getLogin)</p>
-        </div>
-    }
+    <div class='info-box'>
+        <p>
+            @if(user.getRegisteredByUser != null/* && user.getRegisteredByUser.getInfo.get("org_name") != null*/) {
+                Зарегистрирован через: @htmlfeatures.user_link(user.getRegisteredBy.toString, Event.currentId, user.getRegisteredByUser.getLogin)
+            } else {
+                Зарегистрирован напрямую
+            }
+        </p>
+    </div>
 
     @if(otherUser) {
         <div class='info-box'>
