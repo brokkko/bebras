@@ -1,4 +1,4 @@
-@(eventForm:models.forms.RawForm, cloneForm:models.forms.RawForm)
+@(eventForm:models.forms.RawForm, cloneForm:models.forms.RawForm, copyForm:models.forms.RawForm)
 @import views.widgets.AdminWidget
 @import views.widgets.FormsWidget
 @import models.Event
@@ -48,9 +48,16 @@
 
 
     <div class='info-box@if(cloneForm.hasErrors){ initially-open}'>
-        <h3 class='info-box-cut-shower'>Клонировать событие...</h3>
+        <h3 class='info-box-cut-shower'>Клонировать событие (создание события с аналогичными настройками)...</h3>
         <div class='info-box-cut'>
         @models.Forms.getCloneEventForm.formatExtended(cloneForm, controllers.routes.EventAdministration.doClone(Event.currentId), false, "form.do_add")
+        </div>
+    </div>
+
+    <div class='info-box@if(copyForm.hasErrors){ initially-open}'>
+        <h3 class='info-box-cut-shower'>Копировать событие (создание полной копии события со всеми данными)...</h3>
+        <div class='info-box-cut'>
+        @models.Forms.getCopyEventForm.formatExtended(copyForm, controllers.routes.EventAdministration.doCopy(Event.currentId), false, "form.do_add")
         </div>
     </div>
 

@@ -20,7 +20,7 @@ public class HtmlBlock implements SerializableUpdatable {
     public static HtmlBlock load(String eventId, String id) {
         DBCollection blocksCollection = MongoConnection.getHtmlBlocksCollection();
 
-        BasicDBObject query = new BasicDBObject("_id", id);
+        BasicDBObject query = new BasicDBObject("name", id);
         query.put("event_id", eventId);
 
         DBObject blockObject = blocksCollection.findOne(query);
@@ -71,14 +71,14 @@ public class HtmlBlock implements SerializableUpdatable {
 
     @Override
     public void serialize(Serializer serializer) {
-        serializer.write("_id", id);
         serializer.write("event_id", eventId);
+        serializer.write("name", id);
         serializer.write("html", html);
     }
 
     @Override
     public void update(Deserializer deserializer) {
-        id = deserializer.readString("_id");
+        id = deserializer.readString("name");
         eventId = deserializer.readString("event_id");
         html = deserializer.readString("html", "");
     }

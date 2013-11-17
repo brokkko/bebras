@@ -110,4 +110,20 @@ public class RandomProblemBlock extends ProblemBlock {
         serializer.write("tof", takeOnlyFirst);
         SerializationTypesRegistry.list(ObjectId.class).write(serializer, "pids", pids);
     }
+
+    @Override
+    public void substituteIds(Map<ObjectId, ObjectId> problemOld2New) {
+        List<ObjectId> newPids = new ArrayList<>(pids.size());
+
+        for (ObjectId pid : pids) {
+            ObjectId newPid = problemOld2New.get(pid);
+            if (newPid == null) {
+                Logger.warn("strange problem pid");
+                continue;
+            }
+            newPids.add(newPid);
+        }
+
+        pids = newPids;
+    }
 }

@@ -123,7 +123,6 @@ public class Event {
                 }
             }, 0);
         } catch (Exception e) {
-            Logger.warn("Error while getting event '" + eventId + "'", e);
             return null;
         }
     }
@@ -299,8 +298,11 @@ public class Event {
     }
 
     public File getEventDataFolder() {
-        File folder = new File(Play.application().getFile("data"), getId());
-        //noinspection ResultOfMethodCallIgnored
+        return getEventDataFolder(getId());
+    }
+
+    public static File getEventDataFolder(String eventId) {
+        File folder = new File(Play.application().getFile("data"), eventId);
         folder.mkdirs();
         return folder;
     }

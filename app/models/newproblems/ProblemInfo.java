@@ -26,7 +26,7 @@ public class ProblemInfo {
     public static ProblemInfo get(final ObjectId pid) {
         //try to find problem in cache
         try {
-            return Cache.getOrElse("problem-" + pid, new Callable<ProblemInfo>() {
+            return Cache.getOrElse(getCacheKey(pid), new Callable<ProblemInfo>() {
                 @Override
                 public ProblemInfo call() {
                     DBObject db = MongoConnection.getProblemsCollection().findOne(new BasicDBObject("_id", pid));
@@ -40,6 +40,10 @@ public class ProblemInfo {
             Logger.error("failed to get problem", e);
             return null; //TODO leads to null pointer exception
         }
+    }
+
+    private static String getCacheKey(ObjectId pid) {
+        return "problem-" + pid;
     }
 
     public static ProblemInfo put(Problem problem) {
@@ -83,5 +87,7 @@ public class ProblemInfo {
         SerializationTypesRegistry.PROBLEM.write(newValueSerializer, FIELD_PROBLEM, problem);
 
         MongoConnection.getProblemsCollection().save(newValue);
+
+        Cache.remove(getCacheKey(id));
     }
 }

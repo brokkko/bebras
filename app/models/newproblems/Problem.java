@@ -1,6 +1,5 @@
 package models.newproblems;
 
-import models.User;
 import models.forms.RawForm;
 import models.newserialization.SerializableUpdatable;
 import models.results.Info;

@@ -6,8 +6,10 @@ import models.newproblems.ConfiguredProblem;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
+import org.bson.types.ObjectId;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,4 +53,5 @@ public abstract class ProblemBlock {
         contest.getResultTranslator().getConfigInfoPattern().write(configuration, serializer.getSerializer("conf"));
     }
 
+    public abstract void substituteIds(Map<ObjectId, ObjectId> problemOld2New);
 }

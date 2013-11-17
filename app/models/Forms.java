@@ -410,6 +410,39 @@ public class Forms {
             )
     );
 
+    @SuppressWarnings("unchecked") //now this is the same as cloneEventForm
+    private static InputForm copyEventForm = InputForm.deserialize(
+            new MemoryDeserializer(
+                    "fields",
+                    Utils.listify(
+                            Utils.mapify(
+                                    "name", "new_event_id",
+                                    "view", Utils.mapify(
+                                    "type", "string",
+                                    "title", "Идентификатор нового события",
+                                    "placeholder", "Введите идентификатор нового события"
+                            ),
+                                    "required", true,
+                                    "validators", Utils.listify(
+                                    Utils.mapify(
+                                            "type", "event id",
+                                            "message", "На сервере уже зарегистрировано событие с этим идентификатором"
+                                    ),
+                                    Utils.mapify(
+                                            "type", "pattern",
+                                            "pattern", "[\\-a-zA-Z0-9]+",
+                                            "message", "Идентификатор может содержать только символы a-z, A-Z, 0-9 и тире"
+                                    )
+                            )
+                            )
+                    ),
+                    "validators",
+                    Utils.listify(
+
+                    )
+            )
+    );
+
     @SuppressWarnings("unchecked")
     private static InputForm createProblemForm = InputForm.deserialize(
             new MemoryDeserializer(
@@ -512,6 +545,10 @@ public class Forms {
 
     public static InputForm getCloneEventForm() {
         return cloneEventForm;
+    }
+
+    public static InputForm getCopyEventForm() {
+        return copyEventForm;
     }
 
     public static InputForm getCreateProblemForm() {

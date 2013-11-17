@@ -146,6 +146,8 @@ public class Application extends Controller {
             content = "image/jpeg";
         else if (fileName.endsWith(".doc"))
             content = "application/msword";
+        else if (fileName.endsWith(".csv"))
+            content = "text/csv";
         else if (fileName.endsWith(".pdf"))
             content = "application/pdf";
 

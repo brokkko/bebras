@@ -198,11 +198,15 @@ public class Contest {
         return problemBlocks;
     }
 
-    public DBCollection getCollection() {
-        if (event.getId().equals("bbtc"))
-            return MongoConnection.getCollection(CONTEST_COLLECTION_NAME_PREFIX + event.getId() + "-" + id);
+    public static DBCollection getCollection(String eventId, String contestId) {
+        if (eventId.equals("bbtc"))
+            return MongoConnection.getCollection(CONTEST_COLLECTION_NAME_PREFIX + eventId + "-" + contestId);
         else
-            return MongoConnection.getCollection(CONTEST_COLLECTION_NAME_PREFIX + event.getId() + "_" + id);
+            return MongoConnection.getCollection(CONTEST_COLLECTION_NAME_PREFIX + eventId + "_" + contestId);
+    }
+
+    public DBCollection getCollection() {
+        return getCollection(event.getId(), id);
     }
 
     public boolean isUnlimitedTime() {
@@ -313,6 +317,10 @@ public class Contest {
 
     public String getProblemName(ObjectId pid) {
         return pid == null ? null : pid2name.get(pid.toString());
+    }
+
+    public void clearRegisteredProblemNames() {
+        pid2name.clear();
     }
 
     public void registerProblemName(ObjectId pid, String name) {

@@ -102,6 +102,7 @@ POST        /wymupload                                                 controlle
 GET         /list                                                      controllers.Application.listEvents()
 GET         /:index/migrate                                            controllers.Application.migrateByIndex(index:Integer)
 POST        /:event/clone_event                                        controllers.EventAdministration.doClone(event)
+POST        /:event/copy_event                                         controllers.EventAdministration.doCopy(event)
 POST        /:event/remove_event                                       controllers.EventAdministration.doRemoveEvent(event)
 GET         /:event/announcements                                      controllers.Announcements.prepareAnnouncement(event)
 POST        /:event/announcements                                      controllers.Announcements.doPrepareAnnouncement(event)

@@ -1,10 +1,7 @@
 package controllers;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
@@ -12,8 +9,11 @@ import models.*;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.forms.validators.FileListValidator;
+import models.newproblems.ConfiguredProblem;
+import models.newproblems.ProblemInfo;
 import models.newproblems.ProblemLink;
 import models.newproblems.bbtc.BBTCProblemsLoader;
+import models.newproblems.newproblemblock.ProblemBlock;
 import models.newserialization.FormDeserializer;
 import models.newserialization.FormSerializer;
 import models.newserialization.JSONDeserializer;
@@ -41,6 +41,9 @@ import views.htmlblocks.HtmlBlock;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -119,7 +122,7 @@ public class EventAdministration extends Controller {
             //do nothing
         }
 
-        return ok(event_admin.render(serializer.getRawForm(), new RawForm()));
+        return ok(event_admin.render(serializer.getRawForm(), new RawForm(), new RawForm()));
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -128,7 +131,7 @@ public class EventAdministration extends Controller {
         RawForm rawForm = deserializer.getRawForm();
 
         if (rawForm.hasErrors())
-            return ok(event_admin.render(rawForm, new RawForm()));
+            return ok(event_admin.render(rawForm, new RawForm(), new RawForm()));
 
         Event event = Event.current();
         event.updateFromEventChangeForm(deserializer);
@@ -189,7 +192,7 @@ public class EventAdministration extends Controller {
         FormDeserializer deserializer = new FormDeserializer(Forms.getCloneEventForm());
         RawForm form = deserializer.getRawForm();
         if (form.hasErrors())
-            return ok(views.html.event_admin.render(new RawForm(), form));
+            return ok(views.html.event_admin.render(new RawForm(), form, new RawForm()));
 
         String newEventId = form.get("new_event_id");
 
@@ -222,14 +225,189 @@ public class EventAdministration extends Controller {
 
         Event.invalidateCache(newEventId);
 
-//        return ok(views.html.event_admin.render(new RawForm(), new RawForm()));
         return redirect(routes.Registration.login(newEventId));
     }
 
+    public static Result doCopy(final String eventId) {
+        FormDeserializer deserializer = new FormDeserializer(Forms.getCopyEventForm());
+        RawForm form = deserializer.getRawForm();
+        if (form.hasErrors())
+            return ok(views.html.event_admin.render(new RawForm(), new RawForm(), form));
+
+        final String newEventId = form.get("new_event_id");
+        final Event event = Event.current();
+
+        F.Promise<Boolean> promiseOfVoid = Akka.future(
+                new Callable<Boolean>() {
+                    public Boolean call() throws Exception {
+                        //do copy event object
+                        copyEvent(event, newEventId);
+                        return true;
+                    }
+                }
+        );
+
+        return async(
+                promiseOfVoid.map(
+                        new F.Function<Boolean, Result>() {
+                            public Result apply(Boolean result) {
+                                return redirect(controllers.routes.Registration.login(newEventId));
+                            }
+                        }
+                )
+        );
+    }
+
+    private static void copyEvent(Event event, String newEventId) {
+        String eventId = event.getId();
+
+        //copy folder
+        try {
+            File newEventFolder = Event.getEventDataFolder(newEventId);
+            Utils.deleteFileOrFolder(newEventFolder);
+            Utils.copyFolder(Event.getEventDataFolder(eventId).toPath(), newEventFolder.toPath());
+        } catch (Exception e) {
+            Logger.error("Failed to copy event folder while copy", e);
+        }
+
+        //copy event object
+
+        DBCollection eventsCollection = MongoConnection.getEventsCollection();
+        DBObject eventObject = eventsCollection.findOne(new BasicDBObject("_id", eventId));
+        eventObject.put("_id", newEventId);
+        eventsCollection.save(eventObject);
+
+        Event newEvent = Event.getInstance(newEventId);
+
+        //recreate users
+
+        Map<ObjectId, ObjectId> userOld2new = new HashMap<>();
+        DBCollection usersCollection = MongoConnection.getUsersCollection();
+        DBCursor allUsers = usersCollection.find(new BasicDBObject(User.FIELD_EVENT, eventId));
+        while (allUsers.hasNext()) {
+            //copy user
+            DBObject user = allUsers.next();
+            ObjectId oldId = (ObjectId) user.get("_id");
+            ObjectId newId = new ObjectId();
+            userOld2new.put(oldId, newId);
+            user.put("_id", newId);
+            user.put(User.FIELD_EVENT, newEventId);
+            usersCollection.insert(user);
+        }
+
+        //now copy users' activity
+        DBCollection activityCollections = MongoConnection.getActivityCollection();
+        DBCursor allActivity = activityCollections.find();
+        while (allActivity.hasNext()) {
+            DBObject entry = allActivity.next();
+            Object u = entry.get("u");
+            ObjectId oldUser;
+            if (u instanceof String)
+                oldUser = new ObjectId((String) u);
+            else
+                oldUser = (ObjectId) u;
+            ObjectId newUser = userOld2new.get(oldUser);
+            if (newUser == null)
+                continue;
+
+            entry.put("_id", new ObjectId());
+            entry.put("u", newUser);
+
+            activityCollections.insert(entry);
+        }
+
+        //now let's copy html blocks
+        DBCollection htmlCollections = MongoConnection.getHtmlBlocksCollection();
+        DBCursor allHtmls = htmlCollections.find(new BasicDBObject("event_id", eventId));
+        while (allHtmls.hasNext()) {
+            DBObject html = allHtmls.next();
+            html.put("_id", new ObjectId());
+            html.put("event_id", newEventId);
+
+            htmlCollections.insert(html);
+        }
+
+        //finally, let's do something with problems
+
+        //process all contests
+        //find all problems that are linked from contests
+        Map<ObjectId, ObjectId> problemOld2New = new HashMap<>();
+
+        for (Contest contest : event.getContests()) {
+            String contestId = contest.getId();
+            Contest newContest = newEvent.getContestById(contestId);
+
+            newContest.clearRegisteredProblemNames();
+
+            List<ConfiguredProblem> allPossibleProblems = contest.getAllPossibleProblems();
+            for (ConfiguredProblem possibleProblem : allPossibleProblems) {
+                ObjectId oldPid = possibleProblem.getProblemId();
+                ObjectId newPid = new ObjectId();
+                new ProblemInfo(newPid, possibleProblem.getProblem()).store();
+                problemOld2New.put(oldPid, newPid);
+
+                newContest.registerProblemName(newPid, contest.getProblemName(oldPid));
+            }
+
+            for (ProblemBlock block : newContest.getProblemBlocks())
+                block.substituteIds(problemOld2New);
+
+            //copy contest
+            DBCollection oldContestCollection = contest.getCollection();
+            DBCollection newContestCollection = newContest.getCollection();
+            newContestCollection.remove(new BasicDBObject()); //remove all
+
+            DBCursor allSubmissions = oldContestCollection.find();
+            while (allSubmissions.hasNext()) {
+                DBObject submission = allSubmissions.next();
+
+                ObjectId oldUser = (ObjectId) submission.get("u");
+                ObjectId newUser = userOld2new.get(oldUser);
+                if (newUser == null)
+                    return;
+
+                submission.put("_id", new ObjectId());
+                submission.put("u", newUser);
+                ObjectId oldPid = (ObjectId) submission.get("pid");
+                if (oldPid != null) {
+                    ObjectId newPid = problemOld2New.get(oldPid);
+                    if (newPid == null) {
+                        Logger.warn("Strange pid " + oldPid);
+                        continue;
+                    }
+                    submission.put("pid", newPid);
+                }
+                newContestCollection.insert(submission);
+            }
+        }
+
+        //copy links
+        DBCollection problemDirsCollection = MongoConnection.getProblemDirsCollection();
+        DBCursor allLinks = problemDirsCollection.find(new BasicDBObject("link", new BasicDBObject("$regex", "^" + eventId + "/")));
+        while (allLinks.hasNext()) {
+            DBObject linkObject = allLinks.next();
+            linkObject.put("_id", new ObjectId());
+            String link = (String) linkObject.get("link");
+            link = newEventId + "/" + link.substring(eventId.length() + 1 /* for slash */);
+
+            ObjectId oldPid = (ObjectId) linkObject.get("pid");
+            ObjectId newPid = oldPid == null ? null : problemOld2New.get(oldPid);
+            ProblemLink newLink = new ProblemLink(link);
+            if (newPid != null)
+                newLink.setProblemId(newPid);
+            else
+                newLink.mkdirs();
+        }
+
+        newEvent.store();
+    }
+
     public static Result doRemoveEvent(String eventId) {
-        //TODO remove corresponding collections
+        //TODO remove corresponding collections (of contests)
+        //TODO remove cached users
 
         MongoConnection.getEventsCollection().remove(new BasicDBObject("_id", eventId));
+        MongoConnection.getUsersCollection().remove(new BasicDBObject(User.FIELD_EVENT, eventId));
 
         Event.invalidateCache(eventId);
 

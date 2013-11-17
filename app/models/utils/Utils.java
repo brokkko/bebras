@@ -3,6 +3,11 @@ package models.utils;
 import controllers.Application;
 
 import java.io.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -224,5 +229,37 @@ public class Utils {
 
             return out.toByteArray();
         }
+    }
+
+    public static void copyFolder(final Path sourcePath, final Path targetPath) throws IOException {
+        Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(final Path dir,
+                                                     final BasicFileAttributes attrs) throws IOException {
+                Files.createDirectories(targetPath.resolve(sourcePath.relativize(dir)));
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+                Files.copy(file, targetPath.resolve(sourcePath.relativize(file)));
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    public static void deleteFileOrFolder(File f) throws IOException {
+        if (!f.exists())
+            return;
+
+        if (f.isDirectory()) {
+            File[] files = f.listFiles();
+            if (files != null)
+                for (File c : files)
+                    deleteFileOrFolder(c);
+        }
+
+        if (!f.delete())
+            throw new FileNotFoundException("Failed to delete file: " + f);
     }
 }

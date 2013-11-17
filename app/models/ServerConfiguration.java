@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
 public class ServerConfiguration {
 
     private static final String CACHE_KEY = "server-configuration";
-    public static final int CURRENT_DB_VERSION = 9;
+    public static final int CURRENT_DB_VERSION = 10;
 
     public static ServerConfiguration getInstance() {
         try {
