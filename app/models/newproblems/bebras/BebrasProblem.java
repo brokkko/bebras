@@ -9,6 +9,7 @@ import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
+import play.Logger;
 import play.api.templates.Html;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
@@ -157,6 +158,12 @@ public class BebrasProblem implements Problem {
             return "-";
 
         Integer ansInt = (Integer) answer.get("a");
+
+        if (ansInt == null) {
+            Logger.info("? found");
+            return "?";
+        }
+
         if (ansInt < 0)
             return ".";
 

@@ -170,12 +170,15 @@ BBTC всегда BBTC независимо от названия события
 
 
 1-2
-Дома 3
-Бусы 3
-Пчёла 6
-Мосты 12
+Дома 3       problem /bebras13/2013-SK-houses-dyn
+Бусы 3       problem /bebras13/2013-SK-05-necklace-dyn
+Пчёла 6      problem /bebras13/2013-SK-06-Bee-dyn
+Мосты 9      problem /bebras13/2013-RU-bridge-dyn
 
 3-4
-Бусы 6
-Пчёла 6
-Мосты 12
+Бусы 6       problem /bebras13/2013-SK-05-necklace-dyn
+Пчёла 6      problem /bebras13/2013-SK-06-Bee-dyn
+Мосты 12     problem /bebras13/2013-RU-bridge-dyn
+
+all
+             problem /bebras13/india-dyn
