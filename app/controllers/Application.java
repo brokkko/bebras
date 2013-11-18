@@ -329,4 +329,16 @@ public class Application extends Controller {
 
         return redirect(routes.Application.enter(eventId));
     }
+
+    //regime = 'add' or 'remove'
+    public static Result setupIpTracing(String ip, String regime) {
+        boolean addIp = "add".equals(regime);
+        ServerConfiguration config = ServerConfiguration.getInstance();
+        if (addIp)
+            config.addTraceIp(ip);
+        else
+            config.removeTraceIp(ip);
+
+        return ok("ip status changed");
+    }
 }

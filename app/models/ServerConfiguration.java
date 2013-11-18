@@ -4,10 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import models.newserialization.Deserializer;
-import models.newserialization.MongoDeserializer;
-import models.newserialization.MongoSerializer;
-import models.newserialization.Serializer;
+import models.newserialization.*;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
@@ -59,6 +56,7 @@ public class ServerConfiguration {
 
     private int dbVersion = 1;
     private boolean maintenanceMode = false;
+    private List<String> traceIPs = new ArrayList<>();
 
     private final SecureRandom random = new SecureRandom();
     private final char[] randomCharacters;
@@ -106,12 +104,14 @@ public class ServerConfiguration {
     private void update(Deserializer deserializer) {
         dbVersion = deserializer.readInt("db version", 1);
         maintenanceMode = deserializer.readBoolean("maintenance", false);
+        traceIPs = SerializationTypesRegistry.list(String.class).read(deserializer, "trace ips");
     }
 
     private void serialize(Serializer serializer) {
         serializer.write("_id", 42);
         serializer.write("db version", dbVersion);
         serializer.write("maintenance", maintenanceMode);
+        SerializationTypesRegistry.list(String.class).write(serializer, "trace ips", traceIPs);
     }
 
     private void store() {
@@ -134,10 +134,6 @@ public class ServerConfiguration {
 
         String destFileName = ServerConfiguration.getInstance().getRandomString(20) + System.currentTimeMillis() + extension;
         return new File(ServerConfiguration.getInstance().getResourcesFolder(), destFileName);
-    }
-
-    public long getRandomLong() {
-        return random.nextLong();
     }
 
     public String getRandomString(int len) {
@@ -179,5 +175,31 @@ public class ServerConfiguration {
 
     public String getSkin() {
         return Event.currentId().startsWith("bebras") ? "bebras" : "bbtc"; //TODO generalize //TODO currentId may lead to exception
+    }
+
+    public boolean isIpTraced(String ip) {
+        if (ip == null)
+            return false;
+
+        for (String traceIP : traceIPs)
+            if (ip.contains(traceIP))
+                return true;
+
+        return false;
+    }
+
+    public void addTraceIp(String ip) {
+        if (traceIPs.contains(ip))
+            return;
+        traceIPs.add(ip);
+        store();
+    }
+
+    public void removeTraceIp(String ip) {
+        int i = traceIPs.indexOf(ip);
+        if (i < 0)
+            return;
+        traceIPs.remove(i);
+        store();
     }
 }

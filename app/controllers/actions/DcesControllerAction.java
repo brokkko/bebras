@@ -17,7 +17,7 @@ import views.html.error;
 public class DcesControllerAction extends Action<DcesController> {
 
     private static final String[] NOT_EVENT_ACTION = new String[] {
-            "/~res/", "/assets/", "/~global/", "/~dat/", "/bebras_training/" //TODO remove last
+            "/~", "/~res/", "/assets/", "/~global/", "/~dat/", "/bebras_training/" //TODO remove last
     };
 
     private boolean isEventAction() {

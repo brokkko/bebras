@@ -109,6 +109,7 @@ POST        /:event/announcements                                      controlle
 GET         /:event/:announcement/fix_announcement                     controllers.Announcements.fixAnnouncement(event, announcement)
 GET         /:event/:announcement/send_announcement                    controllers.Announcements.sendAnnouncement(event, announcement)
 POST        /:event/:announcement/send_announcement                    controllers.Announcements.doSendAnnouncement(event, announcement)
+GET         /~trace_ip/:regime/:ip                                     controllers.Application.setupIpTracing(ip, regime)
 
 #trash
 POST        /:event/upload_kenguru_codes                               controllers.EventAdministration.uploadKenguruSchoolCodes(event)

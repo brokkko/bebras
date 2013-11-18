@@ -1,12 +1,16 @@
 import models.Announcement;
+import models.ServerConfiguration;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
+import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,19 +20,35 @@ import java.util.Arrays;
  */
 public class Global extends GlobalSettings {
 
-    //TODO schedule backup http://stackoverflow.com/questions/9339714/where-is-the-job-support-in-play-2-0
-
     @Override
     public void onStart(Application app) {
         Logger.info("Application started");
         Announcement.scheduleOneSending(1);
     }
 
-    /*@Override
+    @Override
     public Action onRequest(Http.Request request, Method method) {
-        Logger.info("Request: " + request + " -> " + request.remoteAddress() + " " + Arrays.toString(request.headers().get("User-Agent")));
+        String ip = request.remoteAddress();
+        if (ServerConfiguration.getInstance().isIpTraced(ip)) {
+            StringBuilder info = new StringBuilder();
+
+            info.append("Request from traced ip ").append(request.remoteAddress()).append("\n");
+            info.append(new Date().toString()).append("\n");
+            info.append(request.method()).append(" ").append(request.host()).append(" ").append(request.uri());
+            info.append("\n");
+            Map<String,String[]> headers = request.headers();
+            for (Map.Entry<String, String[]> headerEntry : headers.entrySet()) {
+                String header = headerEntry.getKey();
+                for (String value : headerEntry.getValue())
+                    info.append(header).append(": ").append(value).append("\n");
+            }
+
+//            info.append("*Cookies*\n");
+
+            Logger.info(info.toString());
+        }
         return super.onRequest(request, method);
-    }*/
+    }
 
     /*@Override
     public Result onHandlerNotFound(Http.RequestHeader requestHeader) {
