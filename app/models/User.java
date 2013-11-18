@@ -798,6 +798,11 @@ public class User implements SerializableUpdatable {
         return finalResults;
     }
 
+    public void evaluateAllContestsResults() {
+        for (Contest contest : event.getContests())
+            getContestResults(contest);
+    }
+
     public Info getEventResults() {
         if (eventResults != null)
             return eventResults;
@@ -919,7 +924,6 @@ public class User implements SerializableUpdatable {
         usersCollection.remove(remove);
         Cache.remove(getLoginCacheKey(event.getId(), login));
     }
-
 }
 
 

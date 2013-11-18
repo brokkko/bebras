@@ -31,8 +31,10 @@ public class UsersProvider extends WrapperObjectProvider<DBObject, User> {
         User user = new User();
         user.update(deserializer);
 
-        if (loadEventResults)
+        if (loadEventResults) {
+            user.evaluateAllContestsResults();
             user.getEventResults();
+        }
 
         return user;
     }
