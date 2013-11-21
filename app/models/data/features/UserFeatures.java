@@ -23,20 +23,22 @@ public class UserFeatures implements FeaturesSet<User> {
     private User user;
     private RawForm rawForm;
     private ObjectId id;
-    private ObjectId regBy;
 
-    private Map<ObjectId, User> regBy2user = new HashMap<>();
+    private Map<ObjectId, RawForm> user2form = new HashMap<>();
 
     @Override
     public void load(User user) throws Exception {
-        FlatSerializer serializer = new FlatSerializer(".");
-        user.serialize(serializer);
-        rawForm = serializer.getRawForm();
+        rawForm = convertUserToForm(user);
 
         id = user.getId();
-        regBy = user.getRegisteredBy();
 
         this.user = user;
+    }
+
+    private RawForm convertUserToForm(User user) {
+        FlatSerializer serializer = new FlatSerializer(".");
+        user.serialize(serializer);
+        return serializer.getRawForm();
     }
 
     @Override
@@ -44,8 +46,25 @@ public class UserFeatures implements FeaturesSet<User> {
         if (rawForm == null)
             throw new IllegalStateException("Object not loaded");
 
+        RawForm effectiveRawForm = rawForm;
+        User effectiveUser = user;
+
+        while (featureName.startsWith("~reg_by.")) {
+            featureName = featureName.substring("~reg_by.".length());
+
+            effectiveUser = effectiveUser.getRegisteredByUser();
+            if (effectiveUser == null)
+                return null;
+
+            effectiveRawForm = user2form.get(effectiveUser.getId());
+            if (effectiveRawForm == null) {
+                effectiveRawForm = convertUserToForm(effectiveUser);
+                user2form.put(effectiveUser.getId(), effectiveRawForm);
+            }
+        }
+
         if (featureName.startsWith("~contest#")) {
-            List<Contest> contests = context.getEvent().getContestsAvailableForUser(user);
+            List<Contest> contests = context.getEvent().getContestsAvailableForUser(effectiveUser);
             featureName = featureName.substring("~contest#".length());
             int dotPos = featureName.indexOf('.');
 
@@ -71,20 +90,6 @@ public class UserFeatures implements FeaturesSet<User> {
 
         if (featureName.startsWith("~")) {
             switch (featureName) {
-                case "~reg_by": //TODO this may be much generalised: to take any value of user this was registered by
-                    if (regBy == null)
-                        return null;
-                    User regUser = regBy2user.get(regBy);
-                    if (regUser == null) {
-                        regUser = User.getInstance("_id", regBy, context.getEvent().getId());
-                        if (regUser == null) {
-                            regBy = null;
-                            return null;
-                        }
-                        regBy2user.put(regBy, regUser);
-                    }
-
-                    return regUser.getInfo().get("org_name");
                 case "~oid_inc":
                     return Long.toHexString(id.getInc()).toUpperCase();
                 case "~oid_time":
@@ -96,7 +101,7 @@ public class UserFeatures implements FeaturesSet<User> {
             }
         }
 
-        return rawForm.get(featureName);
+        return effectiveRawForm.get(featureName);
     }
 
     @Override

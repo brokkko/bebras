@@ -281,7 +281,7 @@ public class User implements SerializableUpdatable {
     }
 
     public static User getInstance(String field, Object value) {
-        return getInstance(field, value, Event.current().getId());
+        return getInstance(field, value, "_id".equals(field) ? null : Event.current().getId());
     }
 
     private static String getLoginCacheKey(String eventId, String login) {
@@ -299,9 +299,10 @@ public class User implements SerializableUpdatable {
 
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
-        DBObject query = new BasicDBObject(FIELD_EVENT, eventId);
+        DBObject query = new BasicDBObject(field, value);
 
-        query.put(field, value);
+        if (!"_id".equals(field))
+            query.put(FIELD_EVENT, eventId);
 
         DBObject userObject = usersCollection.findOne(query);
         User result;
@@ -317,11 +318,7 @@ public class User implements SerializableUpdatable {
     }
 
     public static User getUserById(ObjectId id) {
-        return getInstance("_id", id);
-    }
-
-    public static User getUserById(String eventId, ObjectId id) {
-        return getInstance("_id", id, eventId);
+        return getInstance("_id", id, null);
     }
 
     public static User getUserByLogin(String login) {

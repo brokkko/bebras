@@ -303,7 +303,7 @@ public class Application extends Controller {
         } catch (IllegalArgumentException ignored) {
             return notFound();
         }
-        User user = User.getUserById(eventId, uid);
+        User user = User.getUserById(uid);
         if (user == null)
             return notFound();
 
