@@ -89,6 +89,11 @@ public class BBTCProblem implements Problem {
     }
 
     @Override
+    public String answerString() {
+        return (char)(rightAnswer + 'A') + "";
+    }
+
+    @Override
     public InfoPattern getAnswerPattern() {
         return new InfoPattern("a", new BasicSerializationType<>(int.class), "answer");
     }

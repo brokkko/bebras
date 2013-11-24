@@ -42,7 +42,7 @@ public class BBTCProblemsLoader {
             answers.addAll(Arrays.asList(nextLine).subList(7, 7 + answersCount)); //TODO report: "manual array to collection copy" fails if copy not from array beginning
             String correctAnswer = nextLine[12].trim();
 
-            int scores = Integer.parseInt(nextLine[13].trim());
+            int scores = Integer.parseInt(nextLine[13].trim()); //TODO NumberFormatException is possible
             int penalty = Integer.parseInt(nextLine[14].trim());
 
             ProblemLink problemLink = folder.child(nextLine[2].trim()).child(nextLine[1].trim());

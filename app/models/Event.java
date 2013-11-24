@@ -294,7 +294,7 @@ public class Event {
 
     //TODO works only after authentication
     public boolean resultsAvailable() {
-        return getResults().before(AuthenticatedAction.getRequestTime());
+        return getResults().before(AuthenticatedAction.getRequestTime()); //TODO getResults may be null ??
     }
 
     public File getEventDataFolder() {

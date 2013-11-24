@@ -125,6 +125,11 @@ public class BebrasDynamicProblem implements Problem {
     }
 
     @Override
+    public String answerString() {
+        return "R";
+    }
+
+    @Override
     public Info check(Info answer, long randSeed) {
         Info result = new Info();
 

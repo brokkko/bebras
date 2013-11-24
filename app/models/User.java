@@ -428,8 +428,19 @@ public class User implements SerializableUpdatable {
     public void serialize() {
         MongoSerializer mongoSerializer = new MongoSerializer();
         serialize(mongoSerializer);
-        MongoConnection.getUsersCollection().save(mongoSerializer.getObject());
+        MongoConnection.getUsersCollection().save(mongoSerializer.getObject()); //TODO error log claims here may a be a problem with a duplicate key
     }
+
+    /*
+     [DuplicateKey: {
+        "serverUsed" : "db1/10.146.2.4:27017" ,
+        "err" : "E11000 duplicate key error index: dces2.users.$login_1_event_id_1  dup key: { : \"kflf\", : \"bebras13\" }" ,
+        "code" : 11000 ,
+        "n" : 0 ,
+        "connectionId" : 3422 ,
+        "ok" : 1.0
+     }]
+     */
 
     public void store() {
         if (MongoConnection.mayEnqueueEvents())

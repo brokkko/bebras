@@ -53,6 +53,8 @@ public class ContestHistoryFeatures implements FeaturesSet<User> {
                 return answersForAllProblems(contest);
             case "answers":
                 return answers(contest);
+            case "right_answers":
+                return rightAnswers(contest);
         }
 
         return null;
@@ -94,6 +96,16 @@ public class ContestHistoryFeatures implements FeaturesSet<User> {
                 }
             }
         }
+
+        return result.toString();
+    }
+
+    private Object rightAnswers(Contest contest) {
+        List<ConfiguredProblem> allPossibleProblems = contest.getAllPossibleProblems();
+
+        StringBuilder result = new StringBuilder();
+        for (ConfiguredProblem problem : allPossibleProblems)
+            result.append(problem.getProblem().answerString());
 
         return result.toString();
     }

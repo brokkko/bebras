@@ -182,6 +182,11 @@ public class BebrasProblem implements Problem {
     }
 
     @Override
+    public String answerString() {
+        return (char)(rightAnswer + 'А') + "";
+    }
+
+    @Override
     public Info check(Info answer, long randSeed) {
         Info result = new Info();
 

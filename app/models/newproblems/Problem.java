@@ -25,6 +25,8 @@ public interface Problem extends SerializableUpdatable {
 
     String answerToString(Info answer, long randSeed); //TODO check result may also be needed
 
+    String answerString();
+
     Info check(Info answer, long randSeed);
 
     InfoPattern getAnswerPattern();
