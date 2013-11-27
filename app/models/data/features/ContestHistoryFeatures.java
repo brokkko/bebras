@@ -39,7 +39,15 @@ public class ContestHistoryFeatures implements FeaturesSet<User> {
         String contestId = contestAndFeature[0];
         String feature = contestAndFeature[1];
 
-        Contest contest = user.getEvent().getContestById(contestId);
+        Contest contest;
+        if (contestId.matches("~contest#\\d{1,2}")) {
+            int i = Integer.parseInt(contestId.substring("~contest#".length()));
+            List<Contest> contestsAvailableForUser = context.getEvent().getContestsAvailableForUser(user);
+            if (i < 1 || i > contestsAvailableForUser.size())
+                return null;
+            contest = contestsAvailableForUser.get(i - 1);
+        } else
+            contest = user.getEvent().getContestById(contestId);
 
         if (contest == null)
             throw new IllegalArgumentException("Unknown contest " + contestId);
