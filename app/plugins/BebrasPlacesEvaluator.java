@@ -153,8 +153,10 @@ public class BebrasPlacesEvaluator extends Plugin {
                     private int getUsersScores(User u) {
                         int sum = 0;
                         List<Contest> contests = event.getContestsAvailableForUser(u);
-                        for (Contest contest : contests)
-                            sum += (Integer) u.getContestInfoCreateIfNeeded(contest.getId()).getFinalResults().get("scores");
+                        for (Contest contest : contests) {
+                            Integer scores = (Integer) u.getContestInfoCreateIfNeeded(contest.getId()).getFinalResults().get("scores");
+                            sum += scores == null ? 0 : scores;
+                        }
                         return sum;
                     }
 
