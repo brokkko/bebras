@@ -9,6 +9,7 @@ import models.Event;
 import models.User;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
+import models.results.Info;
 import org.bson.types.ObjectId;
 import play.libs.Akka;
 import play.libs.F;
@@ -154,7 +155,10 @@ public class BebrasPlacesEvaluator extends Plugin {
                         int sum = 0;
                         List<Contest> contests = event.getContestsAvailableForUser(u);
                         for (Contest contest : contests) {
-                            Integer scores = (Integer) u.getContestInfoCreateIfNeeded(contest.getId()).getFinalResults().get("scores");
+                            Info finalResults = u.getContestInfoCreateIfNeeded(contest.getId()).getFinalResults();
+                            if (finalResults == null)
+                                continue;
+                            Integer scores = (Integer) finalResults.get("scores");
                             sum += scores == null ? 0 : scores;
                         }
                         return sum;
