@@ -20,6 +20,7 @@ public class PluginSerializationType extends SerializableTreeSerializationType<P
         registerClass("flags", EventFlagsPlugin.class);
         registerClass("bebras pdf", BebrasPDFs.class);
         registerClass("questionnaire", QuestionnairePlugin.class);
+        registerClass("bebras places", BebrasPlacesEvaluator.class);
     }
 
 }

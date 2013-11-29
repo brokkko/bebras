@@ -16,6 +16,7 @@ public class BeaverTranslator implements Translator {
     private int scores;
     private int penalty;
     private int noAnswerPenalty;
+    private boolean noLessThan0 = false;
 
     @Override
     public Info translate(List<Info> from, List<Info> settings, User user) {
@@ -55,7 +56,10 @@ public class BeaverTranslator implements Translator {
         }
 
         Info result = new Info();
-        result.put("scores", sum);
+        if (noLessThan0)
+            result.put("scores", sum < 0 ? 0 : sum);
+        else
+            result.put("scores", sum);
         result.put("r", r);
         result.put("w", w);
         result.put("n", n);
@@ -89,6 +93,7 @@ public class BeaverTranslator implements Translator {
         serializer.write("scores", scores);
         serializer.write("penalty", penalty);
         serializer.write("no ans", noAnswerPenalty);
+        serializer.write("no less 0", noLessThan0);
     }
 
     @Override
@@ -96,5 +101,6 @@ public class BeaverTranslator implements Translator {
         scores = deserializer.readInt("scores", 1);
         penalty = deserializer.readInt("penalty", -1);
         noAnswerPenalty = deserializer.readInt("no ans", 0);
+        noLessThan0 = deserializer.readBoolean("no less 0", false);
     }
 }
