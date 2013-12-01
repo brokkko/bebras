@@ -5,14 +5,14 @@
 @import scala.List
 @import java.io.File
 @main_with_menu("Администрирование " + Event.current.getTitle)(List(AdminWidget.get, FormsWidget.get)) { } {
-    <h1>Администрирование мероприятия @Event.current.getTitle</h1>
+    <h1>Администрирование события @Event.current.getTitle</h1>
 
     @if(flash.get("message") != null) {
         <p class='warning'>@flash.get("message")</p>
     }
 
     <div class='info-box@if(eventForm.hasErrors){ initially-open}'>
-        <h3 class='info-box-cut-shower'>Изменить настройки...</h3>
+        <h3 class='info-box-cut-shower'>Основные настройки события...</h3>
         <div class='info-box-cut'>
             @models.Forms.getEventChangeForm.formatExtended(eventForm, controllers.routes.EventAdministration.admin(Event.currentId), true, "form.do_change")
         </div>

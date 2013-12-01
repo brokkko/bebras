@@ -75,15 +75,15 @@ public class Utils {
     }
 
     public static String formatDateTimeForInput(Date date) {
-        return new SimpleDateFormat("YYYY-MM-dd, HH:mm").format(date);
+        return new SimpleDateFormat("yyyy-MM-dd, HH:mm").format(date);
     }
 
     public static String formatContestDate(Date date) {
-        return new SimpleDateFormat("d MMMM YYYY, HH:mm").format(date);
+        return new SimpleDateFormat("d MMMM yyyy, HH:mm").format(date);
     }
 
     public static String formatObjectCreationTime(Date date) {
-        return new SimpleDateFormat("YYYY.MM.dd HH:mm").format(date);
+        return new SimpleDateFormat("yyyy.MM.dd HH:mm").format(date);
     }
 
     public static String scoresWord(int scores) {
