@@ -69,7 +69,7 @@
     <p>После изменения настроек процесса подведения итогов может оказаться, что уже вычисленные результаты участников более неактуальны. В этом случае
         необходимо очистить вычисленные результаты.
     </p>
-    <p><a href="#" class='submit actions-invalidate-contest-results' title="Очистить результаты соревнования">Очистить результаты соревнования</a></p>
+    <p><a href="#" class='submit actions-invalidate-contest-results' title="Пересчитать результаты соревнования">Пересчитать результаты соревнования</a></p>
     <form action="@routes.ContestAdministration.doInvalidateContestsAndEventResults(Event.currentId(), contest.getId)" method="POST" class='actions-invalidate-contest-results'></form>
 
 }

@@ -39,8 +39,8 @@
     <p>После изменения настроек процесса подведения итогов может оказаться, что уже вычисленные результаты участников более неактуальны. В этом случае
         необходимо очистить вычисленные результаты.
     </p>
-    <p><a href="#" class='submit actions-invalidate-event-results' title="Очистить результаты события">Очистить результаты события</a></p>
-    <p><a href="#" class='submit actions-invalidate-all-event-results' title="Очистить результаты события и всех соревнований">Очистить результаты события и всех соревнований</a></p>
+    <p><a href="#" class='submit actions-invalidate-event-results' title="Пересчитать результаты события">Пересчитать результаты события</a></p>
+    <p><a href="#" class='submit actions-invalidate-all-event-results' title="Пересчитать результаты всех соревнований и результаты события">Пересчитать результаты всех соревнований и результаты события</a></p>
     <p><a href="#" class='submit submit actions-remove-all-participants' title="Удалить всех зарегистрированных участников">Удалить всех зарегистрированных участников</a></p>
     <form action="@routes.EventAdministration.doInvalidateEventResults(Event.currentId())" method="POST" class='submit actions-invalidate-event-results'></form>
     <form action="@routes.EventAdministration.doInvalidateContestsAndEventResults(Event.currentId())" method="POST" class='submit actions-invalidate-all-event-results'></form>
