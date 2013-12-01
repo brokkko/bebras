@@ -79,8 +79,9 @@ public class Menu {
     }
 
     private void fillMenuForAuthorizedUser(List<MenuItem> menu, Event event, String eventId, User user) {
-        if (event.getContestsAvailableForUser().size() > 0 || User.current().hasEventAdminRight())
-            menu.add(new MenuItem("Соревнование", routes.UserInfo.contestsList(eventId)));
+        int contestsCount = event.getContestsAvailableForUser().size();
+        if (contestsCount > 0 || User.current().hasEventAdminRight())
+            menu.add(new MenuItem(contestsCount == 1 ? "Соревнование" : "Соревнования", routes.UserInfo.contestsList(eventId)));
 
         addPersonalDataMenuItem(menu, eventId);
 
@@ -89,7 +90,7 @@ public class Menu {
             menu.add(new MenuItem("Регистрация", routes.Registration.registrationByUser(eventId)));
 
         if (user.hasEventAdminRight())
-            menu.add(new MenuItem("Администрирование", routes.EventAdministration.admin(eventId)));
+            menu.add(new MenuItem("Событие", routes.EventAdministration.admin(eventId)));
 
         List<TableDescription<?>> tables = user.getTables();
         String tablesTitle = user.getRole().getTablesMenuTitle();
@@ -104,8 +105,8 @@ public class Menu {
         }
 
         if (user.hasEventAdminRight()) {
-            menu.add(new MenuItem("База заданий", routes.Problems.viewFolder(eventId, eventId)));
-            menu.add(new MenuItem("Рассылка", routes.Announcements.prepareAnnouncement(eventId)));
+            menu.add(new MenuItem("Задания", routes.Problems.viewFolder(eventId, eventId)));
+            menu.add(new MenuItem("Рассылка сообщений", routes.Announcements.prepareAnnouncement(eventId)));
         }
 
         fillExtraItems(menu);
