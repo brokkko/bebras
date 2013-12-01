@@ -1,4 +1,4 @@
-@(index:Int, showSolutions:Boolean, statement:String, answers:java.util.List[String], rightAnswer:Int)
+@(index:String, showSolutions:Boolean, statement:String, answers:java.util.List[String], rightAnswer:Int)
 @import scala.List
 @import models.newproblems.bbtc.BBTCProblem
 <div class='statement'>
@@ -6,7 +6,7 @@
 @if(showSolutions){
     <span class='right-answer hidden'>@rightAnswer</span>
 }
-<span class='problem-index'>@(index + 1).</span> @Html(if (statement == null) "" else statement)
+<span class='problem-index'>@index.</span> @Html(if (statement == null) "" else statement)
 </div>
 <div class='answers'>
     @for((answer, ind) <- (answers ++ List(null)).zipWithIndex) {

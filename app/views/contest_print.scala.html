@@ -1,4 +1,4 @@
-@(status:String, pagedUserProblems:java.util.List[java.util.List[models.newproblems.ConfiguredProblem]], problem2index:java.util.Map[models.newproblems.ConfiguredProblem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)
+@(contest:models.Contest, status:String, pagedUserProblems:java.util.List[java.util.List[models.newproblems.ConfiguredProblem]], problem2index:java.util.Map[models.newproblems.ConfiguredProblem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)
 @import models.utils.Utils
 @import views.widgets.CssJsWidget
 @import models.Contest
@@ -8,12 +8,17 @@
 @import scala.List
 @main(Event.current.getTitle)(List(new ResourceLink("contest.css"), new ResourceLink("contest_stub.js"), problemsWidgets))(false) {
     <div id='all-problems-in-pages-print'>
-        <div class='contest-info hidden'>@Html(jsonContestInfo)</div>
+        @if(jsonContestInfo != null){
+            <div class='contest-info hidden'>@Html(jsonContestInfo)</div>
+        }
         @for((page, pageIndex) <- pagedUserProblems.zipWithIndex) {
             <div class='page'>
             @for(problem <- page) {
-                <div class='problem'><span class='hidden pid'>@problem2index(problem)</span>
-                    @problem.getProblem.format(problem2index(problem), status == "results", problem.getSettings, User.current.getContestRandSeed(Contest.current.getId))
+                <div class='problem'><span class='hidden pr_type'>@problem.getProblem.getType</span>
+                    @problem.getProblem.format(
+                        if (problem2index != null) "" + (1 + problem2index(problem)) else contest.getProblemName(problem.getProblemId),
+                        status == "results", problem.getSettings, User.current.getContestRandSeed(Contest.current.getId)
+                    )
                     <div class='footer'></div>
                 </div>
             }

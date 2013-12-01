@@ -15,7 +15,7 @@ import views.widgets.Widget;
  */
 public interface Problem extends SerializableUpdatable {
 
-    Html format(int index, boolean showSolutions, Info settings, long seed);
+    Html format(String index, boolean showSolutions, Info settings, long seed);
 
     boolean editable();
 

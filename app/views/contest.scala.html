@@ -64,7 +64,7 @@
             @*<div class='page'>*@
             @for(problem <- page) {
                 <div class='problem'><span class='hidden pid'>@problem2index(problem)</span>@*TODO add type info and rewrite contest.js*@
-                    @problem.getProblem.format(problem2index(problem), status == "results", problem.getSettings, User.current.getContestRandSeed(Contest.current.getId))
+                    @problem.getProblem.format("" + (1 + problem2index(problem)), status == "results", problem.getSettings, User.current.getContestRandSeed(Contest.current.getId))
                     <div class='footer'></div>
                 </div>
             }

@@ -131,6 +131,7 @@ public class Contests extends Controller {
 
         if (printing)
             return ok(views.html.contest_print.render(
+                                                             contest,
                                                              textStatus,
                                                              pagedUserProblems,
                                                              problem2index,
@@ -169,32 +170,15 @@ public class Contests extends Controller {
 
         boolean showAnswers = displayType.equals("print ans");
 
-        //fill json info with user answers
-        JSONSerializer contestInfoSerializer = new JSONSerializer();
-        ListSerializer problemsInfoSerializer = contestInfoSerializer.getListSerializer("problems");
-
         Map<ConfiguredProblem, Integer> problem2index = new HashMap<>();
-        int index = 0;
-        for (ConfiguredProblem configuredProblem : allUserProblems) {
-            Problem problem = configuredProblem.getProblem();
-            Serializer problemInfoSerializer = problemsInfoSerializer.getSerializer();
-
-            problemInfoSerializer.write("type", problem.getType());
-
-            problem2index.put(configuredProblem, index);
-
-            index++;
-        }
-
         String textStatus = showAnswers ? "results" : "going";
 
-        contestInfoSerializer.write("status", textStatus);
-
         return ok(views.html.contest_print.render(
+                contest,
                 textStatus,
                 pagedUserProblems,
-                problem2index,
-                contestInfoSerializer.getNode().toString(),
+                null,
+                null,
                 getProblemsWidgets(pagedUserProblems)
         ));
     }

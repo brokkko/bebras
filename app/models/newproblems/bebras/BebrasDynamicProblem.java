@@ -58,7 +58,7 @@ public class BebrasDynamicProblem implements Problem {
     }
 
     @Override
-    public Html format(int index, boolean showSolutions, Info settings, long randSeed) {
+    public Html format(String index, boolean showSolutions, Info settings, long randSeed) {
         int scores = 0;
         if (settings != null) {
             Object oScores = settings.get("r");

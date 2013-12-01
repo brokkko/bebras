@@ -83,7 +83,7 @@ public class BebrasProblem implements Problem {
     }
 
     @Override
-    public Html format(int index, boolean showSolutions, Info settings, long randSeed) {
+    public Html format(String index, boolean showSolutions, Info settings, long randSeed) {
         //render answers
         Html answersHtml;
         List<String> userAnswers = getUserAnswers(randSeed);

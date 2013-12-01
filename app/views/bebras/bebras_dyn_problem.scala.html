@@ -1,7 +1,7 @@
-@(index:Int, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, problemScript:String, images:java.util.Map[String, String], explanation:String, informatics:String, height:Int, uniqueId:String)
+@(index:String, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, problemScript:String, images:java.util.Map[String, String], explanation:String, informatics:String, height:Int, uniqueId:String)
 @import scala.List
 <div class='task-title section-title'>
-    <span class='problem-index'>Задача @(index + 1).</span>
+    <span class='problem-index'>Задача @index.</span>
     <span class='problem-title'>@Html(title)</span>
     @if(scores != 0) {
         <span class='problem-scores'>@scores&nbsp;баллов</span>
