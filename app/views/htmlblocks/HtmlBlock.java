@@ -4,7 +4,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import models.Event;
 import models.User;
 import models.newserialization.*;
 import play.api.templates.Html;
