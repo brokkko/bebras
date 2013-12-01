@@ -43,6 +43,8 @@ GET         /:event/:contest/start                                     controlle
 GET         /:event/:contest/go                                        controllers.Contests.contest(event, contest, displayType = "normal")
 GET         /:event/:contest/go_print                                  controllers.Contests.contest(event, contest, displayType = "print")
 GET         /:event/:contest/go_print_ans                              controllers.Contests.contest(event, contest, displayType = "print ans")
+GET         /:event/:contest/print_contest                             controllers.Contests.allContestProblems(event, contest, displayType = "print")
+GET         /:event/:contest/print_contest_ans                         controllers.Contests.allContestProblems(event, contest, displayType = "print ans")
 POST        /:event/:contest/submit                                    controllers.Contests.submit(event, contest)
 POST        /:event/:contest/stop                                      controllers.Contests.stop(event, contest)
 POST        /:event/:contest/restart                                   controllers.Contests.restart(event, contest)

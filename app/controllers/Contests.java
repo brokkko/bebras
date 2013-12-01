@@ -155,6 +155,50 @@ public class Contests extends Controller {
             ));
     }
 
+    public static Result allContestProblems(String eventId, String contestId, String displayType) {
+        User user = User.current();
+        if (!user.hasEventAdminRight())
+            return forbidden();
+
+        Event event = Event.current();
+        Contest contest = Contest.current();
+
+        List<ConfiguredProblem> allUserProblems = contest.getAllPossibleProblems();
+        List<List<ConfiguredProblem>> pagedUserProblems = new ArrayList<>(1);
+        pagedUserProblems.add(allUserProblems);
+
+        boolean showAnswers = displayType.equals("print ans");
+
+        //fill json info with user answers
+        JSONSerializer contestInfoSerializer = new JSONSerializer();
+        ListSerializer problemsInfoSerializer = contestInfoSerializer.getListSerializer("problems");
+
+        Map<ConfiguredProblem, Integer> problem2index = new HashMap<>();
+        int index = 0;
+        for (ConfiguredProblem configuredProblem : allUserProblems) {
+            Problem problem = configuredProblem.getProblem();
+            Serializer problemInfoSerializer = problemsInfoSerializer.getSerializer();
+
+            problemInfoSerializer.write("type", problem.getType());
+
+            problem2index.put(configuredProblem, index);
+
+            index++;
+        }
+
+        String textStatus = showAnswers ? "results" : "going";
+
+        contestInfoSerializer.write("status", textStatus);
+
+        return ok(views.html.contest_print.render(
+                textStatus,
+                pagedUserProblems,
+                problem2index,
+                contestInfoSerializer.getNode().toString(),
+                getProblemsWidgets(pagedUserProblems)
+        ));
+    }
+
     @SuppressWarnings("UnusedParameters")
     @BodyParser.Of(BodyParser.Json.class)
     public static Result submit(String eventId, String contestId) {

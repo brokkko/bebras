@@ -6,7 +6,7 @@
 @import views.widgets.ResourceLink
 @import models.User
 @import scala.List
-@main(Event.current.getTitle)(List(CssJsWidget get "contest", problemsWidgets))(false) {
+@main(Event.current.getTitle)(List(new ResourceLink("contest.css"), new ResourceLink("contest_stub.js"), problemsWidgets))(false) {
     <div id='all-problems-in-pages-print'>
         <div class='contest-info hidden'>@Html(jsonContestInfo)</div>
         @for((page, pageIndex) <- pagedUserProblems.zipWithIndex) {

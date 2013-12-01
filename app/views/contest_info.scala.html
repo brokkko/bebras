@@ -10,3 +10,7 @@
 <a class='menu-item' target="_blank" href="@routes.Contests.contest(Event.currentId, Contest.current.getId, "print")">без ответов</a>,
 <a class='menu-item' target="_blank" href="@routes.Contests.contest(Event.currentId, Contest.current.getId, "print ans")">с ответами</a>.
 </p>
+<p>Все задания соревнования:
+    <a class='menu-item' target="_blank" href="@routes.Contests.allContestProblems(Event.currentId, Contest.current.getId, "print")">без ответов</a>,
+    <a class='menu-item' target="_blank" href="@routes.Contests.allContestProblems(Event.currentId, Contest.current.getId, "print ans")">с ответами</a>.
+</p>

@@ -115,4 +115,27 @@ public class ResourceLink implements Widget {
     public List<ResourceLink> links() {
         return Arrays.asList(this);
     }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ResourceLink that = (ResourceLink) o;
+
+        if (externalUrl != null ? !externalUrl.equals(that.externalUrl) : that.externalUrl != null) return false;
+        if (localUrl != null ? !localUrl.equals(that.localUrl) : that.localUrl != null) return false;
+        if (type != null ? !type.equals(that.type) : that.type != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = localUrl != null ? localUrl.hashCode() : 0;
+        result = 31 * result + (externalUrl != null ? externalUrl.hashCode() : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        return result;
+    }
 }
