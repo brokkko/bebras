@@ -11,9 +11,9 @@
 
 .answer-text {
     display: block;
-    margin-left: 28px;
-    margin-right: 8px;
-    margin-top: 4px;
+    margin-left: 2.8em;
+    margin-right: 0.5em;
+    margin-top: 0.6em;
 }
 
 .w2 {
@@ -43,8 +43,8 @@
 /*answer selector*/
 
 .task-answer-selector {
-    width: 18px;
-    /*height: 20px;*/
+    width: 2em;
+    /*height: 2em;*/
     border: solid 2px #36F;
     font-size: 1em;
     /*font-weight: bold;*/
@@ -54,10 +54,11 @@
     background-color: #FFF;
     /*padding-top: 2px;*/
     /*padding-left: 1px;*/
-    padding: 1px 0;
+    padding: 0.5em 0;
     display: inline-block;
     float: left;
     margin-right: 2px;
+    vertical-align: middle;
     cursor: default;
 }
 
