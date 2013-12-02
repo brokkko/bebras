@@ -12,7 +12,11 @@ $(function(){
         var $this = $(this);
         var cls = get_class_that_starts_with($this, 'actions-');
 
+        if (!cls)
+            return true;
+
         var $form = $('form.' + cls);
+
         var $extra_input = $form.find('.extra-value');
         var title = $this.attr("title");
 

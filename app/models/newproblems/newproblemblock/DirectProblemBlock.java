@@ -68,7 +68,7 @@ public class DirectProblemBlock extends ProblemBlock {
             }
 
             ObjectId pid = info.getId();
-            result.add(new ConfiguredProblem(pid, info.getProblem(), contest.getProblemName(pid), getConfiguration())); //TODO now settings are null, load settings from deserializer, take infopattern from
+            result.add(new ConfiguredProblem(pid, info.getProblem(), contest.getProblemName(pid), getConfiguration()));
         }
 
         return result;

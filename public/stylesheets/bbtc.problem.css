@@ -11,7 +11,6 @@
 .answer {
     float: left;
     margin-bottom: 4px;
-    cursor: pointer;
 }
 
 .answer-text {
@@ -62,9 +61,9 @@
     display: inline-block;
     float: left;
     margin-right: 0.5em;
-    cursor: default;
 }
 
+/*TODO make 'active' to be a class for <div class='answer'>. This will allow removing a "pointer" cursor from active answers*/
 .task-answer-selector.active {
     background-color: #79F;
     color: #FFF;
@@ -73,7 +72,6 @@
 .task-answer-selector.selectable.hover:not(.active) {
     background-color: #BCF;
     color: #FFF;
-    cursor: pointer;
 }
 
 /*right and wrong answers*/

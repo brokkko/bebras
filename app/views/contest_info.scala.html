@@ -6,11 +6,18 @@
 @for((table, ind) <- contest.getTables.zipWithIndex) {
     <p>@(ind + 1). @table.getTitle: <a href="@routes.Tables.csvTableForContest(Event.currentId, contest.getId, ind)">скачать</a></p>
 }
-<p>Печатные варианты соревнования:
-<a class='menu-item' target="_blank" href="@routes.Contests.contest(Event.currentId, Contest.current.getId, "print")">без ответов</a>,
-<a class='menu-item' target="_blank" href="@routes.Contests.contest(Event.currentId, Contest.current.getId, "print ans")">с ответами</a>.
-</p>
-<p>Все задания соревнования:
-    <a class='menu-item' target="_blank" href="@routes.Contests.allContestProblems(Event.currentId, Contest.current.getId, "print")">без ответов</a>,
-    <a class='menu-item' target="_blank" href="@routes.Contests.allContestProblems(Event.currentId, Contest.current.getId, "print ans")">с ответами</a>.
-</p>
+<div class="info-box">
+    <p>Печатные варианты соревнования:
+    <a class='menu-item' target="_blank" href="@routes.Contests.contest(Event.currentId, Contest.current.getId, "print")">без ответов</a>,
+    <a class='menu-item' target="_blank" href="@routes.Contests.contest(Event.currentId, Contest.current.getId, "print ans")">с ответами</a>.
+    </p>
+    <p>Все задания соревнования:
+        <a class='menu-item' target="_blank" href="@routes.Contests.allContestProblems(Event.currentId, Contest.current.getId, false)">без ответов</a>,
+        <a class='menu-item' target="_blank" href="@routes.Contests.allContestProblems(Event.currentId, Contest.current.getId, true)">с ответами</a>.
+    </p>
+    <p>
+        Просмотр всех заданий в каталоге соревнования:
+        <a href="@routes.Problems.printFolder(Event.currentId, Event.currentId + "/" + contest.getId, true, false)">без ответов</a>,
+        <a href="@routes.Problems.printFolder(Event.currentId, Event.currentId + "/" + contest.getId, true, true)">с ответами</a>.
+    </p>
+</div>

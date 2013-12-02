@@ -5,7 +5,9 @@ import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.Forms;
+import models.User;
 import models.forms.RawForm;
+import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
 import models.newproblems.ProblemInfo;
 import models.newproblems.ProblemLink;
@@ -20,7 +22,10 @@ import views.html.problem_view;
 import views.html.problem_view_raw;
 import views.html.problems_folder;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -188,5 +193,46 @@ public class Problems extends Controller {
         problemInfo.store();
 
         return redirect(routes.Problems.viewProblem(eventId, problemLink));
+    }
+
+    public static Result printFolder(String eventId, String folder, boolean subfolders, boolean showAnswers) {
+        if (!User.current().hasEventAdminRight())
+            return forbidden();
+
+        ProblemLink link = new ProblemLink(folder);
+
+        List<List<ConfiguredProblem>> pagedProblems = new LinkedList<>(); //one page for one folder
+        listProblems(link, subfolders, pagedProblems);
+
+        Map<ConfiguredProblem, String> problem2title = new HashMap<>();
+        for (List<ConfiguredProblem> problemsInPage : pagedProblems)
+            for (ConfiguredProblem problem : problemsInPage)
+                problem2title.put(problem, problem.getName().substring(link.getLink().length() + 1)); //1 for slash /
+
+        return ok(contest_print.render(showAnswers, pagedProblems, problem2title, Contests.getProblemsWidgets(pagedProblems), 0l));
+    }
+
+    private static void listProblems(ProblemLink link, boolean recursively, List<List<ConfiguredProblem>> pagedProblems) {
+        List<ConfiguredProblem> problems = new LinkedList<>();
+        List<ProblemLink> links = link.listProblems();
+
+        for (ProblemLink problemLink : links) {
+            ProblemInfo info = ProblemInfo.get(problemLink.getProblemId());
+            if (info == null) //broken link
+                continue;
+
+            problems.add(new ConfiguredProblem(
+                    problemLink.getProblemId(),
+                    info.getProblem(),
+                    problemLink.getLink(),
+                    null
+            ));
+        }
+
+        pagedProblems.add(problems);
+
+        if (recursively) //may be optimized with one query
+            for (ProblemLink folderLink : link.listFolders())
+                listProblems(folderLink, true, pagedProblems);
     }
 }

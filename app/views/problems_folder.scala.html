@@ -11,6 +11,8 @@
             <form action="@routes.Problems.removeLink(Event.currentId(), folder.getLink)" method="POST" class='submit actions-remove-folder'></form>
             <a class='submit actions-remove-folder' title='Удалить каталог' href='#'>Удалить</a>
             @*<a href='#'>Переименовать</a>*@
+            <a class='submit' href="@routes.Problems.printFolder(Event.currentId, folder.getLink, true, false)">Просмотр без ответов</a>
+            <a class='submit' href="@routes.Problems.printFolder(Event.currentId, folder.getLink, true, true)">Просмотр c ответами</a>
         </div>
         <h2>Каталог <span class='folder-name'>@folder</span></h2>
         <p>@if(folder.hasParent) {@problem_link(folder.getParentLink, "на уровень выше: " + folder.getParent)}</p>

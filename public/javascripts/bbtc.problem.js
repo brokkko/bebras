@@ -32,8 +32,11 @@
             $answer_div.click(click_answer);
             $answer_div.hover(function() {
                 $(this).find('.task-answer-selector').addClass('hover');
+                if (!showing_answers($problem_div))
+                    $(this).css('cursor', 'pointer');
             }, function() {
                 $(this).find('.task-answer-selector').removeClass('hover');
+                $(this).css('cursor', '');
             });
             selectors.addClass('selectable');
         } else {

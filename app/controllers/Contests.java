@@ -129,16 +129,19 @@ public class Contests extends Controller {
 
         contestInfoSerializer.write("status", textStatus);
 
-        if (printing)
+        if (printing) {
+            Map<ConfiguredProblem, String> problem2title = new HashMap<>();
+            for (Map.Entry<ConfiguredProblem, Integer> problemIndexEntry : problem2index.entrySet())
+                problem2title.put(problemIndexEntry.getKey(), "" + (1 + problemIndexEntry.getValue()));
+
             return ok(views.html.contest_print.render(
-                                                             contest,
-                                                             textStatus,
-                                                             pagedUserProblems,
-                                                             problem2index,
-                                                             contestInfoSerializer.getNode().toString(),
-                                                             getProblemsWidgets(pagedUserProblems)
+                 textStatus.equals("results"),
+                 pagedUserProblems,
+                 problem2title,
+                 getProblemsWidgets(pagedUserProblems),
+                 user.getContestRandSeed(contestId)
             ));
-        else
+        } else
             return ok(views.html.contest.render(
                                                        textStatus,
                                                        pagedUserProblems,
@@ -156,30 +159,27 @@ public class Contests extends Controller {
             ));
     }
 
-    public static Result allContestProblems(String eventId, String contestId, String displayType) {
+    public static Result allContestProblems(String eventId, String contestId, boolean showAnswers) {
         User user = User.current();
         if (!user.hasEventAdminRight())
             return forbidden();
 
-        Event event = Event.current();
         Contest contest = Contest.current();
 
         List<ConfiguredProblem> allUserProblems = contest.getAllPossibleProblems();
         List<List<ConfiguredProblem>> pagedUserProblems = new ArrayList<>(1);
         pagedUserProblems.add(allUserProblems);
 
-        boolean showAnswers = displayType.equals("print ans");
-
-        Map<ConfiguredProblem, Integer> problem2index = new HashMap<>();
-        String textStatus = showAnswers ? "results" : "going";
+        Map<ConfiguredProblem, String> problem2title = new HashMap<>();
+        for (ConfiguredProblem problem : allUserProblems)
+            problem2title.put(problem, problem.getName());
 
         return ok(views.html.contest_print.render(
-                contest,
-                textStatus,
+                showAnswers,
                 pagedUserProblems,
-                null,
-                null,
-                getProblemsWidgets(pagedUserProblems)
+                problem2title,
+                getProblemsWidgets(pagedUserProblems),
+                user.getContestRandSeed(contestId)
         ));
     }
 
@@ -264,7 +264,7 @@ public class Contests extends Controller {
         return redirect(routes.UserInfo.contestsList(eventId));
     }
 
-    private static Widget getProblemsWidgets(List<List<ConfiguredProblem>> pagedUserProblems) {
+    public static Widget getProblemsWidgets(List<List<ConfiguredProblem>> pagedUserProblems) {
         Set<ResourceLink> links = new HashSet<>();
 
         for (List<ConfiguredProblem> page : pagedUserProblems)

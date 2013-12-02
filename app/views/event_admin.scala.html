@@ -11,6 +11,12 @@
         <p class='warning'>@flash.get("message")</p>
     }
 
+    <p>
+        Просмотр всех заданий в каталоге события:
+        <a href="@routes.Problems.printFolder(Event.currentId, Event.currentId, true, false)">без ответов</a>,
+        <a href="@routes.Problems.printFolder(Event.currentId, Event.currentId, true, true)">с ответами</a>.
+    </p>
+
     <div class='info-box@if(eventForm.hasErrors){ initially-open}'>
         <h3 class='info-box-cut-shower'>Основные настройки события...</h3>
         <div class='info-box-cut'>
