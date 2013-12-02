@@ -28,7 +28,13 @@
         var selectors = $problem_div.find('.task-answer-selector');
 
         if (!showing_answers($problem_div)) {
-            $problem_div.find('.task-answer-selector').click(click_answer);
+            var $answer_div = $problem_div.find('.answer');
+            $answer_div.click(click_answer);
+            $answer_div.hover(function() {
+                $(this).find('.task-answer-selector').addClass('hover');
+            }, function() {
+                $(this).find('.task-answer-selector').removeClass('hover');
+            });
             selectors.addClass('selectable');
         } else {
             selectors.removeClass('answer-right').removeClass('answer-user-right').removeClass('answer-user-wrong');
@@ -43,7 +49,7 @@
     }
 
     function click_answer() {
-        var $task_selector = $(this);
+        var $task_selector = $(this).find('.task-answer-selector');
 
         if ($task_selector.hasClass('active'))
             return;

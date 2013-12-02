@@ -1,19 +1,23 @@
-/*problem*/
+/*problem, TODO bbtc problem css classes conflict with other types of problems*/
 
 .problem {
     background-color: #e0f1ff;
 }
 
+.statement {
+    line-height: 1.2;
+}
+
 .answer {
     float: left;
     margin-bottom: 4px;
+    cursor: pointer;
 }
 
 .answer-text {
     display: block;
-    margin-left: 2.8em;
-    margin-right: 0.5em;
-    margin-top: 0.6em;
+    margin-right: 1em;
+    margin-top: 0.4em;
 }
 
 .w2 {
@@ -43,10 +47,10 @@
 /*answer selector*/
 
 .task-answer-selector {
-    width: 2em;
+    width: 1.5em;
     /*height: 2em;*/
     border: solid 2px #36F;
-    font-size: 1em;
+    /*font-size: 1em;*/
     /*font-weight: bold;*/
     font-family: Arial, sans-serif;
     color: #000;
@@ -54,11 +58,10 @@
     background-color: #FFF;
     /*padding-top: 2px;*/
     /*padding-left: 1px;*/
-    padding: 0.5em 0;
+    padding: 0.25em 0;
     display: inline-block;
     float: left;
-    margin-right: 2px;
-    vertical-align: middle;
+    margin-right: 0.5em;
     cursor: default;
 }
 
@@ -67,7 +70,7 @@
     color: #FFF;
 }
 
-.task-answer-selector.selectable:hover {
+.task-answer-selector.selectable.hover:not(.active) {
     background-color: #BCF;
     color: #FFF;
     cursor: pointer;
