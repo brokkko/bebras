@@ -159,8 +159,10 @@ form.basic-form .addr-input-field input {
     margin: 2px 0;
 }
 
+form.basic-form .addr-input-field.region input,
 form.basic-form .addr-input-field.city input,
-form.basic-form .addr-input-field.street input {
+form.basic-form .addr-input-field.street input
+{
     width: 200px;
 }
 

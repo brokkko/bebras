@@ -24,6 +24,7 @@ public class AddressInputTemplate extends InputTemplate<Address> {
     public void write(String field, Address value, RawForm rawForm) {
         if (value == null) {
             rawForm.remove(field, "index");
+            rawForm.remove(field, "region");
             rawForm.remove(field, "city");
             rawForm.remove(field, "street");
             rawForm.remove(field, "house");
@@ -31,6 +32,7 @@ public class AddressInputTemplate extends InputTemplate<Address> {
         }
 
         rawForm.put(field, value.getIndex(), "index");
+        rawForm.put(field, value.getRegion(), "region");
         rawForm.put(field, value.getCity(), "city");
         rawForm.put(field, value.getStreet(), "street");
         rawForm.put(field, value.getHouse(), "house");
@@ -40,22 +42,30 @@ public class AddressInputTemplate extends InputTemplate<Address> {
     public Address read(String field, RawForm form) {
         if (
                 form.isEmptyValue(field, "index") &&
+                form.isEmptyValue(field, "region") &&
                 form.isEmptyValue(field, "city") &&
                 form.isEmptyValue(field, "street") &&
                 form.isEmptyValue(field, "house")
         )
             return null;
 
+        /*
+
+        //TODO allow setting up whether we need all fields to be filled
+
         if (form.isEmptyValue(field, "index"))
             form.reject(field, Messages.get("error.msg.addr.no_index"));
+        if (form.isEmptyValue(field, "region"))
+            form.reject(field, Messages.get("error.msg.addr.no_region"));
         if (form.isEmptyValue(field, "city"))
             form.reject(field, Messages.get("error.msg.addr.no_city"));
         if (form.isEmptyValue(field, "street"))
             form.reject(field, Messages.get("error.msg.addr.no_street"));
         if (form.isEmptyValue(field, "house"))
-            form.reject(field, Messages.get("error.msg.addr.no_house"));
+            form.reject(field, Messages.get("error.msg.addr.no_house"));*/
 
         String index = form.get(field, "index");
+        String region = form.get(field, "region");
         String city = form.get(field, "city");
         String street = form.get(field, "street");
         String house = form.get(field, "house");
@@ -66,7 +76,7 @@ public class AddressInputTemplate extends InputTemplate<Address> {
         if (form.hasFieldErrors(field))
             return null;
 
-        return new Address(index, city, street, house);
+        return new Address(index, region, city, street, house);
     }
 
     @Override
@@ -75,7 +85,7 @@ public class AddressInputTemplate extends InputTemplate<Address> {
     }
 
     @Override
-    public String[] getUserInputFields() {
-        return new String[]{"index", "city", "street", "house"};
+    public String[] getUserInputFields() { //TODO remove this method
+        return new String[]{"index", "region", "city", "street", "house"};
     }
 }

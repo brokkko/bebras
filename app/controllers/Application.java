@@ -45,12 +45,6 @@ public class Application extends Controller {
         imagesExtensions.add("bmp");
     }
 
-    public static DBObject getEventTemplate(String eventId) throws IOException {
-        String eventTemplate = Utils.getResourceAsString("/bbtc_event_pattern.json");
-        eventTemplate = eventTemplate.replaceAll("%%%eid%%%", eventId);
-        return (DBObject) JSON.parse(eventTemplate);
-    }
-
     public static Result migrate() {
         F.Promise<Boolean> promiseOfVoid = Akka.future(
                 new Callable<Boolean>() {

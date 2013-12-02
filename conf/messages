@@ -19,6 +19,8 @@ date.month.dec=Декабрь
 
 addr.index=Индекс
 addr.index.placeholder=Индекс
+addr.region=Регион
+addr.region.placeholder=регион
 addr.city=Нас. пункт
 addr.city.placeholder=г. пос. д. ...
 addr.street=Улица
@@ -50,6 +52,7 @@ error.msg.date.no_month=Неверно указан месяц
 error.msg.date.no_year=Неверно указан год
 error.msg.date.not_exists=Такой даты не существует
 error.msg.addr.no_index=Не указан индекс
+error.msg.addr.no_region=Не указан регион
 error.msg.addr.wrong_index=Индекс должен состоять ровно из 6 цифр
 error.msg.addr.no_city=Не указан населенный пункт
 error.msg.addr.no_street=Не указана улица
