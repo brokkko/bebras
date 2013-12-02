@@ -79,6 +79,9 @@ public class Menu {
     }
 
     private void fillMenuForAuthorizedUser(List<MenuItem> menu, Event event, String eventId, User user) {
+        if (user.hasEventAdminRight())
+            menu.add(new MenuItem("Событие", routes.EventAdministration.admin(eventId)));
+
         int contestsCount = event.getContestsAvailableForUser().size();
         if (contestsCount > 0 || User.current().hasEventAdminRight())
             menu.add(new MenuItem(contestsCount == 1 ? "Соревнование" : "Соревнования", routes.UserInfo.contestsList(eventId)));
@@ -88,9 +91,6 @@ public class Menu {
         UserRole role = user.getRole();
         if (role.mayRegisterSomebody())
             menu.add(new MenuItem("Регистрация", routes.Registration.registrationByUser(eventId)));
-
-        if (user.hasEventAdminRight())
-            menu.add(new MenuItem("Событие", routes.EventAdministration.admin(eventId)));
 
         List<TableDescription<?>> tables = user.getTables();
         String tablesTitle = user.getRole().getTablesMenuTitle();
