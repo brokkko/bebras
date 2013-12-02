@@ -65,10 +65,7 @@
     <h2>Добавить блок</h2>
     @contest.getAddBlockInputForm.formatExtended(addBlockForm, routes.ContestAdministration.doAddBlock(Event.currentId, contest.getId), false, "form.do_add")
 
-    <h1>Очистка результатов</h1>
-    <p>После изменения настроек процесса подведения итогов может оказаться, что уже вычисленные результаты участников более неактуальны. В этом случае
-        необходимо очистить вычисленные результаты.
-    </p>
+    <h1>Операции с соревнованием</h1>
     <p><a href="#" class='submit actions-invalidate-contest-results' title="Пересчитать результаты соревнования">Пересчитать результаты соревнования</a></p>
     <form action="@routes.ContestAdministration.doInvalidateContestsAndEventResults(Event.currentId(), contest.getId)" method="POST" class='actions-invalidate-contest-results'></form>
 
