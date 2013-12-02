@@ -26,6 +26,9 @@ public class UserApplicationsFeatures implements FeaturesSet<User> {
 
     @Override
     public Object getFeature(String featureName, FeaturesContext context) {
+        if (featureName.startsWith("num_part#"))
+            return numberOfPayedParticipants(featureName.substring("num_part#".length()));
+
         switch (featureName) {
             case "code":
                 return getIds();
@@ -43,7 +46,7 @@ public class UserApplicationsFeatures implements FeaturesSet<User> {
         return (List<Application>) user.getInfo().get("apps"); //TODO extra field is not necessary "apps"
     }
 
-    public Object getIds() {
+    private Object getIds() {
         Set<String> ids = new HashSet<>();
 
         for (Application application : getApplications())
@@ -59,5 +62,15 @@ public class UserApplicationsFeatures implements FeaturesSet<User> {
                 result += ", " + id;
 
         return result;
+    }
+
+    private Object numberOfPayedParticipants(String type) {
+        int sum = 0;
+
+        for (Application application : getApplications())
+            if (application.getState() == Application.CONFIRMED && type.equals(application.getType()))
+                sum += application.getSize();
+
+        return sum;
     }
 }
