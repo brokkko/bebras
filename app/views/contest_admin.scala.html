@@ -18,7 +18,7 @@
     @contest_info(contest)
 
     <div class='info-box@if(changeContestForm.hasErrors){ initially-open}'>
-        <h3 class='info-box-cut-shower'>Основные настройки...</h3>
+        <h3 class='info-box-cut-shower'>Основные настройки соревнования...</h3>
         <div class='info-box-cut'>
             @models.Forms.getContestChangeForm.formatExtended(changeContestForm, controllers.routes.ContestAdministration.doUpdateContest(Event.currentId, contest.getId), true, "form.do_change")
         </div>

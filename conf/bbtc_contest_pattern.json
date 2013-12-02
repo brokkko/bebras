@@ -17,7 +17,6 @@
             "title": "Результаты соревнования %%%cname%%%",
             "objects": {
                 "type": "users",
-                "event": "%%%eid%%%",
                 "role": "PARTICIPANT",
                 "load event results": true,
                 "filename": "%%%eid%%% %%%cid%%% answers"
