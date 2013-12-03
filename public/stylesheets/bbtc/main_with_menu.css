@@ -440,3 +440,7 @@ a, a:visited {
 .content ol li {
     list-style: decimal;
 }
+
+.wym_area_top ul li {
+    list-style: none;
+}

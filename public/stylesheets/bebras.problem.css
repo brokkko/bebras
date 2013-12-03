@@ -224,10 +224,6 @@ form#edit-problem textarea {
     overflow: hidden;
 }
 
-.wym_area_top ul li {
-    list-style: none;
-}
-
 .task-statement.dynamic {
     font-size: 1.4em;
 }

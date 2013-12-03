@@ -2,9 +2,9 @@
 <div class='html-block'>
 @if(editable) {
 <span class='html-block-ref hidden'>@if(html.getEventId == "~global"){
-    @routes.Application.setGlobalHtmlBlock(html.getId)
+    @routes.Application.setGlobalHtmlBlock(html.getName)
 } else {
-    @routes.EventAdministration.setHtmlBlock(html.getEventId, html.getId)
+    @routes.EventAdministration.setHtmlBlock(html.getEventId, html.getName)
 }</span>
 <div class='html-block-actions'>
 <a class='html-block-edit-action' href='#'>Edit</a>

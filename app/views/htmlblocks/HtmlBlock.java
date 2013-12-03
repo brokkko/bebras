@@ -6,6 +6,7 @@ import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import models.User;
 import models.newserialization.*;
+import org.bson.types.ObjectId;
 import play.api.templates.Html;
 
 /**
@@ -16,16 +17,16 @@ import play.api.templates.Html;
  */
 public class HtmlBlock implements SerializableUpdatable {
 
-    public static HtmlBlock load(String eventId, String id) {
+    public static HtmlBlock load(String eventId, String name) {
         DBCollection blocksCollection = MongoConnection.getHtmlBlocksCollection();
 
-        BasicDBObject query = new BasicDBObject("name", id);
+        BasicDBObject query = new BasicDBObject("name", name);
         query.put("event_id", eventId);
 
         DBObject blockObject = blocksCollection.findOne(query);
 
         if (blockObject == null)
-            return new HtmlBlock(id, eventId, "");
+            return new HtmlBlock(name, eventId, "");
 
         HtmlBlock result = new HtmlBlock();
         result.update(new MongoDeserializer(blockObject));
@@ -33,15 +34,17 @@ public class HtmlBlock implements SerializableUpdatable {
         return result;
     }
 
-    private String id;
+    private ObjectId id;
+    private String name;
     private String eventId;
     private String html;
 
     public HtmlBlock() {
     }
 
-    public HtmlBlock(String id, String eventId, String html) {
-        this.id = id;
+    public HtmlBlock(String name, String eventId, String html) {
+        this.id = new ObjectId();
+        this.name = name;
         this.eventId = eventId;
         this.html = html;
     }
@@ -50,8 +53,8 @@ public class HtmlBlock implements SerializableUpdatable {
         return html;
     }
 
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
     public String getEventId() {
@@ -70,15 +73,17 @@ public class HtmlBlock implements SerializableUpdatable {
 
     @Override
     public void serialize(Serializer serializer) {
+        serializer.write("_id", id);
         serializer.write("event_id", eventId);
-        serializer.write("name", id);
+        serializer.write("name", name);
         serializer.write("html", html);
     }
 
     @Override
     public void update(Deserializer deserializer) {
-        id = deserializer.readString("name");
+        id = deserializer.readObjectId("_id");
         eventId = deserializer.readString("event_id");
+        name = deserializer.readString("name");
         html = deserializer.readString("html", "");
     }
 
