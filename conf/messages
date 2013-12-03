@@ -135,6 +135,8 @@ form.bbtc_test.remind.submit=Восстановить
 
 # results translators
 results_translator.beaver.title.scores=Баллов
+results_translator.beaver.title.scores_right=Баллов за правильные ответы
+results_translator.beaver.title.scores_wrong=Вычтено баллов
 results_translator.beaver.title.right=Правильных ответов
 results_translator.beaver.title.wrong=Неправильных ответов
 results_translator.beaver.title.skip=Пропущено ответов

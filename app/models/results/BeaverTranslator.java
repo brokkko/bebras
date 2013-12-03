@@ -17,6 +17,7 @@ public class BeaverTranslator implements Translator {
     private int penalty;
     private int noAnswerPenalty;
     private boolean noLessThan0 = false;
+    private boolean separateRightAndWrong = false;
 
     @Override
     public Info translate(List<Info> from, List<Info> settings, User user) {
@@ -26,29 +27,28 @@ public class BeaverTranslator implements Translator {
         int r = 0;
         int w = 0;
         int n = 0;
-//        StringBuilder ans = new StringBuilder();
+        int sumR = 0;
+        int sumW = 0;
 
         for (int i = 0; i < problemsCount; i++) {
             Info problemResult = from.get(i);
             Info problemSettings = settings.get(i);
 
             int result = problemResult == null ? 0 : (Integer) problemResult.get("result");
-//            String answer = problemResult == null ? "." : (String) problemResult.get("answer");
 
             int localScores = problemSettings == null ? 1 : problemSettings.get("r") == null ? 1 : (Integer) problemSettings.get("r");
             int localPenalty = problemSettings == null ? -1 : problemSettings.get("w") == null ? -1 : (Integer) problemSettings.get("w");
 
             if (result < 0) {
                 result = penalty * localPenalty * result;
-//                    ans.append(answer.toLowerCase());
+                sumW += result;
                 w++;
             } else if (result > 0) {
                 result = scores * localScores * result;
-//                    ans.append(answer.toUpperCase());
+                sumR += result;
                 r++;
             } else {
                 result = noAnswerPenalty;
-//                    ans.append('.');
                 n++;
             }
 
@@ -63,21 +63,30 @@ public class BeaverTranslator implements Translator {
         result.put("r", r);
         result.put("w", w);
         result.put("n", n);
-//        result.put("ans", ans.toString());
-//        result.put("max", problemsCount * scores);
+
+        if (separateRightAndWrong) {
+            result.put("rs", sumR);
+            result.put("ws", sumW);
+        }
+
         return result;
     }
 
     @Override
     public InfoPattern getInfoPattern() {
-        return new InfoPattern(
+        InfoPattern infoPattern = new InfoPattern(
                 "scores", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.scores"),
                 "r", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.right"),
                 "w", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.wrong"),
-                "n", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.skip")/*,
-                "ans", new BasicSerializationType<>(String.class), Messages.get("results_translator.beaver.title.answers"),
-                "max", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.max")*/
+                "n", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.skip")
         );
+
+        if (separateRightAndWrong) {
+            infoPattern.register("rs", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.scores_right"));
+            infoPattern.register("ws", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.scores_wrong"));
+        }
+
+        return infoPattern;
     }
 
     @Override
@@ -94,6 +103,7 @@ public class BeaverTranslator implements Translator {
         serializer.write("penalty", penalty);
         serializer.write("no ans", noAnswerPenalty);
         serializer.write("no less 0", noLessThan0);
+        serializer.write("separate right and wrong", separateRightAndWrong);
     }
 
     @Override
@@ -102,5 +112,7 @@ public class BeaverTranslator implements Translator {
         penalty = deserializer.readInt("penalty", -1);
         noAnswerPenalty = deserializer.readInt("no ans", 0);
         noLessThan0 = deserializer.readBoolean("no less 0", false);
+        separateRightAndWrong = deserializer.readBoolean("separate right and wrong", false);
     }
+
 }
