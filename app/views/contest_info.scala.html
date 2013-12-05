@@ -2,7 +2,16 @@
 @import models.Contest
 <p>id: @contest.getId</p>
 <p>Данные о соревновании:</p>
-<p>К соревнованию приступили: @contest.getNumStarted</p>
+<p>К соревнованию приступили:
+    @for(role <- Event.current.getRoles) {
+        <br>
+        @defining(contest.getNumStarted(role.getName)) { started =>
+            @if(started > 0) {
+                &nbsp; &nbsp; @role.getTitle: @started
+            }
+        }
+    }
+</p>
 @for((table, ind) <- contest.getTables.zipWithIndex) {
     <p>@(ind + 1). @table.getTitle: <a href="@routes.Tables.csvTableForContest(Event.currentId, contest.getId, ind)">скачать</a></p>
 }

@@ -364,8 +364,9 @@ public class Contest {
 
     // statistics
 
-    public long getNumStarted() {
+    public long getNumStarted(String roleName) {
         DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
+        query.put(User.FIELD_USER_ROLE, roleName);
 
         String sd = "_contests." + id + ".sd";
         query.put(sd, new BasicDBObject("$exists", true));
