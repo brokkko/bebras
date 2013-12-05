@@ -6,7 +6,7 @@
 @main_with_menu(Event.current.getTitle)(scala.List(new ResourceLink("tables.css"), AdminWidget.get)) { } {
     <p class='table-actions'>
         <a target="_blank" href="@routes.Tables.showTablePrint(Event.currentId, tableIndex)"><img src='@routes.Assets.at("images/gnome_text_x_generic.png")'>Распечатать</a>
-        <a href="@routes.Tables.csvTable(Event.currentId, tableIndex)"><img src='@routes.Assets.at("images/excel.png")'>Загрузить в формате Excel</a>
+        <a href="@routes.Tables.csvTable(Event.currentId, tableIndex)"><img src='@routes.Assets.at("images/excel.png")'>Скачать в формате Excel</a>
     </p>
     <h1>@tableTitle</h1>
     <div style="clear:both"></div>
@@ -27,7 +27,7 @@
                 </table>
                 <input type='submit' value='Искать'>
                 &nbsp;&nbsp;&nbsp;
-                <a href='@routes.Tables.showTable(Event.currentId, tableIndex)'>Очистить</a>
+                <a href='@routes.Tables.showTable(Event.currentId, tableIndex)'>Очистить фильтры</a>
             </form>
         </div>@* no space here *@<div class='universal-search'>
             <h2>Полнотекстовый поиск</h2>

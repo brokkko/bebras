@@ -40,6 +40,7 @@ public class Event {
     private Date registrationFinish; //may be null, means never finishes
     private Date results;
     private Date restrictedResults; //this results means that we can not view problems
+    private Date userInfoChangeClosed; //after this date users can not edit their info, only super admin may
 
     private CombinedTranslator resultTranslator = null; //cached translator that unions all translators
     private List<TableDescription> tables;
@@ -70,6 +71,7 @@ public class Event {
         registrationFinish = deserializer.readDate("registration finish");
         results = deserializer.readDate("results");
         restrictedResults = deserializer.readDate("restricted results");
+        userInfoChangeClosed = deserializer.readDate("user info closed");
 
         List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
         setResultTranslators(resultTranslators);
@@ -167,6 +169,7 @@ public class Event {
         serializer.write("registration finish", registrationFinish);
         serializer.write("results", results);
         serializer.write("restricted results", restrictedResults);
+        serializer.write("user info closed", userInfoChangeClosed);
 
         SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).write(serializer, "results translators", resultTranslator.getTranslators());
 
@@ -284,6 +287,10 @@ public class Event {
         return restrictedResults;
     }
 
+    public Date getUserInfoChangeClosed() {
+        return userInfoChangeClosed;
+    }
+
     public List<? extends TableDescription> getTables() {
         return tables;
     }
@@ -329,6 +336,7 @@ public class Event {
         title = deserializer.readString("title");
         results = deserializer.readDate("results");
         restrictedResults = deserializer.readDate("restricted results");
+        userInfoChangeClosed = deserializer.readDate("user info closed");
         registrationStart = deserializer.readDate("registration start");
         registrationFinish = deserializer.readDate("registration finish");
         List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");

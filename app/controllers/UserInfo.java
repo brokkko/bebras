@@ -3,8 +3,10 @@ package controllers;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import controllers.actions.Authenticated;
+import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
+import models.Event;
 import models.User;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.FormDeserializer;
@@ -17,6 +19,8 @@ import org.bson.types.ObjectId;
 import play.mvc.Controller;
 
 import play.mvc.Result;
+
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,9 +38,18 @@ public class UserInfo extends Controller {
         return ok(views.html.contests_list.render(new RawForm()));
     }
 
+    private static boolean mayChangeUserInfo() {
+        Date userInfoChangeClosed = Event.current().getUserInfoChangeClosed();
+        boolean mayChange = userInfoChangeClosed == null || userInfoChangeClosed.after(AuthenticatedAction.getRequestTime());
+        if (User.current().hasEventAdminRight())
+            mayChange = true;
+        return mayChange;
+    }
+
     @SuppressWarnings("UnusedParameters")
     public static Result info(String eventId, String userId) { //TODO use event id
         User user = User.current();
+
         User userToChange = userId == null ? user : User.getInstance("_id", new ObjectId(userId)); //TODO wrong id leads to an exception
 
         if (userToChange == null)
@@ -49,10 +62,11 @@ public class UserInfo extends Controller {
         userToChange.serialize(formSerializer);
 
         return ok(views.html.user_info.render(
-                                                     userToChange,
-                                                     formSerializer.getRawForm(),
-                                                     userId != null,
-                                                     flash("user_info_change_msg") != null ? "page.user_info.info_changed" : null
+                userToChange,
+                mayChangeUserInfo(),
+                formSerializer.getRawForm(),
+                userId != null,
+                flash("user_info_change_msg")
         ));
     }
 
@@ -70,12 +84,17 @@ public class UserInfo extends Controller {
 
         RawForm form = formDeserializer.getRawForm();
 
+        if (!mayChangeUserInfo()) {
+            flash("user_info_change_msg", "Редактирование данных запрещено");
+            return redirect(routes.UserInfo.info(eventId, oneUserChangesHimOrHerself ? null : userToChange.getId().toString()));
+        }
+
         boolean partialRegistration = false;
         boolean wasPartial = userToChange.isPartialRegistration();
 
         if (form.hasErrors()) {
             if (oneUserChangesHimOrHerself || !formDeserializer.isPartiallyFilled()) // login and email are not changeable, thus no required
-                return ok(views.html.user_info.render(userToChange, form, userId != null, null));
+                return ok(views.html.user_info.render(userToChange, true, form, userId != null, null));
             else
                 partialRegistration = true;
         }
@@ -84,11 +103,11 @@ public class UserInfo extends Controller {
         userToChange.setPartialRegistration(partialRegistration);
         userToChange.store();
 
-        flash("user_info_change_msg", "1");
+        flash("user_info_change_msg", "page.user_info.info_changed");
 
         return wasPartial && oneUserChangesHimOrHerself ?
-                       redirect(routes.Application.enter(eventId)) :
-                       redirect(routes.UserInfo.info(eventId, oneUserChangesHimOrHerself ? null : userToChange.getId().toString()));
+                redirect(routes.Application.enter(eventId)) :
+                redirect(routes.UserInfo.info(eventId, oneUserChangesHimOrHerself ? null : userToChange.getId().toString()));
     }
 
     private static boolean mayChange(User user, User userToChange) {

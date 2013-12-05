@@ -227,6 +227,14 @@ public class Forms {
                                     "required", false
                             ),
                             Utils.mapify(
+                                    "name", "user info closed",
+                                    "view", Utils.mapify(
+                                            "type", "datetime",
+                                            "title", "Дата запрета на редактирование личных данных"
+                                    ),
+                                    "required", false
+                            ),
+                            Utils.mapify(
                                     "name", "registration start",
                                     "view", Utils.mapify(
                                             "type", "datetime",

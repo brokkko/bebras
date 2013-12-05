@@ -1,4 +1,4 @@
-@(user:models.User, form:models.forms.RawForm, otherUser:Boolean, message:String)
+@(user:models.User, mayChange:Boolean, form:models.forms.RawForm, otherUser:Boolean, message:String)
 @import views.widgets.AdminWidget
 @import views.htmlblocks.HtmlBlockWidget
 @import views.widgets.FormsWidget
@@ -12,8 +12,12 @@
         @if(User.current.isPartialRegistration) {
             <h1>Введите недостающие данные, чтобы продолжить работу</h1>
         } else {
-            <h1>Здесь вы можете посмотреть и изменить свои личные данные</h1>
+            <h1>Здесь вы можете посмотреть @if(mayChange){и изменить} свои личные данные</h1>
         }
+    }
+
+    @if(!mayChange) {
+        <div class="info-box">Внимание! Изменение личных данных сейчас невозможно.</div>
     }
 
     @Event.current.getHtmlBlock("user_info_up").format
@@ -23,7 +27,6 @@
     }
 
     @user.getRole.getEditUserForm.formatExtended(form, routes.UserInfo.doChangeInfo(Event.currentId, if(otherUser) user.getId.toString else null), true, "form.do_change")
-
 
     @if(!otherUser && user.getEmail != null) {
         <div class='info-box'>

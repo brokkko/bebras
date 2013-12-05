@@ -1,17 +1,24 @@
 @(form:models.forms.RawForm, role:models.UserRole, byUser:Boolean, referrerUserId:String)
 @import views.widgets.FormsWidget
+@import views.htmlblocks.HtmlBlockWidget
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(FormsWidget.get)) { } {
+@main_with_menu(Event.current.getTitle)(List(FormsWidget.get, HtmlBlockWidget.get)) { } {
     <h1>Регистрация: @role.getTitle</h1>
+
+    @Event.current.getHtmlBlock("registration-top-for-" + role.getName).format
+
     @if(byUser) {
         <p class='warning'>Введите логин и email. Остальные поля, даже если они обязательные и отмечены звездочкой, можно пропустить. Если вы
         оставите незаполненным обязательное поле, его будет предложено дозаполнить пользователю при первом входе в систему.</p>
     } else {
-        <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
-            После заполнения анкеты вы получите письмо с паролем, поэтому
-            убедитесь, что вы правильно указали email.
-        </p>
+        @if(role.isShowRegistrationHint) {
+            <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
+                После заполнения анкеты вы получите письмо с паролем, поэтому
+                убедитесь, что вы правильно указали email.
+            </p>
+        }
     }
+
     @if(byUser) {
         @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistrationByUser(Event.currentId, role.getName), false, "form.do_register_user")
     } else {

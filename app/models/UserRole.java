@@ -33,6 +33,7 @@ public class UserRole implements SerializableUpdatable {
     private String tablesMenuTitle;
 
     private String enterUrl;
+    private boolean showRegistrationHint;
 
     private List<String> mayRegister = new ArrayList<>();
 
@@ -62,6 +63,10 @@ public class UserRole implements SerializableUpdatable {
 
     public String getEnterUrl() {
         return enterUrl;
+    }
+
+    public boolean isShowRegistrationHint() {
+        return showRegistrationHint;
     }
 
     public InputForm getUsersForm() {
@@ -118,6 +123,9 @@ public class UserRole implements SerializableUpdatable {
 
         if (!DEFAULT_ENTER_URL.equals(enterUrl))
             serializer.write("enter", enterUrl);
+
+        if (!showRegistrationHint)
+            serializer.write("registration hint", false);
     }
 
     @Override
@@ -135,6 +143,8 @@ public class UserRole implements SerializableUpdatable {
         tablesMenuTitle = deserializer.readString("tables menu");
 
         enterUrl = deserializer.readString("enter", DEFAULT_ENTER_URL);
+
+        showRegistrationHint = deserializer.readBoolean("registration hint", true);
     }
 
     private void setUsersForm(InputForm usersForm) {
