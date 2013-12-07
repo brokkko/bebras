@@ -13,7 +13,6 @@ import models.newserialization.Serializer;
 public class Address implements SerializableUpdatable {
 
     private String index;
-    private String region;
     private String city;
     private String street;
     private String house;
@@ -21,9 +20,8 @@ public class Address implements SerializableUpdatable {
     public Address() {
     }
 
-    public Address(String index, String region, String city, String street, String house) {
+    public Address(String index, String city, String street, String house) {
         this.index = index;
-        this.region = region;
         this.city = city;
         this.street = street;
         this.house = house;
@@ -35,14 +33,6 @@ public class Address implements SerializableUpdatable {
 
     public void setIndex(String index) {
         this.index = index;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
     }
 
     public String getCity() {
@@ -72,7 +62,6 @@ public class Address implements SerializableUpdatable {
     @Override
     public void serialize(Serializer serializer) {
         serializer.write("index", index);
-        serializer.write("region", region);
         serializer.write("city", city);
         serializer.write("street", street);
         serializer.write("house", house);
@@ -81,7 +70,6 @@ public class Address implements SerializableUpdatable {
     @Override
     public void update(Deserializer deserializer) {
         this.index = deserializer.readString("index");
-        this.region = deserializer.readString("region");
         this.city = deserializer.readString("city");
         this.street = deserializer.readString("street");
         this.house = deserializer.readString("house");
