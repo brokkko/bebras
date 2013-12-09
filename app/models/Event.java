@@ -418,7 +418,7 @@ public class Event {
     //TODO move to settings
     public static String getOrganizationName() {
         Event event = Event.current();
-        if (event != null && event.getId().startsWith("bebras"))
+        if (event != null && event.getId().startsWith("bebras") || event.getId().startsWith("kio"))
             return "Центр информатизации образования «КИО»";
         return "Центр продуктивного обучения";
     }

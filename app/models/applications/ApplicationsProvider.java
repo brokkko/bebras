@@ -7,8 +7,6 @@ import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import models.Event;
 import models.User;
-import models.applications.Application;
-import models.applications.ApplicationWithUser;
 import models.data.ObjectsProvider;
 import models.newserialization.ListDeserializer;
 import models.newserialization.MongoListDeserializer;
@@ -34,6 +32,7 @@ public class ApplicationsProvider implements ObjectsProvider<ApplicationWithUser
     private ApplicationWithUser nextApplication;
     private String nextLogin;
     private ObjectId nextUserId;
+    private String nextRole;
 
     //negative state means all states
     public ApplicationsProvider(Event currentEvent, User currentUser, String role, int state, String name, String login) {
@@ -41,7 +40,9 @@ public class ApplicationsProvider implements ObjectsProvider<ApplicationWithUser
         this.name = name;
 
         BasicDBObject query = new BasicDBObject(User.FIELD_EVENT, currentEvent.getId());
-        query.put(User.FIELD_USER_ROLE, role);
+
+        if (role != null)
+            query.put(User.FIELD_USER_ROLE, role);
 
         if (state < 0)
             query.put("apps", new BasicDBObject("$exists", true));
@@ -59,7 +60,8 @@ public class ApplicationsProvider implements ObjectsProvider<ApplicationWithUser
 
         BasicDBObject projection = new BasicDBObject("apps", 1);
         projection.put("_id", 1); // not sure this needed, _id is projected by itself
-        projection.put("login", 1);
+        projection.put(User.FIELD_LOGIN, 1);
+        projection.put(User.FIELD_USER_ROLE, 1);
 
         cursor = MongoConnection.getUsersCollection().find(query, projection); //projection select only apps
 
@@ -106,7 +108,7 @@ public class ApplicationsProvider implements ObjectsProvider<ApplicationWithUser
             if (name != null && !name.equals(nextApplication.getName()))
                 continue;
 
-            this.nextApplication = new ApplicationWithUser(nextApplication, nextUserId, nextLogin);
+            this.nextApplication = new ApplicationWithUser(nextApplication, nextUserId, nextLogin, nextRole);
             break;
         }
     }
@@ -125,7 +127,8 @@ public class ApplicationsProvider implements ObjectsProvider<ApplicationWithUser
 
         currentUserApplications = new MongoListDeserializer(apps);
         nextUserId = (ObjectId) nextObject.get("_id");
-        nextLogin = (String) nextObject.get("login");
+        nextLogin = (String) nextObject.get(User.FIELD_LOGIN);
+        nextRole = (String) nextObject.get(User.FIELD_USER_ROLE);
     }
 
 }

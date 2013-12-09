@@ -74,9 +74,11 @@
 
     @Event.current.getHtmlBlock("school_org_applications_list_middle").format
 
-    <h1>Подача новой заявки</h1>
+    @if(plugin.needApplicationForm()) {
+        <h1>Подача новой заявки</h1>
 
-    @plugin.getAddApplicationForm.formatExtended(addApplicationForm, plugin.getAddCall, false, "Подать заявку")
+        @plugin.getAddApplicationForm.formatExtended(addApplicationForm, plugin.getAddCall, false, "Подать заявку")
+    }
 
     @Event.current.getHtmlBlock("school_org_applications_list_bottom").format
 }

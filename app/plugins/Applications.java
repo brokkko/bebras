@@ -38,20 +38,21 @@ public class Applications extends Plugin { //TODO test for right in all calls
     private String right = "school org";
     private String adminRight = "region org";
     private String userField = "apps";
+    private String menuTitle = "Заявки";
     private List<ApplicationType> applicationTypes;
 
     @Override
     public void initPage() {
-        Menu.addMenuItem("Заявки", getCall("apps"), right);
+        Menu.addMenuItem(menuTitle, getCall("apps"), right);
     }
 
     @Override
     public void initEvent(Event event) {
         event.registerExtraUserField(
-                                            right,
-                                            userField, //TODO take this field from plugin configuration
-                                            SerializationTypesRegistry.list(new SerializableSerializationType<>(Application.class)),
-                                            "Заявки"
+                right,
+                userField,
+                SerializationTypesRegistry.list(new SerializableSerializationType<>(Application.class)),
+                "Заявки"
         );
     }
 
@@ -61,6 +62,8 @@ public class Applications extends Plugin { //TODO test for right in all calls
         boolean level2 = User.currentRole().hasRight(adminRight);
         if (!level1 && !level2)
             return Results.forbidden();
+
+        updateSelfApplications();
 
         switch (action) {
             case "apps":
@@ -192,19 +195,29 @@ public class Applications extends Plugin { //TODO test for right in all calls
         if (rawForm.hasErrors())
             return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, rawForm, this, Kvit.getKvitForUser(user)));
 
-        int number = 1;
-        int appsSize = applications.size();
-        if (appsSize != 0)
-            number = applications.get(appsSize - 1).getNumber() + 1;
-
         String type = deserializer.readString("type");
+        int size = deserializer.readInt("size");
+
         ApplicationType appType = getTypeByName(type);
+
         if (appType == null) {
             Logger.warn("Adding application with unknown type " + type);
             return Results.badRequest();
         }
 
-        Application newApplication = new Application(user, deserializer.readInt("size"), number, type);
+        addApplicationForUser(user, event, size, appType);
+
+        return Controller.redirect(getAppsCall());
+    }
+
+    private void addApplicationForUser(User user, Event event, int size, ApplicationType appType) {
+        List<Application> applications = getApplications(user);
+        int number = 1;
+        int appsSize = applications.size();
+        if (appsSize != 0)
+            number = applications.get(appsSize - 1).getNumber() + 1;
+
+        Application newApplication = new Application(user, size, number, appType.getTypeName());
 
         if (!appType.isNeedsConfirmation()) {
             newApplication.setState(Application.CONFIRMED);
@@ -214,14 +227,12 @@ public class Applications extends Plugin { //TODO test for right in all calls
                 if (participantRole == UserRole.EMPTY)
                     Controller.badRequest();
 
-                newApplication.createUsers(event, user, participantRole);
+                newApplication.createUsers(event, user, participantRole, appType);
             }
         }
 
         applications.add(newApplication);
         user.store();
-
-        return Controller.redirect(getCall("apps"));
     }
 
     private Result doPayment(String name) {
@@ -233,7 +244,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         if (application == null)
             return Controller.notFound();
 
-        Result result = Controller.redirect(getCall("apps"));
+        Result result = Controller.redirect(getAppsCall());
 
         if (application.getState() != Application.NEW)
             return result;
@@ -292,7 +303,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
             boolean usersManipulationResult;
             if (newState == Application.CONFIRMED)
-                usersManipulationResult = application.createUsers(event, user, participantRole);
+                usersManipulationResult = application.createUsers(event, user, participantRole, appType);
             else
                 usersManipulationResult = application.removeUsers(event);
 
@@ -307,7 +318,18 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     public boolean mayRemoveApplication(Application application) {
         ApplicationType applicationType = getTypeByName(application.getType());
-        return applicationType == null || !applicationType.isNeedsConfirmation() || application.getState() != Application.CONFIRMED;
+
+        if (applicationType == null)
+            return true;
+
+        //noinspection SimplifiableIfStatement
+        if (applicationType.isSelf())
+            return false;
+
+        return !applicationType.isNeedsConfirmation() || application.getState() != Application.CONFIRMED;
+
+        //TODO report should find null
+//        return !applicationType.isSelf() && (applicationType == null || !applicationType.isNeedsConfirmation() || application.getState() != Application.CONFIRMED);
     }
 
     private Result removeApplication(String name) {
@@ -323,7 +345,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
                 applications.remove(i);
                 user.store();
 
-                return Controller.redirect(getCall("apps"));
+                return Controller.redirect(getAppsCall());
             }
         }
 
@@ -379,11 +401,22 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return getCall("do_payment", false, name);
     }
 
+    public boolean needApplicationForm() {
+        for (ApplicationType applicationType : applicationTypes)
+            if (!applicationType.isSelf())
+                return true;
+
+        return false;
+    }
+
     public InputForm getAddApplicationForm() {
         List<String> titlesList = new ArrayList<>();
         List<String> typesList = new ArrayList<>();
 
         for (ApplicationType applicationType : applicationTypes) {
+            if (applicationType.isSelf())
+                continue;
+
             String description = applicationType.getDescription();
 
             if (applicationType.getPrice() > 0)
@@ -396,43 +429,43 @@ public class Applications extends Plugin { //TODO test for right in all calls
         }
 
         return InputForm.deserialize(
-                                            new MemoryDeserializer(
-                                                                          "fields",
-                                                                          Utils.listify(
-                                                                                               Utils.mapify(
-                                                                                                                   "name", "size",
-                                                                                                                   "view", Utils.mapify(
-                                                                                                                                               "type", "int",
-                                                                                                                                               "title", "Количество участников",
-                                                                                                                                               "placeholder", "Введите количество участников"
-                                                                                               ),
-                                                                                                                   "required", true,
-                                                                                                                   "validators", Utils.listify(
-                                                                                                                                                      Utils.mapify(
-                                                                                                                                                                          "type", "int",
-                                                                                                                                                                          "compare", "<=100"
-                                                                                                                                                      ),
-                                                                                                                                                      Utils.mapify(
-                                                                                                                                                                          "type", "int",
-                                                                                                                                                                          "compare", ">0"
-                                                                                                                                                      )
-                                                                                               )
-                                                                                               ),
-                                                                                               Utils.mapify(
-                                                                                                                   "name", "type",
-                                                                                                                   "view", Utils.mapify(
-                                                                                                                                               "type", "dropdown",
-                                                                                                                                               "title", "Тип заявки",
-                                                                                                                                               "placeholder", "Выберите тип",
-                                                                                                                                               "titles", titlesList,
-                                                                                                                                               "variants", typesList
-                                                                                               ),
-                                                                                                                   "required", true,
-                                                                                                                   "validators", Utils.listify()
-                                                                                               )
-                                                                          ),
-                                                                          "validators", Utils.listify()
-                                            )
+                new MemoryDeserializer(
+                        "fields",
+                        Utils.listify(
+                                Utils.mapify(
+                                        "name", "size",
+                                        "view", Utils.mapify(
+                                                "type", "int",
+                                                "title", "Количество участников",
+                                                "placeholder", "Введите количество участников"
+                                        ),
+                                        "required", true,
+                                        "validators", Utils.listify(
+                                        Utils.mapify(
+                                                "type", "int",
+                                                "compare", "<=100"
+                                        ),
+                                        Utils.mapify(
+                                                "type", "int",
+                                                "compare", ">0"
+                                        )
+                                )
+                                ),
+                                Utils.mapify( //TODO don't do type if there is only one application type
+                                        "name", "type",
+                                        "view", Utils.mapify(
+                                                "type", "dropdown",
+                                                "title", "Тип заявки",
+                                                "placeholder", "Выберите тип",
+                                                "titles", titlesList,
+                                                "variants", typesList
+                                        ),
+                                        "required", true,
+                                        "validators", Utils.listify()
+                                )
+                        ),
+                        "validators", Utils.listify()
+                )
         );
     }
 
@@ -458,6 +491,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         serializer.write("user field", userField);
         serializer.write("right", right);
         serializer.write("admin right", adminRight);
+        serializer.write("menu", menuTitle);
         SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).write(serializer, "types", applicationTypes);
     }
 
@@ -467,6 +501,26 @@ public class Applications extends Plugin { //TODO test for right in all calls
         userField = deserializer.readString("user field", "apps");
         right = deserializer.readString("right", "school org");
         adminRight = deserializer.readString("admin right", "region org");
+        menuTitle = deserializer.readString("menu", "Заявки");
         applicationTypes = SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).read(deserializer, "types");
+    }
+
+    public void updateSelfApplications() {
+        User user = User.current();
+        List<Application> applications = getApplications(user);
+        for (ApplicationType applicationType : applicationTypes)
+            if (applicationType.isSelf()) {
+                //find applications of that type
+
+                boolean hasApp = false;
+                for (Application application : applications)
+                    if (application.getType().equals(applicationType.getTypeName())) {
+                        hasApp = true;
+                        break;
+                    }
+
+                if (!hasApp)
+                    addApplicationForUser(user, Event.current(), 1, applicationType);
+            }
     }
 }

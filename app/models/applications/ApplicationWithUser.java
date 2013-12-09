@@ -14,11 +14,13 @@ public class ApplicationWithUser {
     private Application application;
     private ObjectId userId;
     private String login;
+    private String role;
 
-    public ApplicationWithUser(Application application, ObjectId userId, String login) {
+    public ApplicationWithUser(Application application, ObjectId userId, String login, String role) {
         this.application = application;
         this.userId = userId;
         this.login = login;
+        this.role = role;
     }
 
     public Application getApplication() {
@@ -31,5 +33,9 @@ public class ApplicationWithUser {
 
     public String getLogin() {
         return login;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

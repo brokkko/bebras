@@ -41,11 +41,13 @@ public class ApplicationsFeatures implements FeaturesSet<ApplicationWithUser> {
                 if (state == Application.NEW)
                     return new WrappedFeatureValue("-", Html.apply("-"));
 
+                //TODO allow plugins provide tables and thus remove hardcoded "apps" as a ref to plugin
+                String pluginRef = applicationWithUser.getRole().equals("SELF_PARTICIPANT") ? "self_apps" : "apps";
+
                 return new WrappedFeatureValue("-", views.html.htmlfeatures.action.render(
                         "confirm-" + userId + "-" + applicationName,
                         state == Application.CONFIRMED ? "Отменить подтверждение заявки " + applicationName : "Подтвердить заявку " + applicationName,
-                        //TODO allow plugins provide tables and thus remove hardcoded "apps" as a ref to plugin
-                        controllers.routes.Plugins.doPost(context.getEvent().getId(), "apps", "confirm_app", userId + "/" + applicationName + "/"),
+                        controllers.routes.Plugins.doPost(context.getEvent().getId(), pluginRef, "confirm_app", userId + "/" + applicationName + "/"),
                         context.getCurrentCall(),
                         state == Application.CONFIRMED ? "отменить подтверждение" : "подтвердить"
                 ));

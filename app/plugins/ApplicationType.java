@@ -17,6 +17,7 @@ public class ApplicationType implements SerializableUpdatable {
     private boolean needsConfirmation;
     private int price; /* TODO make price float */
     private String participantRole;
+    private boolean self;
 
     public String getTypeName() {
         return typeName;
@@ -38,6 +39,10 @@ public class ApplicationType implements SerializableUpdatable {
         return participantRole;
     }
 
+    public boolean isSelf() {
+        return self;
+    }
+
     @Override
     public void serialize(Serializer serializer) {
         serializer.write("type", typeName);
@@ -45,6 +50,7 @@ public class ApplicationType implements SerializableUpdatable {
         serializer.write("confirmation", needsConfirmation);
         serializer.write("price", price);
         serializer.write("participant role", participantRole);
+        serializer.write("self", self);
     }
 
     @Override
@@ -53,6 +59,7 @@ public class ApplicationType implements SerializableUpdatable {
         description = deserializer.readString("description");
         needsConfirmation = deserializer.readBoolean("confirmation", true);
         price = deserializer.readInt("price", 0);
-        participantRole = deserializer.readString("participant role");
+        participantRole = deserializer.readString("participant role", "PARTICIPANT");
+        self = deserializer.readBoolean("self", false);
     }
 }

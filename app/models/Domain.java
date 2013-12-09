@@ -22,7 +22,7 @@ public class Domain implements SerializableUpdatable {
                                             "type", "dropdown",
                                             "title", "Оформление",
                                             "placeholder", "Выберите тип оформления",
-                                            "variants", Utils.listify("bbtc", "bebras")
+                                            "variants", Utils.listify("bbtc", "bebras", "kio")
                                     ),
                                     "required", true
                             ),

@@ -18,6 +18,7 @@ import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.i18n.Messages;
 import play.mvc.Http;
+import plugins.ApplicationType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,11 +46,21 @@ public class Application implements SerializableUpdatable {
         return s;
     }
 
+    private static String decBytes(int x, int digits) {
+        String s = Integer.toString(x);
+        while (s.length() < digits)
+            s = '0' + s;
+        int len = s.length();
+        if (len > digits)
+            s = s.substring(len - digits);
+        return s;
+    }
+
     public static String getCodeForUser(User user) {
         int inc = user.getId().getInc();
         int machine = user.getId().getMachine();
 
-        return hexBytes(machine, 2) + hexBytes(inc, 4);
+        return decBytes(machine, 3) + decBytes(inc, 5);
     }
 
     public static int NEW = 0;
@@ -145,7 +156,10 @@ public class Application implements SerializableUpdatable {
         logins = SerializationTypesRegistry.list(String.class).read(deserializer, "logins");
     }
 
-    public boolean createUsers(Event event, User user, UserRole role) {
+    public boolean createUsers(Event event, User user, UserRole role, ApplicationType appType) {
+        if (!appType.isSelf())
+            return true;
+
         String prefix = getCodeForUser(user).toLowerCase() + number + ".";
         int index = 1;
         int skipped = 0;
