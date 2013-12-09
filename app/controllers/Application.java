@@ -108,7 +108,7 @@ public class Application extends Controller {
     }
 
     public static Result root() {
-        String defaultEvent = ServerConfiguration.getInstance().getDefaultDomainEvent();
+        String defaultEvent = ServerConfiguration.getInstance().getCurrentDomain().getDefaultEvent();
         return redirect(routes.Application.enter(defaultEvent));
     }
 
@@ -246,7 +246,7 @@ public class Application extends Controller {
     }
 
     public static Result listEvents() {
-        String domain = ServerConfiguration.getInstance().getCurrentDomain();
+        String domain = ServerConfiguration.getInstance().getCurrentDomain().getName();
 
         List<String> events = new ArrayList<>();
 

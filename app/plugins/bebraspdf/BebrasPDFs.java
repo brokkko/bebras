@@ -65,7 +65,7 @@ public class BebrasPDFs extends Plugin {
             return 0;
 
         //noinspection unchecked
-        List<Application> apps = (List<Application>) user.getInfo().get("apps"); //get apps from config
+        List<Application> apps = (List<Application>) user.getInfo().get("apps"); //TODO get apps from config
 
         if (apps == null)
             return 0;

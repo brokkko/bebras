@@ -53,7 +53,7 @@ public class BooleanInputTemplate extends InputTemplate<Boolean> {
     @Override
     public void update(Deserializer deserializer) {
         super.update(deserializer);
-        hint = deserializer.readString("hint", "-");
+        hint = deserializer.readString("hint", "");
         defaultValue = deserializer.readBoolean("default", false);
         falseIsNull = deserializer.readBoolean("false is null", false);
     }

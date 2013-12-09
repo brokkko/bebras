@@ -146,7 +146,7 @@ public class ServerConfiguration {
         return new String(chars);
     }
 
-    public String getCurrentDomain() {
+    public Domain getCurrentDomain() {
         String domain = Http.Context.current().request().host().toLowerCase();
 
         if (domain.contains(":"))
@@ -155,17 +155,7 @@ public class ServerConfiguration {
         if (domain.startsWith("www."))
             domain = domain.substring(4);
 
-        if (domain.equals("localhost")) //TODO allow to set this up
-//            domain = "on-line.runodog.ru";
-            domain = "bebras.ru";
-
-        return domain;
-    }
-
-    public String getDefaultDomainEvent() {
-        String domain = getCurrentDomain();
-
-        return domain.contains("bebras") ? "bebras13" : "bbtc"; //TODO allow to set this up
+        return Domain.getInstance(domain);
     }
 
     public File getResource(String name) {
@@ -174,7 +164,7 @@ public class ServerConfiguration {
     }
 
     public String getSkin() {
-        return Event.currentId().startsWith("bebras") ? "bebras" : "bbtc"; //TODO generalize //TODO currentId may lead to exception
+        return getCurrentDomain().getSkin();
     }
 
     public boolean isIpTraced(String ip) {

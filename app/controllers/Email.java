@@ -2,18 +2,10 @@ package controllers;
 
 import controllers.actions.DcesController;
 import models.Event;
+import models.Mailer;
 import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.HtmlEmail;
-import org.apache.commons.mail.SimpleEmail;
-import play.Configuration;
-import play.Logger;
-import play.Play;
 import play.i18n.Messages;
 import play.mvc.Http;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import java.util.Arrays;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,7 +16,7 @@ import java.util.Arrays;
 @DcesController
 public class Email {
 
-    public static String sendEmail(String to, String subject, String message) throws EmailException {
+    /*public static String sendEmail(String to, String subject, String message) throws EmailException {
         return sendEmail(to, subject, message, null, null);
     }
 
@@ -120,8 +112,9 @@ public class Email {
         email.setCharset("UTF8");
         email.setSubject(subject);
     }
+    */
 
-    public static void sendRegistrationConfirmationEmail(String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
+    public static void sendRegistrationConfirmationEmail(Mailer mailer, String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
         if (greeting != null && !greeting.isEmpty())
             greeting = ", " + greeting;
         else
@@ -130,14 +123,14 @@ public class Email {
         String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, false)
                                           .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();
-        sendEmail(
-                         email,
-                         Messages.get("mail.registration.subject", title),
-                         createLineBreaks(Messages.get("mail.registration.body", greeting, title, registrationLink, login, password))
+        mailer.sendEmail(
+                email,
+                Messages.get("mail.registration.subject", title),
+                createLineBreaks(Messages.get("mail.registration.body", greeting, title, registrationLink, login, password))
         );
     }
 
-    public static void sendPasswordRestoreEmail(String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
+    public static void sendPasswordRestoreEmail(Mailer mailer, String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
         if (greeting != null && !greeting.isEmpty())
             greeting = ", " + greeting;
         else
@@ -146,10 +139,10 @@ public class Email {
         String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, true)
                                           .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();
-        sendEmail(
-                         email,
-                         Messages.get("mail.password_remind.subject", title),
-                         createLineBreaks(Messages.get("mail.password_remind.body", greeting, title, registrationLink, login, password))
+        mailer.sendEmail(
+                email,
+                Messages.get("mail.password_remind.subject", title),
+                createLineBreaks(Messages.get("mail.password_remind.body", greeting, title, registrationLink, login, password))
         );
     }
 

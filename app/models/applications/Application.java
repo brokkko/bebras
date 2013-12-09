@@ -4,9 +4,9 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
-import controllers.Email;
 import controllers.MongoConnection;
 import models.Event;
+import models.ServerConfiguration;
 import models.User;
 import models.UserRole;
 import models.newserialization.Deserializer;
@@ -54,8 +54,8 @@ public class Application implements SerializableUpdatable {
 
     public static int NEW = 0;
     public static int PAYED = 1;
-
     public static int CONFIRMED = 2;
+
     private String name;
     private int size;
     private int state;
@@ -197,7 +197,7 @@ public class Application implements SerializableUpdatable {
         String message = Messages.get("mail.application_confirm.body", greeting, getName(), size, size == 1 ? "а" : "", title, "Мои участники",
                                              controllers.routes.Application.enter(Event.currentId()).absoluteURL(Http.Context.current().request()));
 
-        Email.sendEmail(user.getEmail(), subject, message);
+        ServerConfiguration.getInstance().getCurrentDomain().getMailer().sendEmail(user.getEmail(), subject, message);
     }
 
     public boolean removeUsers(Event event) {

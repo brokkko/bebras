@@ -1,0 +1,11 @@
+@(domain:models.Domain, domainForm:models.forms.RawForm, emailForm:models.forms.RawForm)
+@import views.widgets.FormsWidget
+@main_with_menu(Event.current.getTitle)(scala.List(FormsWidget.get)) { } {
+    <h1>Настройки домена @domain.getName</h1>
+
+    @models.Domain.DOMAIN_CHANGE_FORM.format(domainForm, routes.Domains.doChangeDomainInfo(Event.currentId, domain.getName))
+
+    <h2>Рассылка почты</h2>
+
+    @models.Mailer.MAILER_CHANGE_FORM.format(emailForm, routes.Domains.doChangeMailerInfo(Event.currentId, domain.getName))
+}

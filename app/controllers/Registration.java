@@ -50,8 +50,8 @@ public class Registration extends Controller {
         if (mayRegister.size() == 1) {
             String roleName = mayRegister.get(0);
             return byUser ?
-                           redirect(routes.Registration.roleRegistrationByUser(event.getId(), roleName)) :
-                           redirect(routes.Registration.roleRegistration(event.getId(), roleName, null));
+                    redirect(routes.Registration.roleRegistrationByUser(event.getId(), roleName)) :
+                    redirect(routes.Registration.roleRegistration(event.getId(), roleName, null));
         }
 
         return ok(views.html.registration_select.render(event, registerRole, byUser));
@@ -157,7 +157,10 @@ public class Registration extends Controller {
             password = User.generatePassword();
 
             try {
-                Email.sendRegistrationConfirmationEmail(greeting, email, login, password, confirmationUUID);
+                Email.sendRegistrationConfirmationEmail(
+                        ServerConfiguration.getInstance().getCurrentDomain().getMailer(),
+                        greeting, email, login, password, confirmationUUID
+                );
             } catch (EmailException e) {
                 Logger.error("Failed to send email", e);
                 if (!Play.isDev()) //allow to fail when sending email in dev mode
@@ -177,8 +180,8 @@ public class Registration extends Controller {
         user.store();
 
         return needEmailConfirmation ?
-                       redirect(routes.Registration.waitForEmail(event.getId(), registrationUUID, false)) :
-                       ok(views.html.message.render("registration.ok.title", "registration.ok", null));
+                redirect(routes.Registration.waitForEmail(event.getId(), registrationUUID, false)) :
+                ok(views.html.message.render("registration.ok.title", "registration.ok", null));
     }
 
     private static boolean setRegisterBy(UserRole registeeRole, boolean byUser, String referrerUserId, User user) {
@@ -212,7 +215,7 @@ public class Registration extends Controller {
         boolean isEmail = !passwordRecovery || restoreForEmail == null || restoreForEmail;
 
         return ok(views.html.wait_for_email.render(
-                                                          isEmail, isEmail ? user.getEmail() : user.getLogin()
+                isEmail, isEmail ? user.getEmail() : user.getLogin()
         ));
     }
 
@@ -308,11 +311,12 @@ public class Registration extends Controller {
 
         try {
             Email.sendPasswordRestoreEmail(
-                                                  user.getGreeting(),
-                                                  user.getEmail(),
-                                                  user.getLogin(),
-                                                  newPassword,
-                                                  confirmationUUID
+                    ServerConfiguration.getInstance().getCurrentDomain().getMailer(),
+                    user.getGreeting(),
+                    user.getEmail(),
+                    user.getLogin(),
+                    newPassword,
+                    confirmationUUID
             );
         } catch (EmailException e) {
             Logger.error("Failed to send email", e);

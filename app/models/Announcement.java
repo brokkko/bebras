@@ -75,6 +75,7 @@ public class Announcement implements SerializableUpdatable {
 
     public void sendTestMail() throws EmailException {
         User user = User.current();
+        Mailer mailer = ServerConfiguration.getInstance().getCurrentDomain().getMailer();
 
         StringBuilder message = new StringBuilder();
         message.append("Здравствуйте");
@@ -84,7 +85,7 @@ public class Announcement implements SerializableUpdatable {
 
         message.append(this.message).append("\n\n");
         message.append("--\nС уважением,\n    оргкомитет, ").append(Event.current().getTitle());
-        message.append(" ").append(Email.getReplyTo());
+        message.append(" ").append(mailer.getReplyTo());
 
         message.append("\n\n");
         message.append("Рассылка предназначена для: ").append(role.getTitle());
@@ -94,7 +95,7 @@ public class Announcement implements SerializableUpdatable {
         message.append(controllers.routes.Announcements.fixAnnouncement(event.getId(), getId().toString()).absoluteURL(Http.Context.current().request()));
         message.append(".");
 
-        Email.sendEmail(user.getEmail(), "Тестирование рассылки: " + subject, message.toString());
+        mailer.sendEmail(user.getEmail(), "Тестирование рассылки: " + subject, message.toString());
     }
 
     public void sendEmails() {
@@ -153,6 +154,8 @@ public class Announcement implements SerializableUpdatable {
                         }
 
                         String eventId = announcement.getEvent().getId();
+                        Domain domain = Domain.getInstance(announcement.getEvent().getDomain());
+                        Mailer mailer = domain.getMailer(); //TODO store domain in Announcement
 
                         User user = User.getInstance(User.FIELD_LOGIN, login, eventId);
 
@@ -162,7 +165,7 @@ public class Announcement implements SerializableUpdatable {
                         }
 
                         try {
-                            announcement.sendEmailForUser(user, (String) object.get("un_lnk"));
+                            announcement.sendEmailForUser(mailer, user, (String) object.get("un_lnk"));
                         } catch (EmailException e) {
                             Logger.error("Failed to send email for user " + login + " in event " + eventId, e);
                         }
@@ -185,7 +188,7 @@ public class Announcement implements SerializableUpdatable {
         MongoConnection.getMailingListQueueCollection().save(object);
     }
 
-    private void sendEmailForUser(User user, String unsubscribeLink) throws EmailException {
+    private void sendEmailForUser(Mailer mailer, User user, String unsubscribeLink) throws EmailException {
         StringBuilder message = new StringBuilder();
         message.append("Здравствуйте");
         if (user.getGreeting() != null)
@@ -194,7 +197,7 @@ public class Announcement implements SerializableUpdatable {
 
         message.append(this.message).append("\n\n");
         message.append("--\nС уважением,\n    оргкомитет, ").append(event.getTitle());
-        message.append(" ").append(Email.getReplyTo());
+        message.append(" ").append(mailer.getReplyTo());
 
         message.append("\n\n");
         message.append("Вы получили это письмо, потому что зарегистрированы как ").append(role.getTitle());
@@ -209,7 +212,7 @@ public class Announcement implements SerializableUpdatable {
         if (Play.isDev())
             to = "iposov+" + to.replaceAll("@", "__") + "@gmail.com";
 
-        Email.sendEmail(to, subject, message.toString(), null, unsubscribeLink);
+        mailer.sendEmail(to, subject, message.toString(), null, unsubscribeLink);
     }
 
     public static Announcement getInstance(String aid) {

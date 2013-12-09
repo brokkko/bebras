@@ -107,6 +107,7 @@ public class Menu {
         if (user.hasEventAdminRight()) {
             menu.add(new MenuItem("Задания", routes.Problems.viewFolder(eventId, eventId)));
             menu.add(new MenuItem("Рассылка сообщений", routes.Announcements.prepareAnnouncement(eventId)));
+            menu.add(new MenuItem("Домен", routes.Domains.domainInfo(eventId, "")));
         }
 
         fillExtraItems(menu);

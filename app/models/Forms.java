@@ -116,11 +116,11 @@ public class Forms {
                                             "title", "Минут на прохождение"
                                     ),
                                     "validators", Utils.listify(
-                                    Utils.mapify(
-                                            "type", "int",
-                                            "compare", ">=0"
-                                    )
-                            ),
+                                            Utils.mapify(
+                                                    "type", "int",
+                                                    "compare", ">=0"
+                                            )
+                                    ),
                                     "required", true
                             ),
                             Utils.mapify(

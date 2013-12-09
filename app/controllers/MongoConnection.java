@@ -29,6 +29,7 @@ public class MongoConnection {
     public static final String COLLECTION_NAME_PROBLEMS = "problems";
     public static final String COLLECTION_NAME_ACTIVITY = "activity";
     public static final String COLLECTION_NAME_HTML_BLOCKS = "html_blocks";
+    public static final String COLLECTION_NAME_DOMAINS = "domains";
 
     public static final String COLLECTION_MAILING_LIST = "mail_list";
     public static final String COLLECTION_MAILING_LIST_QUEUE = "mail_list_queue";
@@ -81,6 +82,10 @@ public class MongoConnection {
 
     public static DBCollection getMailingListQueueCollection() {
         return getCollection(COLLECTION_MAILING_LIST_QUEUE);
+    }
+
+    public static DBCollection getDomainsCollection() {
+        return getCollection(COLLECTION_NAME_DOMAINS);
     }
 
     public static List<DBCollection> getContestCollections() {

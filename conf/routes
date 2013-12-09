@@ -130,6 +130,12 @@ POST        /:event/:plugin/:action/$params<(.+/)?>post_p              controlle
 #TODO report. comment in the normal line is not highlighted as an error, but it does not work
 GET         /:action/debug                                             controllers.Debug.debug(action)
 
+#domain
+GET         /:event/domain                                             controllers.Domains.domainInfo(event, domainName="")
+GET         /:event/:domain/domain                                     controllers.Domains.domainInfo(event, domain)
+POST        /:event/:domain/update_domain                              controllers.Domains.doChangeDomainInfo(event, domain)
+POST        /:event/:domain/update_mailer                              controllers.Domains.doChangeMailerInfo(event, domain)
+
 # Map static resources from the /public folder to the /assets URL path
 GET         /bebras_training/*file                                     controllers.Application.returnResource(file, base="/public/bebras-training")
 GET         /assets/*file                                              controllers.Assets.at(path="/public", file)
