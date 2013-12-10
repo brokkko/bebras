@@ -4,6 +4,11 @@ form.basic-form input[type="password"],
 form.basic-form input[type="input"],
 form.basic-form select {
     font-size: inherit;
+    background-color: #fdf5a7;
+}
+
+form.basic-form textarea {
+    background-color: #fdf5a7;
 }
 
 .basic-form {
@@ -211,5 +216,5 @@ form.basic-form .addr-input-field {
 }
 
 form.basic-form .error {
-    background-color: #ffd5bf;
+    background-color: #ff8c71;
 }

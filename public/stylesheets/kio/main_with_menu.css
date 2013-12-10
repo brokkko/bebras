@@ -22,7 +22,7 @@ pre {
 }
 
 p.warning {
-    color: #d22100;
+    color: #a01100;
 }
 
 /* two columns layout */
@@ -35,12 +35,10 @@ html.no-scroll, body.no-scroll {
 }
 
 header {
-    background: #efb201 url(../../images/kio-header.jpg) no-repeat center;
-    border-bottom: 2px #a7763e solid;
+    background: #ff8800 url(../../images/kio-header.png) no-repeat center;
     font-size: 0;
     color: #fff0b2;
-    padding: 6px;
-    height: 34px; /*2em + 2px*/
+    height: 41px; /*2em + 2px*/
 }
 
 /* wrapper, content, navigation */
@@ -48,6 +46,7 @@ header {
 .navigation {
     float: left;
     width: 213px;
+    background: url(../../images/nav-left.png) repeat-y;
 
     padding: 10px 0 32010px;
     margin: 0 0 -32000px;
@@ -60,7 +59,7 @@ header {
 }
 
 .wrapper {
-    background: #aff1f0 /*url(../../images/nav01.png) repeat*/;
+    background: #fbbe07 /*url(../../images/nav01.png) repeat*/;
     /*background-color: #2993dd;*/
     min-height: 100%;
     height: auto !important;
@@ -72,7 +71,7 @@ header {
 .content {
     margin: 0 0 -32000px 213px;
     padding: 1em 1em 32010px;
-    background-color: #aff1f0;
+    background-color: #fbbe07;
     /*border-left: 2px solid #51b5b5;*/
     overflow: hidden;
 }
@@ -113,10 +112,9 @@ footer {
     text-align: center;
     font-size: 0.75em;
     color: black;
-    padding: 2px;
+    padding: 4px 0 2px 0;
 
-    background: #efb201;
-    border-top: 2px #a7763e solid;
+    background: #ff8800;
 
     position: relative;
     height: 26px; /*0.75 em + 0.75 em */
@@ -131,7 +129,7 @@ footer {
 .developed-in-kio {
     float: right;
     position: absolute;
-    top: 8px;
+    top: 11px;
     right: 0;
     margin-right: 1em;
 }
@@ -159,37 +157,41 @@ nav img {
 /*}*/
 
 /*menu items*/
+nav {
+    padding-top: 140px;
+}
+
 nav .menu-item {
     display: block;
-    margin: 0 0.0em 0 0;
+    margin: 0 0 6px 40px;
     line-height: 1;
     text-decoration: none;
     padding: 4px 4px 4px 8px;
     text-align: center;
 }
 
-nav .menu-item:nth-child(odd) {
-    background-color: #efb201;
-}
-
 nav a {
-    background-color: #efb201;
+    background-color: #fbbe07;
     /*box-shadow: 1px 1px 1px #8e6a4c;*/
 }
 
+nav a:hover {
+    text-decoration: none;
+}
+
 nav span.menu-item {
-    background-color: #ffc60b !important;
+    background-color: #fedc0b !important;
     /*box-shadow: 1px 1px 1px #8e6a4c;*/
 }
 
 nav .menu-item, nav .menu-item:visited {
-    color: #941030;
+    color: black;
     /*font-weight: bold;*/
     font-family: "Arial", serif;
 }
 
 nav a.menu-item:hover {
-    background-color: #ffc60b;
+    background-color: #fedc0b;
 }
 
 .hidden {
@@ -197,10 +199,13 @@ nav a.menu-item:hover {
 }
 
 nav div.contest-logo {
-    background: url(../../images/kio-logo.jpg);
-    width: 140px;
-    height: 175px;
+    background: url(../../images/kio-logo.png);
+    width: 152px;
+    height: 163px;
     margin: 0 auto 1em;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .notification {
@@ -230,7 +235,7 @@ nav div.contest-logo {
 
 .info-box {
     /*border-radius: 1em;*/
-    background-color: #88cccd;
+    background-color: #fdf5a7;
     padding: 0.5em 1em;
     margin: 0.4em 1em;
     color: #000000;
@@ -330,11 +335,12 @@ nav div.contest-logo {
 }
 
 a, a:visited {
-    color: #941030;
+    color: #a51e00;
+    text-decoration: none;
 }
 
 a:hover {
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 #su-exit-form {
@@ -441,4 +447,11 @@ a:hover {
 
 .wym_area_top ul li {
     list-style: none;
+}
+
+/* html blocks */
+.contents {
+    background-color: #fdf5a7;
+    margin: 1em;
+    padding: 1em;
 }

@@ -37,8 +37,8 @@ $(function() {
             });
 
             $form.remove();
-//            $wym._box.remove();
-            $block.append($contents);
+            if (html != null && !/^\s*$/.test(html))
+                $block.append($contents);
 
             $block.find('.html-block-edit-action').text('Edit');
             $block.find('.html-block-undo-action').hide();
@@ -57,7 +57,7 @@ $(function() {
             var $textarea = $('<textarea></textarea>');
             $textarea.attr('name', 'html');
             $textarea.addClass('pure-html');
-            $textarea.text(html);
+            $textarea.text(html === null ? "" : html);
 
             $form.append($textarea);
 

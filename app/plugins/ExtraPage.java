@@ -7,6 +7,8 @@ import models.newserialization.Serializer;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.Menu;
+import views.html.extra_page;
+import views.html.extra_page_2col;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,6 +23,7 @@ public class ExtraPage extends Plugin {
     private String right;
     private String title;
     private boolean showInMenu;
+    private boolean twoColumns;
 
     @Override
     public void initPage() {
@@ -38,7 +41,10 @@ public class ExtraPage extends Plugin {
         if (right != null && !User.currentRole().hasRight(right) && !right.equals("anon")) //TODO remove anon role
             return Controller.forbidden();
 
-        return Controller.ok(views.html.extra_page.render(global ? "~global" : Event.currentId(), blockId));
+        if (twoColumns)
+            return Controller.ok(extra_page_2col.render(global ? "~global" : Event.currentId(), blockId));
+        else
+            return Controller.ok(extra_page.render(global ? "~global" : Event.currentId(), blockId));
     }
 
     @Override
@@ -52,11 +58,13 @@ public class ExtraPage extends Plugin {
         if (!getDefaultBlockId().equals(blockId))
             serializer.write("block", blockId);
         if (global)
-            serializer.write("global", global);
+            serializer.write("global", true);
         serializer.write("right", right);
         serializer.write("title", title);
         if (!showInMenu)
-            serializer.write("menu", showInMenu);
+            serializer.write("menu", false);
+        if (twoColumns)
+            serializer.write("two columns", true);
     }
 
     @Override
@@ -68,6 +76,7 @@ public class ExtraPage extends Plugin {
         right = deserializer.readString("right");
         title = deserializer.readString("title");
         showInMenu = deserializer.readBoolean("menu", true);
+        twoColumns = deserializer.readBoolean("two columns", false);
     }
 
     private String getDefaultBlockId() {

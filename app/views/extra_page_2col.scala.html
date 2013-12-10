@@ -1,0 +1,16 @@
+@(eventId:String, blockId:String)
+@import views.htmlblocks.HtmlBlockWidget
+@import views.htmlblocks.HtmlBlock
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List(HtmlBlockWidget.get)) { } {
+    <table class="two-columns-page">
+        <tr>
+            <td>
+                @HtmlBlock.load(eventId, blockId + "-col1").format
+            </td>
+            <td>
+                @HtmlBlock.load(eventId, blockId + "-col2").format
+            </td>
+        </tr>
+    </table>
+}

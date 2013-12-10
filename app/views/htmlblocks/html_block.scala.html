@@ -11,6 +11,8 @@
 <a class='html-block-undo-action' href='#'>Undo</a>
 </div>
 }
-<div class='contents@if(editable){ admin}else{}'>@Html(html.getHtml)</div>
+@if(html.getHtml.trim != "") {
+    <div class='contents@if(editable){ admin}else{}'>@Html(html.getHtml)</div>
+}
 <div style='clear: both'></div>
 </div>

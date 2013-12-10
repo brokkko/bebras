@@ -71,3 +71,7 @@ table.kvit-data {
 table.kvit-data td {
     padding-bottom: 0.5em;
 }
+
+.two-columns-page td {
+    width: 50%;
+}
