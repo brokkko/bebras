@@ -3,7 +3,6 @@ package models.forms.inputtemplate;
 import models.forms.RawForm;
 import models.newserialization.*;
 import play.api.templates.Html;
-import sun.util.logging.resources.logging_de;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -11,7 +11,7 @@
 @main_with_menu(event.getTitle)(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get, FormsWidget.get)) { } {
     <h1>Список поданных заявок</h1>
 
-    @Event.current.getHtmlBlock("school_org_applications_list_top").format
+    @Event.current.getHtmlBlock("school_org_applications_list_top_" + plugin.getRef).format
 
     @if(applications != null && applications.size > 0) {
         <table class='applications'>
@@ -72,7 +72,7 @@
         <p>Ни одной заявки пока не подано</p>
     }
 
-    @Event.current.getHtmlBlock("school_org_applications_list_middle").format
+    @Event.current.getHtmlBlock("school_org_applications_list_middle_" + plugin.getRef).format
 
     @if(plugin.needApplicationForm()) {
         <h1>Подача новой заявки</h1>
@@ -80,5 +80,5 @@
         @plugin.getAddApplicationForm.formatExtended(addApplicationForm, plugin.getAddCall, false, "Подать заявку")
     }
 
-    @Event.current.getHtmlBlock("school_org_applications_list_bottom").format
+    @Event.current.getHtmlBlock("school_org_applications_list_bottom_" + plugin.getRef).format
 }
