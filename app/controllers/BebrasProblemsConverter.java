@@ -168,7 +168,7 @@ public class BebrasProblemsConverter extends Controller {
             String extension = Utils.getExtension(imgName);
             File resourceFile = ServerConfiguration.getInstance().getNewResourceFile(extension);
 
-            String replacement = matcher.group(1) + routes.Application.returnFile(resourceFile.getName()) + matcher.group(3);
+            String replacement = matcher.group(1) + routes.Resources.returnFile(resourceFile.getName()) + matcher.group(3);
 
             matcher.appendReplacement(result, replacement);
 
