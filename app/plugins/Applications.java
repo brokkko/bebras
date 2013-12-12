@@ -141,7 +141,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         if (kvit.isGenerated())
             return Results.ok(views.html.applications.kvit.render(null, this, kvit));
         else
-            return Results.redirect(routes.Application.returnFile(kvit.getKvitFileName()));
+            return Results.redirect(routes.Resources.returnFile(kvit.getKvitFileName()));
     }
 
     private Result showKvit(String name) {

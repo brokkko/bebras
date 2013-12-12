@@ -137,9 +137,9 @@ POST        /:event/:domain/update_domain                              controlle
 POST        /:event/:domain/update_mailer                              controllers.Domains.doChangeMailerInfo(event, domain)
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /bebras_training/*file                                     controllers.Application.returnResource(file, base="/public/bebras-training")
+GET         /bebras_training/*file                                     controllers.Resources.returnResource(file, base="/public/bebras-training")
 GET         /assets/*file                                              controllers.Assets.at(path="/public", file)
-GET         /~res/*file                                                controllers.Application.returnFile(file)
-GET         /:event/~dat/*file                                         controllers.Application.returnDataFile(event, file)
+GET         /~res/*file                                                controllers.Resources.returnFile(file)
+GET         /:event/~dat/*file                                         controllers.Resources.returnDataFile(event, file)
 
 GET         /convert_bebras_problems_HJKsdCVsdflQsWjhfJKweahfih        controllers.BebrasProblemsConverter.convertProblems()

@@ -57,6 +57,7 @@ public class ServerConfiguration {
     private int dbVersion = 1;
     private boolean maintenanceMode = false;
     private List<String> traceIPs = new ArrayList<>();
+    private boolean allowCache = false;
 
     private final SecureRandom random = new SecureRandom();
     private final char[] randomCharacters;
@@ -92,6 +93,15 @@ public class ServerConfiguration {
         store();
     }
 
+    public boolean isAllowCache() {
+        return allowCache;
+    }
+
+    public void setAllowCache(boolean allowCache) {
+        this.allowCache = allowCache;
+        store();
+    }
+
     public boolean isMaintenanceMode() {
         return maintenanceMode;
     }
@@ -105,6 +115,7 @@ public class ServerConfiguration {
         dbVersion = deserializer.readInt("db version", 1);
         maintenanceMode = deserializer.readBoolean("maintenance", false);
         traceIPs = SerializationTypesRegistry.list(String.class).read(deserializer, "trace ips");
+        allowCache = deserializer.readBoolean("allow cache", false);
     }
 
     private void serialize(Serializer serializer) {
@@ -112,6 +123,7 @@ public class ServerConfiguration {
         serializer.write("db version", dbVersion);
         serializer.write("maintenance", maintenanceMode);
         SerializationTypesRegistry.list(String.class).write(serializer, "trace ips", traceIPs);
+        serializer.write("allow cache", allowCache);
     }
 
     private void store() {

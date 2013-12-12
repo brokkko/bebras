@@ -112,98 +112,6 @@ public class Application extends Controller {
         return redirect(routes.Application.enter(defaultEvent));
     }
 
-    public static Result returnResource(final String file, final String base) throws IOException {
-        InputStream resource = Application.class.getResourceAsStream(base + "/" + file);
-
-        if (resource == null)
-            return notFound();
-
-        String content = determineContentType(file);
-
-        return ok(resource).as(content);
-    }
-
-    private static String determineContentType(String fileName) {
-        fileName = fileName.toLowerCase();
-
-        String content = "text/plain";
-
-        if (fileName.endsWith(".html"))
-            content = "text/html";
-        else if (fileName.endsWith(".css"))
-            content = "text/css";
-        else if (fileName.endsWith(".js"))
-            content = "text/javascript";
-        else if (fileName.endsWith(".png"))
-            content = "image/png";
-        else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg"))
-            content = "image/jpeg";
-        else if (fileName.endsWith(".doc"))
-            content = "application/msword";
-        else if (fileName.endsWith(".csv"))
-            content = "text/csv";
-        else if (fileName.endsWith(".pdf"))
-            content = "application/pdf";
-
-        return content;
-    }
-
-    public static Result returnFile(String file) throws IOException {
-//        String s = "abc";
-//        for (int i = 0; i < 30000000; i++)
-//            s = s.substring(1) + "a";
-
-        String cacheKey = "resource-file-" + file;
-
-        final String decodedFile = URLDecoder.decode(file, "UTF-8");
-
-        byte[] content = null;
-        try {
-            content = Cache.getOrElse(cacheKey, new Callable<byte[]>() {
-                @Override
-                public byte[] call() throws Exception {
-                    File resource = ServerConfiguration.getInstance().getResource(decodedFile);
-                    if (!resource.exists())
-                        return null;
-
-                    //read file to byte array
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    byte[] buffer = new byte[1024 * 8];
-                    try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(resource))) {
-                        int read;
-                        while ((read = in.read(buffer)) > 0)
-                            baos.write(buffer, 0, read);
-                    } catch (Exception e) {
-                        Logger.warn("Failed to read resource " + decodedFile, e);
-                        return null;
-                    }
-
-                    return baos.toByteArray();
-                }
-            }, 30 * 60);  //30 minutes
-        } catch (Exception ignored) {
-        }
-
-        if (content == null)
-            return notFound();
-
-        String contentType = determineContentType(file);
-        return ok(content).as(contentType);
-    }
-
-    @Authenticated(admin = true)
-    @LoadEvent
-    public static Result returnDataFile(String eventId, String file) throws UnsupportedEncodingException {
-        file = URLDecoder.decode(file, "UTF-8");
-
-        File content = new File(Event.current().getEventDataFolder().getAbsolutePath() + "/" + file);
-
-        if (!content.exists())
-            return notFound();
-
-        return ok(content);
-    }
-
     public static Result wymEditorUpload() {
         //TODO has problems with cyrillic file names, and may have serious problems with html symbols in file name
         ObjectNode result = Json.newObject();
@@ -238,7 +146,7 @@ public class Application extends Controller {
         }
 
         result.put("original_filename", "an image");
-        result.put("thumbUrl", routes.Application.returnFile(destFile.getName()).toString());
+        result.put("thumbUrl", routes.Resources.returnFile(destFile.getName()).toString());
 
         ArrayNode arrayOfResults = (ArrayNode) Json.parse("[]");
         arrayOfResults.add(result);

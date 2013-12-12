@@ -6,6 +6,7 @@ import models.ServerConfiguration;
 import play.Logger;
 import play.api.templates.Html;
 import play.mvc.Action;
+import play.mvc.Call;
 import play.mvc.Http;
 import play.mvc.Result;
 import plugins.Plugin;
@@ -58,6 +59,14 @@ public class DcesControllerAction extends Action<DcesController> {
         Result call = delegate.call(ctx);
 
         finalizeRequest(ctx);
+
+        boolean forbidCaching = !configuration.allowCache() && !config.isAllowCache();
+        if (forbidCaching) {
+            // http://stackoverflow.com/questions/49547/making-sure-a-web-page-is-not-cached-across-all-browsers
+            ctx.response().setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            ctx.response().setHeader("Pragma", "no-cache");
+            ctx.response().setHeader("Expires", "0");
+        }
 
         return call;
     }
