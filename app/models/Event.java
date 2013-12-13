@@ -51,6 +51,7 @@ public class Event {
     private Map<String, InfoPattern> right2extraFields = new HashMap<>(); //extra fields for users
     private Map<String, Object> extraFields = new HashMap<>(); //extra fields for the event itself
 
+    private String skin;
     private String domain;
 
     private Event(Deserializer deserializer) {
@@ -86,6 +87,7 @@ public class Event {
         setPlugins(plugins);
 
         domain = deserializer.readString("domain");
+        skin = deserializer.readString("skin", "default");
 
         //TODO enters site before confirmation
         //TODO choose where to go if authorized
@@ -183,6 +185,8 @@ public class Event {
         );
 
         SerializationTypesRegistry.list(SerializationTypesRegistry.PLUGIN).write(serializer, "plugins", new ArrayList<>(plugins.values()));
+
+        serializer.write("skin", skin);
     }
 
     public static String currentId(Http.Context ctx) {
@@ -342,6 +346,7 @@ public class Event {
         List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
         setResultTranslators(resultTranslators);
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
+        skin = deserializer.readString("skin", "");
 
         List<UserRole> roles = SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).read(deserializer, "roles");
         setRoles(roles);
@@ -421,6 +426,10 @@ public class Event {
         if (event != null && event.getId().startsWith("bebras") || event.getId().startsWith("kio"))
             return "Центр информатизации образования «КИО»";
         return "Центр продуктивного обучения";
+    }
+
+    public String getSkin() {
+        return skin;
     }
 
     public User createUser(String password, UserRole role, Info info, User register, boolean partialRegistration) {

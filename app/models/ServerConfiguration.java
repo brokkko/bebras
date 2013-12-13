@@ -175,10 +175,6 @@ public class ServerConfiguration {
         return new File(Play.application().getFile(base).getAbsolutePath() + "/" + name);
     }
 
-    public String getSkin() {
-        return getCurrentDomain().getSkin();
-    }
-
     public boolean isIpTraced(String ip) {
         if (ip == null)
             return false;

@@ -17,16 +17,6 @@ public class Domain implements SerializableUpdatable {
                     "fields",
                     Utils.listify(
                             Utils.mapify(
-                                    "name", "skin",
-                                    "view", Utils.mapify(
-                                            "type", "dropdown",
-                                            "title", "Оформление",
-                                            "placeholder", "Выберите тип оформления",
-                                            "variants", Utils.listify("bbtc", "bebras", "kio")
-                                    ),
-                                    "required", true
-                            ),
-                            Utils.mapify(
                                     "name", "defaultEvent",
                                     "view", Utils.mapify(
                                             "type", "string",
@@ -65,7 +55,6 @@ public class Domain implements SerializableUpdatable {
     private Mailer mailer = new Mailer();
     private String googleCounter = "";
     private String yandexMetrika = "";
-    private String skin = "";
     private String defaultEvent = "default";
 
     public static Domain getInstance(final String name) {
@@ -108,7 +97,6 @@ public class Domain implements SerializableUpdatable {
         serializer.write("mailer", mailer);
         serializer.write("googleCounter", googleCounter);
         serializer.write("yandexMetrika", yandexMetrika);
-        serializer.write("skin", skin);
         serializer.write("defaultEvent", defaultEvent);
     }
 
@@ -129,7 +117,6 @@ public class Domain implements SerializableUpdatable {
 
         googleCounter = deserializer.readString("googleCounter", "");
         yandexMetrika = deserializer.readString("yandexMetrika", "");
-        skin = deserializer.readString("skin", "");
         defaultEvent = deserializer.readString("defaultEvent", "");
     }
 
@@ -147,10 +134,6 @@ public class Domain implements SerializableUpdatable {
 
     public String getYandexMetrika() {
         return yandexMetrika;
-    }
-
-    public String getSkin() {
-        return skin;
     }
 
     public String getDefaultEvent() {

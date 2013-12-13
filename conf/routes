@@ -105,7 +105,6 @@ POST        /:event/*problem_link/edit_problem                         controlle
 #global admin
 GET         /migrate                                                   controllers.Application.migrate()
 POST        /wymupload                                                 controllers.Application.wymEditorUpload()
-GET         /list                                                      controllers.Application.listEvents()
 GET         /:index/migrate                                            controllers.Application.migrateByIndex(index:Integer)
 POST        /:event/clone_event                                        controllers.EventAdministration.doClone(event)
 POST        /:event/copy_event                                         controllers.EventAdministration.doCopy(event)

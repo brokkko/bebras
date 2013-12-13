@@ -23,7 +23,6 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.event_message;
-import views.html.list_events;
 
 import java.io.*;
 import java.net.URLDecoder;
@@ -151,24 +150,6 @@ public class Application extends Controller {
         ArrayNode arrayOfResults = (ArrayNode) Json.parse("[]");
         arrayOfResults.add(result);
         return ok(arrayOfResults).as("text/html"); //text/html is because upload_image plugin needs this
-    }
-
-    public static Result listEvents() {
-        String domain = ServerConfiguration.getInstance().getCurrentDomain().getName();
-
-        List<String> events = new ArrayList<>();
-
-        try (DBCursor eventsCursor = MongoConnection.getEventsCollection().find(
-                new BasicDBObject("domain", domain),
-                new BasicDBObject("_id", 1)
-        )) {
-            while (eventsCursor.hasNext()) {
-                DBObject event = eventsCursor.next();
-                events.add((String) event.get("_id"));
-            }
-        }
-
-        return ok(list_events.render(events));
     }
 
     @Authenticated

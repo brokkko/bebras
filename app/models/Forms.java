@@ -251,6 +251,16 @@ public class Forms {
                                     "required", true
                             ),
                             Utils.mapify(
+                                    "name", "skin",
+                                    "view", Utils.mapify(
+                                            "type", "dropdown",
+                                            "title", "Оформление",
+                                            "placeholder", "Выберите тип оформления",
+                                            "variants", Utils.listify("bbtc", "bebras", "kio")
+                                    ),
+                                    "required", true
+                            ),
+                            Utils.mapify(
                                     "name", "tables",
                                     "view", Utils.mapify(
                                             "type", "json list",

@@ -62,7 +62,7 @@ public class ResourceLink implements Widget {
                 break;
             case "css":
                 if (SKINNED_CSS.contains(localUrl) || SKINNED_CSS.contains(localUrl + ".css")) {
-                    String skin = ServerConfiguration.getInstance().getSkin();
+                    String skin = Event.current().getSkin();
                     localUrl = skin + '/' + localUrl;
                 }
 

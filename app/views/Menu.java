@@ -50,18 +50,18 @@ public class Menu {
         Event event = Event.current();
         String eventId = event == Event.ERROR_EVENT ? null : event.getId();
 
-        if (eventId == null) {
-            menu.add(new MenuItem("Список событий", routes.Application.listEvents()));
-        } else if (User.isAuthorized()) {
-            User user = User.current();
+        if (eventId != null) {
+            if (User.isAuthorized()) {
+                User user = User.current();
 
-            if (user.isPartialRegistration()) {
-                addPersonalDataMenuItem(menu, eventId);
-                addExitMenuItem(menu, eventId);
+                if (user.isPartialRegistration()) {
+                    addPersonalDataMenuItem(menu, eventId);
+                    addExitMenuItem(menu, eventId);
+                } else
+                    fillMenuForAuthorizedUser(menu, event, eventId, user);
             } else
-                fillMenuForAuthorizedUser(menu, event, eventId, user);
-        } else
-            fillMenuForAnon(menu, event, eventId);
+                fillMenuForAnon(menu, event, eventId);
+        }
 
         items = menu;
     }
