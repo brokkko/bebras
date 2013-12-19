@@ -33,6 +33,7 @@ public class MongoConnection {
 
     public static final String COLLECTION_MAILING_LIST = "mail_list";
     public static final String COLLECTION_MAILING_LIST_QUEUE = "mail_list_queue";
+    public static final String COLLECTION_WORKERS = "workers";
 
     private static final Migrator[] migrators = new Migrator[] {
             null, //0
@@ -86,6 +87,10 @@ public class MongoConnection {
 
     public static DBCollection getDomainsCollection() {
         return getCollection(COLLECTION_NAME_DOMAINS);
+    }
+
+    public static DBCollection getWorkersCollection() {
+        return getCollection(COLLECTION_WORKERS);
     }
 
     public static List<DBCollection> getContestCollections() {

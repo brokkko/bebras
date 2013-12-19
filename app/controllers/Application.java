@@ -1,9 +1,5 @@
 package controllers;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
@@ -15,7 +11,6 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.Logger;
-import play.cache.Cache;
 import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
@@ -25,7 +20,6 @@ import play.mvc.Result;
 import views.html.event_message;
 
 import java.io.*;
-import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;

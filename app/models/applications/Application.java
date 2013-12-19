@@ -157,7 +157,7 @@ public class Application implements SerializableUpdatable {
     }
 
     public boolean createUsers(Event event, User user, UserRole role, ApplicationType appType) {
-        if (!appType.isSelf())
+        if (appType.isSelf())
             return true;
 
         String prefix = getCodeForUser(user).toLowerCase() + number + ".";
@@ -188,10 +188,12 @@ public class Application implements SerializableUpdatable {
             created ++;
         }
 
-        try {
-            sendEmailAboutCreatedUsers(user);
-        } catch (EmailException e) {
-            Logger.error("Failed to send email with application confirmation", e);
+        if (Http.Context.current.get() != null) { //TODO this is a hack, because sending emails does not work without http context. Need to get context here or just a link to event
+            try {
+                sendEmailAboutCreatedUsers(user);
+            } catch (Exception e) {
+                Logger.error("Failed to send email with application confirmation", e);
+            }
         }
 
         return true;
@@ -230,5 +232,9 @@ public class Application implements SerializableUpdatable {
         logins = new ArrayList<>();
 
         return true;
+    }
+
+    public void clearUsers() {
+        logins.clear();
     }
 }

@@ -96,6 +96,7 @@ form.do_register=Зарегистрироваться
 form.do_register_user=Зарегистрировать
 form.do_change=Изменить
 form.do_save=Сохранить
+form.do_start=Начать
 form.do_login=Войти
 form.do_remind=Восстановить
 form.do_add=Добавить

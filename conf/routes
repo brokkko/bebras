@@ -58,6 +58,7 @@ POST        /:event/:table/show_table                                  controlle
 GET         /:event/:table/show_table_print                            controllers.Tables.showTablePrint(event, table:Integer)
 GET         /:event/:contest/:table/csv_table                          controllers.Tables.csvTableForContest(event, contest, table:Integer)
 GET         /:event/tables_list                                        controllers.Tables.tablesList(event)
+GET         /:event/workers_list                                       controllers.EventAdministration.workersList(event)
 POST        /:event/add_contest                                        controllers.EventAdministration.addContest(event)
 POST        /:event/invalidate_event_results                           controllers.EventAdministration.doInvalidateEventResults(event)
 POST        /:event/:role/remove_registered                            controllers.EventAdministration.doRemoveAllRegisteredByRole(event, role)

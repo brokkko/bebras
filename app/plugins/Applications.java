@@ -1,5 +1,10 @@
 package plugins;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import controllers.MongoConnection;
+import controllers.worker.Worker;
 import models.Event;
 import models.User;
 import models.UserRole;
@@ -23,6 +28,7 @@ import views.Menu;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import controllers.routes;
@@ -106,6 +112,10 @@ public class Applications extends Plugin { //TODO test for right in all calls
                 if (!level2)
                     return Results.forbidden();
                 return confirmApplication(params);
+            case "transfer":
+                if (!level2)
+                    return Results.forbidden();
+                return transferApplications();
         }
 
         return Controller.notFound();
@@ -193,7 +203,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         FormDeserializer deserializer = new FormDeserializer(getAddApplicationForm());
         RawForm rawForm = deserializer.getRawForm();
         if (rawForm.hasErrors())
-            return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, rawForm, this, Kvit.getKvitForUser(user)));
+            return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, rawForm, new RawForm(), this, Kvit.getKvitForUser(user)));
 
         String type = deserializer.readString("type");
         int size = deserializer.readInt("size");
@@ -210,7 +220,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return Controller.redirect(getAppsCall());
     }
 
-    private void addApplicationForUser(User user, Event event, int size, ApplicationType appType) {
+    private Application addApplicationForUser(User user, Event event, int size, ApplicationType appType) {
         List<Application> applications = getApplications(user);
         int number = 1;
         int appsSize = applications.size();
@@ -233,6 +243,8 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
         applications.add(newApplication);
         user.store();
+
+        return newApplication;
     }
 
     private Result doPayment(String name) {
@@ -345,11 +357,11 @@ public class Applications extends Plugin { //TODO test for right in all calls
                 applications.remove(i);
                 user.store();
 
-                return Controller.redirect(getAppsCall());
+                return Results.redirect(getAppsCall());
             }
         }
 
-        return Controller.notFound();
+        return Results.notFound();
     }
 
     public Html getKvitHtml(User user, Application app, Kvit kvit) {
@@ -364,12 +376,16 @@ public class Applications extends Plugin { //TODO test for right in all calls
     }
 
     private Result organizerApplications() {
+        return organizerApplications(new RawForm(), new RawForm());
+    }
+
+    private Result organizerApplications(RawForm addForm, RawForm transferForm) {
         User user = User.current();
         Kvit kvit = Kvit.getKvitForUser(user);
 
         List<Application> applications = getApplications(user);
 
-        return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, new RawForm(), this, kvit));
+        return Results.ok(views.html.applications.org_apps.render(Event.current(), applications, addForm, transferForm, this, kvit));
     }
 
     private List<Application> getApplications(User user) { //TODO report: extract method does not extract //noinspection
@@ -401,6 +417,10 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return getCall("do_payment", false, name);
     }
 
+    public Call getTransferApplicationCall() {
+        return getCall("transfer", false, "");
+    }
+
     public boolean needApplicationForm() {
         for (ApplicationType applicationType : applicationTypes)
             if (!applicationType.isSelf())
@@ -410,24 +430,6 @@ public class Applications extends Plugin { //TODO test for right in all calls
     }
 
     public InputForm getAddApplicationForm() {
-        List<String> titlesList = new ArrayList<>();
-        List<String> typesList = new ArrayList<>();
-
-        for (ApplicationType applicationType : applicationTypes) {
-            if (applicationType.isSelf())
-                continue;
-
-            String description = applicationType.getDescription();
-
-            if (applicationType.getPrice() > 0)
-                description += " (" + applicationType.getPrice() + "р.)";
-            else
-                description += " (бесплатно)";
-
-            titlesList.add(description);
-            typesList.add(applicationType.getTypeName());
-        }
-
         return InputForm.deserialize(
                 new MemoryDeserializer(
                         "fields",
@@ -441,24 +443,45 @@ public class Applications extends Plugin { //TODO test for right in all calls
                                         ),
                                         "required", true,
                                         "validators", Utils.listify(
-                                        Utils.mapify(
-                                                "type", "int",
-                                                "compare", "<=100"
-                                        ),
-                                        Utils.mapify(
-                                                "type", "int",
-                                                "compare", ">0"
+                                                Utils.mapify(
+                                                        "type", "int",
+                                                        "compare", "<=100"
+                                                ),
+                                                Utils.mapify(
+                                                        "type", "int",
+                                                        "compare", ">0"
+                                                )
                                         )
-                                )
+                                ),
+                                getAppTypeDropdown()
+                        ),
+                        "validators", Utils.listify()
+                )
+        );
+    }
+
+    public InputForm getApplicationTransferForm() {
+        return InputForm.deserialize(
+                new MemoryDeserializer(
+                        "fields",
+                        Utils.listify(
+                                getAppTypeDropdown(),
+                                Utils.mapify(
+                                        "name", "dest_event",
+                                        "view", Utils.mapify(
+                                                "type", "string",
+                                                "title", "Идентификатор события",
+                                                "placeholder", "Введите id события"
+                                        ),
+                                        "required", true,
+                                        "validators", Utils.listify()
                                 ),
                                 Utils.mapify( //TODO don't do type if there is only one application type
-                                        "name", "type",
+                                        "name", "dest_role",
                                         "view", Utils.mapify(
-                                                "type", "dropdown",
-                                                "title", "Тип заявки",
-                                                "placeholder", "Выберите тип",
-                                                "titles", titlesList,
-                                                "variants", typesList
+                                                "type", "string",
+                                                "title", "Роль получателей",
+                                                "placeholder", "Введите роль получателей"
                                         ),
                                         "required", true,
                                         "validators", Utils.listify()
@@ -466,6 +489,42 @@ public class Applications extends Plugin { //TODO test for right in all calls
                         ),
                         "validators", Utils.listify()
                 )
+        );
+
+    }
+
+    private Map<Object, Object> getAppTypeDropdown() {
+        List<String> titlesList = new ArrayList<>();
+        List<String> typesList = new ArrayList<>();
+
+        for (ApplicationType applicationType : applicationTypes) {
+            if (applicationType.isSelf())
+                continue;
+            if (!applicationType.isAllowSelect())
+                continue;
+
+            String description = applicationType.getDescription();
+
+            if (applicationType.getPrice() > 0)
+                description += " (" + applicationType.getPrice() + "р.)";
+            else
+                description += " (бесплатно)";
+
+            titlesList.add(description);
+            typesList.add(applicationType.getTypeName());
+        }
+
+        return Utils.mapify( //TODO don't do type if there is only one application type
+                "name", "type",
+                "view", Utils.mapify(
+                        "type", "dropdown",
+                        "title", "Тип заявки",
+                        "placeholder", "Выберите тип",
+                        "titles", titlesList,
+                        "variants", typesList
+                ),
+                "required", true,
+                "validators", Utils.listify()
         );
     }
 
@@ -522,5 +581,153 @@ public class Applications extends Plugin { //TODO test for right in all calls
                 if (!hasApp)
                     addApplicationForUser(user, Event.current(), 1, applicationType);
             }
+    }
+
+    private Result transferApplications() {
+        FormDeserializer deserializer = new FormDeserializer(getApplicationTransferForm());
+        RawForm rawForm = deserializer.getRawForm();
+
+        if (rawForm.hasErrors())
+            return organizerApplications(new RawForm(), rawForm);
+
+        final Event event = Event.current();
+        final String type = rawForm.get("type");
+        final ApplicationType appType = getTypeByName(type);
+
+        if (appType == null)
+            return Results.badRequest();
+
+        final String destEventId = rawForm.get("dest_event");
+        final Event destEvent = Event.getInstance(destEventId);
+
+        if (destEvent == null)
+            return Results.badRequest("No destination event " + destEventId);
+
+        final String destRoleName = rawForm.get("dest_role");
+        final UserRole destRole = destEvent.getRole(destRoleName);
+        if (destRole == UserRole.EMPTY)
+            return Results.badRequest("Unknown destination role");
+
+        final Applications destPlugin = findApplicationPlugin(destEvent, type);
+
+        if (destPlugin == null)
+            return Results.badRequest("no such app type in destination");
+
+        final ApplicationType destAppType = destPlugin.getTypeByName(type);
+
+        if (destAppType == null)
+            return Results.badRequest("destination event does not have corresponding type");
+
+        final UserRole newParticipantRole = destEvent.getRole(destAppType.getParticipantRole());
+        if (newParticipantRole == UserRole.EMPTY)
+            return Results.badRequest("invalid destination role");
+
+        final Worker worker = new Worker("transfer apps", "From event " + Event.currentId() + " to " + destEventId + ", type " + type);
+        worker.execute(new Worker.Task() {
+            @Override
+            public void run() throws Exception {
+                //begin transfer of applications
+
+                DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
+
+                int userIndex = 0;
+                int transferredUsersCount = 0;
+                try (DBCursor usersCursor = MongoConnection.getUsersCollection().find(query)) {
+                    while (usersCursor.hasNext()) {
+
+                        User user = User.deserialize(new MongoDeserializer(usersCursor.next()));
+
+                        if (!user.getRole().hasRight(right))
+                            continue;
+
+                        userIndex ++;
+                        if (userIndex % 100 == 0)
+                            worker.logInfo("processing user " + userIndex + " total transferred " + transferredUsersCount);
+
+                        List<Application> applications = getApplications(user);
+                        if (applications == null || applications.isEmpty())
+                            continue;
+
+                        List<Application> appsToTransfer = new ArrayList<>();
+                        for (Application application : applications)
+                            if (type.equals(application.getType()) && application.getState() == Application.CONFIRMED)
+                                appsToTransfer.add(application);
+
+                        if (appsToTransfer.isEmpty())
+                            continue;
+
+                        User newUser;
+                        List<Application> transferredApplications;
+
+                        User userWithSameLogin = User.getUserByLogin(destEventId, user.getLogin());
+                        if (userWithSameLogin != null) {
+                            if (user.getEmail().toLowerCase().equals(userWithSameLogin.getEmail().toLowerCase()))
+                                worker.logWarn("User with this login already exists, but emails equal: " + userWithSameLogin.getLogin());
+                            else {
+                                worker.logWarn("User with this login already exists, but emails differ: " + userWithSameLogin.getLogin());
+                                continue;
+                            }
+
+                            transferredApplications = new ArrayList<>();
+                            for (Application application : appsToTransfer) {
+                                Application transferredApplication = addApplicationForUser(userWithSameLogin, destEvent, application.getSize(), destAppType);
+                                transferredApplications.add(transferredApplication);
+                            }
+
+                            newUser = userWithSameLogin;
+                        } else {
+                            newUser = transferUser(user, appsToTransfer);
+                            transferredApplications = getApplications(newUser);
+                        }
+
+                        //remove registered users from applications
+                        for (Application application : transferredApplications) {
+                            application.clearUsers();
+                            application.setState(Application.CONFIRMED);
+                            application.createUsers(destEvent, newUser, newParticipantRole, destAppType);
+                            worker.logInfo("Transferred user: (" + user.getLogin() + ") " + application.getName());
+                        }
+
+                        newUser.store();
+
+                        transferredUsersCount++;
+                    }
+                }
+            }
+
+            private User transferUser(User user, List<Application> appsToTransfer) {
+                User newUser = new User();
+
+                newUser.setEvent(destEvent);
+                newUser.setRole(destRole);
+                newUser.setInfo(user.getInfo());
+                newUser.setPasswordHash(user.getPasswordHash());
+                newUser.setConfirmed(true);
+                newUser.setPartialRegistration(true);
+                newUser.setWantAnnouncements(true);
+
+                //set apps
+                newUser.getInfo().put(getUserField(), appsToTransfer);
+
+                newUser.store();
+
+                //reload user because we need to make new objects for its applications
+                newUser = User.getUserByLogin(destEventId, user.getLogin());
+
+                return newUser;
+            }
+        });
+
+        return Results.redirect(getCall("apps"));
+    }
+
+    private Applications findApplicationPlugin(Event destEvent, String type) {
+        for (Plugin plugin : destEvent.getPlugins())
+            if (plugin instanceof Applications)
+                for (ApplicationType applicationType : ((Applications) plugin).applicationTypes)
+                    if (type.equals(applicationType.getTypeName()))
+                        return (Applications) plugin;
+
+        return null;
     }
 }

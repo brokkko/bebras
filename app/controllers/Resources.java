@@ -108,6 +108,8 @@ public class Resources extends Controller {
             content = "text/csv";
         else if (fileName.endsWith(".pdf"))
             content = "application/pdf";
+        else if (fileName.endsWith(".log") || fileName.endsWith(".txt"))
+            content = "text/plain";
 
         return content;
     }

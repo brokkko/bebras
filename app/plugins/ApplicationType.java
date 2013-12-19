@@ -18,6 +18,7 @@ public class ApplicationType implements SerializableUpdatable {
     private int price; /* TODO make price float */
     private String participantRole;
     private boolean self;
+    private boolean allowSelect = true;
 
     public String getTypeName() {
         return typeName;
@@ -43,6 +44,10 @@ public class ApplicationType implements SerializableUpdatable {
         return self;
     }
 
+    public boolean isAllowSelect() {
+        return allowSelect;
+    }
+
     @Override
     public void serialize(Serializer serializer) {
         serializer.write("type", typeName);
@@ -51,6 +56,7 @@ public class ApplicationType implements SerializableUpdatable {
         serializer.write("price", price);
         serializer.write("participant role", participantRole);
         serializer.write("self", self);
+        serializer.write("allow select", allowSelect);
     }
 
     @Override
@@ -61,5 +67,6 @@ public class ApplicationType implements SerializableUpdatable {
         price = deserializer.readInt("price", 0);
         participantRole = deserializer.readString("participant role", "PARTICIPANT");
         self = deserializer.readBoolean("self", false);
+        allowSelect = deserializer.readBoolean("allow select", true);
     }
 }

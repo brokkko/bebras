@@ -1,13 +1,9 @@
-@(event: Event, applications: java.util.List[models.applications.Application], addApplicationForm: models.forms.RawForm, plugin:plugins.Applications, kvit:models.applications.Kvit)
+@(event: Event, applications: java.util.List[models.applications.Application], addApplicationForm: models.forms.RawForm, transferApplicationsForm: models.forms.RawForm, plugin:plugins.Applications, kvit:models.applications.Kvit)
 @import views.widgets.FormsWidget
 @import views.widgets.ApplicationsWidget
 @import views.widgets.AdminWidget
 @import views.htmlblocks.HtmlBlockWidget
-@import models.forms.RawForm
 @import models.applications.Application
-@import plugins.Applications
-@import views.htmlblocks.HtmlBlock
-
 @main_with_menu(event.getTitle)(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get, FormsWidget.get)) { } {
     <h1>Список поданных заявок</h1>
 
@@ -81,4 +77,14 @@
     }
 
     @Event.current.getHtmlBlock("school_org_applications_list_bottom_" + plugin.getRef).format
+
+
+    @if(User.current.hasEventAdminRight) {
+        <div class='info-box@if(transferApplicationsForm.hasErrors){ initially-open}'>
+            <h3 class='info-box-cut-shower'>Перенос заявок...</h3>
+            <div class='info-box-cut'>
+                @plugin.getApplicationTransferForm.formatExtended(transferApplicationsForm, plugin.getTransferApplicationCall, true, "form.do_start")
+            </div>
+        </div>
+    }
 }

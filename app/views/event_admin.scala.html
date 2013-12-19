@@ -4,7 +4,8 @@
 @import models.Event
 @import scala.List
 @import java.io.File
-@main_with_menu("Администрирование " + Event.current.getTitle)(List(AdminWidget.get, FormsWidget.get)) { } {
+@import views.widgets.ResourceLink
+@main_with_menu("Администрирование " + Event.current.getTitle)(List(AdminWidget.get, FormsWidget.get, new ResourceLink("tables.css"))) { } {
     <h1>Администрирование события @Event.current.getTitle</h1>
 
     @if(flash.get("message") != null) {
@@ -33,13 +34,6 @@
     @files_list(new File(Event.current.getEventDataFolder, "keng-codes"), ServerConfiguration.getInstance().getResource("school codes template.csv"))
 
     @upload_fields()
-
-    @*
-    <h2>Данные по событию:</h2>
-    @for((table, ind) <- Event.current.getTables.zipWithIndex) {
-        <p>@(ind + 1). @table.getTitle: <a href="@routes.Tables.csvTable(Event.currentId, ind)">скачать</a></p>
-    }
-    *@
 
     <h2>Операции с событием</h2>
     <p><a href="#" class='submit actions-invalidate-event-results' title="Пересчитать результаты события">Пересчитать результаты события</a></p>

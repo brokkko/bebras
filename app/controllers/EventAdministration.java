@@ -5,6 +5,7 @@ import com.mongodb.*;
 import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
+import controllers.worker.Worker;
 import models.*;
 import models.forms.InputForm;
 import models.forms.RawForm;
@@ -37,6 +38,7 @@ import scala.concurrent.duration.Duration;
 import views.html.contests_list;
 import views.html.error;
 import views.html.event_admin;
+import views.html.workers_list;
 import views.htmlblocks.HtmlBlock;
 
 import java.io.*;
@@ -641,6 +643,11 @@ public class EventAdministration extends Controller {
         }
 
         event.createUser(password, role, info, register, false);
+    }
+
+    public static Result workersList(String eventId) {
+        List<Worker> workers = Worker.listWorkers(Event.current());
+        return ok(workers_list.render(workers));
     }
 
     private static String getUserFieldsTransformation(String[] title) {

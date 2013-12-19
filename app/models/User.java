@@ -13,7 +13,6 @@ import models.results.Info;
 import models.results.InfoPattern;
 import models.results.Translator;
 import org.bson.types.ObjectId;
-import play.Logger;
 import play.Play;
 import play.cache.Cache;
 import play.mvc.Http;
@@ -99,7 +98,7 @@ public class User implements SerializableUpdatable {
         if (eventId != null) {
             event = Event.getInstance(eventId);
             if (event == null)
-                throw new IllegalStateException("Deserializing user with nonexistent event " + eventId);
+                throw new IllegalStateException("Deserializing user with nonexistent event " + eventId); //TODO was here with bebras13 once!! Why??
         } else
             event = Event.current();
 
