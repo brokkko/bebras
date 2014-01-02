@@ -308,8 +308,7 @@ public class BebrasPlacesEvaluator extends Plugin {
 
         lines.add(new CertificateLine("Настоящим сертификатом удостоверяется, что", 12, false));
         lines.add(new CertificateLine(info.get("surname") + " " + info.get("name") + " " + info.get("patronymic"), 12, true));
-        lines.add(new CertificateLine((String) info.get("school_name"), 10, false));
-        lines.add(new CertificateLine("(" + info.get("address") + ")", 10, false));
+        addSchoolAndAddr(lines, info);
         lines.add(new CertificateLine("принял(а) активное участие в подготовке", 12, false));
         lines.add(new CertificateLine("и проведении конкурса «Бобёр-2013»", 12, false));
 
@@ -365,8 +364,7 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("Настоящим сертификатом-дипломом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
-            lines.add(new CertificateLine((String) orgInfo.get("school_name"), 10, false));
-            lines.add(new CertificateLine("(" + orgInfo.get("address") + ")", 10, false));
+            addSchoolAndAddr(lines, orgInfo);
             lines.add(new CertificateLine("получил(а) отличные результаты,", 12, false));
             lines.add(new CertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
             lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
@@ -375,8 +373,7 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("Настоящим сертификатом-дипломом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
-            lines.add(new CertificateLine((String) orgInfo.get("school_name"), 10, false));
-            lines.add(new CertificateLine("(" + orgInfo.get("address") + ")", 10, false));
+            addSchoolAndAddr(lines, orgInfo);
             lines.add(new CertificateLine("получил(а) хорошие результаты,", 12, false));
             lines.add(new CertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
             lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
@@ -385,8 +382,7 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("Настоящим сертификатом-грамотой", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
-            lines.add(new CertificateLine((String) orgInfo.get("school_name"), 10, false));
-            lines.add(new CertificateLine("(" + orgInfo.get("address") + ")", 10, false));
+            addSchoolAndAddr(lines, orgInfo);
             lines.add(new CertificateLine("успешно участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
             lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
             lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
@@ -394,10 +390,47 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
-            lines.add(new CertificateLine((String) orgInfo.get("school_name"), 10, false));
-            lines.add(new CertificateLine("(" + orgInfo.get("address") + ")", 10, false));
+            addSchoolAndAddr(lines, orgInfo);
             lines.add(new CertificateLine("участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
         }
         return lines;
+    }
+
+    private void addSchoolAndAddr(List<CertificateLine> lines, Info orgInfo) {
+        String schoolName = (String) orgInfo.get("school_name");
+        addProbablyLongLine(lines, schoolName);
+
+        String address = "(" + orgInfo.get("address") + ")";
+        addProbablyLongLine(lines, address);
+    }
+
+    private void addProbablyLongLine(List<CertificateLine> lines, String line) {
+        int len = line.length();
+        if (len < 50) {
+            lines.add(new CertificateLine(line, 10, false));
+            return;
+        }
+
+        int i1 = line.indexOf(" ", len / 2); //second half
+        int i2 = line.lastIndexOf(" ", len / 2); //first half
+
+        if (i1 < 0 && i2 < 0) {
+            lines.add(new CertificateLine(line, 10, false));
+            return;
+        }
+
+        int i;
+
+        if (i1 < 0)
+            i = i2;
+        else if (i2 < 0)
+            i = i1;
+        else if (len / 2 - i2 < i1 - len / 2)
+            i = i2;
+        else
+            i = i1;
+
+        lines.add(new CertificateLine(line.substring(0, i), 10, false));
+        lines.add(new CertificateLine(line.substring(i + 1), 10, false));
     }
 }
