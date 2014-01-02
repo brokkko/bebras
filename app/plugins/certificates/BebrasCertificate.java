@@ -9,9 +9,7 @@ import models.Event;
 import models.User;
 import models.applications.Application;
 import play.Logger;
-import plugins.Applications;
 
-import java.io.IOException;
 import java.util.List;
 
 public class BebrasCertificate extends Certificate {
