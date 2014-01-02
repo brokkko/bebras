@@ -130,6 +130,10 @@ public class MongoConnection {
         return getMongo().getDB(dbname);
     }
 
+    public static Object eval(String code, Object... args) {
+        return getDb().eval(code, args);
+    }
+
     public static boolean mayEnqueueEvents() {
         return Http.Context.current.get() != null;
     }

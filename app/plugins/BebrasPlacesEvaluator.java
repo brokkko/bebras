@@ -13,9 +13,14 @@ import models.results.Info;
 import org.bson.types.ObjectId;
 import play.libs.Akka;
 import play.libs.F;
+import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
+import plugins.certificates.BebrasCertificate;
+import plugins.certificates.CertificateLine;
+import views.Menu;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -31,8 +36,12 @@ public class BebrasPlacesEvaluator extends Plugin {
     private String russiaField; //field name to store result in russia
     private String roleName; //role of users
 
+    private String gradesDescription; //TODO implement in the other way
+
     @Override
     public void initPage() {
+        Menu.addMenuItem("Мой сертификат", getCall("show_pdf"), "participant");
+        Menu.addMenuItem("Мой сертификат", getCall("show_pdf"), "school org");
     }
 
     @Override
@@ -41,6 +50,13 @@ public class BebrasPlacesEvaluator extends Plugin {
 
     @Override
     public Result doGet(String action, String params) {
+
+        if (action.equals("show_pdf"))
+            try {
+                return showPdf(params);
+            } catch (Exception e) {
+                return Results.forbidden("Этот сертификат вам недоступен");
+            }
 
         final Event event = Event.current();
         final String eventId = event.getId();
@@ -151,19 +167,6 @@ public class BebrasPlacesEvaluator extends Plugin {
                         return true;
                     }
 
-                    private int getUsersScores(User u) {
-                        int sum = 0;
-                        List<Contest> contests = event.getContestsAvailableForUser(u);
-                        for (Contest contest : contests) {
-                            Info finalResults = u.getContestInfoCreateIfNeeded(contest.getId()).getFinalResults();
-                            if (finalResults == null)
-                                continue;
-                            Integer scores = (Integer) finalResults.get("scores");
-                            sum += scores == null ? 0 : scores;
-                        }
-                        return sum;
-                    }
-
                     private int getUserGrade(User u) {
                         Object gradeO = u.getInfo().get("grade");
                         if (gradeO == null)
@@ -220,6 +223,20 @@ public class BebrasPlacesEvaluator extends Plugin {
         );
     }
 
+    private int getUsersScores(User u) {
+        Event event = u.getEvent();
+        int sum = 0;
+        List<Contest> contests = event.getContestsAvailableForUser(u);
+        for (Contest contest : contests) {
+            Info finalResults = u.getContestInfoCreateIfNeeded(contest.getId()).getFinalResults();
+            if (finalResults == null)
+                continue;
+            Integer scores = (Integer) finalResults.get("scores");
+            sum += scores == null ? 0 : scores;
+        }
+        return sum;
+    }
+
     @Override
     public Result doPost(String action, String params) {
         return null;
@@ -231,6 +248,7 @@ public class BebrasPlacesEvaluator extends Plugin {
         regionField = deserializer.readString("region field");
         russiaField = deserializer.readString("russia field");
         roleName = deserializer.readString("role");
+        gradesDescription = deserializer.readString("grades description", "");
     }
 
     @Override
@@ -239,5 +257,130 @@ public class BebrasPlacesEvaluator extends Plugin {
         serializer.write("region field", regionField);
         serializer.write("russia field", russiaField);
         serializer.write("role", roleName);
+        serializer.write("grades description", gradesDescription);
+    }
+
+    private Result showPdf(String userLogin) {
+        if (userLogin == null || userLogin.isEmpty())
+            userLogin = User.current().getLogin();
+
+        Event event = Event.current();
+        User user = User.getUserByLogin(userLogin);
+
+        if (user == null)
+            return Results.notFound();
+
+        List<CertificateLine> lines;
+        boolean isOrg;
+
+        if (user.getRole().getName().equals("SCHOOL_ORG")) {
+            lines = getCertificateLinesForOrg(user);
+            isOrg = true;
+        } else {
+            lines = getCertificateLinesForParticipant(event, user);
+            isOrg = false;
+        }
+
+        BebrasCertificate certificate = new BebrasCertificate(user, isOrg, lines);
+        File pdf = certificate.createPdf();
+
+        Controller.response().setHeader("Content-Disposition", "attachment; filename=bebras-certificate-" + user.getLogin() + ".pdf");
+        return Results.ok(pdf);
+    }
+
+    private List<CertificateLine> getCertificateLinesForOrg(User user) {
+        Info info = user.getInfo();
+
+        List<CertificateLine> lines = new ArrayList<>();
+
+        lines.add(new CertificateLine("Настоящим сертификатом удостоверяется, что", 12, false));
+        lines.add(new CertificateLine(info.get("surname") + " " + info.get("name") + " " + info.get("patronymic"), 12, true));
+        lines.add(new CertificateLine((String) info.get("school_name"), 12, false));
+        lines.add(new CertificateLine("(" + info.get("address") + ")", 10, false));
+        lines.add(new CertificateLine("принял(а) активное участие в подготовке", 12, false));
+        lines.add(new CertificateLine("и проведении конкурса «Бобёр-2013»", 12, false));
+
+        return lines;
+    }
+
+    private List<CertificateLine> getCertificateLinesForParticipant(Event event, User user) {
+        int scores = getUsersScores(user);
+        Info info = user.getInfo();
+        String grade = (String) info.get("grade");
+
+        String[] descriptions = gradesDescription.split(" ");
+
+        int s1 = -1;
+        int s2 = -1;
+        int s3 = -1;
+
+        for (int i = 0; i < descriptions.length; i++) {
+            if (descriptions[i].equals("g" + grade)) {
+                s1 = Integer.parseInt(descriptions[i + 1]);
+                s2 = Integer.parseInt(descriptions[i + 2]);
+                s3 = Integer.parseInt(descriptions[i + 3]);
+                break;
+            }
+        }
+
+        if (s1 == -1 || s2 == -1 || s3 == -1)
+            throw new IllegalArgumentException("Wrong grades description: " + gradesDescription);
+
+        List<CertificateLine> lines = new ArrayList<>();
+
+        User org = user.getRegisteredByUser();
+        Info orgInfo = org.getInfo();
+
+        Contest contest = event.getContestsAvailableForUser(user).get(0);
+        long totalParticipants = contest.getNumStarted("PARTICIPANT");
+
+        //get greaterOrEqualParticipants
+        DBObject placeQuery = new BasicDBObject();
+        placeQuery.put("event_id", event.getId());
+        placeQuery.put("grade", grade);
+        placeQuery.put("_role", "PARTICIPANT");
+        placeQuery.put("_contests." + contest.getId() + ".res.scores", new BasicDBObject("$gte", scores));
+        long better = MongoConnection.getUsersCollection().count(placeQuery);
+
+        int percents = (int) Math.round(better * 100.0 / totalParticipants);
+
+        if (scores >= s1) {
+            lines.add(new CertificateLine("Настоящим сертификатом-дипломом", 12, false));
+            lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
+            lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
+            lines.add(new CertificateLine((String) orgInfo.get("school_name"), 12, false));
+            lines.add(new CertificateLine("(" + orgInfo.get("address") + ")", 10, false));
+            lines.add(new CertificateLine("получил(а) отличные результаты,", 12, false));
+            lines.add(new CertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
+            lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
+        } else if (scores >= s2) {
+            lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
+            lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
+            lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
+            lines.add(new CertificateLine((String) orgInfo.get("school_name"), 12, false));
+            lines.add(new CertificateLine("(" + orgInfo.get("address") + ")", 10, false));
+            lines.add(new CertificateLine("получил(а) хорошие результаты,", 12, false));
+            lines.add(new CertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
+            lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
+        } else if (scores >= s3) {
+            lines.add(new CertificateLine("Настоящим сертификатом-грамотой", 12, false));
+            lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
+            lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
+            lines.add(new CertificateLine((String) orgInfo.get("school_name"), 12, false));
+            lines.add(new CertificateLine("(" + orgInfo.get("address") + ")", 10, false));
+            lines.add(new CertificateLine("успешно участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
+            lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
+        } else {
+            lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
+            lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
+            lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
+            lines.add(new CertificateLine((String) orgInfo.get("school_name"), 12, false));
+            lines.add(new CertificateLine("(" + orgInfo.get("address") + ")", 10, false));
+            lines.add(new CertificateLine("участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
+        }
+        return lines;
     }
 }

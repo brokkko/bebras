@@ -56,6 +56,13 @@ public class Application implements SerializableUpdatable {
         return s;
     }
 
+    public static String getCodeForUserHex(User user) { //TODO remove Fffff
+        int inc = user.getId().getInc();
+        int machine = user.getId().getMachine();
+
+        return hexBytes(machine, 2) + hexBytes(inc, 4);
+    }
+
     public static String getCodeForUser(User user) {
         int inc = user.getId().getInc();
         int machine = user.getId().getMachine();

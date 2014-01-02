@@ -13,6 +13,7 @@ import org.bson.types.ObjectId;
 public class UserActionsFeatures extends FunctionFeaturesSet<User> {
 
     private ObjectId userId;
+    private String login;
 
     public UserActionsFeatures(FeaturesSet<User> delegate) {
         super(delegate);
@@ -21,6 +22,7 @@ public class UserActionsFeatures extends FunctionFeaturesSet<User> {
     @Override
     public void load(User object) throws Exception {
         userId = object.getId();
+        login = object.getLogin();
     }
 
     @Override
@@ -50,6 +52,11 @@ public class UserActionsFeatures extends FunctionFeaturesSet<User> {
                 return new WrappedFeatureValue(
                         feature,
                         views.html.htmlfeatures.user_link.render(userId.toString(), context.getEvent().getId(), feature)
+                );
+            case "certificate": //TODO move this feature to plugin
+                return new WrappedFeatureValue(
+                        feature,
+                        views.html.htmlfeatures.certificate_link.render(login, "eval_places", context.getEvent().getId(), feature)
                 );
             case "remove":
                 return new WrappedFeatureValue(
