@@ -284,10 +284,10 @@ public class BebrasPlacesEvaluator extends Plugin {
 
             Logger.info("number of participants " + numberOfParticipants);
 
-            if (numberOfParticipants < need)
-                return Results.ok(message.render("Сертификат недоступен", "К сожалению, ваш сертификат недоступен. Для получения сертификата необходимо привести хотя бы " + need + " участников.", new String[0]));
+            if (numberOfParticipants == 0)
+                return Results.ok(message.render("Сертификат недоступен", "К сожалению, ваш сертификат недоступен. Для получения сертификата необходимо привести хотя бы одного участника.", new String[0]));
 
-            lines = getCertificateLinesForOrg(user);
+            lines = getCertificateLinesForOrg(user, numberOfParticipants >= need);
             isOrg = true;
         } else {
             lines = getCertificateLinesForParticipant(event, user);
@@ -301,7 +301,7 @@ public class BebrasPlacesEvaluator extends Plugin {
         return Results.ok(pdf);
     }
 
-    private List<CertificateLine> getCertificateLinesForOrg(User user) {
+    private List<CertificateLine> getCertificateLinesForOrg(User user, boolean active) {
         Info info = user.getInfo();
 
         List<CertificateLine> lines = new ArrayList<>();
@@ -309,7 +309,10 @@ public class BebrasPlacesEvaluator extends Plugin {
         lines.add(new CertificateLine("Настоящим сертификатом удостоверяется, что", 12, false));
         lines.add(new CertificateLine(info.get("surname") + " " + info.get("name") + " " + info.get("patronymic"), 12, true));
         addSchoolAndAddr(lines, info);
-        lines.add(new CertificateLine("принял(а) активное участие в подготовке", 12, false));
+        if (active)
+            lines.add(new CertificateLine("принял(а) активное участие в подготовке", 12, false));
+        else
+            lines.add(new CertificateLine("принял(а) участие в подготовке", 12, false));
         lines.add(new CertificateLine("и проведении конкурса «Бобёр-2013»", 12, false));
 
         return lines;
