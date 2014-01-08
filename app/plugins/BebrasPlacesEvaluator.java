@@ -361,7 +361,9 @@ public class BebrasPlacesEvaluator extends Plugin {
         placeQuery.put("_contests." + contest.getId() + ".res.scores", new BasicDBObject("$gte", scores));
         long better = MongoConnection.getUsersCollection().count(placeQuery);
 
-        int percents = (int) Math.round(better * 100.0 / totalParticipants);
+        int percents = (int) Math.ceil(better * 100.0 / totalParticipants);
+        if (percents == 0)
+            percents = 1;
 
         if (scores >= s1) {
             lines.add(new CertificateLine("Настоящим сертификатом-дипломом", 12, false));
