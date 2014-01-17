@@ -11,7 +11,7 @@ import models.newserialization.MongoDeserializer;
  * Date: 24.07.13
  * Time: 18:13
  */
-public class UsersProvider extends WrapperObjectProvider<DBObject, User> {
+public class UsersProvider extends WrapperObjectProvider<DBObject, User> { //TODO rewrite with User.listUsers
 
     private boolean loadEventResults;
 

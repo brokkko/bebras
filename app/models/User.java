@@ -13,6 +13,7 @@ import models.results.Info;
 import models.results.InfoPattern;
 import models.results.Translator;
 import org.bson.types.ObjectId;
+import org.omg.CORBA.UserException;
 import play.Play;
 import play.cache.Cache;
 import play.mvc.Http;
@@ -287,11 +288,25 @@ public class User implements SerializableUpdatable {
         return "user-cache-" + login + "~@-_" + eventId;
     }
 
+    private static String getIdCacheKey(ObjectId id) {
+        return "user-cache-" + id;
+    }
+
     public static User getInstance(String field, Object value, String eventId) {
         boolean byLogin = FIELD_LOGIN.equals(field);
+        boolean byId = "_id".equals(field);
 
         if (byLogin) {
             User result = (User) Cache.get(getLoginCacheKey(eventId, (String) value));
+            if (result != null)
+                return result;
+        }
+
+        if (byId) {
+            if (value instanceof String)
+                value = new ObjectId((String) value);
+
+            User result = (User) Cache.get(getIdCacheKey((ObjectId) value));
             if (result != null)
                 return result;
         }
@@ -310,8 +325,8 @@ public class User implements SerializableUpdatable {
         else
             result = User.deserialize(new MongoDeserializer(userObject));
 
-        if (byLogin)
-            Cache.set(getLoginCacheKey(eventId, (String) value), result, 5 * 60); //5 minutes
+        if (result != null)
+            result.cache();
 
         return result;
     }
@@ -338,6 +353,44 @@ public class User implements SerializableUpdatable {
 
     public static User getUserByConfirmationUUID(String confirmationUUID) {
         return getInstance(FIELD_CONFIRMATION_UUID, confirmationUUID);
+    }
+
+    public static class UsersEnumeration implements Enumeration<User>, AutoCloseable {
+
+        private DBCursor cursor;
+
+        private UsersEnumeration(DBCursor cursor) {
+            this.cursor = cursor;
+        }
+
+        @Override
+        public void close() throws Exception {
+            cursor.close();
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+            return cursor.hasNext();
+        }
+
+        @Override
+        public User nextElement() {
+            DBObject userObject = cursor.next();
+            ObjectId id = (ObjectId) userObject.get("_id");
+            User result = (User) Cache.get(getIdCacheKey(id));
+            if (result != null)
+                return result;
+
+            result = User.deserialize(new MongoDeserializer(userObject));
+            result.cache();
+
+            return result;
+        }
+    }
+
+    public static UsersEnumeration listUsers(DBObject query) {
+        DBCursor usersCursor = MongoConnection.getUsersCollection().find(query);
+        return new UsersEnumeration(usersCursor);
     }
 
     public static String generatePassword() {
@@ -413,7 +466,13 @@ public class User implements SerializableUpdatable {
         serializer.write(FIELD_PARTIAL_REG, partialRegistration);
         serializer.write(FIELD_ANNOUNCEMENTS, wantAnnouncements);
 
-        Cache.set(getLoginCacheKey(event.getId(), getLogin()), this, 5 * 60);
+        cache();
+    }
+
+    private void cache() {
+        int expiration = 10 * 60; // 10 minutes
+        Cache.set(getLoginCacheKey(event.getId(), getLogin()), this, expiration);
+        Cache.set(getIdCacheKey(id), this, expiration);
     }
 
     private InfoPattern getUserInfoPattern() {
@@ -922,7 +981,7 @@ public class User implements SerializableUpdatable {
         invalidateAllEventResults(event);
     }
 
-    public static void removeUser(Event event, String login) {
+    /*public static void removeUser(Event event, String login) {
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
         DBObject remove = new BasicDBObject(FIELD_EVENT, event.getId());
@@ -930,7 +989,8 @@ public class User implements SerializableUpdatable {
 
         usersCollection.remove(remove);
         Cache.remove(getLoginCacheKey(event.getId(), login));
-    }
+        Cache.remove(getIdCacheKey(???));
+    }*/
 }
 
 

@@ -628,7 +628,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
             public void run() throws Exception {
                 //begin transfer of applications
 
-                DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
+                DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId()); //TODO rewrite with Users.listUsers
 
                 int userIndex = 0;
                 int transferredUsersCount = 0;

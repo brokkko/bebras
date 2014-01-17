@@ -1,18 +1,20 @@
 package plugins;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.Utilities;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import models.Contest;
-import models.Event;
-import models.User;
-import models.data.features.UserApplicationsFeatures;
+import controllers.worker.Worker;
+import models.*;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
+import models.utils.SimpleProfiler;
 import org.bson.types.ObjectId;
-import play.Logger;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
@@ -24,6 +26,7 @@ import views.Menu;
 import views.html.message;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -56,10 +59,13 @@ public class BebrasPlacesEvaluator extends Plugin {
 
         if (action.equals("show_pdf"))
             try {
-                return showPdf(params);
+                return showPdf(Event.current(), params);
             } catch (Exception e) {
                 return Results.forbidden("Этот сертификат вам недоступен");
             }
+
+        if (action.equals("all_pdfs"))
+            return generateAllCertificates(params);
 
         final Event event = Event.current();
         final String eventId = event.getId();
@@ -226,6 +232,106 @@ public class BebrasPlacesEvaluator extends Plugin {
         );
     }
 
+    private Result generateAllCertificates(final String roleName) {
+        final Event event = Event.current();
+        UserRole role = event.getRole(roleName);
+
+        if (role == UserRole.EMPTY)
+            return Results.badRequest("Unknown role");
+
+        final Worker worker = new Worker("Generate all certificates", "Event=" + event.getId() + " role=" + roleName);
+        worker.execute(new Worker.Task() {
+            @Override
+            public void run() throws Exception {
+                DBObject usersQuery = new BasicDBObject(User.FIELD_EVENT, event.getId());
+                usersQuery.put(User.FIELD_USER_ROLE, roleName);
+
+                File outputPath = new File(event.getEventDataFolder(), "all-certificates-" + roleName + ".pdf");
+
+                Document doc = new Document(
+                        new Rectangle(
+                                Utilities.millimetersToPoints(450), Utilities.millimetersToPoints(320)
+                        ),
+                        0, 0, 0, 0
+                );
+
+                PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
+
+                doc.open();
+
+                Map<Contest, Long> startedCache = new HashMap<>();
+                Map<String, Long> betterCache = new HashMap<>();
+
+                int processedUsers = 0;
+                try (User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery)) {
+                    while (usersEnumeration.hasMoreElements()) {
+                        User user = usersEnumeration.nextElement();
+
+                        List<CertificateLine> lines;
+                        boolean isOrg;
+
+                        if (roleName.equals("SCHOOL_ORG")) {
+                            int numberOfParticipants = numberOfParticipants(user);
+                            if (numberOfParticipants == 0)
+                                continue;
+
+                            boolean organizerActive = isOrganizerActive(numberOfParticipants);
+
+                            //test novosibirsk
+                            ObjectId registeredBy = user.getRegisteredBy();
+                            if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID.equals(registeredBy))
+                                continue;
+
+                            lines = getCertificateLinesForOrg(user, organizerActive);
+                            isOrg = true;
+                        } else { //roleName.equals("PARTICIPANT")
+                            try { //if we can not parse a user's grade, then she did not participate
+                                int grade = Integer.parseInt((String) user.getInfo().get("grade"));
+                                if (grade < 1 || grade > 11)
+                                    continue;
+                            } catch (Exception ignored) { //failed to parse grade
+                                continue;
+                            }
+
+                            User organizer = user.getRegisteredByUser();
+                            boolean needOnlyGreatAndGoodResults = BebrasCertificate.NOVOSIBIRSK_ID.equals(organizer.getRegisteredBy());
+
+                            lines = getCertificateLinesForParticipant(event, user, needOnlyGreatAndGoodResults, startedCache, betterCache);
+
+                            if (lines == null)
+                                continue;
+                            isOrg = false;
+                        }
+
+                        //some extra skips
+
+                        BebrasCertificate certificate = new BebrasCertificate(user, isOrg, lines);
+
+                        int position = processedUsers % 6;
+                        if (position == 0)
+                            doc.newPage();
+                        certificate.draw(writer, position);
+
+                        processedUsers++;
+                        if (processedUsers == 1 || processedUsers % 200 == 0)
+                            worker.logInfo("processed " + processedUsers + " users");
+
+//                        if (processedUsers == 200)
+//                            break;
+                    }
+                } catch (Exception e) {
+                    worker.logError("Exception occurred", e);
+                }
+
+                doc.close();
+
+                worker.logInfo("Finished: " + controllers.routes.Resources.returnDataFile(event.getId(), outputPath.getName()));
+            }
+        });
+
+        return Results.redirect(controllers.routes.EventAdministration.workersList(event.getId()));
+    }
+
     private int getUsersScores(User u) {
         Event event = u.getEvent();
         int sum = 0;
@@ -263,12 +369,11 @@ public class BebrasPlacesEvaluator extends Plugin {
         serializer.write("grades description", gradesDescription);
     }
 
-    private Result showPdf(String userLogin) {
+    private Result showPdf(Event event, String userLogin) {
         if (userLogin == null || userLogin.isEmpty())
             userLogin = User.current().getLogin();
 
-        Event event = Event.current();
-        User user = User.getUserByLogin(userLogin);
+        User user = User.getUserByLogin(event.getId(), userLogin);
 
         if (user == null)
             return Results.notFound();
@@ -277,20 +382,14 @@ public class BebrasPlacesEvaluator extends Plugin {
         boolean isOrg;
 
         if (user.getRole().getName().equals("SCHOOL_ORG")) {
-            int numberOfParticipants = UserApplicationsFeatures.numberOfPayedParticipants(user, "b") + UserApplicationsFeatures.numberOfPayedParticipants(user, "bk");
-            int need = 20;
-            if (gradesDescription.contains("need10"))
-                need = 10;
-
-            Logger.info("number of participants " + numberOfParticipants);
-
+            int numberOfParticipants = numberOfParticipants(user);
             if (numberOfParticipants == 0)
                 return Results.ok(message.render("Сертификат недоступен", "К сожалению, ваш сертификат недоступен. Для получения сертификата необходимо привести хотя бы одного участника.", new String[0]));
 
-            lines = getCertificateLinesForOrg(user, numberOfParticipants >= need);
+            lines = getCertificateLinesForOrg(user, isOrganizerActive(numberOfParticipants));
             isOrg = true;
         } else {
-            lines = getCertificateLinesForParticipant(event, user);
+            lines = getCertificateLinesForParticipant(event, user, false, null, null);
             isOrg = false;
         }
 
@@ -299,6 +398,22 @@ public class BebrasPlacesEvaluator extends Plugin {
 
         Controller.response().setHeader("Content-Disposition", "attachment; filename=bebras-certificate-" + user.getLogin() + ".pdf");
         return Results.ok(pdf);
+    }
+
+    private int numberOfParticipants(User organizer) {
+//        return UserApplicationsFeatures.numberOfPayedParticipants(organizer, "b") + UserApplicationsFeatures.numberOfPayedParticipants(organizer, "bk");
+        DBObject participantsQuery = new BasicDBObject(User.FIELD_EVENT, organizer.getEvent().getId());
+        participantsQuery.put(User.FIELD_USER_ROLE, "PARTICIPANT");
+        participantsQuery.put(User.FIELD_REGISTERED_BY, organizer.getId());
+        return (int) MongoConnection.getUsersCollection().count(participantsQuery);
+    }
+
+    private boolean isOrganizerActive(int numberOfParticipants) {
+        int need = 20;
+        if (gradesDescription.contains("need10"))
+            need = 10;
+
+        return numberOfParticipants >= need;
     }
 
     private List<CertificateLine> getCertificateLinesForOrg(User user, boolean active) {
@@ -318,7 +433,7 @@ public class BebrasPlacesEvaluator extends Plugin {
         return lines;
     }
 
-    private List<CertificateLine> getCertificateLinesForParticipant(Event event, User user) {
+    private List<CertificateLine> getCertificateLinesForParticipant(Event event, User user, boolean needOnlyGreatAndGoodResults, Map<Contest, Long> numStartedCache, Map<String, Long> betterCache) {
         int scores = getUsersScores(user);
         Info info = user.getInfo();
         String grade = (String) info.get("grade");
@@ -339,9 +454,10 @@ public class BebrasPlacesEvaluator extends Plugin {
         }
 
         if (s1 == -1 || s2 == -1 || s3 == -1)
-            throw new IllegalArgumentException("Wrong grades description: " + gradesDescription);
+            throw new IllegalArgumentException("Wrong grades description: " + grade + " < " + gradesDescription);
 
         /*
+        example of grades description
     "grades description" : "g1 45 30 10 g2 45 30 10 g3 85 60 20 g4 85 60 20 g5 75 60 20 g6 75 60 20 g7 75 60 20 g8 75 60 20 g9 75 60 20 g10 75 60 20 g11 75 60 20",
          */
 
@@ -351,31 +467,54 @@ public class BebrasPlacesEvaluator extends Plugin {
         Info orgInfo = org.getInfo();
 
         Contest contest = event.getContestsAvailableForUser(user).get(0);
-        long totalParticipants = contest.getNumStarted("PARTICIPANT");
+
+        //get total participants from cache
+        Long totalParticipants = null;
+        if (numStartedCache != null)
+            totalParticipants = numStartedCache.get(contest);
+
+        if (totalParticipants == null) {
+            totalParticipants = contest.getNumStarted("PARTICIPANT");
+            if (numStartedCache != null)
+                numStartedCache.put(contest, totalParticipants);
+        }
 
         //get greaterOrEqualParticipants
-        DBObject placeQuery = new BasicDBObject();
-        placeQuery.put("event_id", event.getId());
-        placeQuery.put("grade", grade);
-        placeQuery.put("_role", "PARTICIPANT");
-        placeQuery.put("_contests." + contest.getId() + ".res.scores", new BasicDBObject("$gte", scores));
-        long better = MongoConnection.getUsersCollection().count(placeQuery);
+        long better = getBetter(event, scores, grade, contest, betterCache);
 
         int percents = (int) Math.ceil(better * 100.0 / totalParticipants);
         if (percents == 0)
             percents = 1;
 
+        /*
+        Всего участников этого класса N
+
+        считаем p = X в процентах от N, округляем до целого вверх.
+
+        если X > 50, пишем
+            "И вошел в p% лучших участников по России"
+        eсли X = 1
+            "И занял первое место по России"
+        иначе пишем
+            "И вошел в X лучших участников по России"
+         */
+
         if (scores >= s1) {
-            lines.add(new CertificateLine("Настоящим сертификатом-дипломом", 12, false));
+            lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo);
             lines.add(new CertificateLine("получил(а) отличные результаты,", 12, false));
             lines.add(new CertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
-            lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
+            if (better == 1)
+                lines.add(new CertificateLine("и занял первое место по России", 12, false));
+            else if (percents == 1)
+                lines.add(new CertificateLine("и вошёл (вошла) в " + better + " лучших участников по России", 12, false)); //don't write 1%, write instead the whole number
+            else
+                lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
             lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
         } else if (scores >= s2) {
-            lines.add(new CertificateLine("Настоящим сертификатом-дипломом", 12, false));
+            lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo);
@@ -384,7 +523,9 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
             lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
         } else if (scores >= s3) {
-            lines.add(new CertificateLine("Настоящим сертификатом-грамотой", 12, false));
+            if (needOnlyGreatAndGoodResults)
+                return null;
+            lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo);
@@ -392,6 +533,8 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
             lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
         } else {
+            if (needOnlyGreatAndGoodResults)
+                return null;
             lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
@@ -399,6 +542,32 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
         }
         return lines;
+    }
+
+    private long getBetter(Event event, int scores, String grade, Contest contest, Map<String, Long> betterCache) {
+        Long result = null;
+        String cacheKey = null;
+
+        if (betterCache != null) {
+            cacheKey = grade + "@" + contest.getId() + "@" + scores;
+            result = betterCache.get(cacheKey);
+        }
+
+        if (result != null)
+            return result;
+
+        DBObject placeQuery = new BasicDBObject();
+        placeQuery.put("event_id", event.getId());
+        placeQuery.put("grade", grade);
+        placeQuery.put("_role", "PARTICIPANT");
+        placeQuery.put("_contests." + contest.getId() + ".res.scores", new BasicDBObject("$gte", scores));
+
+        result = MongoConnection.getUsersCollection().count(placeQuery);
+
+        if (betterCache != null)
+            betterCache.put(cacheKey, result);
+
+        return result;
     }
 
     private void addSchoolAndAddr(List<CertificateLine> lines, Info orgInfo) {

@@ -152,7 +152,7 @@ public class Tables extends Controller {
                             public Result apply(MemoryDataWriter dataWriter) {
                                 return ok(view_table.render(
                                         tableDescription.getTitle(),
-                                        tableDescription.isShowSearch(),
+                                        tableDescription.isShowSearch() || currentUser.hasEventAdminRight(),
                                         tableDescription.getComment(),
                                         table.getTitles(), dataWriter.getList(), tableIndex, tableDescription.isShowAsTable(),
                                         objectsProviderFactory.getTitles(),

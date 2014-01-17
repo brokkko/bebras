@@ -8,6 +8,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import models.Event;
 import models.User;
 import models.applications.Application;
+import org.bson.types.ObjectId;
 import play.Logger;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public class BebrasCertificate extends Certificate {
 
     private boolean org;
     private List<CertificateLine> lines;
+
+    public static final ObjectId NOVOSIBIRSK_ID = User.getUserByLogin("bebras13", "shkola-plus").getId();
 
     public BebrasCertificate(User user, boolean org, List<CertificateLine> lines) {
         super(user);
@@ -45,23 +48,35 @@ public class BebrasCertificate extends Certificate {
 
     @Override
     public void draw(PdfWriter writer) {
+        draw(writer, -1);
+    }
+
+    public void draw(PdfWriter writer, int position) {
         float x0 = TEXT_BOX_LEFT + TEXT_BOX_WIDTH / 2f;
         float y0 = TEXT_BOX_BOOTOM;
+
+        float lineSkip = lines.size() >= 10 ? 1.3f : 1.5f;
 
         boolean firstLine = true;
         for (CertificateLine line : lines) {
             if (firstLine)
                 firstLine = false;
             else
-                y0 -= Utilities.pointsToMillimeters(line.getSize() * 1.5f);
-            printText(writer, line.getBaseFont(), line.getLine(), line.getSize(), x0, y0, -1);
+                y0 -= Utilities.pointsToMillimeters(line.getSize() * lineSkip);
+            printText(writer, line.getBaseFont(), line.getLine(), line.getSize(), x0, y0, position);
         }
 
-        printText(writer, CertificateLine.DEFAULT_FONT_R, org ? Application.getCodeForUserHex(user) : user.getLogin(), 12, 49, 4, -1);
+        String userCode = org ? Application.getCodeForUserHex(user) : user.getLogin();
+
+        //write login for novosibirsk teachers
+        if (org && NOVOSIBIRSK_ID.equals(user.getRegisteredBy()))
+            userCode = user.getLogin() + " " + userCode;
+
+        printText(writer, CertificateLine.DEFAULT_FONT_R, userCode, 12, 49, 4, position);
     }
 
     //position = 0 1 2 3 4 5
-    private static boolean printText(PdfWriter writer, BaseFont font, String text, float size, float x0, float y0, int position) {
+    private boolean printText(PdfWriter writer, BaseFont font, String text, float size, float x0, float y0, int position) {
         boolean upDown = position != 2 && position != 3 && position != -1;
         float angle = upDown ? 180 : 0;
 
@@ -90,7 +105,7 @@ public class BebrasCertificate extends Certificate {
         float textWidthMM = Utilities.pointsToMillimeters(textWidth);
         boolean wasError = false;
         if (textWidthMM > TEXT_BOX_WIDTH) {
-            Logger.warn("Too wide text (" + textWidthMM + " mm.): " + text + "|");
+            Logger.warn("Too wide text (" + textWidthMM + " mm.): " + user.getLogin() + " " + text + "|");
             wasError = true;
         }
 
