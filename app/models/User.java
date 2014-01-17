@@ -389,7 +389,7 @@ public class User implements SerializableUpdatable {
     }
 
     public static UsersEnumeration listUsers(DBObject query) {
-        DBCursor usersCursor = MongoConnection.getUsersCollection().find(query);
+        DBCursor usersCursor = MongoConnection.getUsersCollection().find(query).sort(new BasicDBObject(User.FIELD_LOGIN, 1));
         return new UsersEnumeration(usersCursor);
     }
 
