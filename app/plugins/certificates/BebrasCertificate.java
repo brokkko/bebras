@@ -66,13 +66,18 @@ public class BebrasCertificate extends Certificate {
             printText(writer, line.getBaseFont(), line.getLine(), line.getSize(), x0, y0, position);
         }
 
+        String userCode = getUserCode(user, org);
+
+        printText(writer, CertificateLine.DEFAULT_FONT_R, userCode, 12, 49, 4, position);
+    }
+
+    public static String getUserCode(User user, boolean org) {
         String userCode = org ? Application.getCodeForUserHex(user) : user.getLogin();
 
         //write login for novosibirsk teachers
         if (org && NOVOSIBIRSK_ID.equals(user.getRegisteredBy()))
             userCode = user.getLogin() + " " + userCode;
-
-        printText(writer, CertificateLine.DEFAULT_FONT_R, userCode, 12, 49, 4, position);
+        return userCode;
     }
 
     //position = 0 1 2 3 4 5

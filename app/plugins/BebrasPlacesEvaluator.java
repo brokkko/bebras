@@ -13,13 +13,13 @@ import models.*;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
-import models.utils.SimpleProfiler;
 import org.bson.types.ObjectId;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
+import plugins.certificates.BebrasAddressCertificate;
 import plugins.certificates.BebrasCertificate;
 import plugins.certificates.CertificateLine;
 import views.Menu;
@@ -66,6 +66,12 @@ public class BebrasPlacesEvaluator extends Plugin {
 
         if (action.equals("all_pdfs"))
             return generateAllCertificates(params);
+
+        if (action.equals("all_addrs"))
+            return generateAllAddresses();
+
+        if (!action.equals("go"))
+            return Results.notFound("unknown action");
 
         final Event event = Event.current();
         final String eventId = event.getId();
@@ -315,9 +321,76 @@ public class BebrasPlacesEvaluator extends Plugin {
                         processedUsers++;
                         if (processedUsers == 1 || processedUsers % 200 == 0)
                             worker.logInfo("processed " + processedUsers + " users");
+                    }
+                } catch (Exception e) {
+                    worker.logError("Exception occurred", e);
+                }
 
-//                        if (processedUsers == 200)
-//                            break;
+                doc.close();
+
+                worker.logInfo("Finished: " + controllers.routes.Resources.returnDataFile(event.getId(), outputPath.getName()));
+            }
+        });
+
+        return Results.redirect(controllers.routes.EventAdministration.workersList(event.getId()));
+    }
+
+    private Result generateAllAddresses() { //TODO almost the same as generate all certificates
+        final Event event = Event.current();
+        final String roleName = "SCHOOL_ORG";
+        final UserRole role = event.getRole(roleName);
+
+        if (role == UserRole.EMPTY)
+            return Results.badRequest("Unknown role");
+
+        final Worker worker = new Worker("Generate all addresses", "Event=" + event.getId() + " role=" + roleName);
+        worker.execute(new Worker.Task() {
+            @Override
+            public void run() throws Exception {
+                DBObject usersQuery = new BasicDBObject(User.FIELD_EVENT, event.getId());
+                usersQuery.put(User.FIELD_USER_ROLE, roleName);
+
+                File outputPath = new File(event.getEventDataFolder(), "all-addresses-" + roleName + ".pdf");
+
+                Document doc = new Document(
+                        new Rectangle(
+                                Utilities.millimetersToPoints(210), Utilities.millimetersToPoints(297)
+                        ),
+                        0, 0, 0, 0
+                );
+
+                PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
+
+                doc.open();
+
+                int processedUsers = 0;
+                try (User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery)) {
+                    while (usersEnumeration.hasMoreElements()) {
+                        User user = usersEnumeration.nextElement();
+
+                        if (roleName.equals("SCHOOL_ORG")) {
+                            int numberOfParticipants = numberOfParticipants(user);
+                            if (numberOfParticipants == 0)
+                                continue;
+
+                            boolean organizerActive = isOrganizerActive(numberOfParticipants);
+
+                            //test novosibirsk
+                            ObjectId registeredBy = user.getRegisteredBy();
+                            if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID.equals(registeredBy))
+                                continue;
+                        }
+
+                        BebrasAddressCertificate certificate = new BebrasAddressCertificate(user);
+
+                        int position = processedUsers % 11;
+                        if (position == 0)
+                            doc.newPage();
+                        certificate.draw(writer, position);
+
+                        processedUsers++;
+                        if (processedUsers == 1 || processedUsers % 100 == 0)
+                            worker.logInfo("processed " + processedUsers + " users");
                     }
                 } catch (Exception e) {
                     worker.logError("Exception occurred", e);
@@ -579,19 +652,20 @@ public class BebrasPlacesEvaluator extends Plugin {
     }
 
     private void addProbablyLongLine(List<CertificateLine> lines, String line) {
+        for (String shortLine : splitProbablyLongLine(line))
+            lines.add(new CertificateLine(shortLine, 10, false));
+    }
+
+    public static String[] splitProbablyLongLine(String line) {
         int len = line.length();
-        if (len < 50) {
-            lines.add(new CertificateLine(line, 10, false));
-            return;
-        }
+        if (len < 50)
+            return new String[]{line};
 
         int i1 = line.indexOf(" ", len / 2); //second half
         int i2 = line.lastIndexOf(" ", len / 2); //first half
 
-        if (i1 < 0 && i2 < 0) {
-            lines.add(new CertificateLine(line, 10, false));
-            return;
-        }
+        if (i1 < 0 && i2 < 0)
+            return new String[]{line};
 
         int i;
 
@@ -604,7 +678,6 @@ public class BebrasPlacesEvaluator extends Plugin {
         else
             i = i1;
 
-        lines.add(new CertificateLine(line.substring(0, i), 10, false));
-        lines.add(new CertificateLine(line.substring(i + 1), 10, false));
+        return new String[]{line.substring(0, i), line.substring(i + 1)};
     }
 }

@@ -13,7 +13,6 @@ import models.results.Info;
 import models.results.InfoPattern;
 import models.results.Translator;
 import org.bson.types.ObjectId;
-import org.omg.CORBA.UserException;
 import play.Play;
 import play.cache.Cache;
 import play.mvc.Http;
