@@ -496,7 +496,7 @@ public class BebrasPlacesEvaluator extends Plugin {
 
         lines.add(new CertificateLine("Настоящим сертификатом удостоверяется, что", 12, false));
         lines.add(new CertificateLine(info.get("surname") + " " + info.get("name") + " " + info.get("patronymic"), 12, true));
-        addSchoolAndAddr(lines, info);
+        addSchoolAndAddr(lines, info, user);
         if (active)
             lines.add(new CertificateLine("принял(а) активное участие в подготовке", 12, false));
         else
@@ -576,7 +576,7 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
-            addSchoolAndAddr(lines, orgInfo);
+            addSchoolAndAddr(lines, orgInfo, user);
             lines.add(new CertificateLine("получил(а) отличные результаты,", 12, false));
             lines.add(new CertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
             if (better == 1)
@@ -590,7 +590,7 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
-            addSchoolAndAddr(lines, orgInfo);
+            addSchoolAndAddr(lines, orgInfo, user);
             lines.add(new CertificateLine("получил(а) хорошие результаты,", 12, false));
             lines.add(new CertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
             lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
@@ -601,7 +601,7 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
-            addSchoolAndAddr(lines, orgInfo);
+            addSchoolAndAddr(lines, orgInfo, user);
             lines.add(new CertificateLine("успешно участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
             lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
             lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
@@ -611,7 +611,7 @@ public class BebrasPlacesEvaluator extends Plugin {
             lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
             lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
-            addSchoolAndAddr(lines, orgInfo);
+            addSchoolAndAddr(lines, orgInfo, user);
             lines.add(new CertificateLine("участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
         }
         return lines;
@@ -643,12 +643,42 @@ public class BebrasPlacesEvaluator extends Plugin {
         return result;
     }
 
-    private void addSchoolAndAddr(List<CertificateLine> lines, Info orgInfo) {
-        String schoolName = (String) orgInfo.get("school_name");
+    private void addSchoolAndAddr(List<CertificateLine> lines, Info orgInfo, User user) {
+        String schoolName = substituteSchoolBebras13((String) orgInfo.get("school_name"), user);
         addProbablyLongLine(lines, schoolName);
 
-        String address = "(" + orgInfo.get("address") + ")";
+        String address = substituteAddrBebras13("(" + orgInfo.get("address") + ")", user);
         addProbablyLongLine(lines, address);
+    }
+
+    private String substituteSchoolBebras13(String schoolName, User user) {
+        switch (user.getLogin()) {
+            case "d26cf21.1":
+                return "МБОУ \"Пажгинская СОШ\"";
+            case "d8a4b71.1":
+                return "МБОУ \"СОШ № 5\"";
+            case "d8a4b71.2":
+                return "МБОУ \"СОШ № 5\"";
+            case "c9d6341.1":
+                return "МАОУ \"Гимназия №5\"";
+        }
+
+        return schoolName;
+    }
+
+    private String substituteAddrBebras13(String address, User user) {
+        switch (user.getLogin()) {
+            case "d26cf21.1":
+                return "Республика Коми, Сыктывдинский район, с. Пажга, 1-й микрорайон, д.23";
+            case "d8a4b71.1":
+                return "г.Усинск ул.Возейская, № 9а";
+            case "d8a4b71.2":
+                return "г.Усинск ул.Возейская, № 9а";
+            case "c9d6341.1":
+                return "г. Новороссийк, ул. Цедрика, 7";
+        }
+
+        return address;
     }
 
     private void addProbablyLongLine(List<CertificateLine> lines, String line) {
