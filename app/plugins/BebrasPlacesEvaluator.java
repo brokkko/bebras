@@ -474,6 +474,9 @@ public class BebrasPlacesEvaluator extends Plugin {
     }
 
     private int numberOfParticipants(User organizer) {
+        if (organizer.getLogin().contains("_helper_")) //only bebras13
+            return organizer.getLogin().startsWith("Kondratieva_VV") ? 1 : 200; // helpers
+
 //        return UserApplicationsFeatures.numberOfPayedParticipants(organizer, "b") + UserApplicationsFeatures.numberOfPayedParticipants(organizer, "bk");
         DBObject participantsQuery = new BasicDBObject(User.FIELD_EVENT, organizer.getEvent().getId());
         participantsQuery.put(User.FIELD_USER_ROLE, "PARTICIPANT");
