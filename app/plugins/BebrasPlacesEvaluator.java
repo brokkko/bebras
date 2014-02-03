@@ -1,8 +1,6 @@
 package plugins;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.Utilities;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
@@ -27,7 +25,9 @@ import views.html.message;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -245,6 +245,8 @@ public class BebrasPlacesEvaluator extends Plugin {
         if (role == UserRole.EMPTY)
             return Results.badRequest("Unknown role");
 
+        final boolean needBackground = role.getName().equals("SCHOOL_ORG");
+
         final Worker worker = new Worker("Generate all certificates", "Event=" + event.getId() + " role=" + roleName);
         worker.execute(new Worker.Task() {
             @Override
@@ -254,14 +256,27 @@ public class BebrasPlacesEvaluator extends Plugin {
 
                 File outputPath = new File(event.getEventDataFolder(), "all-certificates-" + roleName + ".pdf");
 
+                Rectangle documentSize = new Rectangle(
+                        Utilities.millimetersToPoints(450), Utilities.millimetersToPoints(320)
+                );
                 Document doc = new Document(
-                        new Rectangle(
-                                Utilities.millimetersToPoints(450), Utilities.millimetersToPoints(320)
-                        ),
+                        documentSize,
                         0, 0, 0, 0
                 );
 
                 PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
+
+                Image bgImage = null;
+                if (needBackground) {
+                    try {
+                        bgImage = Image.getInstance(event.getEventDataFolder().getAbsolutePath() + "/bg-organizers-all.png");
+                    } catch (Exception e) {
+                        worker.logError("Failed to read bg", e);
+                        return;
+                    }
+                    bgImage.setAbsolutePosition(0, 0);
+                    bgImage.scaleAbsolute(documentSize.getWidth(), documentSize.getHeight());
+                }
 
                 doc.open();
 
@@ -314,8 +329,11 @@ public class BebrasPlacesEvaluator extends Plugin {
                         BebrasCertificate certificate = new BebrasCertificate(user, isOrg, lines);
 
                         int position = processedUsers % 6;
-                        if (position == 0)
+                        if (position == 0) {
                             doc.newPage();
+                            if (needBackground)
+                                doc.add(bgImage);
+                        }
                         certificate.draw(writer, position);
 
                         processedUsers++;

@@ -1,15 +1,12 @@
 package plugins.certificates;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
-import models.ServerConfiguration;
 import models.User;
 import play.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 public abstract class Certificate {
 
@@ -36,7 +33,7 @@ public abstract class Certificate {
         );
 
         //TODO report "never used"
-        try (AutoCloseable docClosable = new AutoCloseable() {
+        try (AutoCloseable ignored = new AutoCloseable() {
             @Override
             public void close() throws Exception {
                 doc.close();
