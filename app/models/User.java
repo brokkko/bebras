@@ -13,6 +13,7 @@ import models.results.Info;
 import models.results.InfoPattern;
 import models.results.Translator;
 import org.bson.types.ObjectId;
+import play.Logger;
 import play.Play;
 import play.cache.Cache;
 import play.mvc.Http;
@@ -382,6 +383,19 @@ public class User implements SerializableUpdatable {
 
             result = User.deserialize(new MongoDeserializer(userObject));
             result.cache();
+
+            return result;
+        }
+
+        public List<User> readToMemory() {
+            ArrayList<User> result = new ArrayList<>();
+
+            try (UsersEnumeration ue = this) {
+                while (ue.hasMoreElements())
+                    result.add(ue.nextElement());
+            } catch (Exception e) {
+                Logger.error("Failed to read users into memory", e);
+            }
 
             return result;
         }

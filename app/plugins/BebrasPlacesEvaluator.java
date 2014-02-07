@@ -353,7 +353,7 @@ public class BebrasPlacesEvaluator extends Plugin {
         return Results.redirect(controllers.routes.EventAdministration.workersList(event.getId()));
     }
 
-    private Result generateAllAddresses() { //TODO almost the same as generate all certificates
+    private Result generateAllAddresses() {
         final Event event = Event.current();
         final String roleName = "SCHOOL_ORG";
         final UserRole role = event.getRole(roleName);
@@ -367,6 +367,17 @@ public class BebrasPlacesEvaluator extends Plugin {
             public void run() throws Exception {
                 DBObject usersQuery = new BasicDBObject(User.FIELD_EVENT, event.getId());
                 usersQuery.put(User.FIELD_USER_ROLE, roleName);
+
+                User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery);
+                List<User> allUsers = usersEnumeration.readToMemory();
+                Collections.sort(allUsers, new Comparator<User>() {
+                    @Override
+                    public int compare(User u1, User u2) {
+                        String s1 = BebrasCertificate.getUserCode(u1, true);
+                        String s2 = BebrasCertificate.getUserCode(u2, true);
+                        return s1.compareTo(s2);
+                    }
+                });
 
                 File outputPath = new File(event.getEventDataFolder(), "all-addresses-" + roleName + ".pdf");
 
@@ -382,36 +393,30 @@ public class BebrasPlacesEvaluator extends Plugin {
                 doc.open();
 
                 int processedUsers = 0;
-                try (User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery)) {
-                    while (usersEnumeration.hasMoreElements()) {
-                        User user = usersEnumeration.nextElement();
+                for (User user : allUsers) {
+                    if (roleName.equals("SCHOOL_ORG")) {
+                        int numberOfParticipants = numberOfParticipants(user);
+                        if (numberOfParticipants == 0)
+                            continue;
 
-                        if (roleName.equals("SCHOOL_ORG")) {
-                            int numberOfParticipants = numberOfParticipants(user);
-                            if (numberOfParticipants == 0)
-                                continue;
+                        boolean organizerActive = isOrganizerActive(numberOfParticipants);
 
-                            boolean organizerActive = isOrganizerActive(numberOfParticipants);
-
-                            //test novosibirsk
-                            ObjectId registeredBy = user.getRegisteredBy();
-                            if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID.equals(registeredBy))
-                                continue;
-                        }
-
-                        BebrasAddressCertificate certificate = new BebrasAddressCertificate(user);
-
-                        int position = processedUsers % 11;
-                        if (position == 0)
-                            doc.newPage();
-                        certificate.draw(writer, position);
-
-                        processedUsers++;
-                        if (processedUsers == 1 || processedUsers % 100 == 0)
-                            worker.logInfo("processed " + processedUsers + " users");
+                        //test novosibirsk
+                        ObjectId registeredBy = user.getRegisteredBy();
+                        if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID.equals(registeredBy))
+                            continue;
                     }
-                } catch (Exception e) {
-                    worker.logError("Exception occurred", e);
+
+                    BebrasAddressCertificate certificate = new BebrasAddressCertificate(user);
+
+                    int position = processedUsers % 11;
+                    if (position == 0)
+                        doc.newPage();
+                    certificate.draw(writer, position);
+
+                    processedUsers++;
+                    if (processedUsers == 1 || processedUsers % 100 == 0)
+                        worker.logInfo("processed " + processedUsers + " users");
                 }
 
                 doc.close();
