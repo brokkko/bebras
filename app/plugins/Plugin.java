@@ -37,15 +37,15 @@ public abstract class Plugin implements SerializableUpdatable {
 
     public abstract Result doPost(String action, String params);
 
-    protected Call getCall() {
+    public Call getCall() {
         return getCall("go");
     }
 
-    protected Call getCall(String action) {
+    public Call getCall(String action) {
         return getCall(action, true, "");
     }
 
-    protected Call getCall(String action, boolean get, String params) {
+    public Call getCall(String action, boolean get, String params) {
         String currentId = Event.currentId();
 
         if (params == null)

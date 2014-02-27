@@ -180,6 +180,24 @@ public class Forms {
                                     "required", false
                             ),
                             Utils.mapify(
+                                    "name", "problems on contests page",
+                                    "view", Utils.mapify(
+                                            "type", "boolean",
+                                            "title", "Без перехода",
+                                            "hint", "Задачи этого соревнования будут показаны на странице со списком соревнований"
+                                    ),
+                                    "required", false
+                            ),
+                            Utils.mapify(
+                                    "name", "auto start",
+                                    "view", Utils.mapify(
+                                            "type", "boolean",
+                                            "title", "Автозапуск",
+                                            "hint", "Это соревнование будет начинаться автоматически при переходе на страницу соревнований"
+                                    ),
+                                    "required", false
+                            ),
+                            Utils.mapify(
                                     "name", "only admin",
                                     "view", Utils.mapify(
                                             "type", "boolean",

@@ -1,5 +1,4 @@
 @(addContestForm:models.forms.RawForm)
-@import models.utils.Utils
 @import views.htmlblocks.HtmlBlockWidget
 @import views.widgets.ResourceLink
 @import views.widgets.FormsWidget
@@ -8,139 +7,65 @@
 @import models.Forms
 @import models.User
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), FormsWidget.get, AdminWidget.get, HtmlBlockWidget.get)) { } {
-    <h1>Список соревнований события</h1>
-    <p class='time warning'>
-    Все моменты времени на этой странице указаны по московскому времени.
-    Московское время: <iframe src="http://free.timeanddate.com/clock/i3m3rjyq/n166/tlru33/fs18/tct/pct/avb/th1" frameborder="0" width="72" height="24" allowTransparency="true"></iframe>
-    </p>
 
-    @Event.current.getHtmlBlock("contests_list_top").format
+@defining(Event.current.getContestsAvailableForUser) { availableContests =>
+@defining(availableContests.filter(_.isShowProblemsOnContestsPage) map (c => controllers.Contests.getProblemsWidgets(c getPagedUserProblems User.current)) ) { extraWidgets =>
 
-    @if(Event.current.resultsAvailable()) {
-    <div class='info-box'> @*TODO remove *@
-        <p class='header'>Окончательные результаты</p>
-        @info(User.current.getEventResults, Event.current.getResultsInfoPattern, null)
-    </div>
-    }
-    @defining(Event.current.getContestsAvailableForUser) { availableContests =>
-        @for((contest, contestIndex) <- availableContests.zipWithIndex) {
-            <div class='info-box'>
-                <div class='info'>
-                    <p class='header big-title'>@contest.getName@if(contest.isOnlyAdmin) {<span><br>(Только для администратора)</span>}</p>
-                    <p><span class='title'>Статус:</span> <span class='data important'>
-                        @User.current().getContestStatus(contest) match {
-                        case 1 => {
-                            соревнование идет!
-                        }
-                        case 2 => {
-                            доступны результаты
-                        }
-                        case 3 => {
-                            соревнование окончено
-                        }
-                        case 4 => {
-                            соревнование пройдено
-                        }
-                        case 5 => {
-                            вы можете начать соревнование
-                        }
-                        case 6 => {
-                            соревнование еще не началось
-                        }
-                        case 7 => {
-                            доступны сокращенные результаты
-                        }
-                        }
-                    </span></p>
-                    @if((contest.isAllowRestart || User.current.hasEventAdminRight) && User.current.userParticipatedAndFinished(contest)) {
-                        <form class='invisible-form' action="@routes.Contests.restart(Event.current.getId, contest.getId)" method="POST">
-                            <p class='contest-action'><a href='#'>Сбросить результаты, чтобы попробовать еще раз</a></p>
-                        </form>
-                    }
-                    <p class='skip'>&nbsp;</p>
-                    <p><span class='title'>Начало:</span> <span class='data'>@models.utils.Utils.formatContestDate(contest.getStart)</span></p>
-                    <p><span class='title'>Окончание:</span> <span class='data'>@utils.Utils.formatContestDate(contest.getFinish)</span></p>
-                    @if(!contest.resultsNotAvailableAtAll) {
-                        <p><span class='title'>Результаты:</span> <span class='data'>
-                            @if(contest.resultsAvailableImmediately) {
-                                доступны сразу
-                            } else {
-                                @utils.Utils.formatContestDate(contest.getResults)
+    @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), FormsWidget.get, AdminWidget.get, HtmlBlockWidget.get) ++ extraWidgets) { } {
+        <h1>Список соревнований события</h1>
+        <p class='time warning'>
+        Все моменты времени на этой странице указаны по московскому времени.
+        Московское время: <iframe src="http://free.timeanddate.com/clock/i3m3rjyq/n166/tlru33/fs18/tct/pct/avb/th1" frameborder="0" width="72" height="24" allowTransparency="true"></iframe>
+        </p>
+
+        @Event.current.getHtmlBlock("contests_list_top").format
+
+        @if(Event.current.resultsAvailable()) {
+        <div class='info-box'> @*TODO remove *@
+            <p class='header'>Окончательные результаты</p>
+            @info(User.current.getEventResults, Event.current.getResultsInfoPattern, null)
+        </div>
+        }
+            @for((contest, contestIndex) <- availableContests.zipWithIndex) {
+                <div class='info-box'>
+                    @contest_info_for_user(contest)
+                    <div class='footer'></div>
+                    @if(User.current.hasEventAdminRight) {
+                        <form action="@routes.ContestAdministration.moveContestUp(Event.currentId, contest.getId)" method="POST" class='actions-move-up-@contest.getId'></form>
+                        <form action="@routes.ContestAdministration.moveContestDown(Event.currentId, contest.getId)" method="POST" class='actions-move-down-@contest.getId'></form>
+                        <form action="@routes.ContestAdministration.removeContest(Event.currentId, contest.getId)" method="POST" class='actions-remove-@contest.getId'></form>
+
+                        <p>
+                            @if(contestIndex != 0) {
+                                <a href="#" class='submit actions-move-up-@contest.getId' title="Переместить вверх">↑</a>
                             }
-                        </span></p>
-                    }
-                    <p><span class='title'>Минут на прохождение:</span>
-                        <span class='data'>
-                        @if(contest.isUnlimitedTime) {
-                            неограничено
-                        } else {
-                            @contest.getDuration
-                        }
-                        </span>
-                    </p>
-                    <p class='contest-select'>
-                        @User.current().getContestStatus(contest) match {
-                        case 1 | 2 | 3 | 4 => {
-                        <a class='link-button' href='@routes.Contests.contest(Event.current.getId, contest.getId, "normal")'>Перейти</a>
-                        }
-                        case 5 => {
-                        <a class='link-button' href='@routes.Contests.startContest(Event.current.getId, contest.getId)'>Начать</a>
-                        }
-                        case 6 | 7 => {}
-                        }
-                    </p>
-                    @*<p>Полные результаты соревнования доступны ограниченное количество времени</p> TODO убрать*@
-                </div>
-                <div class='results-and-description'>
-                    <p class='header big-title'>&nbsp;</p>
-                    @if(User.current().getContestStatus(contest) == 2 || User.current().getContestStatus(contest) == 7 || User.current().getContestStatus(contest) == 3 && User.current.resultsAvailable(contest)) {
-                    <p class='header'>Результаты соревнования</p>
-                    <div><p>@info(User.current.getContestResults(contest), contest.getResultsInfoPattern, null)</p></div>
-                    }
-                    @if(contest.getDescription != null) {
-                        <div class="description">
-                        <p class='header'>Описание</p>
-                        <p>@contest.getDescription</p>
-                        </div>
+                            @if(contestIndex != Event.current.getContestsAvailableForUser.size - 1) {
+                                <a href="#" class='submit actions-move-down-@contest.getId' title="Опустить вниз">↓</a>
+                            }
+                            <a href="#" class='submit actions-remove-@contest.getId' title="Удалить соревнование">⨯</a>
+
+                            <a class='go-contest-admin' href="@routes.ContestAdministration.contestAdmin(Event.currentId, contest.getId)">Администрирование соревнования</a>
+                        </p>
                     }
                 </div>
-                <div class='footer'></div>
-                @if(User.current.hasEventAdminRight) {
-                    <form action="@routes.ContestAdministration.moveContestUp(Event.currentId, contest.getId)" method="POST" class='actions-move-up-@contest.getId'></form>
-                    <form action="@routes.ContestAdministration.moveContestDown(Event.currentId, contest.getId)" method="POST" class='actions-move-down-@contest.getId'></form>
-                    <form action="@routes.ContestAdministration.removeContest(Event.currentId, contest.getId)" method="POST" class='actions-remove-@contest.getId'></form>
+            }
 
-                    <p>
-                        @if(contestIndex != 0) {
-                            <a href="#" class='submit actions-move-up-@contest.getId' title="Переместить вверх">↑</a>
-                        }
-                        @if(contestIndex != Event.current.getContestsAvailableForUser.size - 1) {
-                            <a href="#" class='submit actions-move-down-@contest.getId' title="Опустить вниз">↓</a>
-                        }
-                        <a href="#" class='submit actions-remove-@contest.getId' title="Удалить соревнование">⨯</a>
+            @if(availableContests.isEmpty) {
+                <br>
+                <br>
+                <div class='info-box'>
+                    <h2>Вам пока не доступно ни одного соревнования</h2>
+                </div>
+            }
 
-                        <a class='go-contest-admin' href="@routes.ContestAdministration.contestAdmin(Event.currentId, contest.getId)">Администрирование соревнования</a>
-                    </p>
-                }
-            </div>
+
+        @if(User.current.hasEventAdminRight) {
+        <div class='info-box'>
+        <p class='header big-title'>Добавить соревнование</p>
+            @Forms.getAddContestForm.formatExtended(addContestForm, routes.EventAdministration.addContest(Event.currentId), false, "form.do_add")
+        </div>
         }
 
-        @if(availableContests.isEmpty) {
-            <br>
-            <br>
-            <div class='info-box'>
-                <h2>Вам пока не доступно ни одного соревнования</h2>
-            </div>
-        }
+        @Event.current.getHtmlBlock("contests_list_bottom").format
     }
-
-    @if(User.current.hasEventAdminRight) {
-    <div class='info-box'>
-    <p class='header big-title'>Добавить соревнование</p>
-        @Forms.getAddContestForm().formatExtended(addContestForm, routes.EventAdministration.addContest(Event.currentId), false, "form.do_add")
-    </div>
-    }
-
-    @Event.current.getHtmlBlock("contests_list_bottom").format
-}
+}} @*close definings*@

@@ -274,4 +274,15 @@ public class Contests extends Controller {
         return new ListWidget(new ArrayList<>(links));
     }
 
+    public static Widget getWidgetsForContests(User user, List<Contest> contests) {
+        Set<ResourceLink> links = new HashSet<>();
+
+        for (Contest contest : contests) {
+            Widget widget = getProblemsWidgets(contest.getPagedUserProblems(user));
+            links.addAll(widget.links());
+        }
+
+        return new ListWidget(new ArrayList<>(links));
+    }
+
 }

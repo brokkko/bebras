@@ -6,6 +6,7 @@ import controllers.actions.Authenticated;
 import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
+import models.Contest;
 import models.Event;
 import models.User;
 import models.newserialization.BasicSerializationType;
@@ -20,7 +21,9 @@ import play.mvc.Controller;
 
 import play.mvc.Result;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

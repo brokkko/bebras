@@ -14,7 +14,6 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.util.concurrent.Callable;
 
-@DcesController(allowCache = true)
 public class Resources extends Controller {
 
     @DcesController(allowCache = true)

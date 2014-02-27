@@ -1,8 +1,7 @@
 @(status:String, pagedUserProblems:java.util.List[java.util.List[models.newproblems.ConfiguredProblem]], problem2index:java.util.Map[models.newproblems.ConfiguredProblem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)(show_header:Boolean, show_footer:Boolean, scrolling:Boolean, menu_to_left:Boolean, show_menu:Boolean, top_pages:Boolean, bottom_pages:Boolean, next_buttons:Boolean)
-@import models.utils.Utils
+@import plugins.questionnaire.QuestionnairePlugin
 @import models.utils.Utils
 @import views.widgets.CssJsWidget
-@import models.newproblems.ConfiguredProblem
 @import models.Contest
 @import models.Event
 @import views.widgets.ResourceLink
@@ -100,12 +99,14 @@
             <p class='exit-button'><a class='link-button' href="@routes.Application.enter(Event.currentId)">Выход</a></p>
         }
 
-        @*TODO remove this adhoc condition*@
-        @if(Event.currentId == "bebras13" && User.currentRole().hasRight("questionnaire")) {
-            <br>
-            <p>Поделитесь с самым главным бобром своими впечатлениями о конкурсе!<br>
-            <a class="link-button" href="/bebras13/questionnaire/go/p">Поделиться впечатлениями!</a>
-            </p>
+        @*TODO this is an ad-hoc right and ad-hoc checking of plugin*@
+        @defining(Event.current.getPluginByType(classOf[QuestionnairePlugin])) { questionnairePlugin =>
+            @if(questionnairePlugin != null && User.currentRole().hasRight("questionnaire")) {
+                <br>
+                <p>Поделитесь с самым главным бобром своими впечатлениями о конкурсе!<br> @*TODO read this text from plugin*@
+                    <a class="link-button" href="@questionnairePlugin.getCall">Поделиться впечатлениями!</a>
+                </p>
+            }
         }
     </div>
 }

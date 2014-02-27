@@ -1,0 +1,84 @@
+@(contest:models.Contest)
+<div class='info'>
+    <p class='header big-title'>@contest.getName@if(contest.isOnlyAdmin) {<span><br>(Только для администратора)</span>}</p>
+    <p><span class='title'>Статус:</span> <span class='data important'>
+    @User.current().getContestStatus(contest) match {
+        case 1 => {
+            соревнование идет!
+        }
+        case 2 => {
+            доступны результаты
+        }
+        case 3 => {
+            соревнование окончено
+        }
+        case 4 => {
+            соревнование пройдено
+        }
+        case 5 => {
+            вы можете начать соревнование
+        }
+        case 6 => {
+            соревнование еще не началось
+        }
+        case 7 => {
+            доступны сокращенные результаты
+        }
+    }
+    </span></p>
+    @if((contest.isAllowRestart || User.current.hasEventAdminRight) && User.current.userParticipatedAndFinished(contest)) {
+        <form class='invisible-form' action="@routes.Contests.restart(Event.current.getId, contest.getId)" method="POST">
+            <p class='contest-action'><a href='#'>Сбросить результаты, чтобы попробовать еще раз</a></p>
+        </form>
+    }
+    <p class='skip'>&nbsp;</p>
+    <p><span class='title'>Начало:</span> <span class='data'>@models.utils.Utils.formatContestDate(contest.getStart)</span></p>
+    <p><span class='title'>Окончание:</span> <span class='data'>@utils.Utils.formatContestDate(contest.getFinish)</span></p>
+    @if(!contest.resultsNotAvailableAtAll) {
+        <p><span class='title'>Результаты:</span> <span class='data'>
+        @if(contest.resultsAvailableImmediately) {
+            доступны сразу
+        } else {
+            @utils.Utils.formatContestDate(contest.getResults)
+        }
+        </span></p>
+    }
+    <p><span class='title'>Минут на прохождение:</span>
+        <span class='data'>
+        @if(contest.isUnlimitedTime) {
+            неограничено
+        } else {
+            @contest.getDuration
+        }
+        </span>
+    </p>
+    <p class='contest-select'>
+    @User.current().getContestStatus(contest) match {
+        case 1 | 2 | 3 | 4 => {
+            @if(contest.isShowProblemsOnContestsPage) {
+
+            } else {
+                <a class='link-button' href='@routes.Contests.contest(Event.current.getId, contest.getId, "normal")'>Перейти</a>
+            }
+        }
+        case 5 => {
+            <a class='link-button' href='@routes.Contests.startContest(Event.current.getId, contest.getId)'>Начать</a>
+        }
+        case 6 | 7 => {}
+    }
+    </p>
+    @*<p>Полные результаты соревнования доступны ограниченное количество времени</p> TODO убрать*@
+</div>
+<div class='results-and-description'>
+    <p class='header big-title'>&nbsp;</p>
+    @if(User.current().getContestStatus(contest) == 2 || User.current().getContestStatus(contest) == 7 || User.current().getContestStatus(contest) == 3 && User.current.resultsAvailable(contest)) {
+        <p class='header'>Результаты соревнования</p>
+        <div><p>@info(User.current.getContestResults(contest), contest.getResultsInfoPattern, null)</p></div>
+    }
+    @if(contest.getDescription != null) {
+        <div class="description">
+            <p class='header'>Описание</p>
+            <p>@contest.getDescription</p>
+        </div>
+    }
+</div>

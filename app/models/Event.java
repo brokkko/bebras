@@ -455,4 +455,12 @@ public class Event {
         return user;
     }
 
+    public Plugin getPluginByType(Class<? extends Plugin> pluginClass) {
+        for (Plugin plugin : plugins.values())
+            if (plugin.getClass().equals(pluginClass))
+                return plugin;
+
+        return null;
+    }
+
 }

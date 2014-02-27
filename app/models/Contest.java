@@ -44,6 +44,8 @@ public class Contest {
     private List<String> rights;
     private boolean onlyAdmin = false;
     private boolean allowRestart; //TODO make this allowed restarts count
+    private boolean showProblemsOnContestsPage;
+    private boolean autoStart;
 
     private List<Integer> pageSizes;
     private List<ProblemBlock> problemBlocks;
@@ -71,6 +73,8 @@ public class Contest {
         duration = deserializer.readInt("duration");
 
         allowRestart = deserializer.readBoolean("allow restart", false);
+        showProblemsOnContestsPage = deserializer.readBoolean("problems on contests page", false);
+        autoStart = deserializer.readBoolean("auto start", false);
 
         pageSizes = SerializationTypesRegistry.list(int.class).read(deserializer, "page sizes");
 
@@ -109,6 +113,8 @@ public class Contest {
         serializer.write("only admin", onlyAdmin);
         serializer.write("duration", duration);
         serializer.write("allow restart", allowRestart);
+        serializer.write("problems on contests page", showProblemsOnContestsPage);
+        serializer.write("auto start", autoStart);
 
         SerializationTypesRegistry.list(int.class).write(serializer, "page sizes", pageSizes);
 
@@ -138,6 +144,14 @@ public class Contest {
 
     public Date getFinish() {
         return finish;
+    }
+
+    public boolean isShowProblemsOnContestsPage() {
+        return showProblemsOnContestsPage;
+    }
+
+    public boolean isAutoStart() {
+        return autoStart;
     }
 
     public Date getResults() {
@@ -342,6 +356,8 @@ public class Contest {
         rights = SerializationTypesRegistry.list(String.class).read(deserializer, "rights");
         onlyAdmin = deserializer.readBoolean("only admin", false);
         allowRestart = deserializer.readBoolean("allow restart", false);
+        showProblemsOnContestsPage = deserializer.readBoolean("problems on contests page", false);
+        autoStart = deserializer.readBoolean("auto start", false);
 
         pageSizes = SerializationTypesRegistry.list(int.class).read(deserializer, "page sizes");
 
