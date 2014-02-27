@@ -1,3 +1,34 @@
-@()
-<h2>Это задача конкурса КИО</h2>
-<p>А это текст задачи. Привет.</p>
+@(kio_id:org.bson.types.ObjectId)
+@import plugins.KioProblemPlugin
+@import models.newproblems.kio.KioProblem
+<div class="kio-problem">
+<h2>Задания конкурса</h2>
+<h3><a href="http://ipo.spb.ru/kio-files/kio-14/KIO_0_ru.zip">Уровень 0</a></h3>
+<h3><a href="http://ipo.spb.ru/kio-files/kio-14/KIO_1_ru.zip">Уровень 1</a></h3>
+<h3><a href="http://ipo.spb.ru/kio-files/kio-14/KIO_2_ru.zip">Уровень 2</a></h3>
+
+<p>Чтобы сдать решения, сохраните их с помощью кнопки "Сохранить лучшие результаты и анкету".
+    Ее можно найти на экране выбора задач или справа сверху внутри каждой задачи.</p>
+<p>Сохраненный файл необходимо загрузить на сайт. Решения, присланные по электронной почте, не обрабатываются.</p>
+
+<h2>Загрузка решений</h2>
+
+@if(flash.containsKey(KioProblem.MESSAGE_KEY)) {
+
+    @defining(flash.get(KioProblem.MESSAGE_KEY)) { upload_message =>
+        <p class="kio-problem-message@if(upload_message != "ok") { error}">
+        @if(upload_message == "ok") {
+            Ваше решение успешно загружено
+        } else {
+            @upload_message
+        }
+        </p>
+    }
+}
+
+<p>Вы можете загружать решения произвольное количество раз. Учтено будет последнее отосланное решение.</p>
+<form enctype="multipart/form-data" method="post" action="@Event.current.getPluginByType(classOf[KioProblemPlugin]).getCall("go", false, kio_id.toString)">
+    <input type="file" name="solution">
+    <input type="submit" value="Отправить">
+</form>
+</div>

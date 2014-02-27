@@ -8,10 +8,13 @@ import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
+import org.bson.types.ObjectId;
 import play.api.templates.Html;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
+
+import java.io.File;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,6 +23,10 @@ import views.widgets.Widget;
  * Time: 23:17
  */
 public class KioProblem implements Problem {
+
+    private ObjectId kioId = new ObjectId(); //TODO get rid of this. The id is needed only to find a problem on submit
+
+    public static String MESSAGE_KEY = "kio_problem_message";
 
     private static InfoPattern KIO14_ANSWER_PATTERN = new InfoPattern(
             "_level", new BasicSerializationType<>(int.class), "уровень",
@@ -61,7 +68,7 @@ public class KioProblem implements Problem {
     public Html format(String index, boolean showSolutions, Info settings, long randSeed) {
         User user = User.current();
 
-        return views.html.kio.kio_problem.render();
+        return views.html.kio.kio_problem.render(kioId);
     }
 
     @Override
@@ -113,10 +120,20 @@ public class KioProblem implements Problem {
 
     @Override
     public void serialize(Serializer serializer) {
+        serializer.write("kio_id", kioId);
     }
 
     @Override
     public void update(Deserializer deserializer) {
+        kioId = deserializer.readObjectId("kio_id", new ObjectId());
     }
 
+    public ObjectId getKioId() {
+        return kioId;
+    }
+
+    public void processFile(File solutionFile) {
+        //Http.Context.current().flash().put()
+        User user = User.current();
+    }
 }

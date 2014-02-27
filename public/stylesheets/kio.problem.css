@@ -1,0 +1,12 @@
+.kio-problem p {
+    /*font-family: "Times New Roman",serif;*/
+}
+
+.kio-problem-message {
+    font-weight: bold;
+    color: green;
+}
+
+.kio-problem-message.error {
+    color: red;
+}
