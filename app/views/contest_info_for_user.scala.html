@@ -103,9 +103,7 @@
         </p>
     }
 
-    @if(contest.isShowProblemsOnContestsPage && (status == 6 || status == 7)) {
-        @* show nothing *@
-    } else {
+    @if(contest.isShowProblemsOnContestsPage && status != 6 && status != 7) {
         @for(problemsPage <- contest.getPagedUserProblems(User.current); (confProblem, pid) <- problemsPage.zipWithIndex; problem = confProblem.getProblem) {
             @* TODO some statuses mean that we should not show problems at all*@
             <div class='problem'><span class='hidden pr_type'>@problem.getType</span>
