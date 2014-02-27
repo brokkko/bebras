@@ -5,16 +5,25 @@ import models.forms.RawForm;
 import models.newproblems.Problem;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
+import models.newserialization.JSONDeserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
+import play.Logger;
 import play.api.templates.Html;
+import play.mvc.Http;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -102,7 +111,7 @@ public class KioProblem implements Problem {
 
     @Override
     public InfoPattern getAnswerPattern() {
-        return KIO14_ANSWER_PATTERN;
+        return new InfoPattern();
     }
 
     @Override
@@ -132,8 +141,55 @@ public class KioProblem implements Problem {
         return kioId;
     }
 
-    public void processFile(File solutionFile) {
+    public boolean processFile(File solutionFile) {
         //Http.Context.current().flash().put()
         User user = User.current();
+        Http.Flash flash = Http.Context.current().flash();
+
+        // try read file contents
+        ObjectMapper mapper = new ObjectMapper();
+        JsonFactory jfactory = mapper.getJsonFactory();
+        try (JsonParser jParser = jfactory.createJsonParser(solutionFile)) {
+            JsonNode jsonNode = jParser.readValueAsTree();
+
+            JsonNode kioBase = jsonNode.get("kio_base");
+
+            if (kioBase == null)
+                throw new Exception();
+
+            JsonNode anketa = kioBase.get("anketa");
+
+            if (anketa == null)
+                throw new Exception();
+
+            JsonNode name = anketa.get("name");
+            JsonNode surname = anketa.get("name");
+
+            if (name == null || surname == null)
+                throw new Exception();
+
+            String anketaName = name.asText().trim().toLowerCase();
+            String anketaSurname = surname.asText().trim().toLowerCase();
+
+            String userName = (String) user.getInfo().get("name"); //NullPointerException may be only when hacked, because normal user must have name and surname
+            String userSurname = (String) user.getInfo().get("surname");
+
+            String normalizedUserName = userName.trim().toLowerCase();
+            String normalizedUserSurname = userSurname.trim().toLowerCase();
+
+            if (!normalizedUserName.equals(anketaName) && !normalizedUserSurname.equals(anketaSurname)) {
+                flash.put(MESSAGE_KEY, "В анкете в загруженном файле указан участник: " + name.asText() + " " + surname.asText() + ", " +
+                        "но ваше имя: " + userName + " " + userSurname + ". " +
+                        "Вы можете исправить своё имя на сайте в разделе \"личные данные\", либо в анкете в программе конкурса.");
+                return false;
+            }
+
+        } catch (Exception e) {
+            flash.put(MESSAGE_KEY, "Не удалось прочитать файл с решением. Убедитесь, что вы посылаете правильный файл или попробуйте еще раз.");
+            Logger.error("Error while parsing solution file", e);
+            return false;
+        }
+
+        return true;
     }
 }

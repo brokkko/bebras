@@ -111,18 +111,40 @@ public class KioProblemPlugin extends Plugin {
 
         File file = solutionFilePart.getFile();
         File solutionFile = new File(resultsFolder, user.getLogin() + ".kio-" + level);
-        try {
-            Files.move(file.toPath(), solutionFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            flash.put(KioProblem.MESSAGE_KEY, "К сожалению, загрузка файла не удалась. Попробуйте загрузить еще раз.");
-            return;
-        }
 
-        problem.processFile(solutionFile);
+        if (problem.processFile(file)) {
+            try {
+                Files.move(file.toPath(), solutionFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                flash.put(KioProblem.MESSAGE_KEY, "К сожалению, загрузка файла не удалась. Попробуйте загрузить еще раз.");
+            }
+        }
     }
 
     @Override
     public boolean needsAuthorization() {
         return true;
+    }
+
+    public static Date solutionTime(User user) {
+        File dataFolder = Event.current().getEventDataFolder();
+        File resultsFolder = new File(dataFolder, "solutions");
+
+        String login = user.getLogin();
+
+        File level0 = new File(resultsFolder, login + ".kio-0");
+        File level1 = new File(resultsFolder, login + ".kio-1");
+        File level2 = new File(resultsFolder, login + ".kio-2");
+
+        long m0 = level0.lastModified();
+        long m1 = level1.lastModified();
+        long m2 = level2.lastModified();
+
+        long max = Math.max(Math.max(m0, m1), m2);
+
+        if (max == 0)
+            return null;
+
+        return new Date(max);
     }
 }
