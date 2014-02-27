@@ -188,7 +188,7 @@ public class Forms {
                                     ),
                                     "required", false
                             ),
-                            Utils.mapify(
+                            /*Utils.mapify(
                                     "name", "auto start",
                                     "view", Utils.mapify(
                                             "type", "boolean",
@@ -196,7 +196,7 @@ public class Forms {
                                             "hint", "Это соревнование будет начинаться автоматически при переходе на страницу соревнований"
                                     ),
                                     "required", false
-                            ),
+                            ),*/
                             Utils.mapify(
                                     "name", "only admin",
                                     "view", Utils.mapify(

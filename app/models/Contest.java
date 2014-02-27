@@ -45,7 +45,7 @@ public class Contest {
     private boolean onlyAdmin = false;
     private boolean allowRestart; //TODO make this allowed restarts count
     private boolean showProblemsOnContestsPage;
-    private boolean autoStart;
+    private boolean autoStart; //TODO implement this
 
     private List<Integer> pageSizes;
     private List<ProblemBlock> problemBlocks;

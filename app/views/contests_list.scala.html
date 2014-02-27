@@ -11,7 +11,7 @@
 @defining(Event.current.getContestsAvailableForUser) { availableContests =>
 @defining(availableContests.filter(_.isShowProblemsOnContestsPage) map (c => controllers.Contests.getProblemsWidgets(c getPagedUserProblems User.current)) ) { extraWidgets =>
 
-    @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), FormsWidget.get, AdminWidget.get, HtmlBlockWidget.get) ++ extraWidgets) { } {
+    @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), new ResourceLink("contest_stub.js"), FormsWidget.get, AdminWidget.get, HtmlBlockWidget.get) ++ extraWidgets) { } {
         <h1>Список соревнований события</h1>
         <p class='time warning'>
         Все моменты времени на этой странице указаны по московскому времени.
@@ -27,27 +27,7 @@
         </div>
         }
             @for((contest, contestIndex) <- availableContests.zipWithIndex) {
-                <div class='info-box'>
-                    @contest_info_for_user(contest)
-                    <div class='footer'></div>
-                    @if(User.current.hasEventAdminRight) {
-                        <form action="@routes.ContestAdministration.moveContestUp(Event.currentId, contest.getId)" method="POST" class='actions-move-up-@contest.getId'></form>
-                        <form action="@routes.ContestAdministration.moveContestDown(Event.currentId, contest.getId)" method="POST" class='actions-move-down-@contest.getId'></form>
-                        <form action="@routes.ContestAdministration.removeContest(Event.currentId, contest.getId)" method="POST" class='actions-remove-@contest.getId'></form>
-
-                        <p>
-                            @if(contestIndex != 0) {
-                                <a href="#" class='submit actions-move-up-@contest.getId' title="Переместить вверх">↑</a>
-                            }
-                            @if(contestIndex != Event.current.getContestsAvailableForUser.size - 1) {
-                                <a href="#" class='submit actions-move-down-@contest.getId' title="Опустить вниз">↓</a>
-                            }
-                            <a href="#" class='submit actions-remove-@contest.getId' title="Удалить соревнование">⨯</a>
-
-                            <a class='go-contest-admin' href="@routes.ContestAdministration.contestAdmin(Event.currentId, contest.getId)">Администрирование соревнования</a>
-                        </p>
-                    }
-                </div>
+                @contest_info_for_user(contest, contestIndex)
             }
 
             @if(availableContests.isEmpty) {
@@ -57,7 +37,6 @@
                     <h2>Вам пока не доступно ни одного соревнования</h2>
                 </div>
             }
-
 
         @if(User.current.hasEventAdminRight) {
         <div class='info-box'>
