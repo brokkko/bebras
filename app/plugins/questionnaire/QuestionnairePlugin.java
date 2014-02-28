@@ -26,7 +26,7 @@ public class QuestionnairePlugin extends Plugin {
     private List<QuestionBlock> blocks = new ArrayList<>();
     private String right;
     private String userField;
-    private boolean needAllFinished = true;
+    private int showRegime = 0; //0 means may show always, 1 means need at least 1 contest, 2 means need all contests
 
     private InfoPattern pattern;
 
@@ -51,7 +51,7 @@ public class QuestionnairePlugin extends Plugin {
             else
                 allFinished = false;
 
-        boolean showMenu = needAllFinished && allFinished || !needAllFinished && oneFinished;
+        boolean showMenu = (showRegime == 2) && allFinished || (showRegime == 1) && oneFinished || showRegime == 0;
         if (showMenu)
             Menu.addMenuItem("Анкета участника", getCall(), right);
     }
@@ -119,8 +119,8 @@ public class QuestionnairePlugin extends Plugin {
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
 
-        if (needAllFinished)
-            serializer.write("finish all", needAllFinished);
+        if (showRegime != 1)
+            serializer.write("show regime", showRegime);
         serializer.write("right", right);
         if (!"questionnaire".equals(userField))
             serializer.write("user field", userField);
@@ -132,7 +132,7 @@ public class QuestionnairePlugin extends Plugin {
     public void update(Deserializer deserializer) {
         super.update(deserializer);
 
-        needAllFinished = deserializer.readBoolean("finish all", false);
+        showRegime = deserializer.readInt("show regime", 1);
         right = deserializer.readString("right", "questionnaire");
         userField = deserializer.readString("user field", "questionnaire");
 
