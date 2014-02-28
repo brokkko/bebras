@@ -27,6 +27,8 @@ public class QuestionnairePlugin extends Plugin {
     private String right;
     private String userField;
     private int showRegime = 0; //0 means may show always, 1 means need at least 1 contest, 2 means need all contests
+    private String titleBefore;
+    private String titleAfter;
 
     private InfoPattern pattern;
 
@@ -85,7 +87,7 @@ public class QuestionnairePlugin extends Plugin {
         if (answers == null)
             answers = new Info();
 
-        return Results.ok(views.html.questionnaire.questions.render(blocks, filled, answers, getCall("go", false, "")));
+        return Results.ok(views.html.questionnaire.questions.render(titleBefore, titleAfter, blocks, filled, answers, getCall("go", false, "")));
     }
 
     @Override
@@ -122,6 +124,8 @@ public class QuestionnairePlugin extends Plugin {
         if (showRegime != 1)
             serializer.write("show regime", showRegime);
         serializer.write("right", right);
+        serializer.write("title before", titleBefore);
+        serializer.write("title after", titleAfter);
         if (!"questionnaire".equals(userField))
             serializer.write("user field", userField);
 
@@ -133,6 +137,8 @@ public class QuestionnairePlugin extends Plugin {
         super.update(deserializer);
 
         showRegime = deserializer.readInt("show regime", 1);
+        titleBefore = deserializer.readString("title before", "Заполните, пожалуйста, анкету");
+        titleAfter = deserializer.readString("title after", "Спасибо, что заполнили анкету!");
         right = deserializer.readString("right", "questionnaire");
         userField = deserializer.readString("user field", "questionnaire");
 
