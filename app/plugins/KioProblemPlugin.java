@@ -104,15 +104,10 @@ public class KioProblemPlugin extends Plugin {
 
         //copy file
 
-        File dataFolder = Event.current().getEventDataFolder();
-        File resultsFolder = new File(dataFolder, "solutions");
-        //noinspection ResultOfMethodCallIgnored
-        resultsFolder.mkdir();
-
         File file = solutionFilePart.getFile();
-        File solutionFile = new File(resultsFolder, user.getLogin() + ".kio-" + level);
+        File solutionFile = problem.processFile(level, file);
 
-        if (problem.processFile(file)) {
+        if (solutionFile != null) {
             try {
                 Files.move(file.toPath(), solutionFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
