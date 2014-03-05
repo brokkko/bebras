@@ -4,10 +4,10 @@
 <p>Данные о соревновании:</p>
 <p>К соревнованию приступили:
     @for(role <- Event.current.getRoles) {
-        <br>
         @defining(contest.getNumStarted(role.getName)) { started =>
             @if(started > 0) {
                 &nbsp; &nbsp; @role.getTitle: @started
+                <br>
             }
         }
     }

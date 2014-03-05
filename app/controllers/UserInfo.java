@@ -156,7 +156,7 @@ public class UserInfo extends Controller {
             return badRequest();
 
         String currentValue = (String) user.getInfo().get(flag);
-        user.getInfo().put(flag, currentValue == null ? "yes" : null);
+        user.getInfo().put(flag, currentValue == null ? "+" : null);
         user.store();
 
         return redirect(returnTo);
