@@ -181,6 +181,9 @@ public class Application implements SerializableUpdatable {
             info.put(User.FIELD_LOGIN, login);
             info.put(User.FIELD_RAW_PASS, password);
 
+            if (appType.getUserFlag() != null)
+                info.put(appType.getUserFlag(), "+");
+
             User createdUser = event.createUser(password, role, info, user, true);
             if (createdUser == null) {
                 skipped++;

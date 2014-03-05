@@ -19,6 +19,7 @@ public class ApplicationType implements SerializableUpdatable {
     private String participantRole;
     private boolean self;
     private boolean allowSelect = true;
+    private String userFlag = null;
 
     public String getTypeName() {
         return typeName;
@@ -48,6 +49,10 @@ public class ApplicationType implements SerializableUpdatable {
         return allowSelect;
     }
 
+    public String getUserFlag() {
+        return userFlag;
+    }
+
     @Override
     public void serialize(Serializer serializer) {
         serializer.write("type", typeName);
@@ -57,6 +62,7 @@ public class ApplicationType implements SerializableUpdatable {
         serializer.write("participant role", participantRole);
         serializer.write("self", self);
         serializer.write("allow select", allowSelect);
+        serializer.write("user flag", userFlag);
     }
 
     @Override
@@ -68,5 +74,6 @@ public class ApplicationType implements SerializableUpdatable {
         participantRole = deserializer.readString("participant role", "PARTICIPANT");
         self = deserializer.readBoolean("self", false);
         allowSelect = deserializer.readBoolean("allow select", true);
+        userFlag = deserializer.readString("user flag");
     }
 }
