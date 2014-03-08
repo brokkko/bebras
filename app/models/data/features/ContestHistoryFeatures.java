@@ -138,12 +138,23 @@ public class ContestHistoryFeatures implements FeaturesSet<User> {
         StringBuilder result = new StringBuilder();
         for (Submission submission : allSubmissions) {
             ObjectId pid = submission.getProblemId();
-            if (pid == null)
+
+            long localTime = submission.getLocalTime();
+
+            if (pid == null) {
+                String field = (String) submission.getAnswer().get("f");
+                if (!"page".equals(field))
+                    continue;
+
+                result
+                        .append(Utils.millis2minAndSec(localTime)).append('|')
+                        .append("p").append(submission.getAnswer().get("v")).append(" ");
                 continue;
+            }
+
             Info answer = submission.getAnswer();
             Problem problem = ProblemInfo.get(pid).getProblem();
             String strAns = problem == null ? "?" : problem.answerToString(answer, user.getContestRandSeed(contest.getId())); //TODO think what to do with absent problems
-            long localTime = submission.getLocalTime();
 
             result
                     .append(Utils.millis2minAndSec(localTime))
