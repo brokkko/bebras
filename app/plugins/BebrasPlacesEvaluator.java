@@ -19,6 +19,7 @@ import play.mvc.Result;
 import play.mvc.Results;
 import plugins.certificates.BebrasAddressCertificate;
 import plugins.certificates.BebrasCertificate;
+import plugins.certificates.BebrasGramotaCertificate;
 import plugins.certificates.CertificateLine;
 import views.Menu;
 import views.html.message;
@@ -36,7 +37,7 @@ import java.util.concurrent.Callable;
  * Date: 28.11.13
  * Time: 22:01
  */
-public class BebrasPlacesEvaluator extends Plugin {
+public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class, all places evaluations should be done in results translators
 
     private String regionField; //field name to store result in region
     private String russiaField; //field name to store result in russia
@@ -63,6 +64,9 @@ public class BebrasPlacesEvaluator extends Plugin {
             } catch (Exception e) {
                 return Results.forbidden("Этот сертификат вам недоступен");
             }
+
+        if (action.equals("all_teachers_gramotas"))
+            return generateAllGramotas();
 
         if (action.equals("all_pdfs"))
             return generateAllCertificates(params);
@@ -335,6 +339,88 @@ public class BebrasPlacesEvaluator extends Plugin {
                                 doc.add(bgImage);
                         }
                         certificate.draw(writer, position);
+
+                        processedUsers++;
+                        if (processedUsers == 1 || processedUsers % 200 == 0)
+                            worker.logInfo("processed " + processedUsers + " users");
+                    }
+                } catch (Exception e) {
+                    worker.logError("Exception occurred", e);
+                }
+
+                doc.close();
+
+                worker.logInfo("Finished: " + controllers.routes.Resources.returnDataFile(event.getId(), outputPath.getName()));
+            }
+        });
+
+        return Results.redirect(controllers.routes.EventAdministration.workersList(event.getId()));
+    }
+
+    private Result generateAllGramotas() {
+        final Event event = Event.current();
+        UserRole role = event.getRole("SCHOOL_ORG");
+
+        if (role == UserRole.EMPTY)
+            return Results.badRequest("Unknown role");
+
+        final Worker worker = new Worker("Generate all certificates", "Event=" + event.getId() + " role=" + roleName);
+        worker.execute(new Worker.Task() {
+            @Override
+            public void run() throws Exception {
+                DBObject usersQuery = new BasicDBObject(User.FIELD_EVENT, event.getId());
+                usersQuery.put(User.FIELD_USER_ROLE, "SCHOOL_ORG");
+
+                File outputPath = new File(event.getEventDataFolder(), "all-gramotas.pdf");
+
+                Rectangle documentSize = new Rectangle(
+                        Utilities.millimetersToPoints(210), Utilities.millimetersToPoints(297)
+                );
+                Document doc = new Document(
+                        documentSize,
+                        0, 0, 0, 0
+                );
+
+                PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
+
+                Image bgImage;
+                try {
+                    bgImage = Image.getInstance(event.getEventDataFolder().getAbsolutePath() + "/teacher_gramota.png");
+                } catch (Exception e) {
+                    worker.logError("Failed to read bg", e);
+                    return;
+                }
+                bgImage.setAbsolutePosition(0, 0);
+                bgImage.scaleAbsolute(documentSize.getWidth(), documentSize.getHeight());
+
+                doc.open();
+
+                int processedUsers = 0;
+                try (User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery, new BasicDBObject("surname", 1))) {
+                    while (usersEnumeration.hasMoreElements()) {
+                        User user = usersEnumeration.nextElement();
+
+                        int numberOfParticipants = numberOfParticipants(user);
+                        if (numberOfParticipants < 20)
+                            continue;
+
+                        boolean organizerActive = numberOfParticipants >= 100;
+
+                        //test novosibirsk
+//                        ObjectId registeredBy = user.getRegisteredBy();
+//                        if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID.equals(registeredBy))
+//                            continue;
+
+                        List<CertificateLine> lines = new ArrayList<>();//getCertificateLinesForOrg(user, organizerActive);
+                        addSchoolAndAddr(lines, user.getInfo(), user);
+
+                        //some extra skips
+
+                        BebrasGramotaCertificate certificate = new BebrasGramotaCertificate(user, organizerActive, lines);
+
+                        doc.newPage();
+                        doc.add(bgImage);
+                        certificate.draw(writer);
 
                         processedUsers++;
                         if (processedUsers == 1 || processedUsers % 200 == 0)

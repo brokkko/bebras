@@ -406,6 +406,11 @@ public class User implements SerializableUpdatable {
         return new UsersEnumeration(usersCursor);
     }
 
+    public static UsersEnumeration listUsers(DBObject query, DBObject sort) {
+        DBCursor usersCursor = MongoConnection.getUsersCollection().find(query).sort(sort);
+        return new UsersEnumeration(usersCursor);
+    }
+
     public static String generatePassword() {
         return passwordGenerator.generate(6) + passwordGenerator.generateNumber(2);
     }
