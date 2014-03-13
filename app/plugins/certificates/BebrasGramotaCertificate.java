@@ -104,13 +104,13 @@ public class BebrasGramotaCertificate extends Certificate {
         }
         printDiplomGramotaText(writer, "за активное участие в подготовке и проведении", size, false, x0, y0);
         y0 -= lineSkip;
-        printDiplomGramotaText(writer, "Международного конкурса по информатике «Бобер-2013»", size, false, x0, y0);
+        printDiplomGramotaText(writer, "Международного конкурса по информатике «Бобер-2013»" + (isActive ? "," : ""), size, false, x0, y0);
         if (isActive) {
             y0 -= lineSkip;
             if (((String)user.getInfo().get("patronymic")).toUpperCase().endsWith("Ч"))
-                printDiplomGramotaText(writer, "и вошедший в число лучших организаторов по России", size, false, x0, y0);
+                printDiplomGramotaText(writer, "вошедший в число лучших организаторов по России", size, false, x0, y0);
             else
-                printDiplomGramotaText(writer, "и вошедшая в число лучших организаторов по России", size, false, x0, y0);
+                printDiplomGramotaText(writer, "вошедшая в число лучших организаторов по России", size, false, x0, y0);
         }
     }
 
@@ -123,7 +123,7 @@ public class BebrasGramotaCertificate extends Certificate {
         printDiplomGramotaText(writer, "ЧЛЕНЫ ЖЮРИ:", size, false, x0, y0);
         y0 -= lineSkipBig / 1.4f;
 
-        printDiplomGramotaText(writer, "Председатель Организационного комитета  конкурса «Бобёр-2012»,", size, false, x0, y0);
+        printDiplomGramotaText(writer, "Председатель Организационного комитета  конкурса «Бобёр»,", size, false, x0, y0);
         y0 -= lineSkipSmall;
         printDiplomGramotaText(writer, "декан факультета компьютерных технологий и информатики СПбГЭТУ «ЛЭТИ», д.т.н.", size, false, x0, y0);
         y0 -= lineSkipSmall * 1.4f;
@@ -139,7 +139,7 @@ public class BebrasGramotaCertificate extends Certificate {
 
         printDiplomGramotaText(writer, "Главный редактор журнала «Компьютерные инструменты в образовании»,", size, false, x0, y0);
         y0 -= lineSkipSmall;
-        printDiplomGramotaText(writer, "научный руководитель конкурса «Бобёр-2012», д.п.н.", size, false, x0, y0);
+        printDiplomGramotaText(writer, "научный руководитель конкурса «Бобёр», д.п.н.", size, false, x0, y0);
         y0 -= lineSkipSmall * 1.4f;
         printDiplomGramotaText(writer, "С. Н. Поздняков", size, false, x0 + 50, y0, false);
     }
