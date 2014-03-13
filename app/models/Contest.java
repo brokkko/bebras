@@ -195,7 +195,7 @@ public class Contest {
     }
 
     public String getBlockTitle() {
-        return Event.currentId().startsWith("bebras") ? null : "Блок"; //TODO get rid of this bebras
+        return Event.currentId().startsWith("bebras") || Event.currentId().startsWith("kio14") ? null : "Блок"; //TODO get rid of this bebras
     }
 
     public TableDescription getTable(int index) {
