@@ -74,6 +74,10 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         if (action.equals("all_addrs"))
             return generateAllAddresses();
 
+        // localhost:9000/bebras13/eval_places/all_teachers_gramotas_addrs/p
+        if (action.equals("all_teachers_gramotas_addrs"))
+            return generateAllAddressesForCertificates();
+
         if (!action.equals("go"))
             return Results.notFound("unknown action");
 
@@ -492,6 +496,64 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                         if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID.equals(registeredBy))
                             continue;
                     }
+
+                    BebrasAddressCertificate certificate = new BebrasAddressCertificate(user);
+
+                    int position = processedUsers % 11;
+                    if (position == 0)
+                        doc.newPage();
+                    certificate.draw(writer, position);
+
+                    processedUsers++;
+                    if (processedUsers == 1 || processedUsers % 100 == 0)
+                        worker.logInfo("processed " + processedUsers + " users");
+                }
+
+                doc.close();
+
+                worker.logInfo("Finished: " + controllers.routes.Resources.returnDataFile(event.getId(), outputPath.getName()));
+            }
+        });
+
+        return Results.redirect(controllers.routes.EventAdministration.workersList(event.getId()));
+    }
+
+    private Result generateAllAddressesForCertificates() {
+        final Event event = Event.current();
+        final String roleName = "SCHOOL_ORG";
+        final UserRole role = event.getRole(roleName);
+
+        if (role == UserRole.EMPTY)
+            return Results.badRequest("Unknown role");
+
+        final Worker worker = new Worker("Generate all addresses", "Event=" + event.getId() + " role=" + roleName);
+        worker.execute(new Worker.Task() {
+            @Override
+            public void run() throws Exception {
+                DBObject usersQuery = new BasicDBObject(User.FIELD_EVENT, event.getId());
+                usersQuery.put(User.FIELD_USER_ROLE, roleName);
+
+                User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery, new BasicDBObject("surname", 1));
+                List<User> allUsers = usersEnumeration.readToMemory();
+
+                File outputPath = new File(event.getEventDataFolder(), "all-addresses-for-certificate-" + roleName + ".pdf");
+
+                Document doc = new Document(
+                        new Rectangle(
+                                Utilities.millimetersToPoints(210), Utilities.millimetersToPoints(297)
+                        ),
+                        0, 0, 0, 0
+                );
+
+                PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
+
+                doc.open();
+
+                int processedUsers = 0;
+                for (User user : allUsers) {
+                    int numberOfParticipants = numberOfParticipants(user);
+                    if (numberOfParticipants < 20)
+                        continue;
 
                     BebrasAddressCertificate certificate = new BebrasAddressCertificate(user);
 
