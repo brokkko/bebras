@@ -10,11 +10,39 @@
         @for(widget <- widgets; link <- widget.links if link.getType == "css") {
             <link media="screen,print" rel="stylesheet" href="@link">
         }
+        @google_counter()
+        <script>
+            @*track js errors http://habrahabr.ru/post/149926/ && http://misterphilip.com/universal-analytics/migration/events*@
+            var ga = window.ga || function() {} ;
+            @* _gaq.push(['_trackEvent', 'JS Error', msg, navigator.userAgent + ' -> ' + url + " : " + line, 0, true]); *@
+            window.onerror = function(msg, url, line) {
+                ga('set', 'nonInteraction', true);
+                ga('send', 'event', {
+                    eventCategory: 'JS Error',
+                    eventAction: msg,
+                    eventLabel: navigator.userAgent + ' -> ' + url + " : " + line,
+                    eventValue: 0
+                });
+                return true; // prevent error allerts
+            };
+        </script>
         <script src="@ResourceLink.JQUERY" type="text/javascript"></script>
+        <script>
+            @*track jquery errors http://habrahabr.ru/post/149926/ && http://misterphilip.com/universal-analytics/migration/events*@
+            @*_gaq.push(['_trackEvent', 'jQuery Error', message, navigator.userAgent, 0, true]);*@
+            jQuery.error = function (message) {
+                ga('set', 'nonInteraction', true);
+                ga('send', 'event', {
+                    eventCategory: 'JQuery Error',
+                    eventAction: message,
+                    eventLabel: navigator.userAgent,
+                    eventValue: 0
+                });
+            }
+        </script>
         @for(widget <- widgets; link <- widget.links if link.getType == "js") {
             <script src="@link" type="text/javascript"></script>
         }
-        @google_counter()
     </head>
     <body@if(no_scroll){ class="no-scroll"}>
         <noscript>
