@@ -584,11 +584,28 @@ public class EventAdministration extends Controller {
         }
 
         for (int i = 0; i < title.length; i++)
-            if (i != idInd && !byLogin || i != loginInd && byLogin)
+            if (i != idInd && !byLogin || i != loginInd && byLogin) {
 //                Object oldValue = user.getInfo().get(title[i]);
 //                if (!line[i].equals(oldValue))
 //                    Logger.info("Updated value " + title[i] + " for user " + user.getLogin() + ": was " + oldValue + " now " + line[i]);
-                user.getInfo().put(title[i], line[i]);
+                String userField = title[i];
+                String fieldValue = line[i];
+
+                //set value for the field
+                int pntPos = fieldValue.indexOf('.');
+                if (pntPos < 0)
+                    user.getInfo().put(userField, fieldValue);
+                else {
+                    String part1 = fieldValue.substring(0, pntPos);
+                    String part2 = fieldValue.substring(pntPos + 1);
+                    Map<String, Object> map = (Map<String, Object>) user.getInfo().get(part1);
+                    if (map == null) {
+                        map = new HashMap<>();
+                        user.getInfo().put(part1, map);
+                    }
+                    map.put(part2, fieldValue);
+                }
+            }
 
         user.invalidateAllResults();
     }

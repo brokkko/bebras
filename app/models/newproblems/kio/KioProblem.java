@@ -38,6 +38,7 @@ public class KioProblem implements Problem {
 
     public static String MESSAGE_KEY = "kio_problem_message";
 
+    //not used in program, but is used to save information about data
     private static InfoPattern KIO14_ANSWER_PATTERN = new InfoPattern(
             "_level", new BasicSerializationType<>(int.class), "уровень",
 
@@ -61,7 +62,7 @@ public class KioProblem implements Problem {
                     "statements", new BasicSerializationType<>(int.class), "Выполнено утверждений",
                     "figures", new BasicSerializationType<>(int.class), "Фигурок"
             ),
-            "Создвездия",
+            "Дом, который построил Джэк",
 
             "tarski",
             new InfoPattern(

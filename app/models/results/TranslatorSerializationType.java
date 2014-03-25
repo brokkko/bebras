@@ -12,5 +12,6 @@ public class TranslatorSerializationType extends SerializableTreeSerializationTy
         registerClass("empty", EmptyTranslator.class);
         registerClass("sum scores", SumScoresTranslator.class);
         registerClass("transfer", TransferTranslator.class);
+        registerClass("kio14", Kio14Translator.class);
     }
 }
