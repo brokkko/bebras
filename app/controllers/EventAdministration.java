@@ -591,13 +591,16 @@ public class EventAdministration extends Controller {
                 String userField = title[i];
                 String fieldValue = line[i];
 
+                user.getInfo().put(userField, fieldValue);
+
+                /* TODO implement something like this
                 //set value for the field
-                int pntPos = fieldValue.indexOf('.');
+                int pntPos = userField.indexOf('.');
                 if (pntPos < 0)
                     user.getInfo().put(userField, fieldValue);
                 else {
-                    String part1 = fieldValue.substring(0, pntPos);
-                    String part2 = fieldValue.substring(pntPos + 1);
+                    String part1 = userField.substring(0, pntPos);
+                    String part2 = userField.substring(pntPos + 1);
                     Map<String, Object> map = (Map<String, Object>) user.getInfo().get(part1);
                     if (map == null) {
                         map = new HashMap<>();
@@ -605,6 +608,7 @@ public class EventAdministration extends Controller {
                     }
                     map.put(part2, fieldValue);
                 }
+                */
             }
 
         user.invalidateAllResults();

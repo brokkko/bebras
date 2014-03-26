@@ -10,21 +10,11 @@ import java.util.List;
 public class Kio14Translator implements Translator {
     @Override
     public Info translate(List<Info> from, List<Info> settings, User user) {
-        String gradeS = (String) user.getInfo().get("grade");
-        int grade = 0;
-        try {
-            grade = Integer.parseInt(gradeS);
-        } catch (NumberFormatException ignored) {
-        }
-        int level;
-        if (grade < 5)
-            level = 0;
-        else if (grade > 7)
-            level = 2;
-        else
-            level = 1;
+        int level = getKioLevel(user);
 
         Info result = new Info();
+
+        result.put("level", "" + level);
 
         String prefix = "kio_" + level + "_";
         for (String field : new String[]{
@@ -47,11 +37,29 @@ public class Kio14Translator implements Translator {
         return result;
     }
 
+    private int getKioLevel(User user) {
+        String gradeS = (String) user.getInfo().get("grade");
+        int grade = 0;
+        try {
+            grade = Integer.parseInt(gradeS);
+        } catch (NumberFormatException ignored) {
+        }
+        int level;
+        if (grade < 5)
+            level = 0;
+        else if (grade > 7)
+            level = 2;
+        else
+            level = 1;
+        return level;
+    }
+
     @Override
     public InfoPattern getInfoPattern() {
         return new InfoPattern(
                 "rank", new BasicSerializationType<>(String.class), "Место",
                 "scores", new BasicSerializationType<>(String.class), "Баллы",
+                "level", new BasicSerializationType<>(String.class), "Уровень",
 
                 "total_number_of_difference_graphs", new BasicSerializationType<>(String.class), "Различных созвездий",
                 "total_number_of_right_graphs", new BasicSerializationType<>(String.class), "Всего созвездий",
