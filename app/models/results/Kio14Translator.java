@@ -54,6 +54,15 @@ public class Kio14Translator implements Translator {
             level = 2;
         else
             level = 1;
+
+        String changeLevel = (String) user.getInfo().get("change_level");
+        if ("2".equals(changeLevel))
+            level = 2;
+        if ("1".equals(changeLevel))
+            level = 1;
+        if ("0".equals(changeLevel))
+            level = 0;
+
         return level;
     }
 
