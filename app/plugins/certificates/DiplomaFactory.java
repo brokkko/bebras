@@ -1,10 +1,27 @@
 package plugins.certificates;
 
 import models.User;
+import models.newserialization.Deserializer;
 import models.newserialization.SerializableUpdatable;
+import models.newserialization.Serializer;
 
-public interface DiplomaFactory extends SerializableUpdatable {
+public abstract class DiplomaFactory implements SerializableUpdatable {
 
-    public Diploma getCertificate(User user);
+    private String contestId;
 
+    public abstract Diploma getDiploma(User user);
+
+    public String getContestId() {
+        return contestId;
+    }
+
+    @Override
+    public void serialize(Serializer serializer) {
+        serializer.write("contest", contestId);
+    }
+
+    @Override
+    public void update(Deserializer deserializer) {
+        contestId = deserializer.readString("contest");
+    }
 }

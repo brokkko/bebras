@@ -3,19 +3,36 @@ package plugins.certificates;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import models.User;
+import models.results.Info;
 import play.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.URI;
 import java.net.URL;
 
-public abstract class Diploma {
+public abstract class Diploma<Factory extends DiplomaFactory> {
 
     protected User user;
+    protected Factory factory;
+    private Info results = null;
 
-    protected Diploma(User user) {
+    protected Diploma(User user, Factory factory) {
         this.user = user;
+        this.factory = factory;
+
+        String contestId = factory.getContestId();
+        if (contestId != null)
+            results = user.getContestResults(user.getEvent().getContestById(contestId));
+    }
+
+    protected Info getResults() {
+        if (results == null)
+            results = user.getEventResults();
+        return results;
+    }
+
+    protected String getResult(String field) {
+        return (String) getResults().get(field);
     }
 
     public abstract int getWidthsInMM();

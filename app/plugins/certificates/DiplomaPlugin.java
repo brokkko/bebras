@@ -9,19 +9,27 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
 import plugins.Plugin;
+import views.Menu;
 
 import java.io.File;
 
-public class CertificatePlugin extends Plugin {
+public class DiplomaPlugin extends Plugin {
 
     private String viewRight;
-    private DiplomaFactory diplomaFactory; //TODO replace with serialization type
+    private DiplomaFactory diplomaFactory;
     private String viewTitle;
 
     @Override
     public void initPage() {
-        //do nothing
-        //TODO test if is honoured and add to menu
+        User user = User.current();
+        if (!user.hasRight(viewRight))
+            return;
+
+        Diploma diploma = diplomaFactory.getDiploma(user);
+        if (!diploma.isHonored())
+            return;
+
+        Menu.addMenuItem(viewTitle, getCall(), viewRight);
     }
 
     @Override
@@ -48,7 +56,7 @@ public class CertificatePlugin extends Plugin {
         if (!user.hasRight(viewRight))
             return Results.forbidden("Oops...");
 
-        Diploma diploma = diplomaFactory.getCertificate(user);
+        Diploma diploma = diplomaFactory.getDiploma(user);
 
         if (diploma == null)
             return Results.notFound("diploma type unknown");

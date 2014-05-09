@@ -6,10 +6,8 @@ import com.itextpdf.text.Utilities;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
-import models.Event;
 import models.ServerConfiguration;
 import models.User;
-import models.results.Info;
 import play.Logger;
 import plugins.certificates.Diploma;
 
@@ -18,7 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KioCertificate extends Diploma {
+public class KioCertificate extends Diploma<KioCertificateFactory> {
 
     public static final String PLUGIN_NAME = "KioDiplomas";
     public static final File R_FONT_FILE = ServerConfiguration.getInstance().getPluginFile(PLUGIN_NAME, "AmbassadoreType.ttf");
@@ -41,18 +39,8 @@ public class KioCertificate extends Diploma {
         }
     }
 
-    private final KioCertificateFactory kioCertificateFactory;
-    private final Info contestResults;
-
-    public KioCertificate(User user, KioCertificateFactory kioCertificateFactory) {
-        super(user);
-        this.kioCertificateFactory = kioCertificateFactory;
-
-        String contestId = kioCertificateFactory.getContestId();
-        if (contestId != null)
-            contestResults = user.getContestResults(Event.current().getContestById(contestId));
-        else
-            contestResults = user.getEventResults();
+    public KioCertificate(User user, KioCertificateFactory factory) {
+        super(user, factory);
     }
 
     @Override
@@ -77,7 +65,7 @@ public class KioCertificate extends Diploma {
 
     private int getLevel() {
         try {
-            return Integer.parseInt((String) contestResults.get("level"));
+            return Integer.parseInt(getResult("level"));
         } catch (NumberFormatException e) {
             return 0;
         }
@@ -99,16 +87,12 @@ public class KioCertificate extends Diploma {
         return String.format("%s %s", user.getInfo().get("surname"), user.getInfo().get("name"));
     }
 
-    private List<Integer> getProblemsIndexes() {
-        return kioCertificateFactory.getProblemsByLevels().get(getLevel());
-    }
-
     private List<KioProblemDescription> getProblems() {
-        List<Integer> problemsForLevel = kioCertificateFactory.getProblemsByLevels().get(getLevel());
+        List<Integer> problemsForLevel = factory.getProblemsByLevels().get(getLevel());
         List<KioProblemDescription> problems = new ArrayList<>(problemsForLevel.size());
 
         for (Integer problemId : problemsForLevel)
-            problems.add(kioCertificateFactory.getProblems().get(problemId));
+            problems.add(factory.getProblems().get(problemId));
 
         return problems;
     }
@@ -119,7 +103,7 @@ public class KioCertificate extends Diploma {
 
     private String getScoresForProblem(KioProblemDescription problemDescription) {
         String scoresField = problemDescription.getScoresField();
-        return (String) contestResults.get(scoresField);
+        return getResult(scoresField);
     }
 
     private boolean hasAtLeastOneSolution() {
@@ -142,14 +126,14 @@ public class KioCertificate extends Diploma {
         canvas.showTextAligned(Element.ALIGN_CENTER, surnameName(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(157), 0);
 
         canvas.setFontAndSize(DEFAULT_FONT_R, 17);
-        canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + kioCertificateFactory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(3), 0);
+        canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + factory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(3), 0);
 
         if (hasAtLeastOneSolution()) {
             String levelInfo = "и занял(а) в рейтинге ( " + getLevelAsString() + " уровень )";
             canvas.showTextAligned(Element.ALIGN_LEFT, levelInfo, Utilities.millimetersToPoints(60), Utilities.millimetersToPoints(124), 0);
 
             int level = getLevel();
-            String placeInfo = String.format("%s место из %s", contestResults.get("rank"), kioCertificateFactory.getParticipantsByLevels().get(level));
+            String placeInfo = String.format("%s место из %s", getResult("rank"), factory.getParticipantsByLevels().get(level));
             canvas.showTextAligned(Element.ALIGN_CENTER, placeInfo, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(117), 0);
 
             outputProblemsResult(canvas);
@@ -175,11 +159,11 @@ public class KioCertificate extends Diploma {
             String[] fieldsValues = new String[fields.size()];
             for (int i = 0; i < fields.size(); i++) {
                 String field = fields.get(i);
-                fieldsValues[i] = (String) contestResults.get(field);
+                fieldsValues[i] = getResult(field);
             }
 
             String rankField = problemDescription.getRankField();
-            String rank = (String) contestResults.get(rankField);
+            String rank = getResult(rankField);
             String scores = getScoresForProblem(problemDescription);
 
             String resultsFormat = problemDescription.getPattern();
