@@ -78,7 +78,7 @@ public class KioDiploma extends Diploma<KioDiplomaFactory> {
 
         if (isGroup()) {
             canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 14);
-            canvas.showTextAligned(Element.ALIGN_CENTER, "в команде", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(105), 0);
+            canvas.showTextAligned(Element.ALIGN_CENTER, "(в команде)", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(105), 0);
         }
 
         canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 17);
