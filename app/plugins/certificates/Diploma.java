@@ -16,6 +16,11 @@ public abstract class Diploma<Factory extends DiplomaFactory> {
     protected Factory factory;
     private Info results = null;
 
+    @Deprecated
+    protected Diploma(User user) {
+        this.user = user;
+    }
+
     protected Diploma(User user, Factory factory) {
         this.user = user;
         this.factory = factory;

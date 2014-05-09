@@ -84,6 +84,10 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
     }
 
     private String surnameName() {
+        return surnameName(user);
+    }
+
+    public static String surnameName(User user) {
         return String.format("%s %s", user.getInfo().get("surname"), user.getInfo().get("name"));
     }
 

@@ -1,5 +1,8 @@
 package plugins.certificates.kio;
 
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Utilities;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 import models.ServerConfiguration;
 import models.User;
@@ -34,6 +37,10 @@ public class KioDiploma extends Diploma<KioDiplomaFactory> {
         String diploma = getDiploma();
         if (diploma == null)
             throw new IllegalStateException("Can not get kio diploma file name for a user not honoured with a diploma");
+
+        if (diploma.endsWith("g"))
+            diploma = diploma.substring(0, diploma.length() - 1);
+
         switch (diploma) {
             case "1":
                 return "I";
@@ -60,6 +67,24 @@ public class KioDiploma extends Diploma<KioDiplomaFactory> {
 
     @Override
     public void draw(PdfWriter writer) {
+        PdfContentByte canvas = writer.getDirectContent();
+        canvas.saveState();
+        canvas.beginText();
 
+        canvas.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_CLIP);
+
+        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 24);
+        canvas.showTextAligned(Element.ALIGN_CENTER, KioCertificate.surnameName(user), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(110), 0);
+
+        if (isGroup()) {
+            canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 14);
+            canvas.showTextAligned(Element.ALIGN_CENTER, "в команде", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(105), 0);
+        }
+
+        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 17);
+        canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + factory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(6), 0);
+
+        canvas.endText();
+        canvas.restoreState();
     }
 }
