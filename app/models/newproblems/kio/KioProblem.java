@@ -69,7 +69,7 @@ public class KioProblem implements Problem {
                     "statements", new BasicSerializationType<>(int.class), "Выполнено утверждений",
                     "length", new BasicSerializationType<>(int.class), "Условий"
             ),
-            "Вилларибо и Виллабаджо"
+            "Мир Тарского"
     );
 
     public KioProblem() {

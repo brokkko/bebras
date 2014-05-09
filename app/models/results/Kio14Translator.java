@@ -23,12 +23,15 @@ public class Kio14Translator implements Translator {
                 "total_number_of_right_graphs",
                 "sum_of_lines",
                 "scores_stars",
+                "rank_stars",
                 "total_length",
                 "scores_peterhof",
+                "rank_peterhof",
                 "statements",
                 "figures",
                 "length",
                 "scores_tarski",
+                "rank_tarski",
                 "scores",
                 "rank"
         } )
@@ -66,18 +69,21 @@ public class Kio14Translator implements Translator {
                 "sum_of_lines", new BasicSerializationType<>(String.class), "Длина линий",
 
                 "scores_stars", new BasicSerializationType<>(String.class), "Баллы (Звезды)",
+                "rank_stars", new BasicSerializationType<>(String.class), "Место (Звезды)",
 
 
                 "total_length", new BasicSerializationType<>(String.class), "Длина струй",
 
                 "scores_peterhof", new BasicSerializationType<>(String.class), "Баллы (Фонтаны)",
+                "rank_peterhof", new BasicSerializationType<>(String.class), "Место (Фонтаны)",
 
 
                 "statements", new BasicSerializationType<>(String.class), "Выполнено утверждений",
                 "figures", new BasicSerializationType<>(String.class), "Установлено фигурок",
                 "length", new BasicSerializationType<>(String.class), "Использовано условий",
 
-                "scores_tarski", new BasicSerializationType<>(String.class), "Баллы (Логика)"
+                "scores_tarski", new BasicSerializationType<>(String.class), "Баллы (Логика)",
+                "rank_tarski", new BasicSerializationType<>(String.class), "Место (Логика)"
         );
     }
 

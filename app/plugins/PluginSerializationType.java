@@ -1,8 +1,8 @@
 package plugins;
 
-import models.newproblems.kio.KioProblem;
 import models.newserialization.SerializableTreeSerializationType;
 import plugins.bebraspdf.BebrasPDFs;
+import plugins.certificates.CertificatePlugin;
 import plugins.questionnaire.QuestionnairePlugin;
 
 /**
@@ -23,6 +23,7 @@ public class PluginSerializationType extends SerializableTreeSerializationType<P
         registerClass("questionnaire", QuestionnairePlugin.class);
         registerClass("bebras places", BebrasPlacesEvaluator.class);
         registerClass("kio problem", KioProblemPlugin.class);
+        registerClass("diploma", CertificatePlugin.class);
     }
 
 }

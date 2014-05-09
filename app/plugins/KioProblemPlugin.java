@@ -34,21 +34,25 @@ public class KioProblemPlugin extends Plugin {
                 event.registerExtraUserField(right, prefix + "sum_of_lines", new BasicSerializationType<>(String.class), "Длина линий");
 
                 event.registerExtraUserField(right, prefix + "scores_stars", new BasicSerializationType<>(String.class), "Баллы (Звезды)");
+                event.registerExtraUserField(right, prefix + "rank_stars", new BasicSerializationType<>(String.class), "Место (Звезды)");
 
 
                 event.registerExtraUserField(right, prefix + "total_length", new BasicSerializationType<>(String.class), "Длина струй");
 
                 event.registerExtraUserField(right, prefix + "scores_peterhof", new BasicSerializationType<>(String.class), "Баллы (Фонтаны)");
+                event.registerExtraUserField(right, prefix + "rank_peterhof", new BasicSerializationType<>(String.class), "Место (Фонтаны)");
 
 
                 if (prefix.equals("kio_0_")) {
                     event.registerExtraUserField(right, prefix + "statements", new BasicSerializationType<>(String.class), "Выполнено утверждений");
                     event.registerExtraUserField(right, prefix + "figures", new BasicSerializationType<>(String.class), "Установлено фигурок");
                     event.registerExtraUserField(right, prefix + "scores_tarski", new BasicSerializationType<>(String.class), "Баллы (Дом Джэка)");
+                    event.registerExtraUserField(right, prefix + "rank_tarski", new BasicSerializationType<>(String.class), "Место (Дом Джэка)");
                 } else {
                     event.registerExtraUserField(right, prefix + "statements", new BasicSerializationType<>(String.class), "Выполнено утверждений");
                     event.registerExtraUserField(right, prefix + "length", new BasicSerializationType<>(String.class), "Использовано условий");
                     event.registerExtraUserField(right, prefix + "scores_tarski", new BasicSerializationType<>(String.class), "Баллы (Мир Тарского)");
+                    event.registerExtraUserField(right, prefix + "rank_tarski", new BasicSerializationType<>(String.class), "Место (Мир Тарского)");
                 }
 
                 event.registerExtraUserField(right, prefix + "scores", new BasicSerializationType<>(String.class), "Баллы");

@@ -1,4 +1,4 @@
-package plugins.certificates;
+package plugins.certificates.bebras;
 
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Element;
@@ -9,16 +9,16 @@ import com.itextpdf.text.pdf.PdfWriter;
 import models.User;
 import play.Logger;
 import plugins.BebrasPlacesEvaluator;
-import views.html.helper.inputText;
+import plugins.certificates.Diploma;
 
-public class BebrasAddressCertificate extends Certificate {
+public class BebrasAddressCertificate extends Diploma {
 
     private static final float ADDRESS_BOX_WIDTH = 112;
     private static final float ADDRESS_BOX_HEIGHT = 39;
     private static final float ADDRESS_PADDING = 10;
 
-    private static final Font DEFAULT_FONT_R = new Font(CertificateLine.DEFAULT_FONT_R, 12f, Font.NORMAL);
-    private static final Font DEFAULT_FONT_B = new Font(CertificateLine.DEFAULT_FONT_B, 12f, Font.NORMAL);
+    private static final Font DEFAULT_FONT_R = new Font(BebrasCertificateLine.DEFAULT_FONT_R, 12f, Font.NORMAL);
+    private static final Font DEFAULT_FONT_B = new Font(BebrasCertificateLine.DEFAULT_FONT_B, 12f, Font.NORMAL);
 
     public BebrasAddressCertificate(User user) {
         super(user);
@@ -37,6 +37,11 @@ public class BebrasAddressCertificate extends Certificate {
     @Override
     public String bgPath() {
         return null;
+    }
+
+    @Override
+    public boolean isHonored() {
+        return true;
     }
 
     @Override

@@ -6,6 +6,7 @@ import models.forms.validators.ValidatorSerializationType;
 import models.newproblems.ProblemSerializationType;
 import models.results.TranslatorSerializationType;
 import plugins.PluginSerializationType;
+import plugins.certificates.CertificateFactorySerializationType;
 
 /**
  * Created by ilya
@@ -23,6 +24,8 @@ public class SerializationTypesRegistry {
     public static final ProblemSerializationType PROBLEM = new ProblemSerializationType();
 
     public static final PluginSerializationType PLUGIN = new PluginSerializationType();
+
+    public static final CertificateFactorySerializationType CERTIFICATE_FACTORY = new CertificateFactorySerializationType();
 
     /*public static <T> ArraySerializationType<T> array(SerializationType<T> subtype) {
         return new ArraySerializationType<>(subtype);

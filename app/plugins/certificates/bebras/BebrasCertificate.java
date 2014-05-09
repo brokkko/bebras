@@ -1,4 +1,4 @@
-package plugins.certificates;
+package plugins.certificates.bebras;
 
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Utilities;
@@ -10,10 +10,11 @@ import models.User;
 import models.applications.Application;
 import org.bson.types.ObjectId;
 import play.Logger;
+import plugins.certificates.Diploma;
 
 import java.util.List;
 
-public class BebrasCertificate extends Certificate {
+public class BebrasCertificate extends Diploma {
 
     private static final float TEXT_BOX_LEFT = 94;
     private static final float TEXT_BOX_BOOTOM = 58;
@@ -21,11 +22,11 @@ public class BebrasCertificate extends Certificate {
     private static final float TEXT_BOX_HEIGHT = 58;
 
     private boolean org;
-    private List<CertificateLine> lines;
+    private List<BebrasCertificateLine> lines;
 
     public static final ObjectId NOVOSIBIRSK_ID = User.getUserByLogin("bebras13", "shkola-plus").getId();
 
-    public BebrasCertificate(User user, boolean org, List<CertificateLine> lines) {
+    public BebrasCertificate(User user, boolean org, List<BebrasCertificateLine> lines) {
         super(user);
         this.org = org;
         this.lines = lines;
@@ -47,6 +48,11 @@ public class BebrasCertificate extends Certificate {
     }
 
     @Override
+    public boolean isHonored() {
+        return true;
+    }
+
+    @Override
     public void draw(PdfWriter writer) {
         draw(writer, -1);
     }
@@ -58,7 +64,7 @@ public class BebrasCertificate extends Certificate {
         float lineSkip = lines.size() >= 10 ? 1.3f : 1.5f;
 
         boolean firstLine = true;
-        for (CertificateLine line : lines) {
+        for (BebrasCertificateLine line : lines) {
             if (firstLine)
                 firstLine = false;
             else
@@ -68,7 +74,7 @@ public class BebrasCertificate extends Certificate {
 
         String userCode = getUserCode(user, org);
 
-        printText(writer, CertificateLine.DEFAULT_FONT_R, userCode, 12, 49, 4, position);
+        printText(writer, BebrasCertificateLine.DEFAULT_FONT_R, userCode, 12, 49, 4, position);
     }
 
     public static String getUserCode(User user, boolean org) {

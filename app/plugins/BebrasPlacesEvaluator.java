@@ -17,16 +17,15 @@ import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
-import plugins.certificates.BebrasAddressCertificate;
-import plugins.certificates.BebrasCertificate;
-import plugins.certificates.BebrasGramotaCertificate;
-import plugins.certificates.CertificateLine;
+import plugins.certificates.bebras.BebrasAddressCertificate;
+import plugins.certificates.bebras.BebrasCertificate;
+import plugins.certificates.bebras.BebrasGramotaCertificate;
+import plugins.certificates.bebras.BebrasCertificateLine;
 import views.Menu;
 import views.html.message;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -296,7 +295,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                     while (usersEnumeration.hasMoreElements()) {
                         User user = usersEnumeration.nextElement();
 
-                        List<CertificateLine> lines;
+                        List<BebrasCertificateLine> lines;
                         boolean isOrg;
 
                         if (roleName.equals("SCHOOL_ORG")) {
@@ -415,7 +414,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 //                        if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID.equals(registeredBy))
 //                            continue;
 
-                        List<CertificateLine> lines = new ArrayList<>();//getCertificateLinesForOrg(user, organizerActive);
+                        List<BebrasCertificateLine> lines = new ArrayList<>();//getCertificateLinesForOrg(user, organizerActive);
                         addSchoolAndAddr(lines, user.getInfo(), user);
 
                         //some extra skips
@@ -622,7 +621,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         if (user == null)
             return Results.notFound();
 
-        List<CertificateLine> lines;
+        List<BebrasCertificateLine> lines;
         boolean isOrg;
 
         if (user.getRole().getName().equals("SCHOOL_ORG")) {
@@ -663,24 +662,24 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         return numberOfParticipants >= need;
     }
 
-    private List<CertificateLine> getCertificateLinesForOrg(User user, boolean active) {
+    private List<BebrasCertificateLine> getCertificateLinesForOrg(User user, boolean active) {
         Info info = user.getInfo();
 
-        List<CertificateLine> lines = new ArrayList<>();
+        List<BebrasCertificateLine> lines = new ArrayList<>();
 
-        lines.add(new CertificateLine("Настоящим сертификатом удостоверяется, что", 12, false));
-        lines.add(new CertificateLine(info.get("surname") + " " + info.get("name") + " " + info.get("patronymic"), 12, true));
+        lines.add(new BebrasCertificateLine("Настоящим сертификатом удостоверяется, что", 12, false));
+        lines.add(new BebrasCertificateLine(info.get("surname") + " " + info.get("name") + " " + info.get("patronymic"), 12, true));
         addSchoolAndAddr(lines, info, user);
         if (active)
-            lines.add(new CertificateLine("принял(а) активное участие в подготовке", 12, false));
+            lines.add(new BebrasCertificateLine("принял(а) активное участие в подготовке", 12, false));
         else
-            lines.add(new CertificateLine("принял(а) участие в подготовке", 12, false));
-        lines.add(new CertificateLine("и проведении конкурса «Бобёр-2013»", 12, false));
+            lines.add(new BebrasCertificateLine("принял(а) участие в подготовке", 12, false));
+        lines.add(new BebrasCertificateLine("и проведении конкурса «Бобёр-2013»", 12, false));
 
         return lines;
     }
 
-    private List<CertificateLine> getCertificateLinesForParticipant(Event event, User user, boolean needOnlyGreatAndGoodResults, Map<Contest, Long> numStartedCache, Map<String, Long> betterCache) {
+    private List<BebrasCertificateLine> getCertificateLinesForParticipant(Event event, User user, boolean needOnlyGreatAndGoodResults, Map<Contest, Long> numStartedCache, Map<String, Long> betterCache) {
         int scores = getUsersScores(user);
         Info info = user.getInfo();
         String grade = (String) info.get("grade");
@@ -708,7 +707,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
     "grades description" : "g1 45 30 10 g2 45 30 10 g3 85 60 20 g4 85 60 20 g5 75 60 20 g6 75 60 20 g7 75 60 20 g8 75 60 20 g9 75 60 20 g10 75 60 20 g11 75 60 20",
          */
 
-        List<CertificateLine> lines = new ArrayList<>();
+        List<BebrasCertificateLine> lines = new ArrayList<>();
 
         User org = user.getRegisteredByUser();
         Info orgInfo = org.getInfo();
@@ -747,46 +746,46 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
          */
 
         if (scores >= s1) {
-            lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
-            lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
-            lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
+            lines.add(new BebrasCertificateLine("Настоящим сертификатом", 12, false));
+            lines.add(new BebrasCertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
+            lines.add(new BebrasCertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo, user);
-            lines.add(new CertificateLine("получил(а) отличные результаты,", 12, false));
-            lines.add(new CertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new BebrasCertificateLine("получил(а) отличные результаты,", 12, false));
+            lines.add(new BebrasCertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
             if (better == 1)
-                lines.add(new CertificateLine("и занял первое место по России", 12, false));
+                lines.add(new BebrasCertificateLine("и занял первое место по России", 12, false));
             else if (percents == 1)
-                lines.add(new CertificateLine("и вошёл (вошла) в " + better + " лучших участников по России", 12, false)); //don't write 1%, write instead the whole number
+                lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + better + " лучших участников по России", 12, false)); //don't write 1%, write instead the whole number
             else
-                lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
-            lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
+                lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
+            lines.add(new BebrasCertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
         } else if (scores >= s2) {
-            lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
-            lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
-            lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
+            lines.add(new BebrasCertificateLine("Настоящим сертификатом", 12, false));
+            lines.add(new BebrasCertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
+            lines.add(new BebrasCertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo, user);
-            lines.add(new CertificateLine("получил(а) хорошие результаты,", 12, false));
-            lines.add(new CertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
-            lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
-            lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
+            lines.add(new BebrasCertificateLine("получил(а) хорошие результаты,", 12, false));
+            lines.add(new BebrasCertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
+            lines.add(new BebrasCertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
         } else if (scores >= s3) {
             if (needOnlyGreatAndGoodResults)
                 return null;
-            lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
-            lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
-            lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
+            lines.add(new BebrasCertificateLine("Настоящим сертификатом", 12, false));
+            lines.add(new BebrasCertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
+            lines.add(new BebrasCertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo, user);
-            lines.add(new CertificateLine("успешно участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
-            lines.add(new CertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
-            lines.add(new CertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
+            lines.add(new BebrasCertificateLine("успешно участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
+            lines.add(new BebrasCertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
         } else {
             if (needOnlyGreatAndGoodResults)
                 return null;
-            lines.add(new CertificateLine("Настоящим сертификатом", 12, false));
-            lines.add(new CertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
-            lines.add(new CertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
+            lines.add(new BebrasCertificateLine("Настоящим сертификатом", 12, false));
+            lines.add(new BebrasCertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
+            lines.add(new BebrasCertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo, user);
-            lines.add(new CertificateLine("участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new BebrasCertificateLine("участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
         }
         return lines;
     }
@@ -817,7 +816,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         return result;
     }
 
-    private void addSchoolAndAddr(List<CertificateLine> lines, Info orgInfo, User user) {
+    private void addSchoolAndAddr(List<BebrasCertificateLine> lines, Info orgInfo, User user) {
         String schoolName = substituteSchoolBebras13((String) orgInfo.get("school_name"), user);
         addProbablyLongLine(lines, schoolName);
 
@@ -855,9 +854,9 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         return address;
     }
 
-    private void addProbablyLongLine(List<CertificateLine> lines, String line) {
+    private void addProbablyLongLine(List<BebrasCertificateLine> lines, String line) {
         for (String shortLine : splitProbablyLongLine(line))
-            lines.add(new CertificateLine(shortLine, 10, false));
+            lines.add(new BebrasCertificateLine(shortLine, 10, false));
     }
 
     public static String[] splitProbablyLongLine(String line) {

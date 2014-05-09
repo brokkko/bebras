@@ -1,4 +1,4 @@
-package plugins.certificates;
+package plugins.certificates.bebras;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -10,12 +10,13 @@ import models.Event;
 import models.ServerConfiguration;
 import models.User;
 import play.Logger;
+import plugins.certificates.Diploma;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class BebrasGramotaCertificate extends Certificate {
+public class BebrasGramotaCertificate extends Diploma {
     public static final File R_ARIAL_FONT_FILE = ServerConfiguration.getInstance().getResource("Arial-R.ttf");
     public static BaseFont ARIAL_FONT_R;
     public static final File B_ARIAL_FONT_FILE = ServerConfiguration.getInstance().getResource("Arial-B.ttf");
@@ -31,9 +32,9 @@ public class BebrasGramotaCertificate extends Certificate {
     }
 
     private boolean isActive;
-    private List<CertificateLine> schoolAddrLines;
+    private List<BebrasCertificateLine> schoolAddrLines;
 
-    public BebrasGramotaCertificate(User user, boolean isActive, List<CertificateLine> schoolAddrLines) {
+    public BebrasGramotaCertificate(User user, boolean isActive, List<BebrasCertificateLine> schoolAddrLines) {
         super(user);
         this.isActive = isActive;
         this.schoolAddrLines = schoolAddrLines;
@@ -55,6 +56,11 @@ public class BebrasGramotaCertificate extends Certificate {
     }
 
     @Override
+    public boolean isHonored() {
+        return true;
+    }
+
+    @Override
     public void draw(PdfWriter writer) {
         try {
 
@@ -64,7 +70,7 @@ public class BebrasGramotaCertificate extends Certificate {
             float lineSkip = 1.5f;
 
             boolean firstLine = true;
-//            for (CertificateLine line : schoolAddrLines) {
+//            for (BebrasCertificateLine line : schoolAddrLines) {
 //                if (firstLine)
 //                    firstLine = false;
 //                else
@@ -98,7 +104,7 @@ public class BebrasGramotaCertificate extends Certificate {
 
         printDiplomGramotaText(writer, "школьный организатор", size, false, x0, y0);
         y0 -= lineSkip;
-        for (CertificateLine schoolAddrLine : schoolAddrLines) {
+        for (BebrasCertificateLine schoolAddrLine : schoolAddrLines) {
             printDiplomGramotaText(writer, schoolAddrLine.getLine(), size, false, x0, y0);
             y0 -= lineSkip;
         }

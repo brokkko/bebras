@@ -1,4 +1,4 @@
-package plugins.certificates;
+package plugins.certificates.bebras;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
@@ -9,7 +9,7 @@ import play.Logger;
 import java.io.File;
 import java.io.IOException;
 
-public class CertificateLine {
+public class BebrasCertificateLine {
 
     public static final File R_FONT_FILE = ServerConfiguration.getInstance().getResource("Ubuntu-R.ttf");
     public static BaseFont DEFAULT_FONT_R;
@@ -29,7 +29,7 @@ public class CertificateLine {
     private float size;
     private boolean bold;
 
-    public CertificateLine(String line, float size, boolean bold) {
+    public BebrasCertificateLine(String line, float size, boolean bold) {
         this.line = line;
         this.size = size;
         this.bold = bold;

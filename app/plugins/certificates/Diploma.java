@@ -7,12 +7,14 @@ import play.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.URI;
+import java.net.URL;
 
-public abstract class Certificate {
+public abstract class Diploma {
 
     protected User user;
 
-    protected Certificate(User user) {
+    protected Diploma(User user) {
         this.user = user;
     }
 
@@ -21,6 +23,8 @@ public abstract class Certificate {
     public abstract int getHeightInMM();
 
     public abstract String bgPath();
+
+    public abstract boolean isHonored();
 
     public abstract void draw(PdfWriter writer);
 
@@ -44,8 +48,13 @@ public abstract class Certificate {
             PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
 
             Image bgImage = null;
-            if (bgPath() != null) {
-                bgImage = Image.getInstance(bgPath());
+
+            String bg = bgPath();
+            if (bg != null) {
+                if (bg.contains("://"))
+                    bgImage = Image.getInstance(new URL(bg));
+                else
+                    bgImage = Image.getInstance(bg);
                 bgImage.setAbsolutePosition(0, 0);
                 bgImage.scaleAbsolute(Utilities.millimetersToPoints(getWidthsInMM()), Utilities.millimetersToPoints(getHeightInMM()));
             }
