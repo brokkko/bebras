@@ -25,7 +25,12 @@ public class KioDiploma extends Diploma<KioDiplomaFactory> {
     }
 
     private String getDiploma() {
-        return (String) user.getInfo().get("diploma");
+        String diploma = (String) user.getInfo().get("diploma");
+
+        if ("0".equals(diploma) || "".equals(diploma))
+            diploma = null;
+
+        return diploma;
     }
 
     private boolean isGroup() {

@@ -88,7 +88,7 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
     }
 
     public static String surnameName(User user) {
-        return String.format("%s %s", user.getInfo().get("surname"), user.getInfo().get("name"));
+        return String.format("%s %s", user.getInfo().get("surname"), user.getInfo().get("name")).toUpperCase();
     }
 
     private List<KioProblemDescription> getProblems() {

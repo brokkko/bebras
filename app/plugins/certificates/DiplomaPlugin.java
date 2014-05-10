@@ -61,6 +61,9 @@ public class DiplomaPlugin extends Plugin {
         if (diploma == null)
             return Results.notFound("diploma type unknown");
 
+        if (!diploma.isHonored())
+            return Results.forbidden("You are not honoured with this certificate");
+
         File temporaryCertificate = diploma.createPdf();
 
         //TODO may be class simple name is not the best thing to name a file
