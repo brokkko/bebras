@@ -10,8 +10,9 @@ import models.User;
 import play.Logger;
 import plugins.BebrasPlacesEvaluator;
 import plugins.certificates.Diploma;
+import plugins.certificates.DiplomaFactory;
 
-public class BebrasAddressCertificate extends Diploma {
+public class BebrasAddressCertificate extends Diploma<DiplomaFactory> {
 
     private static final float ADDRESS_BOX_WIDTH = 112;
     private static final float ADDRESS_BOX_HEIGHT = 39;

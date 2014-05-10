@@ -11,12 +11,13 @@ import models.ServerConfiguration;
 import models.User;
 import play.Logger;
 import plugins.certificates.Diploma;
+import plugins.certificates.DiplomaFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class BebrasGramotaCertificate extends Diploma {
+public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
     public static final File R_ARIAL_FONT_FILE = ServerConfiguration.getInstance().getResource("Arial-R.ttf");
     public static BaseFont ARIAL_FONT_R;
     public static final File B_ARIAL_FONT_FILE = ServerConfiguration.getInstance().getResource("Arial-B.ttf");

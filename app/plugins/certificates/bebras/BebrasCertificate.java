@@ -11,10 +11,11 @@ import models.applications.Application;
 import org.bson.types.ObjectId;
 import play.Logger;
 import plugins.certificates.Diploma;
+import plugins.certificates.DiplomaFactory;
 
 import java.util.List;
 
-public class BebrasCertificate extends Diploma {
+public class BebrasCertificate extends Diploma<DiplomaFactory> {
 
     private static final float TEXT_BOX_LEFT = 94;
     private static final float TEXT_BOX_BOOTOM = 58;
