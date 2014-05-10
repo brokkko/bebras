@@ -8,6 +8,7 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 import models.ServerConfiguration;
 import models.User;
+import models.results.Info;
 import play.Logger;
 import plugins.certificates.Diploma;
 
@@ -89,6 +90,34 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
 
     public static String surnameName(User user) {
         return String.format("%s %s", user.getInfo().get("surname"), user.getInfo().get("name")).toUpperCase();
+    }
+
+    public static void drawUserFrom(PdfContentByte canvas, User user, int y0) {
+        Info info = user.getInfo();
+        String schoolLine = (String) info.get("school_name");
+        String addressLine = (String) info.get("address");
+
+        if (schoolLine == null && addressLine == null) {
+            User regBy = user.getRegisteredByUser();
+
+            if (regBy != null) {
+                info = regBy.getInfo();
+                schoolLine = (String) info.get("school_name");
+                addressLine = (String) info.get("address");
+            }
+        }
+
+        if (schoolLine == null)
+            schoolLine = "";
+        if (addressLine == null)
+            addressLine = "";
+
+        schoolLine = schoolLine.replaceAll("  ", " ").replaceAll("[\n\r]+", " ");
+        addressLine = addressLine.replaceAll("  ", "").replaceAll("[\n\r]+", " ");
+
+        canvas.setFontAndSize(DEFAULT_FONT_R, 12);
+        canvas.showTextAligned(Element.ALIGN_CENTER, schoolLine, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
+        canvas.showTextAligned(Element.ALIGN_CENTER, addressLine, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0 - 5), 0);
     }
 
     private List<KioProblemDescription> getProblems() {

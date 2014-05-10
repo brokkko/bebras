@@ -47,6 +47,8 @@ public class KioTeacherGramota extends Diploma<KioTeacherGramotaFactory> {
         canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 24);
         canvas.showTextAligned(Element.ALIGN_CENTER, surnameNamePatronymic(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(119), 0);
 
+        KioCertificate.drawUserFrom(canvas, user, 111);
+
         canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 17);
         canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + factory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(6), 0);
 
