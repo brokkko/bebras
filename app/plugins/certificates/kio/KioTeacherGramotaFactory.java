@@ -6,13 +6,13 @@ import models.newserialization.Serializer;
 import plugins.certificates.Diploma;
 import plugins.certificates.DiplomaFactory;
 
-public class KioTeacherCertificateFactory extends DiplomaFactory {
+public class KioTeacherGramotaFactory extends DiplomaFactory {
 
     private int year;
 
     @Override
     public Diploma getDiploma(User user) {
-        return new KioTeacherCertificate(user, this);
+        return new KioTeacherGramota(user, this);
     }
 
     public int getYear() {

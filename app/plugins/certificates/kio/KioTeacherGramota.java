@@ -9,9 +9,9 @@ import models.User;
 import models.results.Info;
 import plugins.certificates.Diploma;
 
-public class KioTeacherCertificate extends Diploma<KioTeacherCertificateFactory> {
+public class KioTeacherGramota extends Diploma<KioTeacherGramotaFactory> {
 
-    protected KioTeacherCertificate(User user, KioTeacherCertificateFactory factory) {
+    protected KioTeacherGramota(User user, KioTeacherGramotaFactory factory) {
         super(user, factory);
     }
 
@@ -45,7 +45,7 @@ public class KioTeacherCertificate extends Diploma<KioTeacherCertificateFactory>
         canvas.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_CLIP);
 
         canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 24);
-        canvas.showTextAligned(Element.ALIGN_CENTER, surnameNamePatronymic(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(110), 0);
+        canvas.showTextAligned(Element.ALIGN_CENTER, surnameNamePatronymic(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(119), 0);
 
         canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 17);
         canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + factory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(6), 0);

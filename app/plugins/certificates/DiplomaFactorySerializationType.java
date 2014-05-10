@@ -9,6 +9,6 @@ public class DiplomaFactorySerializationType extends SerializableTreeSerializati
         registerClass("kio certificate", KioCertificateFactory.class);
         registerClass("kio diploma", KioDiplomaFactory.class);
         registerClass("kio problem diploma", KioProblemDiplomaFactory.class);
-        registerClass("kio teacher certificate", KioTeacherCertificateFactory.class);
+        registerClass("kio teacher gramota", KioTeacherGramotaFactory.class);
     }
 }
