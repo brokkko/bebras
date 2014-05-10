@@ -15,21 +15,25 @@ import java.io.File;
 
 public class DiplomaPlugin extends Plugin {
 
+    public static final String PLUGIN_NAME = "Diploma";
     private String viewRight;
     private DiplomaFactory diplomaFactory;
     private String viewTitle;
 
     @Override
     public void initPage() {
+        if (!User.currentRole().hasRight(viewRight))
+            return;
+
         User user = User.current();
-        if (!user.hasRight(viewRight))
-            return;
 
-        Diploma diploma = diplomaFactory.getDiploma(user);
-        if (!diploma.isHonored())
-            return;
+        if (user != null) { //TODO user may be null (as far as I understand) only for Domain menu entry. Think what to do with showing diploma
+            Diploma diploma = diplomaFactory.getDiploma(user);
+            if (!diploma.isHonored())
+                return;
 
-        Menu.addMenuItem(viewTitle, getCall(), viewRight);
+            Menu.addMenuItem(viewTitle, getCall(), viewRight);
+        }
     }
 
     @Override

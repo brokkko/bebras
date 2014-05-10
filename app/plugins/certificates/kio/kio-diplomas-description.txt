@@ -13,6 +13,8 @@ no results at all: 018604751.19
 some results: 276070881.3
 good results: 735380771.7
 level changed: 639190151.13
+all types of diplomas: 735161131.7 group
+all types of diplomas: 276981102.1
 
 change_level        1 2
 diploma             1 1g 2 2g 3 3g

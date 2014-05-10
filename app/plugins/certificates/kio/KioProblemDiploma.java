@@ -81,6 +81,9 @@ public class KioProblemDiploma extends Diploma<KioProblemDiplomaFactory> {
         String problemDescription = String.format("Задача «%s»: %s место", factory.getProblemName(getLevel()), getResult(factory.getProblemRankField()));
         canvas.showTextAligned(Element.ALIGN_CENTER, problemDescription, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
 
+        y0 -= lineSkip * 1.4f;
+        KioCertificate.drawUserFrom(canvas, user, y0);
+
         canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 17);
         canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + factory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(6), 0);
 

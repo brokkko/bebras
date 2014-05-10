@@ -131,7 +131,7 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
     }
 
     private boolean scoresAreNonZero(String scores) {
-        return !"0".equals(scores) && !"".equals(scores) && !"-".equals(scores);
+        return scores != null && !"0".equals(scores) && !"".equals(scores) && !"-".equals(scores);
     }
 
     private String getScoresForProblem(KioProblemDescription problemDescription) {
@@ -156,7 +156,9 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
         canvas.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_CLIP);
 
         canvas.setFontAndSize(DEFAULT_FONT_R, 24);
-        canvas.showTextAligned(Element.ALIGN_CENTER, surnameName(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(157), 0);
+        canvas.showTextAligned(Element.ALIGN_CENTER, surnameName(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(161), 0);
+
+        drawUserFrom(canvas, user, 156);
 
         canvas.setFontAndSize(DEFAULT_FONT_R, 17);
         canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + factory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(3), 0);
