@@ -79,12 +79,16 @@ public class KioDiploma extends Diploma<KioDiplomaFactory> {
         canvas.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_CLIP);
 
         canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 24);
-        canvas.showTextAligned(Element.ALIGN_CENTER, KioCertificate.surnameName(user), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(110), 0);
+        float y0 = 108;
+        canvas.showTextAligned(Element.ALIGN_CENTER, KioCertificate.surnameName(user), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
 
         if (isGroup()) {
+            y0 = 103;
             canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 14);
-            canvas.showTextAligned(Element.ALIGN_CENTER, "(в команде)", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(105), 0);
+            canvas.showTextAligned(Element.ALIGN_CENTER, "(в команде)", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
         }
+
+        KioCertificate.drawUserFrom(canvas, user, y0 - 6);
 
         canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 17);
         canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + factory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(6), 0);

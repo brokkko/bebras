@@ -92,7 +92,7 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
         return String.format("%s %s", user.getInfo().get("surname"), user.getInfo().get("name")).toUpperCase();
     }
 
-    public static void drawUserFrom(PdfContentByte canvas, User user, int y0) {
+    public static void drawUserFrom(PdfContentByte canvas, User user, float y0) {
         Info info = user.getInfo();
         String schoolLine = (String) info.get("school_name");
         String addressLine = (String) info.get("address");
