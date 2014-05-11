@@ -109,8 +109,15 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
 
         if (schoolLine == null)
             schoolLine = "";
-        if (addressLine == null)
+        Object sendTo = info.get("send_to");
+        if (addressLine == null || !"school".equals(sendTo))
             addressLine = "";
+
+        String otherLine = (String) info.get("school_for_certificate");
+        if (otherLine != null && !otherLine.isEmpty()) {
+            schoolLine = otherLine;
+            addressLine = "";
+        }
 
         schoolLine = schoolLine.replaceAll("  ", " ").replaceAll("[\n\r]+", " ");
         addressLine = addressLine.replaceAll("  ", "").replaceAll("[\n\r]+", " ");
