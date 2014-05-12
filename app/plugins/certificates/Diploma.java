@@ -76,7 +76,7 @@ public abstract class Diploma<Factory extends DiplomaFactory> {
         }) {
             File outputPath = File.createTempFile("pdf-certificate-", ".pdf");
 
-            PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
+            PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath)); //TODO do we need to close the writer?
 
             Image bgImage = null;
 
