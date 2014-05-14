@@ -20,7 +20,7 @@ public class UserResult {
 
     private UserClass userClass;
 
-    private List<TaskResult> taskResults = new ArrayList<TaskResult>();
+    private List<TaskResult> taskResults = new ArrayList<>();
 
     public UserResult(PdfUser pdfUser, PdfFile pdfFile, UserClass userClass) {
         this.pdfUser = pdfUser;

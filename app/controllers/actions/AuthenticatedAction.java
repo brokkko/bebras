@@ -4,10 +4,8 @@ import controllers.routes;
 import models.Event;
 import models.User;
 import play.api.mvc.Call;
-import play.mvc.Action;
-import play.mvc.Http;
-import play.mvc.Result;
-import play.mvc.Results;
+import play.libs.F;
+import play.mvc.*;
 
 import java.util.Date;
 
@@ -19,7 +17,7 @@ import java.util.Date;
  */
 public class AuthenticatedAction extends Action<Authenticated> {
     @Override
-    public Result call(Http.Context ctx) throws Throwable {
+    public F.Promise<SimpleResult> call(Http.Context ctx) throws Throwable {
         Http.Context.current.set(ctx);
 
         Event event = Event.current();
@@ -27,7 +25,7 @@ public class AuthenticatedAction extends Action<Authenticated> {
         String userName = ctx.session().get(User.getUsernameSessionKey());
 
         //TODO include return back url
-        Result loginRedirect = Results.redirect(routes.Registration.login(event.getId()));
+        F.Promise<SimpleResult> loginRedirect = F.Promise.pure(Results.redirect(routes.Registration.login(event.getId())));
 
         if (userName == null)
             return configuration.redirectToLogin() ? loginRedirect : delegate.call(ctx);
@@ -49,7 +47,7 @@ public class AuthenticatedAction extends Action<Authenticated> {
                 return loginRedirect;
 
             if (needRedirectToFullRegistration(user))
-                return Results.redirect(routes.UserInfo.info(Event.currentId(), null));
+                return F.Promise.pure(Results.redirect(routes.UserInfo.info(Event.currentId(), null)));
         }
 
         return delegate.call(ctx);

@@ -4,20 +4,18 @@ import models.forms.RawForm;
 import models.newserialization.Deserializer;
 import models.newserialization.SerializationType;
 import models.newserialization.Serializer;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import play.api.templates.Html;
 import play.i18n.Messages;
 import views.html.fields.multiline;
 
 import java.io.IOException;
-import java.io.StringWriter;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,7 +43,7 @@ public class JsonListInputTemplate extends InputTemplate<ArrayNode> {
                     ObjectMapper mapper = new ObjectMapper();
                     DefaultPrettyPrinter pr = new DefaultPrettyPrinter();
                     pr.indentArraysWith(new DefaultPrettyPrinter.Lf2SpacesIndenter());
-                    ObjectWriter writer = mapper.writer().withPrettyPrinter(pr);
+                    ObjectWriter writer = mapper.writer().with(pr);
                     return writer.writeValueAsString(value);
 
                     /*StringWriter out = new StringWriter();
@@ -68,8 +66,8 @@ public class JsonListInputTemplate extends InputTemplate<ArrayNode> {
         try {
             //http://stackoverflow.com/questions/3653996/how-to-parse-a-json-string-into-jsonnode-in-jackson
             ObjectMapper mapper = new ObjectMapper();
-            JsonFactory f = mapper.getJsonFactory();
-            JsonParser parser = f.createJsonParser(json);
+            JsonFactory f = mapper.getFactory();
+            JsonParser parser = f.createParser(json);
             JsonNode tree = mapper.readTree(parser);
             if (tree instanceof ArrayNode)
                 return (ArrayNode) tree;
@@ -100,6 +98,6 @@ public class JsonListInputTemplate extends InputTemplate<ArrayNode> {
         super.serialize(serializer);
         serializer.write("placeholder", placeholder);
         if (small)
-            serializer.write("small", small);
+            serializer.write("small", true);
     }
 }

@@ -1,9 +1,9 @@
 package models.newserialization;
 
 import models.utils.Utils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 
@@ -21,31 +21,31 @@ public class JSONDeserializer extends Deserializer {
     @Override
     public Integer readInt(String field) {
         JsonNode sub = node.get(field);
-        return sub == null || sub.isNull() ? null : sub.getIntValue();
+        return sub == null || sub.isNull() ? null : sub.asInt();
     }
 
     @Override
     public Long readLong(String field) {
         JsonNode sub = node.get(field);
-        return sub == null || sub.isNull() ? null : sub.getLongValue();
+        return sub == null || sub.isNull() ? null : sub.asLong();
     }
 
     @Override
     public Double readDouble(String field) {
         JsonNode sub = node.get(field);
-        return sub == null || sub.isNull() ? null : sub.getDoubleValue();
+        return sub == null || sub.isNull() ? null : sub.asDouble();
     }
 
     @Override
     public Boolean readBoolean(String field) {
         JsonNode sub = node.get(field);
-        return sub == null || sub.isNull() ? null : sub.getBooleanValue();
+        return sub == null || sub.isNull() ? null : sub.asBoolean();
     }
 
     @Override
     public String readString(String field) {
         JsonNode sub = node.get(field);
-        return sub == null || sub.isNull() ? null : sub.getTextValue();
+        return sub == null || sub.isNull() ? null : sub.asText();
     }
 
     @Override
@@ -64,7 +64,7 @@ public class JSONDeserializer extends Deserializer {
     public Collection<String> fields() {
         Set<String> fields = new HashSet<>();
 
-        Iterator<String> it = node.getFieldNames();
+        Iterator<String> it = node.fieldNames();
         while (it.hasNext())
             fields.add(it.next());
 

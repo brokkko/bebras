@@ -6,8 +6,8 @@ import models.forms.RawForm;
 import models.forms.inputtemplate.InputTemplate;
 import models.forms.validators.Validator;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.i18n.Messages;
 
 import java.util.*;

@@ -3,12 +3,10 @@ package controllers.actions;
 import controllers.MongoConnection;
 import models.Event;
 import models.ServerConfiguration;
-import play.Logger;
-import play.api.templates.Html;
+import play.mvc.SimpleResult;
+import play.libs.F;
 import play.mvc.Action;
-import play.mvc.Call;
 import play.mvc.Http;
-import play.mvc.Result;
 import plugins.Plugin;
 import views.html.error;
 
@@ -35,17 +33,18 @@ public class DcesControllerAction extends Action<DcesController> {
     }
 
     @Override
-    public Result call(Http.Context ctx) throws Throwable {
+    public F.Promise<SimpleResult> call(Http.Context ctx) throws Throwable {
         Http.Context.current.set(ctx);
 
         ServerConfiguration config = ServerConfiguration.getInstance();
+
         if (config.isMaintenanceMode())
             //TODO попытаться обойтись без времени обслуживания
-            return ok(error.render("В данный момент сервер находится в режиме обслуживания, зайдите позже", null)); //TODO сделать время возвращения
+            return F.Promise.pure(getMaintenanceMessage()); //TODO сделать время возвращения
 
         //migrate if needed
         if (config.getDbVersion() != ServerConfiguration.CURRENT_DB_VERSION && !ctx.request().uri().endsWith("/migrate"))
-            return ok(error.render("В данный момент сервер находится в режиме обслуживания, зайдите позже", null)); //TODO избавиться и от этой хрени тоже
+            return F.Promise.pure(getMaintenanceMessage()); //TODO избавиться и от этой хрени тоже
 
         //initialize plugins
 
@@ -56,7 +55,7 @@ public class DcesControllerAction extends Action<DcesController> {
                     plugin.initPage();
         }
 
-        Result call = delegate.call(ctx);
+        F.Promise<SimpleResult> call = delegate.call(ctx);
 
         finalizeRequest(ctx);
 
@@ -69,6 +68,10 @@ public class DcesControllerAction extends Action<DcesController> {
         }
 
         return call;
+    }
+
+    private SimpleResult getMaintenanceMessage() {
+        return ok(error.render("В данный момент сервер находится в режиме обслуживания, зайдите позже", null));
     }
 
     private void finalizeRequest(Http.Context ctx) {

@@ -9,6 +9,7 @@ object ApplicationBuild extends Build {
 
     val appDependencies = Seq(
       javaCore,
+      cache,
       // Add your project dependencies here,
       "org.mongodb" % "mongo-java-driver" % "2.11.3", //mongo db driver, was 2.9.2
       "org.apache.commons" % "commons-email" % "1.2", //simple email wrapper

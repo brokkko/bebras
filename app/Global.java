@@ -3,6 +3,8 @@ import models.ServerConfiguration;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
+import play.mvc.SimpleResult;
+import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -56,7 +58,7 @@ public class Global extends GlobalSettings {
     }*/
 
     @Override
-    public Result onBadRequest(Http.RequestHeader requestHeader, String error) {
+    public F.Promise<SimpleResult> onBadRequest(Http.RequestHeader requestHeader, String error) {
         Logger.info("Bad request: " + requestHeader.method() + " " + requestHeader.host() + requestHeader.uri());
         return super.onBadRequest(requestHeader, error);
     }

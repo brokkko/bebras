@@ -209,7 +209,7 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
             String scores = getScoresForProblem(problemDescription);
 
             String resultsFormat = problemDescription.getPattern();
-            String resultsText = String.format(resultsFormat, fieldsValues);
+            String resultsText = String.format(resultsFormat, (Object[]) fieldsValues);
             if (!resultsText.contains("\n"))
                 resultsText = String.format("%s место\n(%s)", rank, resultsText);
             else

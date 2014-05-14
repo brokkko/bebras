@@ -44,7 +44,7 @@ public class SerializationTypesRegistry {
     }
 
     public static <T> ListSerializationType<T> list(Class<T> clazz) {
-        return new ListSerializationType<>(new BasicSerializationType<T>(clazz));
+        return new ListSerializationType<>(new BasicSerializationType<>(clazz));
     }
 
     public static <T> StringMapSerializationType<T> map(SerializationType<T> subtype) {

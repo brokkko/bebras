@@ -1,8 +1,8 @@
 package models.newserialization;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Created by ilya
@@ -18,31 +18,31 @@ public class JSONListDeserializer extends ListDeserializer {
     @Override
     public Integer readInt() {
         JsonNode sub = node.get(index++);
-        return sub == null ? null : sub.getIntValue();
+        return sub == null ? null : sub.asInt();
     }
 
     @Override
     public Long readLong() {
         JsonNode sub = node.get(index++);
-        return sub == null ? null : sub.getLongValue();
+        return sub == null ? null : sub.asLong();
     }
 
     @Override
     public Double readDouble() {
         JsonNode sub = node.get(index++);
-        return sub == null ? null : sub.getDoubleValue();
+        return sub == null ? null : sub.asDouble();
     }
 
     @Override
     public Boolean readBoolean() {
         JsonNode sub = node.get(index++);
-        return sub == null ? null : sub.getBooleanValue();
+        return sub == null ? null : sub.asBoolean();
     }
 
     @Override
     public String readString() {
         JsonNode sub = node.get(index++);
-        return sub == null ? null : sub.getTextValue();
+        return sub == null ? null : sub.asText();
     }
 
     @Override
