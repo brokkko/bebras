@@ -42,7 +42,7 @@ public class DcesControllerAction extends Action<DcesController> {
             //TODO попытаться обойтись без времени обслуживания
             return F.Promise.pure(getMaintenanceMessage()); //TODO сделать время возвращения
 
-        //migrate if needed
+        //migrate if needed\
         if (config.getDbVersion() != ServerConfiguration.CURRENT_DB_VERSION && !ctx.request().uri().endsWith("/migrate"))
             return F.Promise.pure(getMaintenanceMessage()); //TODO избавиться и от этой хрени тоже
 
@@ -71,7 +71,7 @@ public class DcesControllerAction extends Action<DcesController> {
     }
 
     private SimpleResult getMaintenanceMessage() {
-        return ok(error.render("В данный момент сервер находится в режиме обслуживания, зайдите позже", null));
+        return ok(error.render("В данный момент сервер находится в режиме обслуживания, зайдите позже", new String[0]));
     }
 
     private void finalizeRequest(Http.Context ctx) {

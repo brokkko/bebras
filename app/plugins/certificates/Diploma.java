@@ -1,11 +1,15 @@
 package plugins.certificates;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.Utilities;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.security.*;
+import models.Contest;
 import models.ServerConfiguration;
 import models.User;
 import models.results.Info;
@@ -18,6 +22,7 @@ import java.net.URL;
 import java.security.cert.Certificate;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.util.List;
 
 public abstract class Diploma<Factory extends DiplomaFactory> {
 
@@ -36,7 +41,26 @@ public abstract class Diploma<Factory extends DiplomaFactory> {
 
         String contestId = factory.getContestId();
         if (contestId != null)
-            results = user.getContestResults(user.getEvent().getContestById(contestId));
+            results = getContestResults(user, contestId);
+        else {
+            List<String> contestIDs = factory.getContestIds();
+            if (contestIDs != null)
+                results = findResultsForContestsInList(contestIDs);
+        }
+    }
+
+    private Info getContestResults(User user, String contestId) {
+        return user.getContestResults(user.getEvent().getContestById(contestId));
+    }
+
+    private Info findResultsForContestsInList(List<String> contestIDs) {
+        for (String contestID : contestIDs) {
+            Contest contest = user.getEvent().getContestById(contestID);
+            if (contest.isAvailableForUser(user))
+                return getContestResults(user, contestID);
+        }
+
+        return null;
     }
 
     protected Info getResults() {
