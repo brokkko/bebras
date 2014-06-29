@@ -1,5 +1,7 @@
 <configuration>
 
+    <!-- This is a file that makes logger output errors to logs/errors.log and other to logs/info.log -->
+
     <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
 
     <appender name="ERRORS-FILE" class="ch.qos.logback.core.FileAppender">
