@@ -1,11 +1,11 @@
 package controllers.actions;
 
 import models.Contest;
+import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
-import play.mvc.Result;
-
-import java.util.Date;
+import play.mvc.SimpleResult;
+import views.html.error;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,13 +15,15 @@ import java.util.Date;
  */
 public class LoadContestAction extends Action<LoadContest> {
     @Override
-    public Result call(Http.Context ctx) throws Throwable {
+    public F.Promise<SimpleResult> call(Http.Context ctx) throws Throwable {
         Http.Context.current.set(ctx);
 
         Contest contest = Contest.current();
 
-        if (contest == null)
-            return ok(views.html.error.render("actions.unknown_contest", null));
+        if (contest == null) {
+            SimpleResult ok = ok(error.render("actions.unknown_contest", null));
+            return F.Promise.pure(ok);
+        }
 
         return delegate.call(ctx);
     }

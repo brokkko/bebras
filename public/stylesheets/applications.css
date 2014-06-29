@@ -1,0 +1,70 @@
+table.applications {
+    border: 1px solid black;
+    margin: 0 auto;
+}
+
+table.applications td {
+    border: 1px solid black;
+    padding: 2px 4px;
+}
+
+table.applications thead td {
+    font-weight: bold;
+    color: #000000;
+    text-align: center;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+}
+
+table.applications tbody td {
+    color: #000000;
+    text-align: center;
+    vertical-align: middle;
+}
+
+table.applications tbody tr.app-no-button td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+table.applications td.number {
+    font-weight: bold;
+}
+
+table.applications td.remove a {
+    color: red;
+}
+
+.app-new, .app-pay, .app-acc {
+    font-weight: bold !important;
+    font-family: "Courier New", courier, serif !important;
+    font-size: 1.2em;
+}
+
+.app-new {
+    color: red !important;
+}
+
+.app-pay {
+    color: blue !important;
+}
+
+.app-acc {
+    color: green !important;
+}
+
+.app-type {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #005609
+}
+
+.app-need-confirm {
+    background-color: #ffe6e6;
+}
+
+.app-no-confirm {
+    background-color: #e6ffe6;
+}

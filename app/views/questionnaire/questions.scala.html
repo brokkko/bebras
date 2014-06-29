@@ -1,0 +1,22 @@
+@(titleBefore:String, titleAfter:String, blocks:java.util.List[plugins.questionnaire.QuestionBlock], filled:Boolean, info:models.results.Info, call:play.mvc.Call)
+@import scala.List
+@import views.widgets.ResourceLink
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("questionnaire.css"))) { } {
+    @if(filled) {
+        <h1>@titleAfter</h1>
+    } else {
+        <h1>@titleBefore</h1>
+    }
+    <form action="@call" method="post">
+        <p>
+        @for(block <- blocks) {
+            @block.render(if (block.getName == null) {null} else {info.get(block.getName)})
+        }
+        </p>
+
+        @if(filled) {
+            <p class="warning">Спасибо! Ваш рассказ сохранён. Но, если хотите, можете его исправить.</p>
+        }
+        <input value="@if(filled){Сохранить рассказ} else {Рассказать!}" type="submit" class='link-button'>
+    </form>
+}

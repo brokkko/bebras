@@ -1,6 +1,6 @@
 @(message:String, args:String*)
 @import scala.List
 @import play.i18n.Messages
-@main_with_menu(play.i18n.Messages.get("error.window.title"))(List(), List()) { } {
+@main_with_menu(play.i18n.Messages.get("error.window.title"))(List()) { } {
     <h1>@Messages.get(message, args)</h1>
 }

@@ -1,0 +1,25 @@
+@(showAnswers:Boolean, pagedUserProblems:java.util.List[java.util.List[models.newproblems.ConfiguredProblem]], problem2title:java.util.Map[models.newproblems.ConfiguredProblem, String], problemsWidgets:views.widgets.Widget, randSeed:Long)
+@import models.utils.Utils
+@import views.widgets.CssJsWidget
+@import models.Contest
+@import models.Event
+@import views.widgets.ResourceLink
+@import models.User
+@import scala.List
+@main(Event.current.getTitle)(List(new ResourceLink("contest.css"), new ResourceLink("contest_stub.js"), problemsWidgets))(false) {
+    <div id='all-problems-in-pages-print'>
+        @for((page, pageIndex) <- pagedUserProblems.zipWithIndex) {
+            <div class='page'>
+            @for(problem <- page) {
+                <div class='problem'><span class='hidden pr_type'>@problem.getProblem.getType</span>
+                    @problem.getProblem.format(
+                        problem2title(problem),
+                        showAnswers, problem.getSettings, randSeed
+                    )
+                    <div class='footer'></div>
+                </div>
+            }
+            </div>
+        }
+    </div>
+}

@@ -1,11 +1,38 @@
-@(form:models.forms.RawForm)
-@import models.forms.RawForm
-@import views.ResourceLink
+@(form:models.forms.RawForm, role:models.UserRole, byUser:Boolean, referrerUserId:String)
+@import views.widgets.FormsWidget
+@import views.htmlblocks.HtmlBlockWidget
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) { } {
-    <h1>Регистрация участника</h1>
-    <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
-    После заполнения анкеты вы получите письмо с паролем, поэтому
-    убедитесь, что вы правильно указали email.
-    @Event.current.getUsersForm.format(form, controllers.routes.Registration.registration(Event.currentId))
+@main_with_menu(Event.current.getTitle)(List(FormsWidget.get, HtmlBlockWidget.get)) { } {
+    <h1>Регистрация: @role.getTitle</h1>
+
+    @Event.current.getHtmlBlock("registration-top-for-" + role.getName).format
+
+    @if(byUser) {
+        <p class='warning'>Введите логин и email. Остальные поля, даже если они обязательные и отмечены звездочкой, можно пропустить. Если вы
+        оставите незаполненным обязательное поле, его будет предложено дозаполнить пользователю при первом входе в систему.</p>
+    } else {
+        @if(role.isShowRegistrationHint) {
+            <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
+                После заполнения анкеты вы получите письмо с паролем, поэтому
+                убедитесь, что вы правильно указали email.
+            </p>
+        }
+    }
+
+    @if(byUser) {
+        @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistrationByUser(Event.currentId, role.getName), false, "form.do_register_user")
+    } else {
+        @role.getUsersForm.formatExtended(form, controllers.routes.Registration.doRegistration(Event.currentId, role.getName, referrerUserId), false, "form.do_register")
+    }
+
+    @if(byUser && Event.current.getAnonymousRole.mayRegister(role)) { @*TODO allow referrals not only for ANON roles*@
+    <div class='info-box'>
+        @defining(routes.Registration.roleRegistration(Event.currentId, role.getName, User.current.getId.toString).absoluteURL()) { ref_link =>
+            Ваша реферальная ссылка на регистрацию: <a href="@ref_link">@ref_link</a>.
+        }
+
+        Те, кто зарегистрируются по этой ссылке, будут считаться зарегистрированны через вас. Рекомендуется распространять эту ссылку, сокращенной с помощью
+        сервиса <a href="http://goo.gl">goo.gl</a>. Этот сервис дополнительно имеет возможность просмотра статистики перехода по ссылке.
+    </div>
+    }
 }

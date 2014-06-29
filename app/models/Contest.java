@@ -1,18 +1,21 @@
 package models;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import controllers.actions.AuthenticatedAction;
-import models.problems.Answer;
-import models.problems.ConfiguredProblem;
-import models.problems.Problem;
-import models.problems.problemblock.FolderBlock;
-import models.problems.problemblock.OneProblemBlock;
-import models.problems.problemblock.ProblemBlock;
-import models.problems.problemblock.RandomProblemsBlock;
-import models.serialization.Deserializer;
-import models.serialization.JSONSerializer;
-import models.serialization.ListDeserializer;
+import models.data.TableDescription;
+import models.forms.InputForm;
+import models.forms.RawForm;
+import models.newproblems.newproblemblock.ProblemBlock;
+import models.newproblems.newproblemblock.ProblemBlockFactory;
+import models.newserialization.*;
+import models.newproblems.ConfiguredProblem;
+import models.results.CombinedTranslator;
+import models.results.EmptyTranslator;
+import models.results.InfoPattern;
+import models.results.Translator;
+import org.bson.types.ObjectId;
 import play.mvc.Http;
 
 import java.util.*;
@@ -38,58 +41,93 @@ public class Contest {
     private Date finish;
     private Date results;
     private int duration;
+    private List<String> rights;
+    private boolean onlyAdmin = false;
     private boolean allowRestart; //TODO make this allowed restarts count
+    private boolean showProblemsOnContestsPage;
+    private boolean autoStart; //TODO implement this
 
     private List<Integer> pageSizes;
     private List<ProblemBlock> problemBlocks;
 
-    private Map<String, Object> grader = new HashMap<>(); //TODO generalize grader
+    private CombinedTranslator resultTranslator;
+
+    private List<TableDescription> tables;
+
+    private LinkedHashMap<String, String> pid2name = new LinkedHashMap<>();
 
     public Contest(Event event, Deserializer deserializer) {
         this.event = event;
 
-        id = deserializer.getString("id");
-        name = deserializer.getString("name");
-        description = deserializer.getString("description");
+        id = deserializer.readString("id");
+        name = deserializer.readString("name");
+        description = deserializer.readString("description");
 
-        start = Utils.parseSimpleTime(deserializer.getString("start"));
-        finish = Utils.parseSimpleTime(deserializer.getString("finish"));
-        results = Utils.parseSimpleTime(deserializer.getString("results"));
+        start = deserializer.readDate("start");
+        finish = deserializer.readDate("finish");
+        results = deserializer.readDate("results");
 
-        duration = deserializer.getInt("duration");
+        onlyAdmin = deserializer.readBoolean("only admin", true);
+        rights = SerializationTypesRegistry.list(String.class).read(deserializer, "rights");
 
-        Boolean allowRestartValue = deserializer.getBoolean("allow restart");
-        allowRestart = allowRestartValue == null ? false : allowRestartValue;
+        duration = deserializer.readInt("duration");
 
-        //read page sizes
+        allowRestart = deserializer.readBoolean("allow restart", false);
+        showProblemsOnContestsPage = deserializer.readBoolean("problems on contests page", false);
+        autoStart = deserializer.readBoolean("auto start", false);
 
-        ListDeserializer pageSizesDeserializer = deserializer.getListDeserializer("page sizes");
-        pageSizes = new ArrayList<>();
-        while (pageSizesDeserializer.hasMore())
-            pageSizes.add(pageSizesDeserializer.getInt());
+        pageSizes = SerializationTypesRegistry.list(int.class).read(deserializer, "page sizes");
 
-        //read blocks
+        //read results translator
 
-        ListDeserializer problemsDeserializer = deserializer.getListDeserializer("problems");
+        List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
+        setTranslators(resultTranslators);
+
+        tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
+
+        pid2name = SerializationTypesRegistry.map(String.class).read(deserializer, "pid2name");
+
+        //read problem blocks
         problemBlocks = new ArrayList<>();
-        while (problemsDeserializer.hasMore()) {
-            String configuration = problemsDeserializer.getString();
-            ProblemBlock[] blocks = {new RandomProblemsBlock(this), new FolderBlock(this), new OneProblemBlock(this)};
-            for (ProblemBlock block : blocks)
-                if (block.acceptsConfiguration(configuration)) {
-                    problemBlocks.add(block);
-                    break;
-                }
-        }
 
-        //load grader
-        Deserializer graderDeserializer = deserializer.getDeserializer("grader");
-        for (String field : graderDeserializer.fieldSet())
-            grader.put(field, graderDeserializer.getObject(field));
+        ListDeserializer blocksDeserializer = deserializer.getListDeserializer("blocks");
+        if (blocksDeserializer != null)
+            while (blocksDeserializer.hasMore())
+                problemBlocks.add(ProblemBlockFactory.getBlock(this, blocksDeserializer.getDeserializer()));
     }
 
     public static Contest deserialize(Event event, Deserializer deserializer) {
         return new Contest(event, deserializer);
+    }
+
+    public void serialize(Serializer serializer) {
+        serializer.write("id", id);
+        serializer.write("name", name);
+        serializer.write("description", description);
+
+        serializer.write("start", start);
+        serializer.write("finish", finish);
+        serializer.write("results", results);
+
+        SerializationTypesRegistry.list(String.class).write(serializer, "rights", rights);
+        serializer.write("only admin", onlyAdmin);
+        serializer.write("duration", duration);
+        serializer.write("allow restart", allowRestart);
+        serializer.write("problems on contests page", showProblemsOnContestsPage);
+        serializer.write("auto start", autoStart);
+
+        SerializationTypesRegistry.list(int.class).write(serializer, "page sizes", pageSizes);
+
+        //write problem blocks
+        ListSerializer blocksSerializer = serializer.getListSerializer("blocks");
+        for (ProblemBlock problemBlock : problemBlocks)
+            problemBlock.serialize(blocksSerializer.getSerializer());
+
+        SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).write(serializer, "results translators", resultTranslator.getTranslators());
+
+        SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).write(serializer, "tables", tables);
+
+        SerializationTypesRegistry.map(String.class).write(serializer, "pid2name", pid2name);
     }
 
     public String getName() {
@@ -108,7 +146,17 @@ public class Contest {
         return finish;
     }
 
+    public boolean isShowProblemsOnContestsPage() {
+        return showProblemsOnContestsPage;
+    }
+
+    public boolean isAutoStart() {
+        return autoStart;
+    }
+
     public Date getResults() {
+        if (results == null)
+            return event.getResults();
         return results;
     }
 
@@ -120,24 +168,59 @@ public class Contest {
         return id;
     }
 
+    public Event getEvent() {
+        return event;
+    }
+
     public boolean isAllowRestart() {
         return allowRestart;
     }
 
+    public List<TableDescription> getTables() {
+        return tables;
+    }
+
+    public boolean isAvailableForUser(User user) {
+        if (user == null)
+            return false;
+        if (rights.isEmpty())
+            return true;
+
+        //user should have any of the specified rights
+        for (String right : rights)
+            if (user.hasRight(right))
+                return true;
+
+        return false;
+    }
+
+    public String getBlockTitle() {
+        return Event.currentId().startsWith("bebras") || Event.currentId().startsWith("kio14") ? null : "Блок"; //TODO get rid of this bebras
+    }
+
+    public TableDescription getTable(int index) {
+        return index < 0 || index >= tables.size() ? null : tables.get(index);
+    }
+
+    private void setTranslators(List<Translator> resultTranslators) {
+        if (resultTranslators.size() == 0)
+            resultTranslators.add(new EmptyTranslator());
+        resultTranslator = new CombinedTranslator(resultTranslators);
+    }
+
+    public List<ProblemBlock> getProblemBlocks() {
+        return problemBlocks;
+    }
+
+    public static DBCollection getCollection(String eventId, String contestId) {
+        if (eventId.equals("bbtc"))
+            return MongoConnection.getCollection(CONTEST_COLLECTION_NAME_PREFIX + eventId + "-" + contestId);
+        else
+            return MongoConnection.getCollection(CONTEST_COLLECTION_NAME_PREFIX + eventId + "_" + contestId);
+    }
+
     public DBCollection getCollection() {
-        return MongoConnection.getCollection(CONTEST_COLLECTION_NAME_PREFIX + event.getId() + "-" + id);
-    }
-
-    public boolean contestStarted() {
-        return start.before(AuthenticatedAction.getRequestTime());
-    }
-
-    public boolean contestFinished() {
-        return finish.before(AuthenticatedAction.getRequestTime());
-    }
-
-    public boolean resultsAvailable() {
-        return results.before(AuthenticatedAction.getRequestTime());
+        return getCollection(event.getId(), id);
     }
 
     public boolean isUnlimitedTime() {
@@ -145,11 +228,12 @@ public class Contest {
     }
 
     public boolean resultsAvailableImmediately() {
-        return results.before(start);
+        return !getResults().after(start);
     }
 
+    //TODO move to user
     public boolean resultsNotAvailableAtAll() {
-        return results.getTime() - finish.getTime() > 1000l * 60 * 60 * 24 * 265 * 50; // 50 years
+        return getResults().getTime() - finish.getTime() > 1000l * 60 * 60 * 24 * 265 * 50; // 50 years
     }
 
     public static Contest current() {
@@ -177,28 +261,33 @@ public class Contest {
         return contest;
     }
 
-    public List<Problem> getUserProblems(User user) {
-        List<Problem> problems = new ArrayList<>();
-
+    public List<ConfiguredProblem> getAllPossibleProblems() {
+        List<ConfiguredProblem> result = new ArrayList<>();
         for (ProblemBlock problemBlock : problemBlocks)
-            for (ConfiguredProblem problem : problemBlock.getProblems(user))
-                problems.add(problem.getProblem());
+            result.addAll(problemBlock.getAllPossibleProblems(this));
 
-        return problems;
+        return result;
     }
 
-    public List<ConfiguredProblem> getConfiguredUserProblems(User user) {
+    public int getProblemsCount() {
+        int problemsCount = 0;
+        for (ProblemBlock problemBlock : problemBlocks)
+            problemsCount += problemBlock.getProblemsCount();
+        return problemsCount;
+    }
+
+    public List<ConfiguredProblem> getUserProblems(User user) {
         List<ConfiguredProblem> problems = new ArrayList<>();
 
         for (ProblemBlock problemBlock : problemBlocks)
-            problems.addAll(problemBlock.getProblems(user));
+            problems.addAll(problemBlock.getProblems(this, user));
 
         return problems;
     }
 
-    public List<List<Problem>> getPagedUserProblems(User user) {
-        List<List<Problem>> pages = new ArrayList<>();
-        List<Problem> userProblems = getUserProblems(user);
+    public List<List<ConfiguredProblem>> getPagedUserProblems(User user) {
+        List<List<ConfiguredProblem>> pages = new ArrayList<>();
+        List<ConfiguredProblem> userProblems = getUserProblems(user);
 
         int pageIndex = 0;
         int index = 0;
@@ -214,7 +303,7 @@ public class Contest {
 
             block = Math.min(block, indexesLeft);
             int nextIndex = index + block;
-            List<Problem> aPage = new ArrayList<>(block);
+            List<ConfiguredProblem> aPage = new ArrayList<>(block);
             for (; index < nextIndex; index++)
                 aPage.add(userProblems.get(index));
 
@@ -228,42 +317,77 @@ public class Contest {
         return getDuration() * 60l * 1000l;
     }
 
-    public ContestResult evaluateUserResults(User user) {
-        List<Answer> answers = user.getAnswersForContest(this);
-        List<Problem> problems = getUserProblems(user);
+    public Translator getResultTranslator() {
+        return resultTranslator;
+    }
 
-        int r = 0;
-        int w = 0;
-        int n = 0;
-        int scores = 0;
+    public InfoPattern getResultsInfoPattern() {
+        return resultTranslator.getInfoPattern();
+    }
 
-        int bonus = (Integer) grader.get("right");
-        int discount = (Integer) grader.get("wrong");
+    public boolean isOnlyAdmin() {
+        return onlyAdmin;
+    }
 
-        for (int i = 0; i < problems.size(); i++) {
-            Answer answer = answers.get(i);
-            Problem problem = problems.get(i);
+    public String getProblemName(ObjectId pid) {
+        return pid == null ? null : pid2name.get(pid.toString());
+    }
 
-            if (answer == null) {
-                n++;
-                continue;
-            }
+    public void clearRegisteredProblemNames() {
+        pid2name.clear();
+    }
 
-            JSONSerializer jsonSerializer = new JSONSerializer();
-            problem.check(answer, jsonSerializer);
-            int res = jsonSerializer.getNode().get("result").getIntValue(); //TODO generalize this all
+    public void registerProblemName(ObjectId pid, String name) {
+        if (pid == null) //don't register anything if there is no problem
+            return;
 
-            if (res == 0)
-                n++;
-            else if (res < 0) {
-                w++;
-                scores += discount;
-            } else {
-                r++;
-                scores += bonus;
-            }
-        }
+        pid2name.put(pid.toString(), name);
+    }
 
-        return new ContestResult(r, w, n, scores, bonus, discount);
+    // form
+
+    public void updateFromContestChangeForm(Deserializer deserializer) {
+        name = deserializer.readString("name");
+        start = deserializer.readDate("start");
+        finish = deserializer.readDate("finish");
+        results = deserializer.readDate("results");
+        duration = deserializer.readInt("duration", 0);
+        description = deserializer.readString("description", null);
+        rights = SerializationTypesRegistry.list(String.class).read(deserializer, "rights");
+        onlyAdmin = deserializer.readBoolean("only admin", false);
+        allowRestart = deserializer.readBoolean("allow restart", false);
+        showProblemsOnContestsPage = deserializer.readBoolean("problems on contests page", false);
+        autoStart = deserializer.readBoolean("auto start", false);
+
+        pageSizes = SerializationTypesRegistry.list(int.class).read(deserializer, "page sizes");
+
+        tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
+
+        List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
+        setTranslators(resultTranslators);
+    }
+
+    public RawForm saveToForm(InputForm form) {
+        FormSerializer serializer = new FormSerializer(form);
+        serialize(serializer);
+        return serializer.getRawForm();
+    }
+
+    public InputForm getAddBlockInputForm() {
+        InputForm configForm = resultTranslator.getConfigInfoPattern().getInputForm();
+        return InputForm.union(Forms.getAddBlockForm(), configForm);
+    }
+
+    // statistics
+
+    public long getNumStarted(String roleName) {
+        DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
+        query.put(User.FIELD_USER_ROLE, roleName);
+
+        String sd = "_contests." + id + ".sd";
+        query.put(sd, new BasicDBObject("$exists", true));
+        query.put(sd, new BasicDBObject("$ne", null));
+
+        return MongoConnection.getUsersCollection().count(query);
     }
 }

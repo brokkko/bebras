@@ -3,36 +3,143 @@
 # ~~~~
 
 # Home page
-GET     /init                       controllers.Application.initialize()
 
-GET     /:event/register            controllers.Registration.registration(event)
-POST    /:event/register            controllers.Registration.doRegistration(event)
-GET     /:event/registered/:uuid    controllers.Registration.waitForEmail(event, uuid, passwordRecovery:Boolean=false)
-GET     /:event/recovered/:uuid     controllers.Registration.waitForEmail(event, uuid, passwordRecovery:Boolean=true)
-GET     /:event/confirm/:uuid       controllers.Registration.confirmRegistration(event, uuid, passwordRecovery:Boolean=false)
-GET     /:event/recover/:uuid       controllers.Registration.confirmRegistration(event, uuid, passwordRecovery:Boolean=true)
-GET     /:event/login               controllers.Registration.login(event)
-POST    /:event/login               controllers.Registration.doLogin(event)
-GET     /:event/remind              controllers.Registration.passwordRemind(event)
-POST    /:event/remind              controllers.Registration.doPasswordRemind(event)
-GET     /:event/logout              controllers.Registration.logout(event)
+GET         /                                                          controllers.Application.root()
+
+#registration
+GET         /:event/register                                           controllers.Registration.registration(event)
+GET         /:event/register_by_user                                   controllers.Registration.registrationByUser(event)
+GET         /:event/:role/register                                     controllers.Registration.roleRegistration(event, role, user_id=null)
+GET         /:event/:role/register_by_user                             controllers.Registration.roleRegistrationByUser(event, role)
+POST        /:event/:role/register                                     controllers.Registration.doRegistration(event, role, user_id=null)
+POST        /:event/:role/register_by_user                             controllers.Registration.doRegistrationByUser(event, role)
+
+GET         /:event/:role/:user_id/register                            controllers.Registration.roleRegistration(event, role, user_id)
+POST        /:event/:role/:user_id/register                            controllers.Registration.doRegistration(event, role, user_id)
+
+#other user actions
+GET         /:event/registered/:uuid                                   controllers.Registration.waitForEmail(event, uuid, passwordRecovery:Boolean=false)
+GET         /:event/recovered/:uuid                                    controllers.Registration.waitForEmail(event, uuid, passwordRecovery:Boolean=true)
+GET         /:event/confirm/:uuid                                      controllers.Registration.confirmRegistration(event, uuid, passwordRecovery:Boolean=false)
+GET         /:event/recover/:uuid                                      controllers.Registration.confirmRegistration(event, uuid, passwordRecovery:Boolean=true)
+GET         /:event/login                                              controllers.Registration.login(event)
+POST        /:event/login                                              controllers.Registration.doLogin(event)
+GET         /:event/remind                                             controllers.Registration.passwordRemind(event)
+POST        /:event/remind                                             controllers.Registration.doPasswordRemind(event)
+GET         /:event/logout                                             controllers.Registration.logout(event)
+GET         /:event/enter                                              controllers.Application.enter(event)
+GET         /:event/:user/subscribe                                    controllers.Application.setSubscription(event, user, subscription:Boolean=true)
+GET         /:event/:user/unsubscribe                                  controllers.Application.setSubscription(event, user, subscription:Boolean=false)
 
 #user info
-GET     /:event/user_info           controllers.UserInfo.info(event)
-POST    /:event/user_info           controllers.UserInfo.doChangeInfo(event)
-GET     /:event/contests            controllers.UserInfo.contestsList(event)
+GET         /:event/user_info                                          controllers.UserInfo.info(event, userId=null)
+GET         /:event/:user_id/user_info                                 controllers.UserInfo.info(event, user_id)
+POST        /:event/user_info                                          controllers.UserInfo.doChangeInfo(event, userId=null)
+POST        /:event/:user_id/user_info                                 controllers.UserInfo.doChangeInfo(event, user_id)
+GET         /:event/contests                                           controllers.UserInfo.contestsList(event)
 
 #contest
-GET     /:event/:contest/start      controllers.Contests.startContest(event, contest)
-GET     /:event/:contest/go         controllers.Contests.contest(event, contest)
-POST    /:event/:contest/submit     controllers.Contests.submit(event, contest)
-POST    /:event/:contest/stop       controllers.Contests.stop(event, contest)
-POST    /:event/:contest/restart    controllers.Contests.restart(event, contest)
+GET         /:event/:contest/start                                     controllers.Contests.startContest(event, contest)
+GET         /:event/:contest/go                                        controllers.Contests.contest(event, contest, displayType = "normal")
+GET         /:event/:contest/go_print                                  controllers.Contests.contest(event, contest, displayType = "print")
+GET         /:event/:contest/go_print_ans                              controllers.Contests.contest(event, contest, displayType = "print ans")
+GET         /:event/:contest/print_contest                             controllers.Contests.allContestProblems(event, contest, showAnswers:Boolean=false)
+GET         /:event/:contest/print_contest_ans                         controllers.Contests.allContestProblems(event, contest, showAnswers:Boolean=true)
+POST        /:event/:contest/submit                                    controllers.Contests.submit(event, contest)
+POST        /:event/:contest/stop                                      controllers.Contests.stop(event, contest)
+POST        /:event/:contest/restart                                   controllers.Contests.restart(event, contest)
+
+#admin event
+GET         /:event/admin                                              controllers.EventAdministration.admin(event)
+POST        /:event/admin                                              controllers.EventAdministration.doChangeEvent(event)
+GET         /:event/:table/csv_table                                   controllers.Tables.csvTable(event, table:Integer)
+GET         /:event/:table/show_table                                  controllers.Tables.showTable(event, table:Integer)
+POST        /:event/:table/show_table                                  controllers.Tables.showTableSearch(event, table:Integer)
+GET         /:event/:table/show_table_print                            controllers.Tables.showTablePrint(event, table:Integer)
+GET         /:event/:contest/:table/csv_table                          controllers.Tables.csvTableForContest(event, contest, table:Integer)
+GET         /:event/tables_list                                        controllers.Tables.tablesList(event)
+GET         /:event/workers_list                                       controllers.EventAdministration.workersList(event)
+POST        /:event/add_contest                                        controllers.EventAdministration.addContest(event)
+POST        /:event/invalidate_event_results                           controllers.EventAdministration.doInvalidateEventResults(event)
+POST        /:event/:role/remove_registered                            controllers.EventAdministration.doRemoveAllRegisteredByRole(event, role)
+POST        /:event/invalidate_contests_and_event_results              controllers.EventAdministration.doInvalidateContestsAndEventResults(event)
+POST        /:event/load_user_fields                                   controllers.EventAdministration.doLoadUserFields(event)
+POST        /:event/:user/remove_user                                  controllers.UserInfo.removeUser(event, user)
+POST        /:event/:user/:flag/swap_flag                              controllers.UserInfo.swapFlag(event, user, flag)
+
+POST        /:event/:user/su                                           controllers.Application.substituteUser(event, user)
+GET         /:event/su_exit                                            controllers.Application.substituteUserExit(event)
+
+#html block
+POST        /~global/:block/set_html_block                             controllers.Application.setGlobalHtmlBlock(block)
+POST        /:event/:block/set_html_block                              controllers.EventAdministration.setHtmlBlock(event, block)
+
+#admin contest
+GET         /:event/:contest/contest_admin                             controllers.ContestAdministration.contestAdmin(event, contest)
+POST        /:event/:contest/invalidate_contest_results                controllers.ContestAdministration.doInvalidateContestsAndEventResults(event, contest)
+POST        /:event/:contest/contest_up                                controllers.ContestAdministration.moveContestUp(event, contest)
+POST        /:event/:contest/contest_down                              controllers.ContestAdministration.moveContestDown(event, contest)
+POST        /:event/:contest/contest_remove                            controllers.ContestAdministration.removeContest(event, contest)
+POST        /:event/:contest/update                                    controllers.ContestAdministration.doUpdateContest(event, contest)
+POST        /:event/:contest/add_block                                 controllers.ContestAdministration.doAddBlock(event, contest)
+POST        /:event/:contest/:index/move_block_up                      controllers.ContestAdministration.moveBlockUp(event, contest, index:Integer)
+POST        /:event/:contest/:index/move_block_down                    controllers.ContestAdministration.moveBlockDown(event, contest, index:Integer)
+POST        /:event/:contest/:index/remove_block                       controllers.ContestAdministration.removeBlock(event, contest, index:Integer)
+
+#admin problems
+GET         /:event/*folder/view_folder                                controllers.Problems.viewFolder(event, folder)
+GET         /:event/*folder/print_folder                               controllers.Problems.printFolder(event, folder, subfolders:Boolean=false, showAnswers:Boolean=false)
+GET         /:event/*folder/print_folder_ans                           controllers.Problems.printFolder(event, folder, subfolders:Boolean=false, showAnswers:Boolean=true)
+GET         /:event/*folder/print_folder_sub                           controllers.Problems.printFolder(event, folder, subfolders:Boolean=true, showAnswers:Boolean=false)
+GET         /:event/*folder/print_folder_sub_ans                       controllers.Problems.printFolder(event, folder, subfolders:Boolean=true, showAnswers:Boolean=true)
+GET         /:event/*problem_link/view_problem                         controllers.Problems.viewProblem(event, problem_link)
+GET         /:event/*pid/view_problem_raw                              controllers.Problems.viewRawProblem(event, pid)
+GET         /:event/*pid/ans/view_problem_print                        controllers.Problems.viewPrintProblem(event, pid, answers:Boolean=true)
+GET         /:event/*pid/no_ans/view_problem_print                     controllers.Problems.viewPrintProblem(event, pid, answers:Boolean=false)
+POST        /:event/*problem_link/remove_link                          controllers.Problems.removeLink(event, problem_link)
+POST        /:event/*problem_link/rename_problem                       controllers.Problems.renameProblem(event, problem_link)
+POST        /:event/*problem_link/update_problem                       controllers.Problems.updateProblem(event, problem_link)
+POST        /:event/*folder/create_problem                             controllers.Problems.createProblem(event, folder)
+POST        /:event/*folder/create_folder                              controllers.Problems.createFolder(event, folder)
+POST        /:event/*problem_link/edit_problem                         controllers.Problems.editProblem(event, problem_link)
+
+#global admin
+GET         /migrate                                                   controllers.Application.migrate()
+POST        /wymupload                                                 controllers.Application.wymEditorUpload()
+GET         /:index/migrate                                            controllers.Application.migrateByIndex(index:Integer)
+POST        /:event/clone_event                                        controllers.EventAdministration.doClone(event)
+POST        /:event/copy_event                                         controllers.EventAdministration.doCopy(event)
+POST        /:event/remove_event                                       controllers.EventAdministration.doRemoveEvent(event)
+GET         /:event/announcements                                      controllers.Announcements.prepareAnnouncement(event)
+POST        /:event/announcements                                      controllers.Announcements.doPrepareAnnouncement(event)
+GET         /:event/:announcement/fix_announcement                     controllers.Announcements.fixAnnouncement(event, announcement)
+GET         /:event/:announcement/send_announcement                    controllers.Announcements.sendAnnouncement(event, announcement)
+POST        /:event/:announcement/send_announcement                    controllers.Announcements.doSendAnnouncement(event, announcement)
+GET         /~trace_ip/:regime/:ip                                     controllers.Application.setupIpTracing(ip, regime)
+
+#trash
+POST        /:event/upload_kenguru_codes                               controllers.EventAdministration.uploadKenguruSchoolCodes(event)
+POST        /:event/:contest/upload_problems                           controllers.EventAdministration.uploadProblemsFile(event, contest)
+
+#plugins
+GET         /:event/:plugin/:action/$params<(.+/)?>p                   controllers.Plugins.doGet(event, plugin, action, params)
+POST        /:event/:plugin/:action/$params<(.+/)?>post_p              controllers.Plugins.doPost(event, plugin, action, params)
 
 #debug
 #TODO: 1) create controller intention, 2) TODO highlight. 3) Create method intention shows up even if there is no controller 4) autoimport play.mvc.Result
 #TODO report. comment in the normal line is not highlighted as an error, but it does not work
-GET     /debug/:action              controllers.Debug.debug(action)
+GET         /:action/debug                                             controllers.Debug.debug(action)
+
+#domain
+GET         /:event/domain                                             controllers.Domains.domainInfo(event, domainName="")
+GET         /:event/:domain/domain                                     controllers.Domains.domainInfo(event, domain)
+POST        /:event/:domain/update_domain                              controllers.Domains.doChangeDomainInfo(event, domain)
+POST        /:event/:domain/update_mailer                              controllers.Domains.doChangeMailerInfo(event, domain)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET         /bebras_training/*file                                     controllers.Resources.returnResource(file, base="/public/bebras-training")
+GET         /assets/*file                                              controllers.Assets.at(path="/public", file)
+GET         /~res/*file                                                controllers.Resources.returnFile(file)
+GET         /:event/~dat/*file                                         controllers.Resources.returnDataFile(event, file)
+
+GET         /convert_bebras_problems_HJKsdCVsdflQsWjhfJKweahfih        controllers.BebrasProblemsConverter.convertProblems()

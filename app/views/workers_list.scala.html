@@ -1,0 +1,42 @@
+@(workers:java.util.List[controllers.worker.Worker])
+@import controllers.actions.AuthenticatedAction
+@import models.utils.Utils
+@import java.util.Date
+@import views.widgets.ResourceLink
+@import views.widgets.AdminWidget
+@import views.widgets.FormsWidget
+@import scala.List
+@main_with_menu("Администрирование " + Event.current.getTitle)(List(AdminWidget.get, FormsWidget.get, new ResourceLink("tables.css"))) { } {
+
+    <h2>Запущенные процессы</h2>
+
+    <table class="data-table">
+    <thead>
+        <tr>
+            <td>Тип</td>
+            <td>Начало</td>
+            <td>Статус</td>
+            <td>Работает</td>
+            <td>Описание</td>
+            <td>Лог</td>
+        </tr>
+    </thead>
+    <tbody>
+    @for(worker <- workers) {
+        <tr>
+            <td>@worker.getName</td>
+            <td>@Utils.formatObjectCreationTime(new Date(worker.getCreationTime))</td>
+            @if(worker.isFinished) {
+                <td>завершено</td>
+                <td>@Utils.millis2minAndSec(worker.getFinish.getTime - worker.getCreationTime)</td>
+            } else {
+                <td>в процессе</td>
+                <td>@Utils.millis2minAndSec(AuthenticatedAction.getRequestTime.getTime - worker.getCreationTime)</td>
+            }
+            <td>@worker.getDescription</td>
+            <td><a target="_blank" href="@routes.Resources.returnDataFile(Event.currentId, "_workers/" + worker.getLog.getName)">просмотр</a></td>
+        </tr>
+    }
+    </tbody>
+    </table>
+}

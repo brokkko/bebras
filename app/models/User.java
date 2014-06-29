@@ -1,14 +1,21 @@
 package models;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import controllers.MongoConnection;
 import controllers.actions.AuthenticatedAction;
-import models.problems.Answer;
-import models.problems.ConfiguredProblem;
-import models.serialization.*;
+import models.data.TableDescription;
+import models.forms.InputField;
+import models.forms.InputForm;
+import models.newproblems.ConfiguredProblem;
+import models.newproblems.Problem;
+import models.newserialization.*;
+import models.results.Info;
+import models.results.InfoPattern;
+import models.results.Translator;
+import org.bson.types.ObjectId;
+import play.Logger;
 import play.Play;
+import play.cache.Cache;
 import play.mvc.Http;
 
 import javax.crypto.SecretKeyFactory;
@@ -25,57 +32,133 @@ import java.util.*;
  * Date: 31.12.12
  * Time: 1:44
  */
-public class User implements Serializable {
+public class User implements SerializableUpdatable {
+
+    private static final String FIELD_PASS_HASH = "passhash";
+    public static final String FIELD_EVENT = "event_id";
+    public static final String FIELD_CONTEST_INFO = "_contests";
+    public static final String FIELD_LAST_USER_ACTIVITY = "_lua";
+    public static final String FIELD_EVENT_RESULTS = "_er";
+    public static final String FIELD_USER_ROLE = "_role";
+    public static final String FIELD_REGISTERED_BY = "_reg_by";
+    public static final String FIELD_PARTIAL_REG = "_p_reg";
+    public static final String FIELD_ANNOUNCEMENTS = "_ann";
 
     public static final String FIELD_LOGIN = "login";
     public static final String FIELD_NAME = "name";
     public static final String FIELD_PATRONYMIC = "patronymic";
+    public static final String FIELD_EMAIL = "email";
+    public static final String FIELD_RAW_PASS = "raw_pass";
+
+    //TODO separate all user fields that are not from User.info
+
+    private static final PasswordGenerator passwordGenerator = new PasswordGenerator();
+
+    private Info info = null;
+    private Event event = null; // should be substituted at update
+    private String passwordHash;
+    private ObjectId id = new ObjectId();
+
+    //TODO move this all to some extra classes
     public static final String FIELD_REGISTRATION_UUID = "_registration_uuid";
     public static final String FIELD_CONFIRMATION_UUID = "_confirmation_uuid";
-    public static final String FIELD_EMAIL = "email";
-    public static final String FIELD_PASS_HASH = "passhash";
-    public static final String FIELD_EVENT = "event_id";
-    public static final String FIELD_CONFIRMED = "cfrmd";
-    public static final String FIELD_RESTORE_FOR_EMAIL = "_rstr_for_mail";
-    public static final String FIELD_NEW_RECOVERY_PASSWORD = "_rec_pswd";
+    private static final String FIELD_CONFIRMED = "cfrmd";
+    private static final String FIELD_RESTORE_FOR_EMAIL = "_rstr_for_mail";
+    private static final String FIELD_NEW_RECOVERY_PASSWORD = "_rec_pswd";
 
-    public static final String FIELD_CONTEST_INFO = "_contests";
-    public static final String FIELD_LAST_USER_ACTIVITY = "_lua";
-
-    public static final PasswordGenerator passwordGenerator = new PasswordGenerator();
-
-    private Map<String, Object> map = new HashMap<>();
+    private String registrationUUID;
+    private String confirmationUUID;
+    private boolean confirmed;
+    private boolean restoreForEmail;
+    private String newRecoveryPassword;
+    private boolean partialRegistration;
+    private boolean wantAnnouncements;
 
     private Map<String, ContestInfoForUser> contest2info = new HashMap<>();
+    private Info eventResults = null;
     private UserActivityEntry userActivityEntry;
+
+    private UserRole role = UserRole.EMPTY;
+    private ObjectId registeredBy = null;
+
+    // cache
+    private Map<Contest, List<Submission>> cachedAllSubmissions = new HashMap<>();
 
     public User() {
     }
 
     public void update(Deserializer deserializer) {
-        for (String field : deserializer.fieldSet()) {
-            switch (field) {
-                case FIELD_CONTEST_INFO:
-                    loadContestsInfo(deserializer.getDeserializer(field));
-                    break;
-                case FIELD_LAST_USER_ACTIVITY:
-                    userActivityEntry = UserActivityEntry.deserialize(deserializer.getDeserializer(field));
-                    break;
-                default:
-                    Object fieldValue = deserializer.getObject(field);
-                    if (fieldValue instanceof DBObject)
-                        fieldValue = Address.deserialize(deserializer.getDeserializer(field)); //TODO not necessary address
-                    map.put(field, fieldValue);
-            }
+        Deserializer userActivityDeserializer = deserializer.getDeserializer(FIELD_LAST_USER_ACTIVITY);
+        if (userActivityDeserializer != null)
+            userActivityEntry = UserActivityEntry.deserialize(getId(), userActivityDeserializer);
+
+        id = deserializer.readObjectId("_id");
+
+        //read event
+        String eventId = deserializer.readString(FIELD_EVENT);
+        if (eventId != null) {
+            event = Event.getInstance(eventId);
+            if (event == null)
+                throw new IllegalStateException("Deserializing user with nonexistent event " + eventId); //TODO was here with bebras13 once!! Why??
+        } else
+            event = Event.current();
+
+        //read role
+        String roleName = deserializer.readString(FIELD_USER_ROLE);
+        if (roleName != null)
+            role = event.getRole(roleName);
+
+        // -------
+        passwordHash = deserializer.readString(FIELD_PASS_HASH);
+
+        info = getUserInfoPattern().read(deserializer);
+
+        //read registration data
+        registrationUUID = deserializer.readString(FIELD_REGISTRATION_UUID);
+        confirmationUUID = deserializer.readString(FIELD_CONFIRMATION_UUID);
+        confirmed = deserializer.readBoolean(FIELD_CONFIRMED, false);
+        restoreForEmail = deserializer.readBoolean(FIELD_RESTORE_FOR_EMAIL, false);
+        newRecoveryPassword = deserializer.readString(FIELD_NEW_RECOVERY_PASSWORD);
+
+        loadContestsInfo(deserializer.getDeserializer(FIELD_CONTEST_INFO));
+
+        eventResults = event.getResultsInfoPattern().read(deserializer, FIELD_EVENT_RESULTS);
+
+        registeredBy = deserializer.readObjectId(FIELD_REGISTERED_BY);
+        partialRegistration = deserializer.readBoolean(FIELD_PARTIAL_REG, false);
+        wantAnnouncements = deserializer.readBoolean(FIELD_ANNOUNCEMENTS, true);
+
+        //TODO get rid of iposov
+        if (getLogin().equals("iposov"))
+            role = event.getRole("EVENT_ADMIN");
+    }
+
+    public void updateFromForm(FormDeserializer deserializer, InputForm form) {
+        for (InputField inputField : form.getFields()) {
+            String field = inputField.getName();
+            info.put(field, deserializer.getValue(field));
         }
     }
 
     private void loadContestsInfo(Deserializer deserializer) {
-        for (String contestId : deserializer.fieldSet())
+        if (deserializer == null)
+            return;
+
+        for (String contestId : deserializer.fields()) {
+            Contest contest = event.getContestById(contestId);
+
+            //this may happen if some contest was removed from an event
+            if (contest == null)
+                continue;
+
             contest2info.put(
                     contestId,
-                    new ContestInfoForUser(deserializer.getDeserializer(contestId))
+                    new ContestInfoForUser(
+                            contest,
+                            deserializer.getDeserializer(contestId)
+                    )
             );
+        }
     }
 
     public static User deserialize(Deserializer deserializer) {
@@ -84,38 +167,61 @@ public class User implements Serializable {
         return user;
     }
 
-    public Object get(String field) {
-        return map.get(field);
-    }
-
-    public String getString(String field) {
-        return (String) map.get(field);
-    }
-
     public void put(String field, Object value) {
-        map.put(field, value);
+        info.put(field, value);
     }
 
     public String getLogin() {
-        return getString(FIELD_LOGIN);
+        return (String) info.get(FIELD_LOGIN);
     }
 
     public String getEmail() {
-        return getString(FIELD_EMAIL);
+        return (String) info.get(FIELD_EMAIL);
+    }
+
+    public void setEmail(String email) {
+        this.info.put(FIELD_EMAIL, email);
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
+    public void setInfo(Info info) {
+        this.info = info;
     }
 
     public boolean testPassword(String password) {
-        return passwordHash(password).equals(getString(FIELD_PASS_HASH));
+        return passwordHash(password).equals(passwordHash);
     }
 
     public static String passwordHash(String password) {
-        //TODO understand this code
         //http://stackoverflow.com/questions/2860943/suggestions-for-library-to-hash-passwords-in-java
         try {
             byte[] salt = new BigInteger(Play.application().configuration().getString("salt"), 16).toByteArray();
             SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
-            byte[] hash = f.generateSecret(spec).getEncoded();
+            byte[] hash = f.generateSecret(spec).getEncoded(); //TODO I didn't know this was so slow (~100ms)
             return new BigInteger(1, hash).toString(16);
         } catch (NoSuchAlgorithmException e) {
             return null;
@@ -124,7 +230,7 @@ public class User implements Serializable {
         }
     }
 
-    public static User current() {
+    public static User current() { //TODO cache users
         Map<String, Object> contextArgs = Http.Context.current().args;
 
         User user = (User) contextArgs.get("user");
@@ -134,6 +240,9 @@ public class User implements Serializable {
                 return null;
             user = getInstance(FIELD_LOGIN, username);
 
+            if (user == null) //this can occur if the user was removed; usually in debugging situations
+                return null;
+
             checkUserActivity(user);
 
             contextArgs.put("user", user);
@@ -142,21 +251,29 @@ public class User implements Serializable {
         return user;
     }
 
+    public static UserRole currentRole() {
+        User user = User.current();
+        return user == null ? Event.current().getAnonymousRole() : user.getRole();
+    }
+
     private static void checkUserActivity(User user) {
         Http.Context context = Http.Context.current();
+        Date requestTime = AuthenticatedAction.getRequestTime();
         UserActivityEntry entry = new UserActivityEntry(
                 user.getId(),
                 context.request().remoteAddress(),
                 context.request().getHeader("User-Agent"),
-                AuthenticatedAction.getRequestTime()
+                requestTime
         );
 
-        if (entry.equals(user.getUserActivityEntry()))
+        UserActivityEntry entryOld = user.getUserActivityEntry();
+
+        if (entry.equals(entryOld) && requestTime.getTime() - entryOld.getDate().getTime() < 30 * 60 * 1000) //30 min hour
             return;
 
         entry.store();
         user.setUserActivityEntry(entry);
-        user.store(); //TODO think about when to store user
+        user.store();
     }
 
     public static boolean isAuthorized() {
@@ -164,17 +281,134 @@ public class User implements Serializable {
     }
 
     public static User getInstance(String field, Object value) {
+        return getInstance(field, value, "_id".equals(field) ? null : Event.current().getId());
+    }
+
+    private static String getLoginCacheKey(String eventId, String login) {
+        return "user-cache-" + login + "~@-_" + eventId;
+    }
+
+    private static String getIdCacheKey(ObjectId id) {
+        return "user-cache-" + id;
+    }
+
+    public static User getInstance(String field, Object value, String eventId) {
+        boolean byLogin = FIELD_LOGIN.equals(field);
+        boolean byId = "_id".equals(field);
+
+        if (byLogin) {
+            User result = (User) Cache.get(getLoginCacheKey(eventId, (String) value));
+            if (result != null)
+                return result;
+        }
+
+        if (byId) {
+            if (value instanceof String)
+                value = new ObjectId((String) value);
+
+            User result = (User) Cache.get(getIdCacheKey((ObjectId) value));
+            if (result != null)
+                return result;
+        }
+
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
-        DBObject query = new BasicDBObject(FIELD_EVENT, Event.current().getId());
+        DBObject query = new BasicDBObject(field, value);
 
-        query.put(field, value);
+        if (!"_id".equals(field))
+            query.put(FIELD_EVENT, eventId);
 
         DBObject userObject = usersCollection.findOne(query);
+        User result;
         if (userObject == null)
-            return null;
+            result = null;
         else
-            return User.deserialize(new MongoDeserializer(userObject));
+            result = User.deserialize(new MongoDeserializer(userObject));
+
+        if (result != null)
+            result.cache();
+
+        return result;
+    }
+
+    public static User getUserById(ObjectId id) {
+        return getInstance("_id", id, null);
+    }
+
+    public static User getUserByLogin(String login) {
+        return getInstance(FIELD_LOGIN, login);
+    }
+
+    public static User getUserByLogin(String eventId, String login) {
+        return getInstance(FIELD_LOGIN, login, eventId);
+    }
+
+    public static User getUserByEmail(String email) {
+        return getInstance(FIELD_EMAIL, email);
+    }
+
+    public static User getUserByRegistrationUUID(String registrationUUID) {
+        return getInstance(FIELD_REGISTRATION_UUID, registrationUUID);
+    }
+
+    public static User getUserByConfirmationUUID(String confirmationUUID) {
+        return getInstance(FIELD_CONFIRMATION_UUID, confirmationUUID);
+    }
+
+    public static class UsersEnumeration implements Enumeration<User>, AutoCloseable {
+
+        private DBCursor cursor;
+
+        private UsersEnumeration(DBCursor cursor) {
+            this.cursor = cursor;
+        }
+
+        @Override
+        public void close() throws Exception {
+            cursor.close();
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+            return cursor.hasNext();
+        }
+
+        @Override
+        public User nextElement() {
+            DBObject userObject = cursor.next();
+            ObjectId id = (ObjectId) userObject.get("_id");
+            User result = (User) Cache.get(getIdCacheKey(id));
+            if (result != null)
+                return result;
+
+            result = User.deserialize(new MongoDeserializer(userObject));
+            result.cache();
+
+            return result;
+        }
+
+        public List<User> readToMemory() {
+            ArrayList<User> result = new ArrayList<>();
+
+            try (UsersEnumeration ue = this) {
+                while (ue.hasMoreElements())
+                    result.add(ue.nextElement());
+            } catch (Exception e) {
+                Logger.error("Failed to read users into memory", e);
+            }
+
+            return result;
+        }
+    }
+
+    public static UsersEnumeration listUsers(DBObject query) {
+        DBCursor usersCursor = MongoConnection.getUsersCollection().find(query).sort(new BasicDBObject(User.FIELD_LOGIN, 1));
+        return new UsersEnumeration(usersCursor);
+    }
+
+    public static UsersEnumeration listUsers(DBObject query, DBObject sort) {
+        DBCursor usersCursor = MongoConnection.getUsersCollection().find(query).sort(sort);
+        return new UsersEnumeration(usersCursor);
     }
 
     public static String generatePassword() {
@@ -185,12 +419,16 @@ public class User implements Serializable {
         return "user-" + Event.currentId();
     }
 
-    public static String getUserEventActivitySessionKey() {
-        return "ua-" + Event.currentId();
+    public static String getSuUsernameSessionKey() {
+        return "su-" + Event.currentId();
     }
 
-    public String getId() {
-        return map.get("_id").toString();
+    public static String getSubstitutedUser() {
+        return Http.Context.current().session().get(getSuUsernameSessionKey());
+    }
+
+    public ObjectId getId() {
+        return id;
     }
 
     public UserActivityEntry getUserActivityEntry() {
@@ -201,29 +439,90 @@ public class User implements Serializable {
         this.userActivityEntry = userActivityEntry;
     }
 
-    @Override
-    public void store(Serializer serializer) {
-        for (Map.Entry<String, Object> field2value : map.entrySet()) {
-            String field = field2value.getKey();
-            Object value = field2value.getValue();
+    public Info getInfo() {
+        return info;
+    }
 
-            serializer.write(field, value);
-        }
+    public boolean isPartialRegistration() {
+        return partialRegistration;
+    }
+
+    public void setPartialRegistration(boolean partialRegistration) {
+        this.partialRegistration = partialRegistration;
+    }
+
+    @Override
+    public void serialize(Serializer serializer) {
+        getUserInfoPattern().write(info, serializer);
 
         Serializer contestInfoSerializer = serializer.getSerializer(FIELD_CONTEST_INFO);
         for (Map.Entry<String, ContestInfoForUser> id2date : contest2info.entrySet()) {
             String contestId = id2date.getKey();
             ContestInfoForUser contestInfo = id2date.getValue();
-            contestInfo.store(contestInfoSerializer.getSerializer(contestId));
+            contestInfoSerializer.write(contestId, contestInfo);
         }
 
-        userActivityEntry.store(serializer.getSerializer(FIELD_LAST_USER_ACTIVITY), false);
+        event.getResultsInfoPattern().write(serializer, FIELD_EVENT_RESULTS, eventResults);
+
+        if (userActivityEntry != null) //it is null if this is not an authorized page, e.g. a registration page
+            userActivityEntry.store(serializer.getSerializer(FIELD_LAST_USER_ACTIVITY), false);
+
+        serializer.write(FIELD_USER_ROLE, role.getName());
+
+        //write registration data
+        serializer.write(FIELD_REGISTRATION_UUID, registrationUUID);
+        serializer.write(FIELD_CONFIRMATION_UUID, confirmationUUID);
+        serializer.write(FIELD_CONFIRMED, confirmed);
+        serializer.write(FIELD_RESTORE_FOR_EMAIL, restoreForEmail);
+        serializer.write(FIELD_NEW_RECOVERY_PASSWORD, newRecoveryPassword);
+
+        serializer.write("_id", id);
+        serializer.write(FIELD_EVENT, event.getId());
+        serializer.write(FIELD_PASS_HASH, passwordHash);
+
+        serializer.write(FIELD_REGISTERED_BY, registeredBy);
+        serializer.write(FIELD_PARTIAL_REG, partialRegistration);
+        serializer.write(FIELD_ANNOUNCEMENTS, wantAnnouncements);
+
+        cache();
     }
 
-    public void store() {
+    private void cache() {
+        int expiration = 10 * 60; // 10 minutes
+        Cache.set(getLoginCacheKey(event.getId(), getLogin()), this, expiration);
+        Cache.set(getIdCacheKey(id), this, expiration);
+    }
+
+    private InfoPattern getUserInfoPattern() {
+        //role.getUserInfoPattern() and event plugins extra fields
+        return InfoPattern.union(
+                role.getUserInfoPattern(),
+                event.getExtraUserFields(role.getName())
+        );
+    }
+
+    public void serialize() {
         MongoSerializer mongoSerializer = new MongoSerializer();
-        store(mongoSerializer);
-        mongoSerializer.store(MongoConnection.getUsersCollection());
+        serialize(mongoSerializer);
+        MongoConnection.getUsersCollection().save(mongoSerializer.getObject()); //TODO error log claims here may a be a problem with a duplicate key
+    }
+
+    /*
+     [DuplicateKey: {
+        "serverUsed" : "db1/10.146.2.4:27017" ,
+        "err" : "E11000 duplicate key error index: dces2.users.$login_1_event_id_1  dup key: { : \"kflf\", : \"bebras13\" }" ,
+        "code" : 11000 ,
+        "n" : 0 ,
+        "connectionId" : 3422 ,
+        "ok" : 1.0
+     }]
+     */
+
+    public void store() {
+        if (MongoConnection.mayEnqueueEvents())
+            MongoConnection.enqueueUserStorage(this);
+        else
+            serialize();
     }
 
     public Date contestStartTime(String contestId) {
@@ -255,10 +554,10 @@ public class User implements Serializable {
         store();
     }
 
-    private ContestInfoForUser getContestInfoCreateIfNeeded(String contestId) {
+    public ContestInfoForUser getContestInfoCreateIfNeeded(String contestId) {
         ContestInfoForUser contestInfo = contest2info.get(contestId);
         if (contestInfo == null) {
-            contestInfo = new ContestInfoForUser();
+            contestInfo = new ContestInfoForUser(event.getContestById(contestId));
             contest2info.put(contestId, contestInfo);
         }
 
@@ -313,16 +612,43 @@ public class User implements Serializable {
         return AuthenticatedAction.getRequestTime().getTime() - start.getTime() >= contest.getDurationInMs();
     }
 
+    //contest timing
+
+    public boolean contestStarted(Contest contest) {
+        return hasEventAdminRight() || contest.getStart().before(AuthenticatedAction.getRequestTime());
+    }
+
+    public boolean contestFinished(Contest contest) {
+        return !hasEventAdminRight() && contest.getFinish().before(AuthenticatedAction.getRequestTime());
+    }
+
+    public boolean resultsAvailable(Contest contest) {
+        return hasEventAdminRight() || contest.getResults().before(AuthenticatedAction.getRequestTime());
+    }
+
+    public boolean restrictedResults() {
+        Date restrictedResults = event.getRestrictedResults();
+        return restrictedResults != null && !hasEventAdminRight() && restrictedResults.before(AuthenticatedAction.getRequestTime());
+    }
+
     public int getContestStatus(Contest contest) {
         if (contestIsGoing(contest))
             return 1; //going
-        if (contest.resultsAvailable() && userParticipatedAndFinished(contest))
-            return 2; //results available
-        if (contest.contestFinished() && !participatedInContest(contest.getId()))
-            return 3; //finished but not participated
+        if (resultsAvailable(contest) && userParticipatedAndFinished(contest)) {
+            if (restrictedResults())
+                return 7; //results available, but they are restricted
+            else
+                return 2; //results available
+        }
+        if (contestFinished(contest) && !participatedInContest(contest.getId())) {
+            if (restrictedResults())
+                return 7; //results available, but they are restricted
+            else
+                return 3; //finished but not participated
+        }
         if (userParticipatedAndFinished(contest))
             return 4; //finished but still waiting results
-        if (contest.contestStarted())
+        if (contestStarted(contest))
             return 5; //still may participate
         return 6; //still not started;
     }
@@ -331,19 +657,366 @@ public class User implements Serializable {
      * @param contest a contest to get results from
      * @return a list with user answers
      */
-    public List<Answer> getAnswersForContest(Contest contest) { //TODO optimize
-        List<Answer> pid2ans = new ArrayList<>();
+    public List<Info> getAnswersForContest(Contest contest) {
+        List<Submission> submissionsForContest = getSubmissionsForContest(contest);
+        List<Info> answers = new ArrayList<>(submissionsForContest.size());
 
-        String uid = getId();
-        List<ConfiguredProblem> configuredUserProblems = contest.getConfiguredUserProblems(this);
+        for (Submission submission : submissionsForContest)
+            answers.add(submission == null ? null : submission.getAnswer());
 
-        for (ConfiguredProblem configuredUserProblem : configuredUserProblems) {
-            String link = configuredUserProblem.getLink();
-            Submission submission = Submission.getSubmissionForUser(contest, uid, link, Submission.AnswerOrdering.LAST, Submission.TimeType.LOCAL);
+        return answers;
+    }
 
-            pid2ans.add(submission == null ? null : submission.getAnswer());
+    /**
+     * @param contest a contest to get results from
+     * @return a list with user answers
+     */
+    public List<Submission> getSubmissionsForContest(Contest contest) {
+        List<Submission> allSubmissions = getAllSubmissions(contest);
+
+        Map<ObjectId, Submission> problem2lastSubmission = new HashMap<>();
+
+        //iterate all submissions backwards because we need last submissions for all problems //TODO implement also best submissions instead of last
+        ListIterator<Submission> li = allSubmissions.listIterator(allSubmissions.size());
+
+        while (li.hasPrevious()) {
+            Submission s = li.previous();
+
+            ObjectId pid = s.getProblemId();
+            if (pid != null && !problem2lastSubmission.containsKey(pid))
+                problem2lastSubmission.put(pid, s);
         }
+
+        //put submissions into a list
+
+        List<ConfiguredProblem> configuredUserProblems = contest.getUserProblems(this);
+        List<Submission> pid2ans = new ArrayList<>();
+        for (ConfiguredProblem problem : configuredUserProblems)
+            pid2ans.add(problem2lastSubmission.get(problem.getProblemId()));
 
         return pid2ans;
     }
+
+    public List<Submission> getAllSubmissions(Contest contest) {
+        List<Submission> allSubmissions = cachedAllSubmissions.get(contest);
+
+        if (allSubmissions == null) {
+            allSubmissions = evaluateAllSubmissions(contest);
+            cachedAllSubmissions.put(contest, allSubmissions);
+        }
+
+        return allSubmissions;
+    }
+
+    private List<Submission> evaluateAllSubmissions(Contest contest) {
+        DBCollection submissionsCollection = contest.getCollection();
+
+        DBObject query = new BasicDBObject("u", id);
+        DBObject sort = new BasicDBObject("pid", 1);
+        sort.put("lt", 1);
+
+        List<Submission> allSubmissions = new ArrayList<>();
+
+        try (
+                DBCursor submissionsCursor = submissionsCollection.find(query).sort(sort)
+        ) {
+            long previousLocalTime = -1;
+            while (submissionsCursor.hasNext()) {
+                Submission submission = new Submission(contest, new MongoDeserializer(submissionsCursor.next()));
+
+                //local time may be the same if contestant sent the same several times
+                if (submission.getLocalTime() == previousLocalTime)
+                    continue;
+
+                allSubmissions.add(submission);
+            }
+        }
+
+        return allSubmissions;
+    }
+
+    //TODO the following methods are only for BBTC contest
+    public int totalScores(Event event) {
+        int scores = 0;
+        for (Contest contest : event.getContests()) {
+            Info userResults = evaluateContestResults(contest);
+            scores += (Integer) userResults.get("scores");
+        }
+        return scores;
+    }
+
+    public String totalPosition() {
+        Object position = info.get("__bbtc__scores__");
+        return position == null ? "-" : position.toString();
+    }
+
+    public String getGreeting() {
+        Object name = info.get(FIELD_NAME);
+        Object patronymic = info.get(FIELD_PATRONYMIC);
+
+        if (name != null && patronymic != null)
+            return name + " " + patronymic;
+
+        if (name != null)
+            return name.toString();
+
+        return null;
+    }
+
+    //registration info getters and setters
+
+    public String getRegistrationUUID() {
+        return registrationUUID;
+    }
+
+    public void setRegistrationUUID(String registrationUUID) {
+        this.registrationUUID = registrationUUID;
+    }
+
+    public String getConfirmationUUID() {
+        return confirmationUUID;
+    }
+
+    public void setConfirmationUUID(String confirmationUUID) {
+        this.confirmationUUID = confirmationUUID;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+
+    public boolean isRestoreForEmail() {
+        return restoreForEmail;
+    }
+
+    public void setRestoreForEmail(boolean restoreForEmail) {
+        this.restoreForEmail = restoreForEmail;
+    }
+
+    public String getNewRecoveryPassword() {
+        return newRecoveryPassword;
+    }
+
+    public void setNewRecoveryPassword(String newRecoveryPassword) {
+        this.newRecoveryPassword = newRecoveryPassword;
+    }
+
+    //may return not null even if getRegisteredByUser() returns null, because the user was removed
+    public ObjectId getRegisteredBy() {
+        return registeredBy;
+    }
+
+    public User getRegisteredByUser() {
+        return registeredBy == null ? null : getUserById(registeredBy);
+    }
+
+    public void setRegisteredBy(ObjectId registeredBy) {
+        this.registeredBy = registeredBy;
+    }
+
+    public boolean isWantAnnouncements() {
+        return wantAnnouncements;
+    }
+
+    public void setWantAnnouncements(boolean wantAnnouncements) {
+        this.wantAnnouncements = wantAnnouncements;
+    }
+
+    // tables
+
+    public List<TableDescription<?>> getTables() {
+        List<TableDescription<?>> result = new ArrayList<>();
+
+        List<? extends TableDescription> tables = getEvent().getTables();
+        for (TableDescription<?> table : tables)
+            if (hasRight(table.getRight()))
+                result.add(table);
+
+        return result;
+    }
+
+    // results
+
+    private Info evaluateContestResults(Contest contest) {
+        List<Submission> submissions = getSubmissionsForContest(contest);
+
+        List<ConfiguredProblem> problems = contest.getUserProblems(this);
+        int size = problems.size();
+        List<Info> problemsInfo = new ArrayList<>(size);
+        List<Info> problemsSettingsInfo = new ArrayList<>(size);
+
+        for (int i = 0; i < size; i++) {
+            ConfiguredProblem configuredProblem = problems.get(i);
+            Problem problem = configuredProblem.getProblem();
+
+            Submission submission = submissions.get(i);
+            if (submission != null) {
+                problemsInfo.add(problem.check(submission.getAnswer(), getContestRandSeed(contest.getId()))); //TODO implement remote check, online check
+                problemsSettingsInfo.add(configuredProblem.getSettings());
+            } else {
+                problemsInfo.add(null);
+                problemsSettingsInfo.add(null);
+            }
+
+        }
+
+        return contest.getResultTranslator().translate(problemsInfo, problemsSettingsInfo, this);
+    }
+
+    public Info getContestResults(Contest contest) {
+        ContestInfoForUser contestInfo = getContestInfoCreateIfNeeded(contest.getId());
+
+        Info finalResults = contestInfo.getFinalResults();
+        if (finalResults != null)
+            return finalResults;
+
+        finalResults = evaluateContestResults(contest);
+
+        contestInfo.setFinalResults(finalResults);
+        store();
+
+        return finalResults;
+    }
+
+    public void evaluateAllContestsResults() {
+        for (Contest contest : event.getContests())
+            getContestResults(contest);
+    }
+
+    public Info getEventResults() {
+        if (eventResults != null)
+            return eventResults;
+
+        Translator resultTranslator = event.getResultTranslator();
+
+        Collection<Contest> contests = event.getContestsAvailableForUser(this);
+
+        List<Info> contestsInfo = new ArrayList<>(contests.size());
+        List<Info> contestsSettings = new ArrayList<>(contests.size());
+
+        for (Contest contest : contests) {
+//            if (contest.isAllowRestart()) //TODO invent some method to exclude test contests
+//                continue;
+
+            contestsInfo.add(getContestResults(contest));
+            contestsSettings.add(null);
+        }
+
+        eventResults = resultTranslator.translate(contestsInfo, contestsSettings, this);
+
+        store();
+
+        return eventResults;
+    }
+
+    //rights
+
+    public boolean hasRight(String right) {
+        int tildePos = right.indexOf("~");
+        if (tildePos >= 0) {
+            String virtualRight = right.substring(tildePos + 1);
+            if (!hasVirtualRights(virtualRight.split("~")))
+                return false;
+
+            right = right.substring(0, tildePos);
+        }
+
+        return role.hasRight(right);
+    }
+
+    private boolean hasVirtualRights(String... rights) {
+        for (String right : rights)
+            if (!hasVirtualRight(right))
+                return false;
+        return true;
+    }
+
+    private boolean hasVirtualRight(String right) {
+        //virtual right may be of form id=value
+        String[] fieldAndValue = right.split("=");
+        if (fieldAndValue.length != 2)
+            return false;
+        String field = fieldAndValue[0].trim();
+        String value = fieldAndValue[1].trim();
+
+        Object realValue = getInfo().get(field);
+
+        return realValue != null && realValue.toString().equals(value);
+    }
+
+    public boolean hasEventAdminRight() {
+        return hasRight("event admin");
+    }
+
+    public void invalidateEventResults() {
+        eventResults = null;
+        cachedAllSubmissions.clear();
+        store();
+    }
+
+    public void invalidateContestResults(String contestId) {
+        ContestInfoForUser contestInfo = getContestInfoCreateIfNeeded(contestId);
+        contestInfo.setFinalResults(null);
+        invalidateEventResults();
+        store();
+    }
+
+    public void invalidateAllResults() {
+        for (Contest contest : event.getContests())
+            getContestInfoCreateIfNeeded(contest.getId()).setFinalResults(null);
+        invalidateEventResults();
+    }
+
+    private static void invalidateOneContestResults(Event event, Contest contest) {
+        DBCollection usersCollection = MongoConnection.getUsersCollection();
+        DBObject query = new BasicDBObject("event_id", event.getId());
+        String contestResultsField = User.FIELD_CONTEST_INFO + "." + contest.getId() + ".res";
+        DBObject update = new BasicDBObject("$unset", new BasicDBObject(contestResultsField, ""));
+
+        usersCollection.updateMulti(query, update);
+    }
+
+    public static void invalidateAllContestResults(Event event, Contest contest) {
+        invalidateAllEventResults(event);
+        invalidateOneContestResults(event, contest);
+    }
+
+    public static void invalidateAllEventResults(Event event) {
+        DBCollection usersCollection = MongoConnection.getUsersCollection();
+        DBObject query = new BasicDBObject(User.FIELD_EVENT, event.getId());
+        DBObject update = new BasicDBObject("$unset", new BasicDBObject(User.FIELD_EVENT_RESULTS, ""));
+
+        usersCollection.updateMulti(query, update);
+    }
+
+    public static void invalidateAllResults(Event event) {
+        for (Contest contest : event.getContests())
+            invalidateOneContestResults(event, contest);
+        invalidateAllEventResults(event);
+    }
+
+    /*public static void removeUser(Event event, String login) {
+        DBCollection usersCollection = MongoConnection.getUsersCollection();
+
+        DBObject remove = new BasicDBObject(FIELD_EVENT, event.getId());
+        remove.put(FIELD_LOGIN, login);
+
+        usersCollection.remove(remove);
+        Cache.remove(getLoginCacheKey(event.getId(), login));
+        Cache.remove(getIdCacheKey(???));
+    }*/
 }
+
+
+/*
+Группа помощи задержанным: http://vk.com/miting_help▼ , телефон 9878231.
+В случае задержания необходимо сообщить информацию о себе, о том, сколько человек в автозаке, куда вас везут и т. д.
+Если вы хотите помочь задержанным, также обращайтесь в эту группу.
+
+РосУзник, телефон 8 (951) 666-79-28, твиттер @RosUznik.
+Адвокаты РосУзника готовы оказывать помощь.
+*/

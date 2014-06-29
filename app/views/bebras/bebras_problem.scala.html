@@ -1,0 +1,35 @@
+@(index:String, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, question:String, answersHtml:Html, rightAnswer:Int, explanation:String, informatics:String)
+@import scala.List
+@import models.newproblems.bbtc.BBTCProblem
+<div class='task-title section-title'>
+    <span class='problem-index'>Задача @index.</span>
+    <span class='problem-title'>@Html(title)</span>
+    @if(scores != 0) {
+        <span class='problem-scores'>@scores&nbsp;баллов</span>
+    }
+    <span class='problem-country'><img alt="@country" src="@routes.Assets.at("images/flags/" + country + ".png")">@countryName</span>
+</div>
+<div class='task-statement'>
+    @Html(statement)
+</div>
+<div class='section-title clear'>Вопрос</div>
+<div class='task-question'>@Html(question)</div>
+<div class='section-title clear'>Варианты ответов</div>
+<table class='task-answers'>
+    @answersHtml
+</table>
+@if(showSolutions) {
+    <span class='right-answer hidden'>@rightAnswer</span>
+    <div class='section-title'>Правильный ответ: @models.newproblems.bebras.BebrasProblem.numberAnswer2string(rightAnswer)</div>
+    <div class='section-title'>Решение</div>
+    <div class='task-explanation'>
+        @Html(explanation)
+    </div>
+    @if(informatics != null && informatics != "") {
+        <div class='section-title'>Это информатика!</div>
+        <div class='task-informatics'>
+            @Html(informatics)
+        </div>
+    }
+}
+<div class='footer'></div>

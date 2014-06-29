@@ -1,6 +1,5 @@
-@(form:models.forms.RawForm, field: String, hint:String)
-@import models.forms.RawForm
-<input class='input-checkbox' type="checkbox" value="1" name="@field" @if(form.get(field) == "1") { checked="checked" }>
+@(value:Boolean, field: String, hint:String)
+<input class='input-checkbox' type="checkbox" value="1" name="@field" @if(value != null && value) { checked="checked" }>
 @if(hint != null) {
     <span class="checkbox-hint">@Html(hint)</span>
 }

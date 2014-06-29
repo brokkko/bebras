@@ -1,7 +1,8 @@
 package models.forms.validators;
 
 import models.User;
-import models.serialization.Deserializer;
+import models.newserialization.Deserializer;
+import models.newserialization.Serializer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,16 +12,24 @@ import models.serialization.Deserializer;
  */
 public class UserFieldValidator extends Validator<String> {
 
-    private final String field;
+    private String field;
 
-    public UserFieldValidator(Deserializer deserializer) {
-        field = deserializer.getString("field");
+    @Override
+    public Validator.ValidationResult validate(String login) {
+        User user = User.getInstance(field, login);
+
+        return user == null ? ok() : message();
     }
 
     @Override
-    public String validate(String login) {
-        User user = User.getInstance(field, login);
+    public void update(Deserializer deserializer) {
+        super.update(deserializer);
+        field = deserializer.readString("field");
+    }
 
-        return user == null ? null : getMessage();
+    @Override
+    public void serialize(Serializer serializer) {
+        super.serialize(serializer);
+        serializer.write("field", field);
     }
 }

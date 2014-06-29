@@ -1,23 +1,18 @@
 package controllers;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
-import models.Contest;
-import models.Submission;
-import models.User;
-import models.UserActivityEntry;
+import com.mongodb.*;
+import models.*;
+import models.migration.*;
+import models.newproblems.ProblemLink;
 import play.Configuration;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
-import play.libs.Akka;
-import scala.concurrent.duration.FiniteDuration;
+import play.mvc.Http;
 
 import java.net.UnknownHostException;
+import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,6 +28,26 @@ public class MongoConnection {
     public static final String COLLECTION_NAME_PROBLEM_DIRS = "categories";
     public static final String COLLECTION_NAME_PROBLEMS = "problems";
     public static final String COLLECTION_NAME_ACTIVITY = "activity";
+    public static final String COLLECTION_NAME_HTML_BLOCKS = "html_blocks";
+    public static final String COLLECTION_NAME_DOMAINS = "domains";
+
+    public static final String COLLECTION_MAILING_LIST = "mail_list";
+    public static final String COLLECTION_MAILING_LIST_QUEUE = "mail_list_queue";
+    public static final String COLLECTION_WORKERS = "workers";
+
+    private static final Migrator[] migrators = new Migrator[] {
+            null, //0
+            null, //1
+            new Migrator2(),
+            new Migrator3(),
+            new Migrator4(),
+            new Migrator5(),
+            new Migrator6(),
+            new Migrator7(),
+            new Migrator8(),
+            new Migrator9(),
+            new Migrator10()
+    };
 
     public static DBCollection getConfigCollection() {
         return getCollection(COLLECTION_NAME_CONFIG);
@@ -58,31 +73,113 @@ public class MongoConnection {
         return getCollection(COLLECTION_NAME_ACTIVITY);
     }
 
-    public static DBCollection getCollection(String contestId) {
-        String dbname = Play.application().configuration().getString("mongodb.db");
-        DB answersDB = getMongo().getDB(dbname);
+    public static DBCollection getHtmlBlocksCollection() {
+        return getCollection(COLLECTION_NAME_HTML_BLOCKS);
+    }
 
-        DBCollection collection = answersDB.getCollection(contestId);
-        boolean needCreateIndexes = !answersDB.collectionExists(contestId);
+    public static DBCollection getMailingListCollection() {
+        return getCollection(COLLECTION_MAILING_LIST);
+    }
 
-        if (needCreateIndexes)
+    public static DBCollection getMailingListQueueCollection() {
+        return getCollection(COLLECTION_MAILING_LIST_QUEUE);
+    }
+
+    public static DBCollection getDomainsCollection() {
+        return getCollection(COLLECTION_NAME_DOMAINS);
+    }
+
+    public static DBCollection getWorkersCollection() {
+        return getCollection(COLLECTION_WORKERS);
+    }
+
+    public static List<DBCollection> getContestCollections() {
+        DB db = getDb();
+        Set<String> collectionNames = db.getCollectionNames();
+        //filter
+
+        List<DBCollection> contestCollections = new ArrayList<>();
+
+        for (String name : collectionNames)
+            if (name.startsWith(Contest.CONTEST_COLLECTION_NAME_PREFIX))
+                contestCollections.add(getCollection(name));
+
+        return contestCollections;
+    }
+
+    public static DBCollection getCollection(String collectionName) {
+        DB answersDB = getDb();
+
+        DBCollection collection = answersDB.getCollection(collectionName);
+        Boolean collectionExists = (Boolean) Cache.get("collection-exists-" + collectionName);
+        if (collectionExists == null)
+            collectionExists = answersDB.collectionExists(collectionName);
+
+        boolean needCreateIndexes = !collectionExists;
+
+        if (needCreateIndexes) //TODO think about substitute with dbCollection.ensureIndex() and do it only once
             createIndexes(collection);
 
+        Cache.set("collection-exists-" + collectionName, true);
+
         return collection;
+    }
+
+    private static DB getDb() {
+        String dbname = Play.application().configuration().getString("mongodb.db");
+        return getMongo().getDB(dbname);
+    }
+
+    public static Object eval(String code, Object... args) {
+        return getDb().eval(code, args);
+    }
+
+    public static boolean mayEnqueueEvents() {
+        return Http.Context.current.get() != null;
+    }
+
+    public static void enqueueUserStorage(User user) {
+        Map<String,Object> contextArgs = Http.Context.current().args;
+
+        //noinspection unchecked
+        Set<User> usersToStore = (Set<User>) contextArgs.get("users-to-store");
+
+        if (usersToStore == null) {
+            usersToStore = new HashSet<>();
+            contextArgs.put("users-to-store", usersToStore);
+        }
+
+        usersToStore.add(user);
+    }
+
+    public static void storeEnqueuedUsers(Http.Context ctx) {
+        Map<String,Object> contextArgs = ctx.args;
+
+        //noinspection unchecked
+        Set<User> usersToStore = (Set<User>) contextArgs.get("users-to-store");
+
+        if (usersToStore != null)
+            for (User user : usersToStore)
+                user.serialize();
     }
 
     private static void createIndexes(DBCollection collection) {
         switch (collection.getName()) {
             case COLLECTION_NAME_USERS:
-                collection.createIndex(new BasicDBObject(User.FIELD_LOGIN, 1));
+                DBObject loginAndEventIndex = new BasicDBObject(User.FIELD_LOGIN, 1);
+                loginAndEventIndex.put(User.FIELD_EVENT, 1);
+
+                collection.createIndex(loginAndEventIndex, new BasicDBObject("unique", true));
                 collection.createIndex(new BasicDBObject(User.FIELD_CONFIRMATION_UUID, 1));
                 collection.createIndex(new BasicDBObject(User.FIELD_REGISTRATION_UUID, 1));
-                collection.createIndex(new BasicDBObject(User.FIELD_EVENT, 1));
+                collection.createIndex(new BasicDBObject(User.FIELD_REGISTERED_BY, 1));
                 break;
             case COLLECTION_NAME_ACTIVITY:
                 collection.createIndex(new BasicDBObject(UserActivityEntry.FIELD_USER, 1));
                 collection.createIndex(new BasicDBObject(UserActivityEntry.FIELD_IP, 1));
                 break;
+            case COLLECTION_NAME_PROBLEM_DIRS:
+                collection.createIndex(new BasicDBObject(ProblemLink.FIELD_LINK, 1));
         }
 
         if (collection.getName().startsWith(Contest.CONTEST_COLLECTION_NAME_PREFIX)) {
@@ -92,18 +189,18 @@ public class MongoConnection {
         }
     }
 
-    private static Mongo getMongo() {
+    private static MongoClient getMongo() {
         try {
-            return Cache.getOrElse("mongo", new Callable<Mongo>() {
+            return Cache.getOrElse("mongo", new Callable<MongoClient>() {
                 @Override
-                public Mongo call() throws Exception {
+                public MongoClient call() throws Exception {
                     Configuration configuration = Play.application().configuration();
 
                     final String host = configuration.getString("mongodb.host");
                     final Integer configPort = configuration.getInt("mongodb.port");
                     final int port = configPort == null ? 27017 : configPort;
 
-                    return new Mongo(host, port);
+                    return new MongoClient(host, port);
                 }
             }, 0);
         } catch (Exception e) {
@@ -116,7 +213,7 @@ public class MongoConnection {
                 final Integer configPort = configuration.getInt("mongodb.port");
                 final int port = configPort == null ? 27017 : configPort;
 
-                return new Mongo(host, port);
+                return new MongoClient(host, port);
             } catch (UnknownHostException e1) {
                 Logger.error("Failed to get mongo DB", e1);
                 return null;
@@ -124,5 +221,39 @@ public class MongoConnection {
         }
     }
 
+    public static void migrate() {
+        ServerConfiguration configuration = ServerConfiguration.getInstance();
 
+        int dbVersion = configuration.getDbVersion();
+        if (dbVersion >= ServerConfiguration.CURRENT_DB_VERSION)
+            return;
+
+        configuration.setMaintenanceMode(true);
+
+        for (int ver = dbVersion + 1; ver <= ServerConfiguration.CURRENT_DB_VERSION; ver++) {
+            Migrator migrator = migrators[ver];
+            Logger.info("migrating from version " + (ver - 1) + " to version " + ver);
+            migrator.migrate();
+            configuration.setDbVersion(ver);
+        }
+
+        configuration.setMaintenanceMode(false);
+    }
+
+    public static void migrate(int index) {
+        ServerConfiguration configuration = ServerConfiguration.getInstance();
+
+        int dbVersion = configuration.getDbVersion();
+        if (dbVersion != index - 1)
+            return;
+
+        configuration.setMaintenanceMode(true);
+
+        Migrator migrator = migrators[index];
+        Logger.info("migrating from version " + (index - 1) + " to version " + index);
+        migrator.migrate();
+        configuration.setDbVersion(index);
+
+        configuration.setMaintenanceMode(false);
+    }
 }

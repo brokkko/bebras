@@ -1,0 +1,19 @@
+@(pid:org.bson.types.ObjectId, problem:models.newproblems.Problem, showAnswers:Boolean)
+@import views.widgets.WymEditorWidget
+@* TODO remove code duplication with problem_view.scala.html *@
+@import views.widgets.AdminWidget
+@import views.widgets.ResourceLink
+@import scala.List
+@import org.bson.types.ObjectId
+@import models.newproblems.Problem
+@main("Задача " + pid.toString)(List(WymEditorWidget.get, new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), problem.getWidget(false), AdminWidget.get))(false) {
+    @if(showAnswers) {
+    <div class='problem'>
+        @problem.format("1", true, null, 0)
+    </div>
+    } else {
+    <div class='problem'>
+        @problem.format("1", false, null, 0)
+    </div>
+    }
+}

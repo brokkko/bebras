@@ -2,25 +2,27 @@ package controllers;
 
 import controllers.actions.*;
 import models.Contest;
+import models.Event;
 import models.Submission;
 import models.User;
-import models.Utils;
-import models.problems.Answer;
-import models.problems.Problem;
-import models.serialization.JSONDeserializer;
-import models.serialization.JSONSerializer;
-import models.serialization.ListSerializer;
-import models.serialization.Serializer;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import models.newproblems.ConfiguredProblem;
+import models.newproblems.Problem;
+import models.newserialization.JSONDeserializer;
+import models.newserialization.JSONSerializer;
+import models.newserialization.ListSerializer;
+import models.newserialization.Serializer;
+import models.results.Info;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.Results;
-import views.ResourceLink;
-import views.html.contest;
+import views.html.contest_print;
+import views.widgets.ListWidget;
+import views.widgets.ResourceLink;
+import views.widgets.Widget;
 
 import java.util.*;
 
@@ -33,52 +35,55 @@ import java.util.*;
 @LoadEvent
 @Authenticated
 @LoadContest
+@DcesController
 public class Contests extends Controller {
 
+    @SuppressWarnings("UnusedParameters")
     public static Result startContest(String eventId, String contestId) {
         return ok(views.html.start_contest_confirmation.render());
     }
 
-    public static Result contest(String eventId, String contestId) {
+    public static Result contest(String eventId, String contestId, String displayType) {
         User user = User.current();
 
         Contest contest = Contest.current();
 
+        Event event = Event.current();
+
         int status = user.getContestStatus(contest);
-        if (status == 6)
+        if (status == 6 || status == 7)
             return forbidden();
 
-        long time = System.currentTimeMillis();
+        boolean printing = !displayType.equals("normal");
 
-//        Logger.info("[1] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
-        List<List<Problem>> pagedUserProblems = contest.getPagedUserProblems(user);
+        List<List<ConfiguredProblem>> pagedUserProblems = contest.getPagedUserProblems(user);
 
-        List<ResourceLink> cssLinksList = getCssLinks(pagedUserProblems);
-        List<ResourceLink> jsLinksList = getJsLinks(pagedUserProblems);
-
-//        Logger.info("[2] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
-        List<Answer> answersForContest = user.getAnswersForContest(contest);
-
-//        Logger.info("[3] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
+//        List<Info> answersForContest = printing ? (List<Info>) Collections.emptyList() : user.getAnswersForContest(contest); //TODO report: removing of redundant cast leads to error
+        List<Info> answersForContest;
+        if (printing)
+            answersForContest = Collections.nCopies(contest.getUserProblems(user).size(), null);
+        else
+            answersForContest = user.getAnswersForContest(contest);
 
         //fill json info with user answers
         JSONSerializer contestInfoSerializer = new JSONSerializer();
         ListSerializer problemsInfoSerializer = contestInfoSerializer.getListSerializer("problems");
 
-        Map<Problem, Integer> problem2index = new HashMap<>();
+        Map<ConfiguredProblem, Integer> problem2index = new HashMap<>();
         int index = 0;
-        for (List<Problem> page : pagedUserProblems)
-            for (Problem problem : page) {
+        for (List<ConfiguredProblem> page : pagedUserProblems)
+            for (ConfiguredProblem configuredProblem : page) {
+                Problem problem = configuredProblem.getProblem();
                 Serializer problemInfoSerializer = problemsInfoSerializer.getSerializer();
-                Answer answer = answersForContest.get(index);
+                Info answer = answersForContest.get(index);
 
                 if (answer == null)
-                    problemInfoSerializer.write("ans", null);
+                    problemInfoSerializer.writeNull("ans");
                 else
-                    Utils.writeMapToSerializer(answer, problemInfoSerializer.getSerializer("ans"));
+                    problem.getAnswerPattern().write(problemInfoSerializer, "ans", answer);
                 problemInfoSerializer.write("type", problem.getType());
 
-                problem2index.put(problem, index);
+                problem2index.put(configuredProblem, index);
 
                 index++;
             }
@@ -89,8 +94,10 @@ public class Contests extends Controller {
         Date contestStartTime = user.contestStartTime(contestId);
         if (contestStartTime == null) {
             contestStartTime = AuthenticatedAction.getRequestTime();
-            user.setContestStartTime(contestId, contestStartTime);
-            user.store();
+            if (!user.contestFinished(contest)) { //don't mark that user started contest if he can not start it. TODO check this condition in some other way
+                user.setContestStartTime(contestId, contestStartTime);
+                user.store();
+            }
         }
 
         contestInfoSerializer.write("passed", AuthenticatedAction.getRequestTime().getTime() - contestStartTime.getTime());
@@ -110,26 +117,76 @@ public class Contests extends Controller {
             textStatus = "going";
         if (status == 2)
             textStatus = "results";
-        if (status == 3 && contest.resultsAvailable())
+        if (status == 3 && user.resultsAvailable(contest))
             textStatus = "results";
+
+        if (printing) {
+            String needStatus = displayType.equals("print") ? "going" : "results";
+            if (!user.hasEventAdminRight() && !textStatus.equals("results") && !needStatus.equals(textStatus))
+                return forbidden();
+            textStatus = needStatus;
+        }
+
         contestInfoSerializer.write("status", textStatus);
 
-//        Logger.info("[5] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
+        if (printing) {
+            Map<ConfiguredProblem, String> problem2title = new HashMap<>();
+            for (Map.Entry<ConfiguredProblem, Integer> problemIndexEntry : problem2index.entrySet())
+                problem2title.put(problemIndexEntry.getKey(), "" + (1 + problemIndexEntry.getValue()));
 
-//        Status ok = ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
-
-//        Logger.info("[6] " + (System.currentTimeMillis() - time)); time = System.currentTimeMillis();
-
-        return ok(views.html.contest.render(textStatus, pagedUserProblems, problem2index, contestInfoSerializer.getNode().toString(), cssLinksList, jsLinksList));
+            return ok(views.html.contest_print.render(
+                 textStatus.equals("results"),
+                 pagedUserProblems,
+                 problem2title,
+                 getProblemsWidgets(pagedUserProblems),
+                 user.getContestRandSeed(contestId)
+            ));
+        } else
+            return ok(views.html.contest.render(
+                                                       textStatus,
+                                                       pagedUserProblems,
+                                                       problem2index,
+                                                       contestInfoSerializer.getNode().toString(),
+                                                       getProblemsWidgets(pagedUserProblems),
+                                                       event.getExtraField("contests_no_header", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_no_footer", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_scrolling", false) == Boolean.TRUE,
+                                                       event.getExtraField("contests_menu_to_right", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_no_menu", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_no_top_pages", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_no_bottom_pages", false) == Boolean.FALSE,
+                                                       event.getExtraField("contests_no_next_buttons", false) == Boolean.FALSE
+            ));
     }
 
+    public static Result allContestProblems(String eventId, String contestId, boolean showAnswers) {
+        User user = User.current();
+        if (!user.hasEventAdminRight())
+            return forbidden();
+
+        Contest contest = Contest.current();
+
+        List<ConfiguredProblem> allUserProblems = contest.getAllPossibleProblems();
+        List<List<ConfiguredProblem>> pagedUserProblems = new ArrayList<>(1);
+        pagedUserProblems.add(allUserProblems);
+
+        Map<ConfiguredProblem, String> problem2title = new HashMap<>();
+        for (ConfiguredProblem problem : allUserProblems)
+            problem2title.put(problem, problem.getName());
+
+        return ok(views.html.contest_print.render(
+                showAnswers,
+                pagedUserProblems,
+                problem2title,
+                getProblemsWidgets(pagedUserProblems),
+                user.getContestRandSeed(contestId)
+        ));
+    }
+
+    @SuppressWarnings("UnusedParameters")
     @BodyParser.Of(BodyParser.Json.class)
     public static Result submit(String eventId, String contestId) {
         Contest contest = Contest.current();
-        User user = User.current();
-
-        if (!user.contestIsGoing(contest))
-            return forbidden();
 
         JsonNode submissionJson = request().body().asJson();
         if (!(submissionJson instanceof ArrayNode))
@@ -148,21 +205,34 @@ public class Contests extends Controller {
             if (!contest.isUnlimitedTime() && submission.getLocalTime() > contest.getDurationInMs())
                 continue;
 
+            if (submission.isSystem())
+                processSystemSubmission(submission);
+
             submissions.add(submission);
         }
 
+        User user = User.current();
+        user.invalidateContestResults(contestId);
+
         //store all submissions
         for (Submission submission : submissions)
-            submission.store();
+            submission.serialize();
 
         return ok();
     }
 
+    private static void processSystemSubmission(Submission submission) {
+//        if ("page".equals(submission.getSystemField())) {
+//            Logger.info("user moved to page " + submission.getSystemValue());
+//        }
+        //TODO do something
+    }
+
+    @SuppressWarnings("UnusedParameters")
     public static Result stop(String eventId, String contestId) {
         Contest contest = Contest.current();
         User user = User.current();
 
-        int contestStatus = user.getContestStatus(contest);
         if (!user.contestIsGoing(contest))
             return forbidden();
 
@@ -175,7 +245,7 @@ public class Contests extends Controller {
     public static Result restart(String eventId, String contestId) {
         Contest contest = Contest.current();
 
-        if (!contest.isAllowRestart())
+        if (!contest.isAllowRestart() && !User.current().hasEventAdminRight())
             return forbidden();
 
         User user = User.current();
@@ -186,38 +256,33 @@ public class Contests extends Controller {
         user.setContestStartTime(contestId, null);
         user.setContestFinishTime(contestId, null);
         user.generateContestRandSeed(contestId);
-        user.store(); //TODO This is a duplicated todo about storing user info. Here it is actually stored in generateContestRandSeed
+        user.invalidateContestResults(contest.getId());
+        user.store();
 
         Submission.removeAllAnswersForUser(user.getId(), contest);
 
         return redirect(routes.UserInfo.contestsList(eventId));
     }
 
-    //TODO this is almost the same as get css links
-    private static List<ResourceLink> getJsLinks(List<List<Problem>> pagedUserProblems) {
-        Set<String> jsLinks = new HashSet<>();
+    public static Widget getProblemsWidgets(List<List<ConfiguredProblem>> pagedUserProblems) {
+        Set<ResourceLink> links = new HashSet<>();
 
-        for (List<Problem> page : pagedUserProblems)
-            for (Problem problem : page)
-                jsLinks.add(problem.getJsLink());
+        for (List<ConfiguredProblem> page : pagedUserProblems)
+            for (ConfiguredProblem problem : page)
+                links.addAll(problem.getProblem().getWidget(false).links());
 
-        List<ResourceLink> jsLinksList = new ArrayList<>();
-        for (String jsLink : jsLinks)
-            jsLinksList.add(new ResourceLink(jsLink, "js"));
-        return jsLinksList;
+        return new ListWidget(new ArrayList<>(links));
     }
 
-    private static List<ResourceLink> getCssLinks(List<List<Problem>> pagedUserProblems) {
-        Set<String> cssLinks = new HashSet<>();
+    public static Widget getWidgetsForContests(User user, List<Contest> contests) {
+        Set<ResourceLink> links = new HashSet<>();
 
-        for (List<Problem> page : pagedUserProblems)
-            for (Problem problem : page)
-                cssLinks.add(problem.getCssLink());
+        for (Contest contest : contests) {
+            Widget widget = getProblemsWidgets(contest.getPagedUserProblems(user));
+            links.addAll(widget.links());
+        }
 
-        List<ResourceLink> cssLinksList = new ArrayList<>();
-        for (String cssLink : cssLinks)
-            cssLinksList.add(new ResourceLink(cssLink, "css"));
-        return cssLinksList;
+        return new ListWidget(new ArrayList<>(links));
     }
 
 }

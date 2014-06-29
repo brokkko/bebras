@@ -1,0 +1,30 @@
+@(announcement:models.Announcement)
+@import views.widgets.ResourceLink
+@import views.widgets.AdminWidget
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List(AdminWidget.get, new ResourceLink("announcements.css"))) { } {
+    @if(announcement.isSent) {
+        <h1>Это сообщение уже разослано</h1>
+    } else {
+        <h1>Вы собираетесь разослать сообщение</h1>
+    }
+
+    @if(Controller.flash("announcement-send")) {
+        <p class='warning'>@Controller.flash("announcement-send")</p>
+    }
+
+    <h2>Кому</h2>
+    <p>@announcement.getRole.getTitle</p>
+
+    <h2>Тема</h2>
+    <p>@announcement.getSubject</p>
+
+    <h2>Сообщение</h2>
+    <p>@announcement.getMessage</p>
+
+    @if(!announcement.isSent) {
+        <form action='@routes.Announcements.doSendAnnouncement(Event.currentId, announcement.getId.toString)' method="POST" onsubmit="$('.announcement-do-send').hide();">
+            <input type="submit" value="Разослать" class='announcement-do-send' onclick="return confirm('Вы действительно хотите разослать сообщение?');">
+        </form>
+    }
+}

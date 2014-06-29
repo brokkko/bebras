@@ -1,0 +1,32 @@
+.announcement-form input, .announcement-form textarea, .announcement-form select {
+    font-size: 1em;
+}
+
+.announcement-form-label {
+    display: block;
+    padding: 1em 0;
+}
+
+.announcement-form-row {
+    padding: 4px;
+}
+
+.announcement-form-message-text, .announcement-form-subject {
+    width: 100%;
+    font-family: serif;
+}
+
+.announcement-form-submit {
+    margin-top: 1em;
+    padding: 4px;
+}
+
+.announcement-do-send {
+    font-size: 2em;
+    padding: 0.5em;
+}
+
+.announcement-already-sent {
+    font-size: 2em;
+    color: red;
+}

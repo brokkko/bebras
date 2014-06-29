@@ -1,0 +1,2 @@
+@(link:models.newproblems.ProblemLink, title:String, additionalClass:String = null)
+<a class='problem-link@if(additionalClass != null){ @additionalClass}' href='@if(link.isProblem) {@routes.Problems.viewProblem(Event.currentId, link.getLink)} else {@routes.Problems.viewFolder(Event.currentId, link.getLink)}' title='@link.getLink'>@title</a>

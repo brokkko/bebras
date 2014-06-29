@@ -1,0 +1,70 @@
+@(kio_id:org.bson.types.ObjectId, is_org:Boolean, sub_users:java.util.List[models.User])
+@import plugins.KioProblemPlugin
+@import models.newproblems.kio.KioProblem
+@import models.utils.Utils
+<div class="kio-problem">
+<h2>Задания конкурса</h2>
+<h3><a href="http://ipo.spb.ru/kio-files/kio-14/KIO_0_ru.zip">Уровень 0</a></h3>
+<h3><a href="http://ipo.spb.ru/kio-files/kio-14/KIO_1_ru.zip">Уровень 1</a></h3>
+<h3><a href="http://ipo.spb.ru/kio-files/kio-14/KIO_2_ru.zip">Уровень 2</a></h3>
+
+<p>Чтобы сдать решения, сохраните их с помощью кнопки "Сохранить лучшие результаты и анкету".
+    Ее можно найти на экране выбора задач или справа сверху внутри каждой задачи.</p>
+<p>Сохраненный файл необходимо загрузить на сайт. Решения, присланные по электронной почте, не обрабатываются.</p>
+
+@if(is_org) {
+    <table class="kio-problem-users-table">
+        <thead>
+            <tr><td>Фамилия имя</td><td>Решение загружено</td></tr>
+        </thead>
+        <tbody>
+            @for(user <- sub_users) {
+                 <tr>
+                     <td>@user.getInfo.get("surname") @user.getInfo.get("name")</td>
+                     <td>
+                     @defining(KioProblemPlugin.solutionTime(user)) {upload_time =>
+                         @if(upload_time != null) {
+                             @Utils.formatObjectCreationTime(upload_time)
+                         } else {
+                             -
+                         }
+                     }
+                     </td>
+                 </tr>
+            }
+        </tbody>
+    </table>
+} else {
+    @defining(KioProblemPlugin.solutionTime(User.current())) {upload_time =>
+
+        @if(upload_time != null) {
+            <h2>Последнее решение было загружено: @Utils.formatObjectCreationTime(upload_time)</h2>
+        } else {
+            <h2>Загруженных решений пока нет</h2>
+        }
+
+    }
+}
+
+
+<h2>Загрузка решений</h2>
+
+@if(flash.containsKey(KioProblem.MESSAGE_KEY)) {
+
+    @defining(flash.get(KioProblem.MESSAGE_KEY)) { upload_message =>
+        <p class="kio-problem-message@if(upload_message != "ok") { error}">
+        @if(upload_message == "ok") {
+            Ваше решение успешно загружено
+        } else {
+            Файл не загружен! @upload_message
+        }
+        </p>
+    }
+}
+
+<p>Вы можете загружать решения произвольное количество раз. Учтено будет последнее отосланное решение.</p>
+<form enctype="multipart/form-data" method="post" action="@Event.current.getPluginByType(classOf[KioProblemPlugin]).getCall("go", false, kio_id.toString)">
+    <input type="file" name="solution">
+    <input type="submit" value="Отправить">
+</form>
+</div>

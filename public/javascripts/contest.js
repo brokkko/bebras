@@ -27,22 +27,25 @@ var submit_answer; //function (problem_id, answer)
 
     var current_page = 0;
     var pages_count;
-    var start_time;
+    var start_time = null;
 
     function page_selector_click() {
         var $this = $(this);
-        var clicked_page_index = +$this.find('span').text();
+        var clicked_page_index = +$this.find('span.-info').text();
         select_page(clicked_page_index);
+        submit_system_message("page", "" + clicked_page_index);
     }
 
-    function animate_substitute($div_to_hide, $div_to_show) {
+    function animate_substitute($div_to_hide, $div_to_show, complete) {
         $div_to_hide.animate({
             opacity: 0
-        }, 200, function () {
+        }, 200, "swing", function () {
             $div_to_hide.css('opacity', 1).hide();
             $div_to_show.css('opacity', 0).show().animate({
                 'opacity': 1
             }, 200);
+            if (complete)
+                complete();
         });
     }
 
@@ -59,13 +62,16 @@ var submit_answer; //function (problem_id, answer)
         });
 
         //show a page
-        var allPages = $('.page');
-        var $current_page = $(allPages.get(current_page));
-        var $new_page = $(allPages.get(page));
-        animate_substitute($current_page, $new_page);
+        if (!scrolling_problem_change_regime()) {
+            var allPages = $('.page');
+            var $current_page = $(allPages.get(current_page));
+            var $new_page = $(allPages.get(page));
+            animate_substitute($current_page, $new_page, function() {
+                window.scrollTo(0, $selectors.offset().top - 10);
+            });
+        }
 
         current_page = page;
-        window.scrollTo(0, 0);
     }
 
     //problem info
@@ -76,6 +82,10 @@ var submit_answer; //function (problem_id, answer)
 
     function get_problem_div(pid) {
         return $($('.problem').get(pid));
+    }
+
+    function scrolling_problem_change_regime() {
+        return $('.contest-is-scrolling').size() > 0;
     }
 
     //loading user answers to problems
@@ -99,41 +109,74 @@ var submit_answer; //function (problem_id, answer)
         }
     }
 
+    function ensure_timer_is_going() {
+        if (start_time !== null)
+            return;
+
+        var now = new Date().getTime();
+        start_time = now - contest_info.passed;
+
+        if (contest_info.status == "going" && contest_info.duration > 0)
+            timer();
+    }
+
     //page loaded
+
+    $(window).load(function() {
+        ensure_timer_is_going();
+    });
 
     $(function() {
         pages_count = $('.page').length;
 
         $('.page-selector').click(page_selector_click);
-        $('.page-back').click(function(){select_page(current_page - 1);});
+        $('.page-back').click(function(){select_page(current_page - 1);}); //TODO in scrolling regime this should also work
         $('.page-forward').click(function(){select_page(current_page + 1);});
         $('#stop-contest').click(stop_contest_click);
         $('#stop-confirmation').click(stop_confirmation_click);
 
         contest_info = $.parseJSON($('.contest-info').text());
 
+        answer_sending_info_show('ok');
+
         switch (contest_info.status) {
             case "going":
                 load_list();
                 load_all_user_answers();
 
-                start_time = new Date().getTime() - contest_info.passed;
+                if (contest_info.passed == 0) //if contest just started,
+                    localStorage.removeItem(local_storage_key_start_time());
+
+                ensure_timer_is_going();
 
                 if (answers_list.length > 0)
                     send_answers_now();
 
-                if (contest_info.duration > 0)
-                    timer();
-
                 break;
             case "wait":
                 stop_contest(false);
+
+                load_list();
+                if (answers_list.length > 0)
+                    send_answers_now();
+
                 break;
             case "results":
                 $('#contest-time').hide(); //hide all extra time information
-                load_all_user_answers(); //without loading list with local storage answers
+
+                load_all_user_answers();
+
+                //test if there were unsent answers
+                load_list();
+                if (answers_list.length > 0)
+                    send_answers_now();
+
                 break;
         }
+
+        //split pages if needed
+        if (scrolling_problem_change_regime())
+            $('#all-problems-in-pages').splitPages('page', $('.content-footer'));
     });
 
     //stopping contest
@@ -160,7 +203,8 @@ var submit_answer; //function (problem_id, answer)
                 dataType: 'json',
                 data: '{}',
                 processData: false,
-                contentType: 'application/json; charset=UTF-8'
+                contentType: 'application/json; charset=UTF-8',
+                error: stop_contest_error
             });
 
         //don't show contest stop again
@@ -172,9 +216,16 @@ var submit_answer; //function (problem_id, answer)
         $('#time-info').hide();
         $('#stop-contest').hide();
         $('#stop-confirmation').hide();
+        $('.content-footer').hide();
 
         //show last screen
         animate_substitute($('#all-problems-in-pages'), $('#contest-finished-info'));
+    }
+
+    function stop_contest_error() {
+        //write down that contest stopped
+        if (hasLocalStorage())
+            localStorage.setItem(local_storage_key_stop(), "stopped");
     }
 
     //sending answers
@@ -209,7 +260,7 @@ var submit_answer; //function (problem_id, answer)
     }
 
     function send_delay(fails) {
-        var delay = fails * 60000;
+        var delay = /*fails **/ 60000;
         if (delay > 600 * 1000)
             delay = 600 * 1000; //not greater than two minutes
         return delay;
@@ -225,7 +276,20 @@ var submit_answer; //function (problem_id, answer)
         clear_list();
         sending_timeout_id = null;
         send_fails_count = 0;
-        console.log('send success');
+        if (console)
+            console.log('sending success');
+
+        answer_sending_info_show('ok');
+
+        //if we show results then refresh page to display new results from server
+        if (contest_info.status == 'results')
+            window.location = window.location; //TODO refresh
+
+        //if user stopped manually, but server did not get this
+        if (hasLocalStorage() && localStorage.getItem(local_storage_key_stop()) == "stopped") {
+            localStorage.removeItem(local_storage_key_stop());
+            stop_contest(true);
+        }
     }
 
     function answers_error() {
@@ -233,7 +297,10 @@ var submit_answer; //function (problem_id, answer)
         undo_timeout();
         var delay = send_delay(send_fails_count);
         sending_timeout_id = setTimeout(send_answers_now, delay);
-        console.log('send failed, delay for ' + delay);
+        if (console)
+            console.log('sending failed, delay for ' + delay);
+
+        answer_sending_info_show('fail');
     }
 
     function send_answers_now() {
@@ -248,11 +315,20 @@ var submit_answer; //function (problem_id, answer)
             success: answers_success,
             error: answers_error
         });
+
+        answer_sending_info_show('do');
+    }
+
+    function answer_sending_info_show(id) {
+        $('.answer-sending-info').hide();
+        $('.answer-sending-info-' + id).show();
     }
 
     function give_answer(problem_id, answer) {
         if (contest_info.status != "going") //should not occur, but anyway
             return;
+
+        ensure_timer_is_going();
 
         var time = new Date().getTime() - start_time;
 
@@ -260,7 +336,7 @@ var submit_answer; //function (problem_id, answer)
         if (duration > 0 && time >= duration) //don't send answers that are after the contest had finished
             return;
 
-        var ans = {"lt": time, "pid": problem_id, "a": answer};
+        var ans = {"lt": time, "pn": problem_id, "a": answer};
         push_answer_to_list(ans);
 
         if (sending_timeout_id == null)
@@ -268,6 +344,19 @@ var submit_answer; //function (problem_id, answer)
     }
 
     submit_answer = give_answer;
+
+    function submit_system_message(field, value) {
+        ensure_timer_is_going();
+
+        var time = new Date().getTime() - start_time;
+
+        var ans = {"lt": time, "pn": null, "a": {
+            "f": field,
+            "v": value
+        }};
+
+        push_answer_to_list(ans);
+    }
 
     //local storage
 
@@ -279,6 +368,14 @@ var submit_answer; //function (problem_id, answer)
         return "answers-" + contest_info.storage_id;
     }
 
+    function local_storage_key_stop() {
+        return "stop-" + contest_info.storage_id;
+    }
+
+    function local_storage_key_start_time() {
+        return "start-" + contest_info.storage_id;
+    }
+
     //clock
     function timer() {
         var time = new Date().getTime() - start_time;
@@ -286,7 +383,6 @@ var submit_answer; //function (problem_id, answer)
         var millisecondsLeft = contest_info.duration - time;
         if (millisecondsLeft <= 0) {
             stop_contest(false);
-            console.log('here');
             return;
         }
 
@@ -304,5 +400,3 @@ var submit_answer; //function (problem_id, answer)
     }
 
 })();
-
-//TODO display info about sending problems if there are any

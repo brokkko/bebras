@@ -1,17 +1,13 @@
 package models.forms;
 
-import models.Event;
 import models.forms.inputtemplate.InputTemplate;
+import models.forms.inputtemplate.StringInputTemplate;
 import models.forms.validators.Validator;
-import models.serialization.Deserializer;
-import models.serialization.ListDeserializer;
+import models.newserialization.*;
 import play.api.templates.Html;
-import play.i18n.Messages;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,22 +15,31 @@ import java.util.Map;
  * Date: 20.03.13
  * Time: 22:49
  */
-public class InputField {
+public class InputField implements SerializableUpdatable {
 
     public static final String FIELDS_SEPARATOR_REGEX = "\\|";
 
     private String name;
-    private String messagesPrefix;
     private InputTemplate inputTemplate;
-    private Map<String, Object> additionalConfiguration;
+    private boolean skipForEdit; //do not create form entry for it (edit form)
+    private boolean required;
+    private boolean store;
+    private boolean extra; //do not create form entry for it
     private List<Validator> validators;
 
-    public InputField(String name, String messagesPrefix, InputTemplate inputTemplate, Map<String, Object> additionalConfiguration, List<Validator> validators) {
+    public InputField() {
+        //emtpy constructor
+    }
+
+    public InputField(String name, InputTemplate inputTemplate, boolean required, List<Validator> validators) {
         this.name = name;
         this.inputTemplate = inputTemplate;
-        this.additionalConfiguration = additionalConfiguration;
+        this.required = required;
         this.validators = validators;
-        this.messagesPrefix = messagesPrefix;
+
+        this.store = true;
+        this.skipForEdit = false;
+        this.extra = false;
     }
 
     public String getName() {
@@ -58,75 +63,59 @@ public class InputField {
     }
 
     public Html format(RawForm form) {
-        return inputTemplate.format(form, this);
+        return inputTemplate.render(form, name);
     }
 
     public List<? extends Validator> getValidators() {
         return validators;
     }
 
-    public static InputField deserialize(String messagesPrefix, Deserializer deserializer) {
-        String name = null;
-        InputTemplate inputTemplate = null;
-        Map<String, Object> additionalConfiguration = new HashMap<>();
-        List<Validator> validators = new ArrayList<>();
+    public void update(Deserializer deserializer) {
+        name = deserializer.readString("name");
+        inputTemplate = SerializationTypesRegistry.INPUT_TEMPLATE.read(deserializer, "view");
 
-        for (String fieldName : deserializer.fieldSet()) {
-            switch (fieldName) {
-                case "name":
-                    name = deserializer.getString(fieldName);
-                    break;
-                case "type":
-                    inputTemplate = InputTemplate.getInstance(deserializer.getString(fieldName));
-                    break;
-                case "validators":
-                    ListDeserializer validatorsDeserializer = deserializer.getListDeserializer(fieldName);
-                    while (validatorsDeserializer.hasMore()) {
-                        Deserializer validatorDeserializer = validatorsDeserializer.getDeserializer();
-                        validators.add(Validator.deserialize(validatorDeserializer));
-                    }
-                    break;
-                default:
-                    additionalConfiguration.put(fieldName, deserializer.getObject(fieldName));
-            }
+        if (inputTemplate == null) {
+            skipForEdit = true;
+            store = true;
+            required = false;
+            validators = new ArrayList<>();
+            extra = true;
+            return;
         }
 
-        return new InputField(name, messagesPrefix, inputTemplate, additionalConfiguration, validators);
+        skipForEdit = deserializer.readBoolean("skip for edit", false);
+        store = deserializer.readBoolean("store", true);
+        required = deserializer.readBoolean("required", false);
+        validators = SerializationTypesRegistry.list(SerializationTypesRegistry.VALIDATOR).read(deserializer, "validators");
+        extra = false;
     }
 
-    //standard configuration
+    public void serialize(Serializer serializer) {
+        serializer.write("name", name);
+        SerializationTypesRegistry.INPUT_TEMPLATE.write(serializer, "view", inputTemplate);
+        serializer.write("skip for edit", skipForEdit);
+        serializer.write("store", store);
+        serializer.write("required", required);
+        SerializationTypesRegistry.list(SerializationTypesRegistry.VALIDATOR).write(serializer, "validators", validators);
+    }
+
+    public boolean isExtra() {
+        return extra;
+    }
 
     public boolean isRequired() {
-        Boolean required = (Boolean) additionalConfiguration.get("required");
-        return required == null ? false : required;
+        return required;
     }
 
-    public Object getConfig(String name) {
-        return additionalConfiguration.get(name);
+    public boolean isSkipForEdit() {
+        return skipForEdit;
     }
 
-    public boolean getBooleanConfig(String name, boolean defaultValue) {
-        Boolean value = (Boolean) getConfig(name);
-        return value == null ? defaultValue : value;
-    }
-
-    public String getConfigFromMessages(String key) {
-        String title = (String) additionalConfiguration.get(key);
-        if (title == null)
-            return Messages.get("form." + dirtyHackSubs(Event.current().getId()) + "." + messagesPrefix + "." + name + "." + key); //TODO get messages name ??
-        return title;
-    }
-
-    //TODO get rid of the hack
-    public static String dirtyHackSubs(String id) {
-        return id.replace('-', '_');
+    public boolean isStore() {
+        return store;
     }
 
     public String getTitle() {
-        return getConfigFromMessages("title");
-    }
-
-    public String getPlaceholder() {
-        return getConfigFromMessages("placeholder");
+        return inputTemplate.getTitle();
     }
 }

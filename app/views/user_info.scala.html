@@ -1,16 +1,75 @@
-@(form:models.forms.RawForm, message:String)
-@import models.forms.RawForm
-@import views.ResourceLink
+@(user:models.User, mayChange:Boolean, form:models.forms.RawForm, otherUser:Boolean, message:String)
+@import views.widgets.AdminWidget
+@import views.htmlblocks.HtmlBlockWidget
+@import views.widgets.FormsWidget
 @import models.Event
-@import models.Forms
 @import scala.List
 @import play.i18n.Messages
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("forms.css")), List(new ResourceLink("forms.js"))) { } {
-    <h1>Здесь вы можете посмотреть и изменить свои личные данные</h1>
+@main_with_menu(Event.current.getTitle)(List(FormsWidget.get, HtmlBlockWidget.get, AdminWidget.get)) { } {
+    @if(otherUser) {
+        <h1>Личные данные пользователя @user.getLogin</h1>
+    } else {
+        @if(User.current.isPartialRegistration) {
+            <h1>Введите недостающие данные, чтобы продолжить работу</h1>
+        } else {
+            <h1>Личные данные</h1>
+        }
+    }
+
+    @if(!mayChange) {
+        <div class="info-box">Внимание! Изменение личных данных сейчас невозможно.</div>
+    }
+
+    @Event.current.getHtmlBlock("user_info_up").format
 
     @if(message != null) {
         <p class="warning">@Messages.get(message)</p>
     }
 
-    @Event.current.getEditUserForm.formatExtended(form, routes.UserInfo.doChangeInfo(Event.currentId), true, "form.user.submit")
+    @user.getRole.getEditUserForm.formatExtended(form, routes.UserInfo.doChangeInfo(Event.currentId, if(otherUser) user.getId.toString else null), true, "form.do_change")
+
+    @if(!otherUser && user.getEmail != null) {
+        <div class='info-box'>
+            @if(user.isWantAnnouncements) {
+                Вы подписаны на рассылку уведомлений о событии @Event.current.getTitle.
+                <a href='@routes.Application.setSubscription(Event.currentId, user.getId.toString, false)'>Отписаться</a>
+            } else {
+                Вы не подписаны на рассылку уведомлений о событии @Event.current.getTitle.
+                <a href='@routes.Application.setSubscription(Event.currentId, user.getId.toString, true)'>Подписаться</a>
+            }
+        </div>
+    }
+
+    @Event.current.getHtmlBlock("user_info_down").format
+
+    <div class='info-box'>
+        <p>
+            @if(user.getRegisteredByUser != null/* && user.getRegisteredByUser.getInfo.get("org_name") != null*/) {
+                Зарегистрирован через: @htmlfeatures.user_link(user.getRegisteredBy.toString, Event.currentId, user.getRegisteredByUser.getLogin)
+            } else {
+                Зарегистрирован напрямую
+            }
+        </p>
+    </div>
+
+    @if(otherUser) {
+        <div class='info-box'>
+            @defining(user.getUserActivityEntry) { ua =>
+                @if(ua == null) {
+                    <p>Посещений не было</p>
+                } else {
+                    <table>
+                        <tr><td>Последнее посещение</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@ua.getDate</b></td></tr>
+                        <tr><td>ip</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getIp</b></td></tr>
+                        <tr><td>user agent</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getUa</b></td></tr>
+                    </table>
+                }
+            }
+        </div>
+
+        <div class='info-box'>
+            <form class='submit actions-substitute-user' method="post" action="@routes.Application.substituteUser(Event.currentId, user.getId.toString)"></form>
+            <p>Зайти от имени пользователя <b><a href="#" class="submit actions-substitute-user" title="Зайти от имени пользователя @user.getLogin">@user.getLogin</a></b></p>
+        </div>
+    }
 }
