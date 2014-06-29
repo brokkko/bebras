@@ -1,18 +1,17 @@
-import models.problems.ProblemSource;
-import models.problems.RootProblemSource;
-import models.problems.bbtc.BBTCProblemSource;
+import models.Announcement;
+import models.ServerConfiguration;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
-import play.api.mvc.Handler;
+import play.mvc.SimpleResult;
+import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,29 +21,45 @@ import java.util.concurrent.Callable;
  */
 public class Global extends GlobalSettings {
 
-    //TODO schedule backup http://stackoverflow.com/questions/9339714/where-is-the-job-support-in-play-2-0
-
     @Override
     public void onStart(Application app) {
-        //TODO move problem sources mount to configuration
-        //TODO allow uploading of files to mount
+        Logger.info("Application started");
+        Announcement.scheduleOneSending(1);
     }
 
     @Override
     public Action onRequest(Http.Request request, Method method) {
-        Logger.info("Request: " + request + " -> " + request.remoteAddress() + " " + Arrays.toString(request.headers().get("User-Agent")));
+        String ip = request.remoteAddress();
+        if (ServerConfiguration.getInstance().isIpTraced(ip)) {
+            StringBuilder info = new StringBuilder();
+
+            info.append("Request from traced ip ").append(request.remoteAddress()).append("\n");
+            info.append(new Date().toString()).append("\n");
+            info.append(request.method()).append(" ").append(request.host()).append(" ").append(request.uri());
+            info.append("\n");
+            Map<String,String[]> headers = request.headers();
+            for (Map.Entry<String, String[]> headerEntry : headers.entrySet()) {
+                String header = headerEntry.getKey();
+                for (String value : headerEntry.getValue())
+                    info.append(header).append(": ").append(value).append("\n");
+            }
+
+//            info.append("*Cookies*\n");
+
+            Logger.info(info.toString());
+        }
         return super.onRequest(request, method);
     }
 
-    @Override
+    /*@Override
     public Result onHandlerNotFound(Http.RequestHeader requestHeader) {
-        Logger.info("Handler not found: " + requestHeader.getHeader("User-Agent"));
+        Logger.info("Handler not found: " + requestHeader.method() + " " + requestHeader.host() + requestHeader.uri());
         return super.onHandlerNotFound(requestHeader);
-    }
+    }*/
 
     @Override
-    public Result onBadRequest(Http.RequestHeader requestHeader, String error) {
-        Logger.info("Bad request: " + requestHeader.getHeader("User-Agent") + " -> " + error);
+    public F.Promise<SimpleResult> onBadRequest(Http.RequestHeader requestHeader, String error) {
+        Logger.info("Bad request: " + requestHeader.method() + " " + requestHeader.host() + requestHeader.uri());
         return super.onBadRequest(requestHeader, error);
     }
 }

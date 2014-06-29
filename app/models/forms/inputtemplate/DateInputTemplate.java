@@ -1,10 +1,11 @@
 package models.forms.inputtemplate;
 
-import models.forms.InputField;
 import models.forms.RawForm;
+import models.newserialization.BasicSerializationType;
+import models.newserialization.Deserializer;
+import models.newserialization.SerializationType;
 import play.api.templates.Html;
 import play.i18n.Messages;
-import views.html.fields.date;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -15,15 +16,15 @@ import java.util.GregorianCalendar;
  * Date: 02.01.13
  * Time: 17:24
  */
-public class DateInputTemplate extends InputTemplate {
+public class DateInputTemplate extends InputTemplate<Date> {
 
     @Override
-    public Html format(RawForm form, InputField inputField) {
-        return date.render(form, inputField.getName());
+    public Html render(RawForm form, String field) {
+        return views.html.fields.date.render(form, field);
     }
 
     @Override
-    public void write(String field, Object value, RawForm rawForm) {
+    public void write(String field, Date value, RawForm rawForm) {
         if (value == null) {
             rawForm.remove(field, "day");
             rawForm.remove(field, "month");
@@ -32,7 +33,7 @@ public class DateInputTemplate extends InputTemplate {
         }
 
         GregorianCalendar date = new GregorianCalendar();
-        date.setTime((Date) value);
+        date.setTime(value);
 
         rawForm.put(field, date.get(GregorianCalendar.DAY_OF_MONTH), "day");
         rawForm.put(field, date.get(GregorianCalendar.MONTH), "month");
@@ -40,7 +41,7 @@ public class DateInputTemplate extends InputTemplate {
     }
 
     @Override
-    public Object read(String field, RawForm form) {
+    public Date read(String field, RawForm form) {
         if (form.isEmptyValue(field, "day") && form.isEmptyValue(field, "month") && form.isEmptyValue(field, "year"))
             return null;
 
@@ -69,4 +70,10 @@ public class DateInputTemplate extends InputTemplate {
             return null;
         }
     }
+
+    @Override
+    public SerializationType<Date> getType() {
+        return new BasicSerializationType<>(Date.class);
+    }
+
 }

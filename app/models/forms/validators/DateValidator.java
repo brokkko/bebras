@@ -1,6 +1,7 @@
 package models.forms.validators;
 
-import models.serialization.Deserializer;
+import models.newserialization.Deserializer;
+import models.newserialization.Serializer;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -15,14 +16,10 @@ import java.util.regex.Pattern;
  */
 public class DateValidator extends Validator<Date> {
 
-    private final String comparison;
-
-    public DateValidator(Deserializer deserializer) {
-        comparison = deserializer.getString("comparison");
-    }
+    private String comparison;
 
     @Override
-    public String validate(Date date) {
+    public Validator.ValidationResult validate(Date date) {
 
         Pattern pattern = Pattern.compile("(<|<=|>|>=|=)\\s*now\\s*(\\+|\\-)\\s*(\\d+)\\s*([YMwdhms])");
 
@@ -92,6 +89,18 @@ public class DateValidator extends Validator<Date> {
                 break;
         }
 
-        return ok ? null : getMessage();
+        return ok ? ok() : message();
+    }
+
+    @Override
+    public void update(Deserializer deserializer) {
+        super.update(deserializer);
+        comparison = deserializer.readString("comparison");
+    }
+
+    @Override
+    public void serialize(Serializer serializer) {
+        super.serialize(serializer);
+        serializer.write("comparison", comparison);
     }
 }

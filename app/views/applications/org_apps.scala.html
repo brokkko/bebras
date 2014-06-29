@@ -1,0 +1,90 @@
+@(event: Event, applications: java.util.List[models.applications.Application], addApplicationForm: models.forms.RawForm, transferApplicationsForm: models.forms.RawForm, plugin:plugins.Applications, kvit:models.applications.Kvit)
+@import views.widgets.FormsWidget
+@import views.widgets.ApplicationsWidget
+@import views.widgets.AdminWidget
+@import views.htmlblocks.HtmlBlockWidget
+@import models.applications.Application
+@main_with_menu(event.getTitle)(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get, FormsWidget.get)) { } {
+    <h1>Список поданных заявок</h1>
+
+    @Event.current.getHtmlBlock("school_org_applications_list_top_" + plugin.getRef).format
+
+    @if(applications != null && applications.size > 0) {
+        <table class='applications'>
+            <thead>
+                <tr>
+                    <td>№</td>
+                    <td>Код заявки</td>
+                    <td>Участников</td>
+                    <td>Статус оплаты</td>
+                    <td>Квитанция</td>
+                    <td>Дата оплаты</td>
+                    <td>Удаление</td>
+                </tr>
+            </thead>
+            <tbody>
+            @for((application, ind) <- applications.zipWithIndex) {
+                @defining(plugin.getTypeByName(application.getType)) { app_type =>
+                    <tr class="@if(application.getState != 0){app-no-button} else {app-has-button} @if(app_type != null && app_type.isNeedsConfirmation){app-need-confirm} else {app-no-confirm}">
+                        <td class='number'>@(ind + 1)</td>
+                        <td>@application.getName@if(app_type != null){<span class='app-type'>@app_type.getDescription</span>}</td>
+                        <td>@application.getSize</td>
+                        <td class="@application.getState match {
+                                case 0 => {app-new}
+                                case 1 => {app-pay}
+                                case 2 => {app-acc}
+                        }">
+                            @application.getState match {
+                                case 0 => {-}
+                                case 1 => {+}
+                                case 2 => {@*Подтврждено*@&#x2714;}
+                            }
+                        </td>
+                        <td>@plugin.getKvitHtml(User.current, application, kvit)</td>
+                        <td>
+                            @if(application.getState != Application.NEW) {
+                                @application.getComment
+                            } else {
+                                <form method="POST" action="@plugin.getDoPayCall(application.getName)">
+                                    <input type='submit' class='input-payment form-button small' value='Ввести'>
+                                    <input type='hidden' class='payment-comment' name='comment'>
+                                </form>
+                            }
+                        </td>
+                        <td class='remove'>
+                            @if(plugin.mayRemoveApplication(application)) {
+                                <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
+                                <a href="#" class="submit actions-remove-app-@ind" title="Удалить заявку @application.getName">Удалить</a>
+                            } else {
+                                &nbsp;
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    } else {
+        <p>Ни одной заявки пока не подано</p>
+    }
+
+    @Event.current.getHtmlBlock("school_org_applications_list_middle_" + plugin.getRef).format
+
+    @if(plugin.needApplicationForm()) {
+        <h1>Подача новой заявки</h1>
+
+        @plugin.getAddApplicationForm.formatExtended(addApplicationForm, plugin.getAddCall, false, "Подать заявку")
+    }
+
+    @Event.current.getHtmlBlock("school_org_applications_list_bottom_" + plugin.getRef).format
+
+
+    @if(User.current.hasEventAdminRight) {
+        <div class='info-box@if(transferApplicationsForm.hasErrors){ initially-open}'>
+            <h3 class='info-box-cut-shower'>Перенос заявок...</h3>
+            <div class='info-box-cut'>
+                @plugin.getApplicationTransferForm.formatExtended(transferApplicationsForm, plugin.getTransferApplicationCall, true, "form.do_start")
+            </div>
+        </div>
+    }
+}

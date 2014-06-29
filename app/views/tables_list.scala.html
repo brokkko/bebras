@@ -1,0 +1,19 @@
+@(event:models.Event)
+@import models.data.TableDescription
+@import models.Event
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List()) { } {
+    <h1>Данные по событию</h1>
+    @for((table, ind) <- User.current.getTables.zipWithIndex) {
+        <div class='info-box'>
+            <div class='link'>
+                <p><a href="@routes.Tables.showTable(Event.currentId, ind)">@table.getTitle</a></p>
+            </div>
+            <div class='additional table-actions small'>
+                <a target="_blank" href="@routes.Tables.showTablePrint(Event.currentId, ind)"><img src='@routes.Assets.at("images/gnome_text_x_generic.png")'>Распечатать</a>
+                <a href="@routes.Tables.csvTable(Event.currentId, ind)"><img src='@routes.Assets.at("images/excel.png")'>Скачать в формате Excel</a>
+            </div>
+            <div class='footer'></div>
+        </div>
+    }
+}

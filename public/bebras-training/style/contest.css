@@ -1,0 +1,439 @@
+*{
+    /* Universal page reset */
+    margin:0;
+    padding:0;
+}
+
+body{
+    background-color: #125;
+    /* Setting default text color, background and a font stack */
+    font-size:0.825em;
+    color:#222;
+    /*background:url('../img/page_bg.jpg') repeat-x #383b3f;*/
+    font-family:Arial, Helvetica, sans-serif;
+	text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+#main{
+    /* The main container div */
+    position:relative;
+    margin: 10px auto; /* было 50px, говорят, много очень, по вертикали -80px' */
+    width:800px;
+    background-color: #24A;
+    /*background:url('../img/main_bg.jpg') repeat-x #aeadad;*/
+    border:1px solid #36F;
+    padding: 30px 25px 40px; /* 70->30 60->40, по вертикали -60px  */
+/* Итого -140px для полезного контента */
+    /* CSS3 rounded cornenrs */
+
+    -moz-border-radius:12px;
+    -webkit-border-radius:12px;
+    border-radius:12px;
+	text-align: left;
+}
+
+#holder{
+    /* The unordered list that is to be split into pages */
+
+    width:800px;
+    overflow: hidden;
+    position:relative;
+    /*background:url('../img/dark_bg.jpg') repeat #4e5355;*/
+    padding-bottom:10px;
+
+    /*	CSS3 inner shadow (the webkit one is commeted, because Google Chrome
+    does not like rounded corners combined with inset shadows): */
+
+    -moz-box-shadow:0 0 10px #222 inset;
+    /*-webkit-box-shadow:0 0 10px #222 inset;*/
+    box-shadow:0 0 10px #222 inset;
+}
+
+.switcher{
+    position:absolute;
+    margin-top:4px;
+}
+
+a.swShowPage {
+
+    /* The links that initiate the page slide */
+
+    background-color:#125;
+    float:left;
+    /*height:25px;*/
+    /*width:25px;*/
+    margin:4px 3px;
+    padding: 1pt 4pt 1pt 4pt;
+    font-size: 13pt;
+    /*text-indent:-9999px;*/
+    /*border:1px solid #ccc;*/
+
+    /* CSS3 rounded corners */
+
+    -moz-border-radius:7px;
+    -webkit-border-radius:7px;
+    border-radius:7px;
+}
+
+a.swShowPage:hover, a.swShowPage.active{
+    background-color:#2993dd;
+    /*	CSS3 inner shadow */
+    -moz-box-shadow:0 0 7px #1e435d inset;
+    /*-webkit-box-shadow:0 0 7px #1e435d inset;*/
+    box-shadow:0 0 7px #1e435d inset;
+    color: #FFF;
+    text-decoration: none;
+}
+
+a.swShowPage.answered{
+    background-color: #acd9d9;
+    /*	CSS3 inner shadow */
+    -moz-box-shadow:0 0 7px #1e435d inset;
+    /*-webkit-box-shadow:0 0 7px #1e435d inset;*/
+    box-shadow:0 0 7px #1e435d inset;
+}
+
+#holder .task {
+    /*background-color:#F4F4F4;*/
+    background-color:#FFF;
+    list-style:none outside none;
+    margin:10px 10px 20px 10px;
+    padding:20px;
+    /*float:left;*/
+    overflow: auto;
+
+    /*width: 100%;*/
+
+    /* Regular CSS3 box shadows (not inset): */
+
+    -moz-box-shadow:0 0 6px #111111;
+    -webkit-box-shadow:0 0 6px #111111;
+    box-shadow:0 0 6px #111111;
+}
+
+.task.center {
+	text-align:center;
+}
+
+#holder .task.system-task {
+    background-color:#DEF;
+}
+
+
+#holder, #holder li{
+    /* Applying rouded corners to both the holder and the holder lis */
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
+    border-radius:8px;
+}
+
+.clear{
+    /* This class clears the floated elements */
+    clear:both;
+}
+
+
+/* The styles below are only necessary for the styling of the demo page */
+
+h1{
+    background-color:#272B2C;
+    border-bottom:1px solid #000000;
+    color:#EEEEEE;
+    font-size:32px;
+    font-weight:normal;
+    margin-bottom:30px;
+    padding:30px 0;
+    text-align:center;
+
+    -moz-box-shadow:0 1px 0 #444444;
+    -webkit-box-shadow:0 1px 0 #444444;
+    box-shadow:0 1px 0 #444444;
+}
+
+
+.problem{
+    /* уменьшить отступ между названием задачи и ее текстом */
+    margin: 0 10px 10px 10px;
+}
+
+.analysis{
+    margin: 10px;
+}
+
+h1,h2{
+    font-family:"Myriad Pro",Arial,Helvetica,sans-serif;
+}
+
+h2{
+    font-size:14px;
+    font-weight:normal;
+    text-align:center;
+
+    position:absolute;
+    right:40px;
+    top:43px;
+}
+
+.swPage {
+    font-size: 13pt;
+    font-family: "tahoma", "arial", "verdana", "Lucida Sans", sans-serif;
+    /*font-family: "Times New Roman", serif;*/
+}
+
+a, a:visited {
+    color:#22AAEE;
+    text-decoration:none;
+    outline:none;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+a img{
+    border:none;
+}
+
+
+#finish{
+    /* нет такого свойства в css */
+    /*align: right;*/
+    /* здесь придется делать так */
+    float: right;
+    margin: 5px 40px 0 0;
+}
+
+div.problem img {
+    float: left;
+}
+img.full_width {
+    display: block;
+    clear: both;
+    max-width: 500px;
+    /*width: 100%;*/
+    margin: 5px auto;
+    text-align: center;
+}
+
+div.part_three {
+    width: 33%;
+    float: left;
+}
+
+/* нужно пропускать строку между условием задачи и вариантами ответа */
+.problem {
+    margin-bottom: 30px;
+}
+
+problem p {
+    padding: 10px 0 0 10px;
+}
+
+
+div.answers {
+    display: block;
+    clear: both;
+    margin: 0 30px 0 0;
+    padding: 20px 5px 20px 5px;
+}
+
+img {
+    /* в первой картинке (возможно и не только) нет отступа между картинкой и текстом справа от неё */
+    /*margin: 5px 5px 5px 5px;*/
+}
+
+.answer {
+    /* нужно делать пробелы между радио-кнопками и стоящими рядом ответами и больше расстояние */
+    margin: 0 25px 0 0;
+    /* в 8 задаче "нет ответа" нужно сделать с новой строки (иначе получается перенос слова) */
+    white-space: nowrap;
+}
+
+.answer input[type="radio"] {
+    /* нужно делать пробелы между радио-кнопками и стоящими рядом ответами и больше расстояние */
+    margin: 0 5px 0 0;
+}
+
+.answer img {
+    /* в вариантах ответа сильных отступов справа не будет */
+    margin: 5px;
+}
+
+.correct {
+    margin: 2px 0 20px 0;
+}
+
+.problem p {
+    display: block;
+    max-width: 760px;
+    clear: both;
+    float: left;
+    margin: 3px 0 0 0;
+}
+
+.left_image {
+    float: left;
+    margin: 7px 17px 7px 0;
+}
+
+.right_image {
+    float: right;
+    margin: 7px 0 7px 7px;
+}
+
+.section-title {
+    font-family : Arial,sans-serif;
+    font-size : 20pt;
+    color: #3366FF;
+    margin-top: 6pt;
+    margin-bottom: 6pt;
+}
+
+.task-statement p {
+    margin-bottom: 7pt;
+}
+
+.correct-answer {
+    display: none;
+}
+
+img.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+input.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.country {
+    display: none;
+}
+
+.country-info {
+    font-size: 13pt;
+}
+
+.country-info img {
+    margin: 0 6pt 0 26pt;
+	width: 32px;
+    height: 32px;
+	vertical-align: middle;
+}
+
+.country-info img.sq {
+	width: 32px;
+}
+
+table.center {
+    /*display: block;*/
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.center {
+    text-align: center;
+}
+
+#button-finish {
+    padding: 20px;
+    font-size: 18pt;
+    font-family: Arial, sans-serif;
+    margin-top: 20px;
+}
+
+.task-answer-selector {
+    width: 20px;
+    /*height: 20px;*/
+    border: solid 3px #36F;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: Arial, sans-serif;
+    color: #000;
+    text-align: center;
+    background-color: #FFF;
+    padding-top: 2px;
+    cursor: pointer;
+}
+
+.active {
+    background-color: #79F;
+    color: #FFF;
+    cursor: default;
+}
+
+.over {
+    background-color: #BCF;
+    color: #FFF;
+}
+
+.answer-wrapper {
+    float: left;
+    margin-right: 20px;
+}
+
+.-ta {
+    padding-right: 6pt;
+}
+
+.-aw {
+    padding-right: 20pt;
+}
+
+.page-link {
+    display: none;
+}
+
+#finish-confirmation input {
+    padding: 6pt 10pt 6pt 10pt;
+}
+
+.answer-right {
+    border-color: #33bb33;
+}
+
+.answer-user-right {
+    background-color: #47ff47;
+    color: #000;
+}
+
+.answer-user-wrong {
+    background-color: #ff6666;
+    border-color: #ff3344;
+}
+
+.code {
+    font-family: monospace;
+    font-size: 11pt;
+}
+
+ul {
+    padding-left: 24pt;
+}
+
+li {
+    padding-left: 8pt;
+    margin-bottom: 4pt;
+}
+
+input[type="button"] {
+    background-color: #36f;
+    color: #fff;
+    border: 1px solid #bcf;
+}
+
+input[type="button"]:hover {
+    background-color: #2993dd;
+}
+
+#results-text {
+	text-align: left;
+}

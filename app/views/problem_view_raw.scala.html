@@ -1,0 +1,54 @@
+@(pid:org.bson.types.ObjectId, problem:models.newproblems.Problem)
+@import views.widgets.WymEditorWidget
+@* TODO remove code duplication with problem_view.scala.html *@
+@import views.widgets.AdminWidget
+@import views.widgets.ResourceLink
+@import scala.List
+@import org.bson.types.ObjectId
+@import models.newproblems.Problem
+@main_with_menu(Event.current.getTitle)(List(WymEditorWidget.get, new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), problem.getWidget(true), AdminWidget.get)) { } {
+    @* -- header -- *@
+    <div class='info-box'>
+        @* TODO remove problem
+        <div class='folder-actions'>
+            <form action="@routes.Problems.removeLink(Event.currentId(), link.getLink)" method="POST" class='submit actions-remove-problem'></form>
+            <a class='submit actions-remove-problem' title='Удалить задачу' href='#'>Удалить</a>
+        </div>
+        *@
+        <h2>Задание <span class='folder-name'>@pid</span></h2>
+    </div>
+
+    @* -- problem statement / answer -- *@
+    <div class='problem-statement-answer'>
+        <div class='problem hidden'><span class='hidden pr_type'>@problem.getType</span>
+            <p>Предварительный просмотр: <a href='#' class='switch-problem'>переключить на ответ</a></p>
+            @problem.format("1", false, null, 0)
+        </div>
+        <div class='problem'><span class='hidden pr_type'>@problem.getType</span>
+            <p>Предварительный просмотр: <a href='#' class='switch-problem'>переключить на условие</a></p>
+            @problem.format("1", true, null, 0)
+        </div>
+    </div>
+
+    @* -- edit problem -- *@
+
+    @defining(problem.formatEditor) { editor =>
+        @if(editor != null) {
+            <div class=info-box>
+                <h2>Редактирование задания</h2>
+            </div>
+
+            <div class=info-box>
+                <form id='edit-problem' method="POST""> @*todo make edit problem controller use pid instead of link*@
+                    @editor
+
+                    <div class='change-problem'><input type='submit' class='wymupdate' value="Изменить задачу"></div>
+                </form>
+            </div>
+        } else {
+            <div class=info-box>
+                <p>Редактирование недоступно</p>
+            </div>
+        }
+    }
+}

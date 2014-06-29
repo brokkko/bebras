@@ -1,10 +1,11 @@
-/*problem*/
+/*problem, TODO bbtc problem css classes conflict with other types of problems*/
 
 .problem {
     background-color: #e0f1ff;
-    padding: 1em 1em 0.4em;
-    margin-bottom: 0.5em;
-    overflow: hidden;
+}
+
+.statement {
+    line-height: 1.2;
 }
 
 .answer {
@@ -14,9 +15,8 @@
 
 .answer-text {
     display: block;
-    margin-left: 28px;
-    margin-right: 8px;
-    margin-top: 4px;
+    margin-right: 1em;
+    margin-top: 0.4em;
 }
 
 .w2 {
@@ -39,10 +39,6 @@
     margin-bottom: 1em;
 }
 
-.problem .footer {
-    clear: both;
-}
-
 .problem-index {
     font-weight: bold;
 }
@@ -50,10 +46,10 @@
 /*answer selector*/
 
 .task-answer-selector {
-    width: 18px;
-    /*height: 20px;*/
+    width: 1.5em;
+    /*height: 2em;*/
     border: solid 2px #36F;
-    font-size: 1em;
+    /*font-size: 1em;*/
     /*font-weight: bold;*/
     font-family: Arial, sans-serif;
     color: #000;
@@ -61,22 +57,21 @@
     background-color: #FFF;
     /*padding-top: 2px;*/
     /*padding-left: 1px;*/
-    padding: 1px 0;
+    padding: 0.25em 0;
     display: inline-block;
     float: left;
-    margin-right: 2px;
-    cursor: default;
+    margin-right: 0.5em;
 }
 
+/*TODO make 'active' to be a class for <div class='answer'>. This will allow removing a "pointer" cursor from active answers*/
 .task-answer-selector.active {
     background-color: #79F;
     color: #FFF;
 }
 
-.task-answer-selector.selectable:hover {
+.task-answer-selector.selectable.hover:not(.active) {
     background-color: #BCF;
     color: #FFF;
-    cursor: pointer;
 }
 
 /*right and wrong answers*/
@@ -98,9 +93,4 @@
 /*answers decoration*/
 .no-answer {
     color: #888;
-}
-
-/*underlined words*/
-u {
-    color: #df000f;
 }

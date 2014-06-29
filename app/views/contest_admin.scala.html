@@ -1,0 +1,72 @@
+@*TODO to be renamed*@
+@(contest:models.Contest, changeContestForm:models.forms.RawForm, addBlockForm:models.forms.RawForm)
+@import models.Contest
+@import views.widgets.FormsWidget
+@import views.widgets.CssJsWidget
+@import models.newproblems.ProblemLink
+@import models.newproblems.ConfiguredProblem
+@import scala.List
+@import java.io.File
+@main_with_menu(Event.current.getTitle)(List(FormsWidget.get(), CssJsWidget.get("admin"))) { } {
+    <h1>Администрирование соревнования @contest.getName</h1>
+
+    @if(flash.get("message") != null) {
+        <p class='warning'>@flash.get("message")</p>
+    }
+
+    <h2>Информация</h2>
+    @contest_info(contest)
+
+    <div class='info-box@if(changeContestForm.hasErrors){ initially-open}'>
+        <h3 class='info-box-cut-shower'>Основные настройки соревнования...</h3>
+        <div class='info-box-cut'>
+            @models.Forms.getContestChangeForm.formatExtended(changeContestForm, controllers.routes.ContestAdministration.doUpdateContest(Event.currentId, contest.getId), true, "form.do_change")
+        </div>
+    </div>
+
+    @defining("/" + Event.currentId + "/" + contest.getId) { folder_link =>
+        <h2>Загрузить задачи для соревнования (в @problem_link(new ProblemLink(folder_link), folder_link))</h2>
+    }
+    <form enctype="multipart/form-data" method="POST" action="@routes.EventAdministration.uploadProblemsFile(Event.currentId, contest.getId)">
+        <input type="file" name="problem-set">
+        <input type="submit" value="Загрузить файл">
+    </form>
+    <br>
+    @files_list(new File(Event.current.getEventDataFolder, "tasks-" + contest.getId), ServerConfiguration.getInstance().getResource("BBTC test template.csv"))
+
+    <h1>Набор заданий</h1>
+
+    @if(contest.getProblemBlocks.size() == 0) {
+        <p>Нет блоков для отображения</p>
+    }
+
+    @for((block, index) <- contest.getProblemBlocks.zipWithIndex) {
+        <form action="@routes.ContestAdministration.moveBlockUp(Event.currentId, contest.getId, index)" method="POST" class='actions-move-up-@index'></form>
+        <form action="@routes.ContestAdministration.moveBlockDown(Event.currentId, contest.getId, index)" method="POST" class='actions-move-down-@index'></form>
+        <form action="@routes.ContestAdministration.removeBlock(Event.currentId, contest.getId, index)" method="POST" class='actions-remove-@index'></form>
+
+        <p>@(index + 1). @block.getInfoString:
+            @for(confProblem <- block.getAllPossibleProblems(contest)) {
+                @*TODO make helper to create raw problems links*@
+                <a class='problem-link' href='@routes.Problems.viewRawProblem(Event.currentId, confProblem.getProblemId.toString)' title='@confProblem.getName'>@confProblem.getName</a>
+            }
+
+            @if(index != 0) {
+                <a href="#" class='submit actions-move-up-@index' title="Поднять вверх">↑</a>
+            }
+            @if(index != contest.getProblemBlocks.size - 1) {
+                <a href="#" class='submit actions-move-down-@index' title="Опустить вниз">↓</a>
+            }
+            <a href="#" class='submit actions-remove-@index' title="Удалить блок">⨯</a>
+            <br><span class='block-config-info'>@contest.getResultTranslator.getConfigInfoPattern.simpleFormat(block.getConfiguration)</span>
+        </p>
+    }
+
+    <h2>Добавить блок</h2>
+    @contest.getAddBlockInputForm.formatExtended(addBlockForm, routes.ContestAdministration.doAddBlock(Event.currentId, contest.getId), false, "form.do_add")
+
+    <h1>Операции с соревнованием</h1>
+    <p><a href="#" class='submit actions-invalidate-contest-results' title="Пересчитать результаты соревнования">Пересчитать результаты соревнования</a></p>
+    <form action="@routes.ContestAdministration.doInvalidateContestsAndEventResults(Event.currentId(), contest.getId)" method="POST" class='actions-invalidate-contest-results'></form>
+
+}

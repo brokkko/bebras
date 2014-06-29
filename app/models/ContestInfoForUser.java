@@ -1,12 +1,13 @@
 package models;
 
-import models.serialization.Deserializer;
-import models.serialization.Serializable;
-import models.serialization.Serializer;
+import models.newserialization.Deserializer;
+import models.newserialization.Serializable;
+import models.newserialization.Serializer;
+import models.results.Info;
+import org.bson.types.ObjectId;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,11 +21,24 @@ public class ContestInfoForUser implements Serializable {
     private Date finished;
     private Long randSeed;
 
-    //TODO add per problem results
+    private final Contest contest;
 
-    private Map<String, Object> finalResults;
+    private Info finalResults;
 
-    public ContestInfoForUser() {
+    private List<ObjectId> problems;
+
+    public ContestInfoForUser(Contest contest) {
+        this.contest = contest;
+    }
+
+    public ContestInfoForUser(Contest contest, Deserializer deserializer) {
+        this.contest = contest;
+
+        started = deserializer.readDate("sd");
+        finished = deserializer.readDate("fd");
+        randSeed = deserializer.readLong("seed");
+
+        finalResults = contest.getResultsInfoPattern().read(deserializer, "res");
     }
 
     public Date getStarted() {
@@ -51,35 +65,25 @@ public class ContestInfoForUser implements Serializable {
         this.randSeed = randSeed;
     }
 
-    public Map<String, Object> getFinalResults() {
+    public Info getFinalResults() {
         return finalResults;
     }
 
-    public ContestInfoForUser(Deserializer deserializer) {
-        started = (Date) deserializer.getObject("sd");
-        finished = (Date) deserializer.getObject("fd");
-        randSeed = (Long) deserializer.getObject("seed");
-
-        //deserialize results
-        Deserializer results = deserializer.getDeserializer("res");
-        if (results != null) {
-            finalResults = new HashMap<>();
-            for (String field : deserializer.fieldSet())
-                finalResults.put(field, deserializer.getObject(field));
-        }
+    public List<ObjectId> getProblems() {
+        return problems;
     }
 
     @Override
-    public void store(Serializer serializer) {
+    public void serialize(Serializer serializer) {
         serializer.write("sd", started);
         serializer.write("fd", finished);
-        serializer.write("seed", randSeed);
+        if (randSeed != null)
+            serializer.write("seed", randSeed);
 
-        if (finalResults != null) {
-            Serializer results = serializer.getSerializer("res");
+        contest.getResultsInfoPattern().write(serializer, "res", finalResults);
+    }
 
-            for (Map.Entry<String, Object> field2value : finalResults.entrySet())
-                results.write(field2value.getKey(), field2value.getValue());
-        }
+    public void setFinalResults(Info finalResults) {
+        this.finalResults = finalResults;
     }
 }

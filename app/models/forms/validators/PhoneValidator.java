@@ -1,7 +1,5 @@
 package models.forms.validators;
 
-import models.serialization.Deserializer;
-
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
@@ -10,12 +8,12 @@ import models.serialization.Deserializer;
  */
 public class PhoneValidator extends Validator<String> {
 
-    public PhoneValidator(Deserializer deserializer) {
+    public PhoneValidator() {
         defaultMessage = "error.msg.phone";
     }
 
     @Override
-    public String validate(String phone) {
+    public Validator.ValidationResult validate(String phone) {
         //filter out spaces and -
         phone = phone.replaceAll("[- ]", "");
 
@@ -25,15 +23,16 @@ public class PhoneValidator extends Validator<String> {
 
         //forbid --
         if (phone.contains("--"))
-            return getMessage();
+            return message();
 
         //remove pair of brackets if there is one
         if (phone.matches("[^\\(\\)]*\\([^\\(\\)]*\\)[^\\(\\)]*"))
             phone = phone.replaceAll("[\\(\\)]", "");
 
         if (! phone.matches("\\d{5,12}"))
-            return getMessage();
+            return message();
 
-        return null;
+        return ok();
     }
+
 }

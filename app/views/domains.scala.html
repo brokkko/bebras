@@ -1,0 +1,25 @@
+@(domain:models.Domain, domainEvents:java.util.List[String], domainForm:models.forms.RawForm, emailForm:models.forms.RawForm)
+@import views.widgets.FormsWidget
+@main_with_menu(Event.current.getTitle)(scala.List(FormsWidget.get)) { } {
+    <h1>Домен @domain.getName</h1>
+
+    <h2>Список событий</h2>
+
+    <table>
+    @for(event <- domainEvents) {
+        <tr>
+            <td>@event</td>
+            <td style="width:1em"></td>
+            <td><h2><a href="@routes.Application.enter(event)">@Event.getInstance(event).getTitle</a></h2></td>
+        </tr>
+    }
+    </table>
+
+    <h2>Настройка домена</h2>
+
+    @models.Domain.DOMAIN_CHANGE_FORM.formatExtended(domainForm, routes.Domains.doChangeDomainInfo(Event.currentId, domain.getName), true, "form.do_change")
+
+    <h2>Рассылка почты</h2>
+
+    @models.Mailer.MAILER_CHANGE_FORM.formatExtended(emailForm, routes.Domains.doChangeMailerInfo(Event.currentId, domain.getName), true, "form.do_change")
+}

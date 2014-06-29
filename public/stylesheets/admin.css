@@ -1,0 +1,29 @@
+form.actions {
+    display: inline;
+}
+
+.folder-actions a {
+    float: right;
+    clear: both;
+}
+
+a.submit {
+    text-decoration: none;
+}
+
+a.submit:hover {
+    text-decoration: underline;
+}
+
+.files-list {
+    margin-bottom: 1em;
+}
+
+.files-list td {
+    border: 1px solid black;
+    padding: 4px 8px;
+}
+
+.block-config-info {
+    color: #888;
+}

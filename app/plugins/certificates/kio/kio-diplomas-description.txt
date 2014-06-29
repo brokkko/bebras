@@ -1,0 +1,79 @@
+evaluate rank for a problem, if participants are sorted by scores of a problem
+=IF(G2=G1;M1;ROW(M2)-1)
+=IF(I2=I1;N1;ROW(N2)-1)
+=IF(L2=L1;O1;ROW(O2)-1)
+
+
+Participants in 2014
+0: 763
+1: 682
+2: 469
+
+no results at all: 018604751.19
+some results: 276070881.3
+good results: 735380771.7
+level changed: 639190151.13
+all types of diplomas: 735161131.7 group
+all types of diplomas: 276981102.1
+
+change_level        1 2
+diploma             1 1g 2 2g 3 3g
+diploma_problem_1   1 1g
+diploma_problem_2   1 1g
+diploma_problem_3   1 1g
+
+
+teacher
+teacher_gramota     1
+
+{
+  "name" : "change_level",
+  "view" : null,
+  "skip for edit" : true,
+  "store" : true,
+  "required" : false,
+  "validators" : [ ]
+},
+{
+  "name" : "diploma",
+  "view" : null,
+  "skip for edit" : true,
+  "store" : true,
+  "required" : false,
+  "validators" : [ ]
+},
+{
+  "name" : "diploma_problem_1",
+  "view" : null,
+  "skip for edit" : true,
+  "store" : true,
+  "required" : false,
+  "validators" : [ ]
+},
+{
+  "name" : "diploma_problem_2",
+  "view" : null,
+  "skip for edit" : true,
+  "store" : true,
+  "required" : false,
+  "validators" : [ ]
+},
+{
+  "name" : "diploma_problem_3",
+  "view" : null,
+  "skip for edit" : true,
+  "store" : true,
+  "required" : false,
+  "validators" : [ ]
+}
+
+
+
+{
+  "name" : "teacher_gramota",
+  "view" : null,
+  "skip for edit" : true,
+  "store" : true,
+  "required" : false,
+  "validators" : [ ]
+}

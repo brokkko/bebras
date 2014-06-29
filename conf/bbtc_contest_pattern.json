@@ -1,0 +1,37 @@
+{
+    "id": "%%%cid%%%",
+    "name": "%%%cname%%%",
+    "start": "2013-05-13 12:00",
+    "finish": "2013-05-21 00:00",
+    "duration": 10,
+    "page sizes": [5],
+    "results translators": [
+        {
+            "type": "beaver",
+            "scores": 1,
+            "penalty": -1
+        }
+    ],
+    "tables": [
+        {
+            "title": "Результаты соревнования %%%cname%%%",
+            "objects": {
+                "type": "users",
+                "role": "PARTICIPANT",
+                "load event results": true,
+                "filename": "%%%eid%%% %%%cid%%% answers"
+            },
+            "columns": [
+                "id -> user._id",
+                "start -> user._contests.%%%cid%%%.sd",
+                "problems_order -> contest.%%%cid%%%.problems_order",
+                "history -> contest.%%%cid%%%.history",
+                "Answers -> contest.%%%cid%%%.answers_all",
+                "num_right -> user._contests.%%%cid%%%.res.r",
+                "num_wrong -> user._contests.%%%cid%%%.res.w",
+                "num_skipped -> user._contests.%%%cid%%%.res.n",
+                "scores -> user._contests.%%%cid%%%.res.scores"
+            ]
+        }
+    ]
+}

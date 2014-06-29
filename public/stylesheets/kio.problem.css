@@ -1,0 +1,25 @@
+.kio-problem p {
+    /*font-family: "Times New Roman",serif;*/
+}
+
+.kio-problem-message {
+    font-weight: bold;
+    color: green;
+}
+
+.kio-problem-message.error {
+    color: red;
+}
+
+.kio-problem-users-table {
+    margin-top: 6px;
+}
+
+.kio-problem-users-table thead {
+    font-weight: bold;
+}
+
+.kio-problem-users-table td {
+    border: 1px solid black;
+    padding: 2px 6px;
+}

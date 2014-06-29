@@ -1,0 +1,7 @@
+@(name:String, value:String, elements:java.util.List[String])
+<select name="@name">
+    <option class='disabled' value="" @if(value == null || value == "") {selected="selected"}>выберите...</option>
+    @for(element <- elements) {
+        <option value="@element" @if(value == element) {selected="selected"}>@element</option>
+    }
+</select>

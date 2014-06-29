@@ -1,0 +1,23 @@
+@(event:models.Event, registerRole:models.UserRole, byUser:Boolean)
+@import models.Event
+@import models.Forms
+@import models.User
+@import scala.List
+@main_with_menu(Event.current.getTitle)(List()) { } {
+    <h1>Выберите вид регистрации</h1>
+    @for((role, roleIndex) <- registerRole.getMayRegister.zipWithIndex) {
+        <div class='info-box'>
+            <div class='info'>
+                <p class='header'><a href="@if(byUser) {
+                    @routes.Registration.roleRegistrationByUser(event.getId, role)
+                } else {
+                    @routes.Registration.roleRegistration(event.getId, role, null)
+                }">@event.getRole(role).getTitle</a></p>
+            </div>
+            <div class='results-and-description'>
+                <p>@event.getRole(role).getDescription</p>
+            </div>
+            <div class='footer'></div>
+        </div>
+    }
+}
