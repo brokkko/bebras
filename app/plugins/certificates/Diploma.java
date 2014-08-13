@@ -56,6 +56,8 @@ public abstract class Diploma<Factory extends DiplomaFactory> {
     private Info findResultsForContestsInList(List<String> contestIDs) {
         for (String contestID : contestIDs) {
             Contest contest = user.getEvent().getContestById(contestID);
+            if (contest == null)
+                continue;
             if (contest.isAvailableForUser(user))
                 return getContestResults(user, contestID);
         }
