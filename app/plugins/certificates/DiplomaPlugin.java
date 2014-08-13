@@ -69,10 +69,10 @@ public class DiplomaPlugin extends Plugin {
     }
 
     private Result showCertificate() {
-        User user = User.current();
-        if (!user.hasRight(viewRight))
+        if (!User.currentRole().hasRight(viewRight))
             return Results.forbidden("Oops...");
 
+        User user = User.current();
         Diploma diploma = diplomaFactory.getDiploma(user);
 
         if (diploma == null)
