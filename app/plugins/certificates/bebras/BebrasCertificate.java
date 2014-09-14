@@ -79,7 +79,7 @@ public class BebrasCertificate extends Diploma<DiplomaFactory> {
     }
 
     public static String getUserCode(User user, boolean org) {
-        String userCode = org ? Application.getCodeForUserHex(user) : user.getLogin();
+        String userCode = org ? Application.getCodeForUserHex(user) : user.getLogin(); //TODO this was in 2013, now get rid of HEX
 
         //write login for novosibirsk teachers
         if (org && NOVOSIBIRSK_ID.equals(user.getRegisteredBy()))
