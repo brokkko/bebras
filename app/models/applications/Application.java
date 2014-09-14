@@ -67,7 +67,7 @@ public class Application implements SerializableUpdatable {
         int inc = user.getId().getInc();
         int machine = user.getId().getMachine();
 
-        return decBytes(machine, 3) + decBytes(inc, 5);
+        return decBytes(machine, 1) + decBytes(inc, 6);
     }
 
     public static int NEW = 0;
