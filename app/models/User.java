@@ -999,16 +999,26 @@ public class User implements SerializableUpdatable {
         invalidateAllEventResults(event);
     }
 
-    /*public static void removeUser(Event event, String login) {
+    public static void removeUserById(Event event, ObjectId userId, ObjectId restrictOwner) {
         DBCollection usersCollection = MongoConnection.getUsersCollection();
 
         DBObject remove = new BasicDBObject(FIELD_EVENT, event.getId());
-        remove.put(FIELD_LOGIN, login);
+        remove.put("_id", userId);
+        if (restrictOwner != null)
+            remove.put(User.FIELD_REGISTERED_BY, restrictOwner);
+
+        String idCacheKey = getIdCacheKey(userId);
+
+        User user = (User) Cache.get(idCacheKey);
+
+        if (user != null)
+            Cache.remove(getLoginCacheKey(event.getId(), user.getLogin()));
+
+        Cache.remove(idCacheKey);
 
         usersCollection.remove(remove);
-        Cache.remove(getLoginCacheKey(event.getId(), login));
-        Cache.remove(getIdCacheKey(???));
-    }*/
+    }
+
 }
 
 
