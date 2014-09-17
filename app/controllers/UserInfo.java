@@ -124,14 +124,12 @@ public class UserInfo extends Controller {
         form.bindFromRequest();
         String returnTo = form.get("-return-to");
 
-        ObjectId user = new ObjectId(userId);
-        DBObject query = new BasicDBObject("_id", user);
+        User.removeUserById(
+                Event.getInstance(eventId),
+                new ObjectId(userId),
+                adminUser.hasEventAdminRight() ? null : adminUser.getId()
+        );
 
-        if (!adminUser.hasEventAdminRight())
-            query.put(User.FIELD_REGISTERED_BY, adminUser.getId());
-
-        query.put("event_id", eventId); //for any case, ensure not to delete a user from another event
-        MongoConnection.getUsersCollection().remove(query);
         return redirect(returnTo);
     }
 

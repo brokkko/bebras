@@ -15,8 +15,8 @@ public class UserFieldValidator extends Validator<String> {
     private String field;
 
     @Override
-    public Validator.ValidationResult validate(String login) {
-        User user = User.getInstance(field, login);
+    public Validator.ValidationResult validate(String value) {
+        User user = User.getInstance(field, value);
 
         return user == null ? ok() : message();
     }
