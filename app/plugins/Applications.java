@@ -168,7 +168,9 @@ public class Applications extends Plugin { //TODO test for right in all calls
         //https://code.google.com/p/wkhtmltopdf
         //may need to install ubuntu fontconfig package
 
-        final Application application = getApplicationByName(name);
+        final Application application = "example".equals(name) ?
+                getExampleApplication() :
+                getApplicationByName(name);
         final Kvit kvit = Kvit.getKvitForUser(User.current());
 
         if (application == null)
@@ -192,6 +194,10 @@ public class Applications extends Plugin { //TODO test for right in all calls
                         }
                 )
         );
+    }
+
+    private Application getExampleApplication() {
+        return new Application(User.current(), 100, 1, applicationTypes.get(0).getTypeName());
     }
 
     private Result addApplication() {
