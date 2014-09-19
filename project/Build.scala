@@ -19,11 +19,11 @@ object ApplicationBuild extends Build {
     //      "com.github.mumoshu" %% "play2-memcached" % "0.3.0.2"
   )
 
-//  val authSubProject = Project("auth", file("auth"))
+  val authSubProject = Project("auth", file("auth"))
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
     // Add your own project settings here
     //      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
-  )//.dependsOn(authSubProject)
+  ).dependsOn(authSubProject)
 
 }
