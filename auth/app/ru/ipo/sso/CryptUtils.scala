@@ -3,6 +3,8 @@ package ru.ipo.sso
 import java.security.Signature
 import javax.xml.bind.DatatypeConverter
 
+import play.api.Logger
+
 object CryptUtils {
 
   def base64decode(base64Code: String): Array[Byte] = DatatypeConverter.parseBase64Binary(base64Code)
@@ -11,6 +13,8 @@ object CryptUtils {
 
   def sign(lines: String*) = {
     val text = lines mkString "\n"
+
+    Logger.debug("signing: " + text)
 
     val signer = Signature.getInstance("SHA512withRSA")
     signer.initSign(SSOConfiguration.get.privateKey)

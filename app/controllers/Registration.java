@@ -14,6 +14,11 @@ import play.Play;
 import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
+import ru.ipo.sso.SSO;
+import scala.None;
+import scala.Option;
+import scala.Some;
+import scala.concurrent.Future;
 
 import java.util.List;
 import java.util.UUID;
@@ -179,6 +184,11 @@ public class Registration extends Controller {
 
         user.store();
 
+        //now register on SSO
+
+        if (event.isSsoEnabled())
+            SSO.register(login, password, email, user.isConfirmed());
+
         return needEmailConfirmation ?
                 redirect(routes.Registration.waitForEmail(event.getId(), registrationUUID, false)) :
                 ok(views.html.message.render("registration.ok.title", "registration.ok", null));
@@ -211,8 +221,8 @@ public class Registration extends Controller {
         if (user == null)
             return redirect(routes.Registration.login(eventId));
 
-        Boolean restoreForEmail = user.isRestoreForEmail();
-        boolean isEmail = !passwordRecovery || restoreForEmail == null || restoreForEmail;
+        boolean restoreForEmail = user.isRestoreForEmail();
+        boolean isEmail = !passwordRecovery || restoreForEmail;
 
         return ok(views.html.wait_for_email.render(
                 isEmail, isEmail ? user.getEmail() : user.getLogin()
@@ -238,6 +248,9 @@ public class Registration extends Controller {
             user.setPasswordHash(user.getNewRecoveryPassword());
 
         user.store();
+
+        if (Event.current().isSsoEnabled())
+            SSO.modify(Option.apply((String) null), Option.apply((String) null), user.getEmail(), Option.apply((Object) true));
 
         return ok(views.html.login.render(new RawForm(), passwordRecovery ? "page.registration.password_recovered" : "page.registration.confirmed"));
     }

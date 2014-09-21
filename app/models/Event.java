@@ -54,6 +54,8 @@ public class Event {
     private String skin;
     private String domain;
 
+    private boolean ssoEnabled;
+
     private Event(Deserializer deserializer) {
         this.id = deserializer.readString("_id");
         this.title = deserializer.readString("title");
@@ -88,6 +90,8 @@ public class Event {
 
         domain = deserializer.readString("domain");
         skin = deserializer.readString("skin", "default");
+
+        ssoEnabled = deserializer.readBoolean("sso", false);
 
         //TODO enters site before confirmation
         //TODO choose where to go if authorized
@@ -187,6 +191,8 @@ public class Event {
         SerializationTypesRegistry.list(SerializationTypesRegistry.PLUGIN).write(serializer, "plugins", new ArrayList<>(plugins.values()));
 
         serializer.write("skin", skin);
+
+        serializer.write("sso", ssoEnabled);
     }
 
     public static String currentId(Http.Context ctx) {
@@ -318,6 +324,10 @@ public class Event {
         return folder;
     }
 
+    public boolean isSsoEnabled() {
+        return ssoEnabled;
+    }
+
     public boolean registrationStarted() {
         return registrationStart == null || registrationStart.before(new Date()); //TODO get date from ... AuthenticatedAction
     }
@@ -347,6 +357,7 @@ public class Event {
         setResultTranslators(resultTranslators);
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
         skin = deserializer.readString("skin", "");
+        ssoEnabled = deserializer.readBoolean("sso", false);
 
         List<UserRole> roles = SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).read(deserializer, "roles");
         setRoles(roles);
@@ -423,7 +434,7 @@ public class Event {
     //TODO move to settings
     public static String getOrganizationName() {
         Event event = Event.current();
-        if (event != null && event.getId().startsWith("bebras") || event.getId().startsWith("kio"))
+        if (event != null && (event.getId().startsWith("bebras") || event.getId().startsWith("kio")))
             return "Центр информатизации образования «КИО»";
         return "Центр продуктивного обучения";
     }
@@ -462,5 +473,4 @@ public class Event {
 
         return null;
     }
-
 }

@@ -9,7 +9,7 @@ import play.api.Play
 case class SSOConfiguration(
                              host: String,
                              id: String,
-                            publicKey: PublicKey,
+                             publicKey: PublicKey,
                              privateKey: PrivateKey
                              )
 
