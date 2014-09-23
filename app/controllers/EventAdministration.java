@@ -185,8 +185,6 @@ public class EventAdministration extends Controller {
         HtmlBlock htmlBlock = HtmlBlock.load(event, block);
         htmlBlock.setHtml(rawForm.get("html"));
 
-        Logger.info(rawForm.get("html"));
-
         return ok();
     }
 
