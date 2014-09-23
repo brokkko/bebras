@@ -1,6 +1,5 @@
 package views;
 
-import play.Logger;
 import play.mvc.Call;
 import play.mvc.Http;
 

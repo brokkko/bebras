@@ -81,3 +81,5 @@ mail.from_name=Ilya Posov
 salt=12c1b734df23fabc371cd5a8331ef49a #exactly 16 bytes in HEX needed
 
 parsers.text.maxLength=512K
+
+po.st.api_key="key from https://re.po.st/partner/globalstats"

@@ -279,6 +279,15 @@ public class Forms {
                                     "required", true
                             ),
                             Utils.mapify(
+                                    "name", "sso",
+                                    "view", Utils.mapify(
+                                            "type", "boolean",
+                                            "title", "Single Sign-On",
+                                            "hint", "Режим единого входа"
+                                    ),
+                                    "required", true
+                            ),
+                            Utils.mapify(
                                     "name", "tables",
                                     "view", Utils.mapify(
                                             "type", "json list",
