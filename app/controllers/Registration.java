@@ -194,24 +194,31 @@ public class Registration extends Controller {
                 ok(views.html.message.render("registration.ok.title", "registration.ok", null));
     }
 
+    //return true on failure, if referrerUserId can not register a user
     private static boolean setRegisterBy(UserRole registeeRole, boolean byUser, String referrerUserId, User user) {
-        ObjectId registerBy = null;
+        User referrer = null;
+
         if (byUser)
-            registerBy = User.current().getId();
+            referrer = User.current();
+
         if (referrerUserId != null) {
+            ObjectId registerBy;
+
             try {
                 registerBy = new ObjectId(referrerUserId);
             } catch (Exception ignored) { //illegal argument exception
                 return true;
             }
-            User referrer = User.getInstance("_id", registerBy);
+
+            referrer = User.getUserById(registerBy);
+
             if (referrer == null)
                 return true;
             if (!referrer.getRole().mayRegister(registeeRole))
                 return true;
         }
 
-        user.setRegisteredBy(registerBy);
+        user.setRegisteredBy(referrer);
         return false;
     }
 
