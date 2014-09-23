@@ -50,10 +50,16 @@ public class Kvit {
     }
 
     public static Kvit getKvitForUser(User user) {
-        ObjectId regBy = user.getRegisteredBy();
-        if (regBy == null)
-            return DEFAULT_KVIT;
-        return getKvitFromUserDescription(User.getInstance("_id", regBy));
+        User superUser = user;
+
+        while (superUser != null) {
+            Kvit kvit = getKvitFromUserDescription(superUser);
+            if (kvit != DEFAULT_KVIT)
+                return kvit;
+            superUser = superUser.getRegisteredByUser();
+        }
+
+        return DEFAULT_KVIT;
     }
 
     public static Kvit getKvitFromUserDescription(User user) {
@@ -152,7 +158,7 @@ public class Kvit {
         Utils.writeResourceToFile("/public/invoice-2.html", page2, subs);
         Utils.writeResourceToFile("/public/invoice.css", css);
 
-        Utils.runProcess("/opt/wkhtmltopdf-amd64", page1.getAbsolutePath(), page2.getAbsolutePath(), pdf.getAbsolutePath());
+        Utils.runProcess("/opt/wkhtmltopdf-amd64", page1.getAbsolutePath(), /*page2.getAbsolutePath(), */pdf.getAbsolutePath());
 
         return pdf;
     }

@@ -453,7 +453,7 @@ public class Event {
         user.setConfirmed(true);
         user.setPartialRegistration(partialRegistration);
         user.setRole(role);
-        user.setRegisteredBy(register.getId());
+        user.setRegisteredBy(register);
         user.setWantAnnouncements(false); //TODO allow to change this
 
         try {

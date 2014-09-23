@@ -44,7 +44,7 @@
 
     <div class='info-box'>
         <p>
-            @if(user.getRegisteredByUser != null/* && user.getRegisteredByUser.getInfo.get("org_name") != null*/) {
+            @if(user.getRegisteredByUser != null) {
                 Зарегистрирован через: @htmlfeatures.user_link(user.getRegisteredBy.toString, Event.currentId, user.getRegisteredByUser.getLogin)
             } else {
                 Зарегистрирован напрямую
