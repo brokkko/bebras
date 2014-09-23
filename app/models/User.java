@@ -830,8 +830,10 @@ public class User implements SerializableUpdatable {
 
     public void setRegisteredBy(User user) {
         this.registeredBy = new ArrayList<>();
-        this.registeredBy.add(user.getId());
-        this.registeredBy.addAll(user.registeredBy);
+        if (user != null) {
+            this.registeredBy.add(user.getId());
+            this.registeredBy.addAll(user.registeredBy);
+        }
     }
 
     public boolean isWantAnnouncements() {
