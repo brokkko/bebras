@@ -79,7 +79,7 @@ public class User implements SerializableUpdatable {
     private UserActivityEntry userActivityEntry;
 
     private UserRole role = UserRole.EMPTY;
-    private ObjectId registeredBy = null;
+    private List<ObjectId> registeredBy = null;
 
     // cache
     private Map<Contest, List<Submission>> cachedAllSubmissions = new HashMap<>();
@@ -124,9 +124,22 @@ public class User implements SerializableUpdatable {
 
         eventResults = event.getResultsInfoPattern().read(deserializer, FIELD_EVENT_RESULTS);
 
-        registeredBy = deserializer.readObjectId(FIELD_REGISTERED_BY);
         partialRegistration = deserializer.readBoolean(FIELD_PARTIAL_REG, false);
         wantAnnouncements = deserializer.readBoolean(FIELD_ANNOUNCEMENTS, true);
+
+        //read registered by
+        try {
+            registeredBy = SerializationTypesRegistry.list(ObjectId.class).read(deserializer, FIELD_REGISTERED_BY);
+        } catch (Exception e) {
+            Logger.info("fixing reg-by value for user " + id + " " + getLogin() + " (" + eventId + ")");
+            registeredBy = new ArrayList<>();
+            ObjectId superUserId = deserializer.readObjectId(FIELD_REGISTERED_BY);
+            while (superUserId != null) {
+                registeredBy.add(superUserId);
+                superUserId = User.getUserById(superUserId).getRegisteredBy();
+            }
+            store();
+        }
 
         //TODO get rid of iposov
         if (getLogin().equals("iposov"))
@@ -480,7 +493,7 @@ public class User implements SerializableUpdatable {
         serializer.write(FIELD_EVENT, event.getId());
         serializer.write(FIELD_PASS_HASH, passwordHash);
 
-        serializer.write(FIELD_REGISTERED_BY, registeredBy);
+        SerializationTypesRegistry.list(ObjectId.class).write(serializer, FIELD_REGISTERED_BY, registeredBy);
         serializer.write(FIELD_PARTIAL_REG, partialRegistration);
         serializer.write(FIELD_ANNOUNCEMENTS, wantAnnouncements);
 
@@ -807,15 +820,18 @@ public class User implements SerializableUpdatable {
 
     //may return not null even if getRegisteredByUser() returns null, because the user was removed
     public ObjectId getRegisteredBy() {
-        return registeredBy;
+        return registeredBy == null || registeredBy.size() == 0 ? null : registeredBy.get(0);
     }
 
     public User getRegisteredByUser() {
-        return registeredBy == null ? null : getUserById(registeredBy);
+        ObjectId byId = getRegisteredBy();
+        return byId == null ? null : getUserById(byId);
     }
 
-    public void setRegisteredBy(ObjectId registeredBy) {
-        this.registeredBy = registeredBy;
+    public void setRegisteredBy(User user) {
+        this.registeredBy = new ArrayList<>();
+        this.registeredBy.add(user.getId());
+        this.registeredBy.addAll(user.registeredBy);
     }
 
     public boolean isWantAnnouncements() {

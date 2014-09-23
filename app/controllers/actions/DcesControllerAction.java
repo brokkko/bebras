@@ -76,5 +76,7 @@ public class DcesControllerAction extends Action<DcesController> {
 
     private void finalizeRequest(Http.Context ctx) {
         MongoConnection.storeEnqueuedUsers(ctx);
+
+        ctx.args.put("finalized", true);
     }
 }
