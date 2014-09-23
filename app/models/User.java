@@ -124,20 +124,22 @@ public class User implements SerializableUpdatable {
 
         eventResults = event.getResultsInfoPattern().read(deserializer, FIELD_EVENT_RESULTS);
 
+        partialRegistration = deserializer.readBoolean(FIELD_PARTIAL_REG, false);
+        wantAnnouncements = deserializer.readBoolean(FIELD_ANNOUNCEMENTS, true);
+
         //read registered by
         try {
             registeredBy = SerializationTypesRegistry.list(ObjectId.class).read(deserializer, FIELD_REGISTERED_BY);
         } catch (Exception e) {
+            Logger.info("fixing reg-by value for user " + id + " " + getLogin() + " (" + eventId + ")");
             registeredBy = new ArrayList<>();
             ObjectId superUserId = deserializer.readObjectId(FIELD_REGISTERED_BY);
             while (superUserId != null) {
                 registeredBy.add(superUserId);
                 superUserId = User.getUserById(superUserId).getRegisteredBy();
             }
+            store();
         }
-
-        partialRegistration = deserializer.readBoolean(FIELD_PARTIAL_REG, false);
-        wantAnnouncements = deserializer.readBoolean(FIELD_ANNOUNCEMENTS, true);
 
         //TODO get rid of iposov
         if (getLogin().equals("iposov"))

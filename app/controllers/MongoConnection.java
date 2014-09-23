@@ -135,7 +135,8 @@ public class MongoConnection {
     }
 
     public static boolean mayEnqueueEvents() {
-        return Http.Context.current.get() != null;
+        Http.Context ctx = Http.Context.current.get();
+        return ctx != null && !ctx.args.containsKey("finalized");
     }
 
     public static void enqueueUserStorage(User user) {
