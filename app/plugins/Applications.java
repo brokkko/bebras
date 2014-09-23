@@ -64,6 +64,12 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     @Override
     public Result doGet(String action, String params) {
+        //simple action without authorization
+        if ("pdfkvit".equals(action) && "example".equals(params))
+            return showPdfKvit(params);
+        if ("kvit_example".equals(action))
+            return showKvit();
+
         boolean level1 = User.currentRole().hasRight(right);
         boolean level2 = User.currentRole().hasRight(adminRight);
         if (!level1 && !level2)
@@ -84,11 +90,6 @@ public class Applications extends Plugin { //TODO test for right in all calls
                 if (!level1)
                     return Results.forbidden();
                 return showPdfKvit(params);
-
-            case "kvit_example":
-                if (!level2)
-                    return Results.forbidden();
-                return showKvit();
         }
 
         return Results.notFound();
@@ -146,7 +147,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     private Result showKvit() {
         User user = User.current();
-        Kvit kvit = Kvit.getKvitFromUserDescription(user);
+        Kvit kvit = Kvit.getKvitForUser(user);
 
         if (kvit.isGenerated())
             return Results.ok(views.html.applications.kvit.render(null, this, kvit));

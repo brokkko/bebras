@@ -818,11 +818,12 @@ public class User implements SerializableUpdatable {
 
     //may return not null even if getRegisteredByUser() returns null, because the user was removed
     public ObjectId getRegisteredBy() {
-        return registeredBy.size() == 0 ? null : registeredBy.get(0);
+        return registeredBy == null || registeredBy.size() == 0 ? null : registeredBy.get(0);
     }
 
     public User getRegisteredByUser() {
-        return registeredBy == null ? null : getUserById(getRegisteredBy());
+        ObjectId byId = getRegisteredBy();
+        return byId == null ? null : getUserById(byId);
     }
 
     public void setRegisteredBy(User user) {
