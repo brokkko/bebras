@@ -167,10 +167,14 @@ public class MongoConnection {
     private static void createIndexes(DBCollection collection) {
         switch (collection.getName()) {
             case COLLECTION_NAME_USERS:
-                DBObject loginAndEventIndex = new BasicDBObject(User.FIELD_LOGIN, 1);
-                loginAndEventIndex.put(User.FIELD_EVENT, 1);
+                DBObject eventAndLoginIndex = new BasicDBObject(User.FIELD_EVENT, 1);
+                eventAndLoginIndex.put(User.FIELD_LOGIN, 1);
+                collection.createIndex(eventAndLoginIndex, new BasicDBObject("unique", true));
 
-                collection.createIndex(loginAndEventIndex, new BasicDBObject("unique", true));
+                DBObject eventAndRoleIndex = new BasicDBObject(User.FIELD_EVENT, 1);
+                eventAndRoleIndex.put(User.FIELD_USER_ROLE, 1);
+                collection.createIndex(eventAndRoleIndex);
+
                 collection.createIndex(new BasicDBObject(User.FIELD_CONFIRMATION_UUID, 1));
                 collection.createIndex(new BasicDBObject(User.FIELD_REGISTRATION_UUID, 1));
                 collection.createIndex(new BasicDBObject(User.FIELD_REGISTERED_BY, 1));
