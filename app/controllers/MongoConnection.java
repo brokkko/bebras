@@ -117,7 +117,7 @@ public class MongoConnection {
 
         boolean needCreateIndexes = !collectionExists;
 
-        if (needCreateIndexes) //TODO think about substitute with dbCollection.ensureIndex() and do it only once
+        if (needCreateIndexes) //TODO think about substitute with dbCollection.ensureIndex() on startup
             createIndexes(collection);
 
         Cache.set("collection-exists-" + collectionName, true);
