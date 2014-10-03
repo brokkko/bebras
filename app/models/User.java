@@ -136,7 +136,11 @@ public class User implements SerializableUpdatable {
             ObjectId superUserId = deserializer.readObjectId(FIELD_REGISTERED_BY);
             while (superUserId != null) {
                 registeredBy.add(superUserId);
-                superUserId = User.getUserById(superUserId).getRegisteredBy();
+                User superUser = User.getUserById(superUserId);
+                if (superUser == null) //TODO this occurs if superUser was deleted
+                    superUserId = null;
+                else
+                    superUserId = superUser.getRegisteredBy();
             }
             store();
         }
