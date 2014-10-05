@@ -110,6 +110,8 @@ public class Menu {
             menu.add(new MenuItem("Домен", routes.Domains.domainInfo(eventId, "")));
         }
 
+        menu.add(new MenuItem("Примеры соревнований", routes.Domains.));
+
         fillExtraItems(menu);
 
         addExitMenuItem(menu, eventId);

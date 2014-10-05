@@ -38,7 +38,14 @@ public class Contests extends Controller {
 
     @SuppressWarnings("UnusedParameters")
     public static Result startContest(String eventId, String contestId) {
+        if (User.current() == null)
+            autoRegisterUser();
+
         return ok(views.html.start_contest_confirmation.render());
+    }
+
+    private static void autoRegisterUser() {
+        //TODO implement
     }
 
     public static Result contest(String eventId, String contestId, String displayType) {

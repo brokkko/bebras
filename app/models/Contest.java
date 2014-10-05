@@ -184,6 +184,8 @@ public class Contest {
     }
 
     public boolean isAvailableForUser(User user) {
+        if (isAvailableForAnon())
+            return true;
         if (user == null)
             return false;
         if (rights.isEmpty())
@@ -195,6 +197,10 @@ public class Contest {
                 return true;
 
         return false;
+    }
+
+    public boolean isAvailableForAnon() {
+        return rights.contains("anon");
     }
 
     public String getBlockTitle() {

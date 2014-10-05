@@ -35,10 +35,12 @@ public class Domains extends Controller {
         FormSerializer mailerFormSerializer = new FormSerializer(Mailer.MAILER_CHANGE_FORM);
         domain.getMailer().serialize(mailerFormSerializer);
 
+        domain.invalidateContestsList(); //TODO move this action to some appropriate place.
+
         return ok(domains.render(domain, domainEvents, domainFormSerializer.getRawForm(), mailerFormSerializer.getRawForm()));
     }
 
-    private static List<String> getDomainEvents(String domainName) {
+    public static List<String> getDomainEvents(String domainName) {
         List<String> events = new ArrayList<>();
 
         try (DBCursor eventsCursor = MongoConnection.getEventsCollection().find(
@@ -89,5 +91,10 @@ public class Domains extends Controller {
             return ServerConfiguration.getInstance().getCurrentDomain();
         else
             return Domain.getInstance(domainName);
+    }
+
+    public static Result contests(String eventId) {
+        Domain domain = ServerConfiguration.getInstance().getCurrentDomain();
+        domain.getContestsList()
     }
 }

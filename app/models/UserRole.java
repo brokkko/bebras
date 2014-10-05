@@ -44,7 +44,11 @@ public class UserRole implements SerializableUpdatable {
     }
 
     public boolean hasRight(String right) {
-        return rights != null && rights.contains(right);
+        return "anon".equals(right) || rights != null && rights.contains(right);
+    }
+
+    public boolean hasEventAdminRight() {
+        return hasRight("event admin");
     }
 
     public Set<? extends String> getRights() {
