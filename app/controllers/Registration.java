@@ -280,6 +280,8 @@ public class Registration extends Controller {
         User user = (User) formDeserializer.getValidationData();
 
         session(User.getUsernameSessionKey(), user.getLogin());
+        if (user.hasEventAdminRight())
+            Logger.info("Admin user logged in: " + user.getId() + " " + user.getLogin());
 
         return redirect(routes.Application.enter(eventId));
     }
