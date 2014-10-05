@@ -1,7 +1,5 @@
 package models.data;
 
-import models.newserialization.SerializableUpdatable;
-
 /**
  * Created with IntelliJ IDEA.
  * User: ilya

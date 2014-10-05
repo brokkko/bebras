@@ -4,7 +4,6 @@ import au.com.bytecode.opencsv.CSVReader;
 import models.newproblems.ProblemInfo;
 import models.newproblems.ProblemLink;
 import org.bson.types.ObjectId;
-import play.Logger;
 
 import java.io.*;
 import java.util.ArrayList;

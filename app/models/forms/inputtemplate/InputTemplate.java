@@ -1,11 +1,9 @@
 package models.forms.inputtemplate;
 
-import models.forms.InputTemplateSerializationType;
 import models.forms.RawForm;
 import models.newforms.blocks.InputBlock;
 import models.newserialization.*;
 import play.api.templates.Html;
-import play.i18n.Messages;
 
 /**
  * Created with IntelliJ IDEA.

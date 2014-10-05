@@ -1,6 +1,5 @@
 package models.applications;
 
-import models.User;
 import org.bson.types.ObjectId;
 
 /**

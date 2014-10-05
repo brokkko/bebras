@@ -3,10 +3,10 @@ package controllers.actions;
 import controllers.MongoConnection;
 import models.Event;
 import models.ServerConfiguration;
-import play.mvc.SimpleResult;
 import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
+import play.mvc.SimpleResult;
 import plugins.Plugin;
 import views.html.error;
 

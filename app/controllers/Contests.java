@@ -1,5 +1,8 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.actions.*;
 import models.Contest;
 import models.Event;
@@ -12,14 +15,9 @@ import models.newserialization.JSONSerializer;
 import models.newserialization.ListSerializer;
 import models.newserialization.Serializer;
 import models.results.Info;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.contest_print;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;

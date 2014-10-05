@@ -6,7 +6,10 @@ import play.api.templates.Html;
 import play.i18n.Messages;
 import play.mvc.Call;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

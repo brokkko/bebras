@@ -1,6 +1,8 @@
 package models;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import controllers.actions.AuthenticatedAction;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
@@ -10,7 +12,7 @@ import models.results.Info;
 import models.results.InfoPattern;
 import org.bson.types.ObjectId;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.

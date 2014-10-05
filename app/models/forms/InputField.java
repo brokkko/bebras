@@ -1,9 +1,11 @@
 package models.forms;
 
 import models.forms.inputtemplate.InputTemplate;
-import models.forms.inputtemplate.StringInputTemplate;
 import models.forms.validators.Validator;
-import models.newserialization.*;
+import models.newserialization.Deserializer;
+import models.newserialization.SerializableUpdatable;
+import models.newserialization.SerializationTypesRegistry;
+import models.newserialization.Serializer;
 import play.api.templates.Html;
 
 import java.util.ArrayList;

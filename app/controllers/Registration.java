@@ -1,11 +1,11 @@
 package controllers;
 
 import controllers.actions.Authenticated;
-import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.*;
-import models.forms.*;
+import models.forms.InputForm;
+import models.forms.RawForm;
 import models.newserialization.FormDeserializer;
 import org.apache.commons.mail.EmailException;
 import org.bson.types.ObjectId;
@@ -15,10 +15,7 @@ import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
 import ru.ipo.sso.SSO;
-import scala.None;
 import scala.Option;
-import scala.Some;
-import scala.concurrent.Future;
 
 import java.util.List;
 import java.util.UUID;

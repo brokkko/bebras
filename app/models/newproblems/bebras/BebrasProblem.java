@@ -1,6 +1,5 @@
 package models.newproblems.bebras;
 
-import models.utils.Utils;
 import models.forms.RawForm;
 import models.newproblems.Problem;
 import models.newserialization.BasicSerializationType;
@@ -9,6 +8,7 @@ import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
+import models.utils.Utils;
 import play.Logger;
 import play.api.templates.Html;
 import views.widgets.ListWidget;

@@ -1,13 +1,19 @@
 package plugins;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.Utilities;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import controllers.worker.Worker;
-import models.*;
+import models.Contest;
+import models.Event;
+import models.User;
+import models.UserRole;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
@@ -19,15 +25,14 @@ import play.mvc.Result;
 import play.mvc.Results;
 import plugins.certificates.bebras.BebrasAddressCertificate;
 import plugins.certificates.bebras.BebrasCertificate;
-import plugins.certificates.bebras.BebrasGramotaCertificate;
 import plugins.certificates.bebras.BebrasCertificateLine;
+import plugins.certificates.bebras.BebrasGramotaCertificate;
 import views.Menu;
 import views.html.message;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 /**

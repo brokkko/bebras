@@ -1,11 +1,8 @@
 package plugins.bebraspdf.generator;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.*;
 import plugins.bebraspdf.model.KeyFieldConsts;
-
 
 import java.io.*;
 

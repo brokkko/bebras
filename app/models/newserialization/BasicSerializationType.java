@@ -2,9 +2,7 @@ package models.newserialization;
 
 import org.bson.types.ObjectId;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by ilya

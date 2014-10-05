@@ -5,7 +5,10 @@ import models.forms.InputForm;
 import models.newserialization.*;
 import models.results.InfoPattern;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.

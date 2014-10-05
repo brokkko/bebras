@@ -3,13 +3,13 @@ package models.data.features;
 import models.Contest;
 import models.Submission;
 import models.User;
-import models.utils.Utils;
 import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
 import models.newproblems.ProblemInfo;
 import models.results.Info;
+import models.utils.Utils;
 import org.bson.types.ObjectId;
 
 import java.util.*;

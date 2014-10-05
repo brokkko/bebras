@@ -1,12 +1,12 @@
 package models.data.features;
 
-import models.utils.Utils;
 import models.applications.Application;
 import models.applications.ApplicationWithUser;
 import models.data.FeaturesContestType;
 import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.data.WrappedFeatureValue;
+import models.utils.Utils;
 import play.api.templates.Html;
 
 import java.util.Date;

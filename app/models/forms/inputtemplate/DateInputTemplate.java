@@ -2,7 +2,6 @@ package models.forms.inputtemplate;
 
 import models.forms.RawForm;
 import models.newserialization.BasicSerializationType;
-import models.newserialization.Deserializer;
 import models.newserialization.SerializationType;
 import play.api.templates.Html;
 import play.i18n.Messages;

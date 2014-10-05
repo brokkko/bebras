@@ -1,7 +1,13 @@
 package controllers;
 
-import controllers.actions.*;
-import models.*;
+import controllers.actions.Authenticated;
+import controllers.actions.DcesController;
+import controllers.actions.LoadContest;
+import controllers.actions.LoadEvent;
+import models.Contest;
+import models.Event;
+import models.Forms;
+import models.User;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newproblems.newproblemblock.ProblemBlock;
