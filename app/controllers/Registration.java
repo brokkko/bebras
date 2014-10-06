@@ -262,7 +262,7 @@ public class Registration extends Controller {
     @Authenticated(redirectToLogin = false)
     @SuppressWarnings("UnusedParameters")
     public static Result login(String eventId) {
-        if (User.isAuthorized())
+        if (User.isAuthorized() && User.current().getRole() != UserRole.ANON)
             return redirect(routes.Application.enter(eventId));
 
         return ok(views.html.login.render(new RawForm(), null));
