@@ -8,7 +8,7 @@
 @import models.User
 @import scala.List
 
-@defining(Event.current.getContestsAvailableForUser) { availableContests =>
+@defining(Event.current.getContestsAvailableForUser filter (!_.isAvailableForAnon)) { availableContests =>
 @defining(availableContests.filter(_.isShowProblemsOnContestsPage) map (c => controllers.Contests.getProblemsWidgets(c getPagedUserProblems User.current)) ) { extraWidgets =>
 
     @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), new ResourceLink("contest_stub.js"), FormsWidget.get, AdminWidget.get, HtmlBlockWidget.get) ++ extraWidgets) { } {

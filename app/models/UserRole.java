@@ -19,9 +19,13 @@ import java.util.Set;
 public class UserRole implements SerializableUpdatable {
 
     public static final UserRole EMPTY = new UserRole();
+    public static final UserRole ANON = new UserRole();
 
     static {
         EMPTY.update(new MemoryDeserializer("name", "EMPTY"));
+
+        ANON.update(new MemoryDeserializer("name", "ANON"));
+        ANON. //TODO set user info pattern with login and email
     }
 
     public static final String DEFAULT_ENTER_URL = "contests";

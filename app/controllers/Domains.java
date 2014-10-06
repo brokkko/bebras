@@ -14,6 +14,7 @@ import models.newserialization.FormDeserializer;
 import models.newserialization.FormSerializer;
 import play.mvc.Controller;
 import play.mvc.Result;
+import views.html.contests_list_domain;
 import views.html.domains;
 
 import java.util.ArrayList;
@@ -91,10 +92,5 @@ public class Domains extends Controller {
             return ServerConfiguration.getInstance().getCurrentDomain();
         else
             return Domain.getInstance(domainName);
-    }
-
-    public static Result contests(String eventId) {
-        Domain domain = ServerConfiguration.getInstance().getCurrentDomain();
-        domain.getContestsList()
     }
 }

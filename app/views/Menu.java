@@ -75,6 +75,8 @@ public class Menu {
 
         menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(eventId)));
 
+        addDomainContestsMenuItem(menu, eventId);
+
         fillExtraItems(menu);
     }
 
@@ -110,7 +112,7 @@ public class Menu {
             menu.add(new MenuItem("Домен", routes.Domains.domainInfo(eventId, "")));
         }
 
-        menu.add(new MenuItem("Примеры соревнований", routes.Domains.));
+        addDomainContestsMenuItem(menu, eventId);
 
         fillExtraItems(menu);
 
@@ -150,6 +152,10 @@ public class Menu {
             if ("anon".equals(right) || role.hasRight(right)) //TODO remove anon role
                 menu.add(extraItem.getItem());
         }
+    }
+
+    private void addDomainContestsMenuItem(List<MenuItem> menu, String eventId) {
+        menu.add(new MenuItem("Примеры соревнований", routes.DomainContests.contests(eventId)));
     }
 
     private static class RestrictedAccessMenuItem {
