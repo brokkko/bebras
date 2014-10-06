@@ -4,6 +4,7 @@ import models.forms.InputField;
 import models.forms.InputForm;
 import models.newserialization.*;
 import models.results.InfoPattern;
+import models.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,7 +26,31 @@ public class UserRole implements SerializableUpdatable {
         EMPTY.update(new MemoryDeserializer("name", "EMPTY"));
 
         ANON.update(new MemoryDeserializer("name", "ANON"));
-        ANON. //TODO set user info pattern with login and email
+        ANON.setUsersForm(InputForm.deserialize(
+                new MemoryDeserializer(
+                        "fields",
+                        Utils.listify(
+                                Utils.mapify(
+                                        "name", User.FIELD_LOGIN,
+                                        "view", Utils.mapify(
+                                                "type", "string",
+                                                "title", "Логин"
+                                        ),
+                                        "required", true
+                                ),
+                                Utils.mapify(
+                                        "name", User.FIELD_EMAIL,
+                                        "view", Utils.mapify(
+                                                "type", "string",
+                                                "title", "Email"
+                                        ),
+                                        "required", true
+                                )
+                        ),
+                        "validators",
+                        Utils.listify()
+                )
+        ));
     }
 
     public static final String DEFAULT_ENTER_URL = "contests";

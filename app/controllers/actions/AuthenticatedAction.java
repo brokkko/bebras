@@ -76,10 +76,12 @@ public class AuthenticatedAction extends Action<Authenticated> {
      * @return the username of a new user
      */
     private String autoRegisterUser() {
-        String login = new ObjectId().toString();
+        ObjectId userId = new ObjectId();
+        String login = userId.toString();
         String email = login + "@autoregistered";
 
         User user = User.deserialize(new MemoryDeserializer(
+                "_id", login,
                 User.FIELD_LOGIN, login,
                 User.FIELD_EMAIL, email,
                 User.FIELD_USER_ROLE, "ANON"
@@ -89,7 +91,7 @@ public class AuthenticatedAction extends Action<Authenticated> {
         user.setWantAnnouncements(false);
         user.setConfirmed(true);
 
-        user.store();
+        user.serialize(); // is the same as store immediately
 
         return login;
     }
