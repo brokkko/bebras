@@ -51,9 +51,8 @@ public class Menu {
         String eventId = event == Event.ERROR_EVENT ? null : event.getId();
 
         if (eventId != null) {
-            if (User.isAuthorized()) {
-                User user = User.current();
-
+            User user = User.current();
+            if (User.isAuthorized() && user.getRole() != UserRole.ANON) {
                 if (user.isPartialRegistration()) {
                     addPersonalDataMenuItem(menu, eventId);
                     addExitMenuItem(menu, eventId);
