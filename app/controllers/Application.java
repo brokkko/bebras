@@ -1,5 +1,7 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
@@ -8,8 +10,6 @@ import models.ServerConfiguration;
 import models.User;
 import models.utils.Utils;
 import org.bson.types.ObjectId;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.Logger;
 import play.libs.Akka;
 import play.libs.F;
@@ -19,10 +19,11 @@ import play.mvc.Http;
 import play.mvc.Result;
 import views.html.event_message;
 
-import java.io.*;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 @DcesController

@@ -1,10 +1,8 @@
 package models.migration;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import org.bson.types.ObjectId;
-import play.Logger;
 
 /**
  * Created with IntelliJ IDEA.

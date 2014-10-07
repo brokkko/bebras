@@ -231,6 +231,8 @@ public class Event {
     }
 
     public UserRole getRole(String name) {
+        if ("ANON".equals(name))
+            return UserRole.ANON;
         UserRole role = roles.get(name);
         return role == null ? UserRole.EMPTY : role;
     }
@@ -358,6 +360,7 @@ public class Event {
         tables = SerializationTypesRegistry.list(new SerializableSerializationType<>(TableDescription.class)).read(deserializer, "tables");
         skin = deserializer.readString("skin", "");
         ssoEnabled = deserializer.readBoolean("sso", false);
+        domain = deserializer.readString("domain");
 
         List<UserRole> roles = SerializationTypesRegistry.list(new SerializableSerializationType<>(UserRole.class)).read(deserializer, "roles");
         setRoles(roles);

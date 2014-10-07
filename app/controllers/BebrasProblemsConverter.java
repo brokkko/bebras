@@ -2,10 +2,10 @@ package controllers;
 
 import controllers.actions.DcesController;
 import models.ServerConfiguration;
-import models.utils.Utils;
 import models.newproblems.ProblemInfo;
 import models.newproblems.ProblemLink;
 import models.newproblems.bebras.BebrasProblem;
+import models.utils.Utils;
 import org.bson.types.ObjectId;
 import play.Logger;
 import play.mvc.Controller;

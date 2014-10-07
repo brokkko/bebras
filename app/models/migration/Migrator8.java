@@ -1,6 +1,5 @@
 package models.migration;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
 

@@ -5,7 +5,6 @@ import play.Logger;
 import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
-import play.mvc.Result;
 import play.mvc.SimpleResult;
 
 /**

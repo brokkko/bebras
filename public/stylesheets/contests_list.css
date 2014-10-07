@@ -39,3 +39,41 @@ p.time iframe {
 .go-contest-admin {
     float: right;
 }
+
+/* short contest */
+
+.short-contests .info-box .results-and-description,
+.short-contests .info-box .extra-contest-info
+{
+    display: none;
+}
+
+.short-contests .info-box {
+    position: relative;
+}
+
+.short-contests .info-box .contest-status-info {
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*right: 0;*/
+    /*float: right;*/
+    position: absolute;
+    left: 8em;
+    /*bottom: 1em;*/
+}
+
+.short-contests .info-box .info {
+    width: 100%;
+}
+
+.short-contests .info-box .header.big-title {
+    text-align: left;
+}
+
+.short-contests .info-box .contest-select {
+    text-align: left;
+}
+
+.short-contests .info-box .contest-select .link-button {
+    margin-top: 0;
+}

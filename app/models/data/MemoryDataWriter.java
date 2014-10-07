@@ -1,11 +1,7 @@
 package models.data;
 
-import play.api.templates.Html;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.

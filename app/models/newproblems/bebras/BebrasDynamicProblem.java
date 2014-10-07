@@ -12,7 +12,9 @@ import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

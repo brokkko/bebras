@@ -1,11 +1,11 @@
 package controllers;
 
 import controllers.actions.Authenticated;
-import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.*;
-import models.forms.*;
+import models.forms.InputForm;
+import models.forms.RawForm;
 import models.newserialization.FormDeserializer;
 import org.apache.commons.mail.EmailException;
 import org.bson.types.ObjectId;
@@ -15,10 +15,7 @@ import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
 import ru.ipo.sso.SSO;
-import scala.None;
 import scala.Option;
-import scala.Some;
-import scala.concurrent.Future;
 
 import java.util.List;
 import java.util.UUID;
@@ -265,7 +262,7 @@ public class Registration extends Controller {
     @Authenticated(redirectToLogin = false)
     @SuppressWarnings("UnusedParameters")
     public static Result login(String eventId) {
-        if (User.isAuthorized())
+        if (User.isAuthorized() && User.current().getRole() != UserRole.ANON)
             return redirect(routes.Application.enter(eventId));
 
         return ok(views.html.login.render(new RawForm(), null));
@@ -283,6 +280,8 @@ public class Registration extends Controller {
         User user = (User) formDeserializer.getValidationData();
 
         session(User.getUsernameSessionKey(), user.getLogin());
+        if (user.hasEventAdminRight())
+            Logger.info("Admin user logged in: " + user.getId() + " " + user.getLogin());
 
         return redirect(routes.Application.enter(eventId));
     }

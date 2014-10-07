@@ -1,9 +1,9 @@
 package models.newserialization;
 
-import models.utils.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import models.utils.Utils;
 
 import java.util.*;
 

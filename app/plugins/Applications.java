@@ -4,16 +4,17 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
+import controllers.routes;
 import controllers.worker.Worker;
 import models.Event;
 import models.User;
 import models.UserRole;
-import models.utils.Utils;
 import models.applications.Application;
 import models.applications.Kvit;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newserialization.*;
+import models.utils.Utils;
 import org.bson.types.ObjectId;
 import play.Logger;
 import play.api.templates.Html;
@@ -30,8 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import controllers.routes;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,7 +1,6 @@
 package controllers;
 
 import controllers.actions.Authenticated;
-import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.Event;

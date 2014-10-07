@@ -8,7 +8,7 @@
 @import models.User
 @import scala.List
 
-@defining(Event.current.getContestsAvailableForUser) { availableContests =>
+@defining(Event.current.getContestsAvailableForUser filter (!_.isAvailableForAnon)) { availableContests =>
 @defining(availableContests.filter(_.isShowProblemsOnContestsPage) map (c => controllers.Contests.getProblemsWidgets(c getPagedUserProblems User.current)) ) { extraWidgets =>
 
     @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), new ResourceLink("contest_stub.js"), FormsWidget.get, AdminWidget.get, HtmlBlockWidget.get) ++ extraWidgets) { } {
@@ -17,6 +17,9 @@
         Все моменты времени на этой странице указаны по московскому времени.
         Московское время: <iframe src="http://free.timeanddate.com/clock/i3m3rjyq/n166/tlru33/fs18/tct/pct/avb/th1" frameborder="0" width="72" height="24" allowTransparency="true"></iframe>
         </p>
+        @if(User.currentRole.hasEventAdminRight) {
+            <p><a id="contests-in-short-form" href="#"></a></p>
+        }
 
         @Event.current.getHtmlBlock("contests_list_top").format
 

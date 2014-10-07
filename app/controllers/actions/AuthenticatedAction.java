@@ -1,13 +1,24 @@
 package controllers.actions;
 
+import controllers.Email;
 import controllers.routes;
 import models.Event;
+import models.ServerConfiguration;
 import models.User;
+import models.newserialization.MemoryDeserializer;
+import org.apache.commons.mail.EmailException;
+import org.bson.types.ObjectId;
+import play.Logger;
+import play.Play;
 import play.api.mvc.Call;
 import play.libs.F;
-import play.mvc.*;
+import play.mvc.Action;
+import play.mvc.Http;
+import play.mvc.Results;
+import play.mvc.SimpleResult;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,8 +38,15 @@ public class AuthenticatedAction extends Action<Authenticated> {
         //TODO include return back url
         F.Promise<SimpleResult> loginRedirect = F.Promise.pure(Results.redirect(routes.Registration.login(event.getId())));
 
-        if (userName == null)
-            return configuration.redirectToLogin() ? loginRedirect : delegate.call(ctx);
+        if (userName == null) {
+            if (configuration.autoRegister()) {
+                userName = autoRegisterUser();
+                ctx.session().put(User.getUsernameSessionKey(), userName);
+            }
+
+            if (userName == null)
+                return configuration.redirectToLogin() ? loginRedirect : delegate.call(ctx);
+        }
 
         ctx.request().setUsername(userName);
 
@@ -51,6 +69,31 @@ public class AuthenticatedAction extends Action<Authenticated> {
         }
 
         return delegate.call(ctx);
+    }
+
+    /**
+     * Registers user and returns his username
+     * @return the username of a new user
+     */
+    private String autoRegisterUser() {
+        ObjectId userId = new ObjectId();
+        String login = userId.toString();
+        String email = login + "@autoregistered";
+
+        User user = User.deserialize(new MemoryDeserializer(
+                "_id", login,
+                User.FIELD_LOGIN, login,
+                User.FIELD_EMAIL, email,
+                User.FIELD_USER_ROLE, "ANON"
+        ));
+
+        user.setPasswordHash("");
+        user.setWantAnnouncements(false);
+        user.setConfirmed(true);
+
+        user.serialize(); // is the same as store immediately
+
+        return login;
     }
 
     public static Date getRequestTime() {

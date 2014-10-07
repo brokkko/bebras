@@ -1,5 +1,9 @@
 package models.newproblems.kio;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import models.Event;
@@ -12,10 +16,6 @@ import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
 import org.bson.types.ObjectId;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import play.Logger;
 import play.api.templates.Html;
 import play.mvc.Http;

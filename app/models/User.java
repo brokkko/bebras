@@ -1,6 +1,9 @@
 package models;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import controllers.actions.AuthenticatedAction;
 import models.data.TableDescription;

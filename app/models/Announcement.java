@@ -1,7 +1,9 @@
 package models;
 
-import com.mongodb.*;
-import controllers.Email;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import models.newserialization.*;
 import org.apache.commons.mail.EmailException;

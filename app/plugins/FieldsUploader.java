@@ -4,8 +4,6 @@ import models.Event;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.io.*;
-
 /**
  * Created with IntelliJ IDEA.
  * User: ilya

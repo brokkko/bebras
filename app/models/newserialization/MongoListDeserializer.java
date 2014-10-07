@@ -26,17 +26,20 @@ public class MongoListDeserializer extends ListDeserializer {
 
     @Override
     public Integer readInt() {
-        return (Integer) list.get(index++);
+        Number number = (Number) list.get(index++);
+        return number == null ? null : number.intValue();
     }
 
     @Override
     public Long readLong() {
-        return (Long) list.get(index++);
+        Number number = (Number) list.get(index++);
+        return number == null ? null : number.longValue();
     }
 
     @Override
     public Double readDouble() {
-        return (Double) list.get(index++);
+        Number number = (Number) list.get(index++);
+        return number == null ? null : number.doubleValue();
     }
 
     @Override
