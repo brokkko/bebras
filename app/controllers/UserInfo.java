@@ -6,6 +6,7 @@ import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.Event;
 import models.User;
+import models.UserRole;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newserialization.BasicSerializationType;
@@ -32,7 +33,10 @@ public class UserInfo extends Controller {
 
     @SuppressWarnings("UnusedParameters")
     public static Result contestsList(String eventId) {
-        return ok(views.html.contests_list.render(new RawForm()));
+        if (User.currentRole() == UserRole.ANON)
+            return redirect(routes.DomainContests.contests(eventId));
+        else
+            return ok(views.html.contests_list.render(new RawForm()));
     }
 
     private static boolean mayChangeUserInfo() {

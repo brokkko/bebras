@@ -5,6 +5,7 @@ import models.newserialization.Serializable;
 import models.newserialization.Serializer;
 import models.results.Info;
 import org.bson.types.ObjectId;
+import play.Logger;
 
 import java.util.Date;
 import java.util.List;
