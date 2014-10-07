@@ -1,6 +1,7 @@
 package views;
 
 import controllers.routes;
+import models.Contest;
 import models.Event;
 import models.User;
 import models.UserRole;
@@ -154,7 +155,18 @@ public class Menu {
     }
 
     private void addDomainContestsMenuItem(List<MenuItem> menu, String eventId) {
-        menu.add(new MenuItem("Примеры соревнований", routes.DomainContests.contests(eventId)));
+        if (eventId == null)
+            return;
+
+        boolean hasAnons = false;
+        for (Contest contest : Event.current().getContests())
+            if (contest.isAvailableForAnon()) {
+                hasAnons = true;
+                break;
+            }
+
+        if (hasAnons)
+            menu.add(new MenuItem("Примеры соревнований", routes.DomainContests.contests(eventId)));
     }
 
     private static class RestrictedAccessMenuItem {
