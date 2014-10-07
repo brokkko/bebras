@@ -1,0 +1,33 @@
+@()
+@import views.htmlblocks.HtmlBlockWidget
+@import views.widgets.ResourceLink
+@import views.widgets.FormsWidget
+@import views.widgets.AdminWidget
+@import models.Event
+@import models.User
+@import scala.List
+
+@defining(Event.current.getContests filter {_.isAvailableForAnon}) { availableContests =>
+    @*TODO support contests with problems on the contests page*@
+    @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), new ResourceLink("contest_stub.js"), FormsWidget.get, AdminWidget.get, HtmlBlockWidget.get)) { } {
+        <h1>Доступные соревнования</h1>
+        <div id="shortering" class="short-contests">
+
+            @Event.current.getHtmlBlock("domain_contests_list_top").format
+
+            @for((contest, contestIndex) <- availableContests.zipWithIndex) {
+                @contest_info_for_user(contest, contestIndex)
+            }
+
+            @if(availableContests.isEmpty) {
+                <br>
+                <br>
+                <div class='info-box'>
+                    <h2>Вам пока не доступно ни одного соревнования</h2>
+                </div>
+            }
+
+            @Event.current.getHtmlBlock("domain_contests_list_bottom").format
+        </div>
+    }
+} @*close definings*@

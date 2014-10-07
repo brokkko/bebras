@@ -39,4 +39,20 @@ $(function(){
         $(this).parents('form').submit();
         return false;
     });
+
+    var contestShortFormMessage = "Переключить на краткую форму соревнований";
+    var contestFullFormMessage = "Переключить на полную форму соревнований";
+    var $contestViewSwitcher = $('#contests-in-short-form');
+    $contestViewSwitcher.text(contestShortFormMessage).click(function() {
+        if ($contestViewSwitcher.text() == contestShortFormMessage) {
+            $(".content").addClass('short-contests');
+            $contestViewSwitcher.text(contestFullFormMessage);
+        } else {
+            $(".content").removeClass('short-contests');
+            $contestViewSwitcher.text(contestShortFormMessage);
+        }
+
+        return false;
+    })
+
 });

@@ -6,12 +6,15 @@ import com.mongodb.DBObject;
 import controllers.actions.Authenticated;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
-import models.*;
+import models.Domain;
+import models.Mailer;
+import models.ServerConfiguration;
 import models.forms.RawForm;
 import models.newserialization.FormDeserializer;
 import models.newserialization.FormSerializer;
 import play.mvc.Controller;
 import play.mvc.Result;
+import views.html.contests_list_domain;
 import views.html.domains;
 
 import java.util.ArrayList;
@@ -33,10 +36,12 @@ public class Domains extends Controller {
         FormSerializer mailerFormSerializer = new FormSerializer(Mailer.MAILER_CHANGE_FORM);
         domain.getMailer().serialize(mailerFormSerializer);
 
+        domain.invalidateContestsList(); //TODO move this action to some appropriate place.
+
         return ok(domains.render(domain, domainEvents, domainFormSerializer.getRawForm(), mailerFormSerializer.getRawForm()));
     }
 
-    private static List<String> getDomainEvents(String domainName) {
+    public static List<String> getDomainEvents(String domainName) {
         List<String> events = new ArrayList<>();
 
         try (DBCursor eventsCursor = MongoConnection.getEventsCollection().find(

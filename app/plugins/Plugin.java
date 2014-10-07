@@ -1,13 +1,12 @@
 package plugins;
 
+import controllers.routes;
 import models.Event;
 import models.newserialization.Deserializer;
 import models.newserialization.SerializableUpdatable;
 import models.newserialization.Serializer;
 import play.mvc.Call;
 import play.mvc.Result;
-
-import controllers.routes;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,6 +1,7 @@
 package views;
 
 import controllers.routes;
+import models.Contest;
 import models.Event;
 import models.User;
 import models.UserRole;
@@ -51,9 +52,8 @@ public class Menu {
         String eventId = event == Event.ERROR_EVENT ? null : event.getId();
 
         if (eventId != null) {
-            if (User.isAuthorized()) {
-                User user = User.current();
-
+            User user = User.current();
+            if (User.isAuthorized() && user.getRole() != UserRole.ANON) {
                 if (user.isPartialRegistration()) {
                     addPersonalDataMenuItem(menu, eventId);
                     addExitMenuItem(menu, eventId);
@@ -74,6 +74,8 @@ public class Menu {
             menu.add(new MenuItem("Регистрация", routes.Registration.registration(eventId)));
 
         menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(eventId)));
+
+        addDomainContestsMenuItem(menu, eventId);
 
         fillExtraItems(menu);
     }
@@ -109,6 +111,8 @@ public class Menu {
             menu.add(new MenuItem("Рассылка сообщений", routes.Announcements.prepareAnnouncement(eventId)));
             menu.add(new MenuItem("Домен", routes.Domains.domainInfo(eventId, "")));
         }
+
+        addDomainContestsMenuItem(menu, eventId);
 
         fillExtraItems(menu);
 
@@ -148,6 +152,21 @@ public class Menu {
             if ("anon".equals(right) || role.hasRight(right)) //TODO remove anon role
                 menu.add(extraItem.getItem());
         }
+    }
+
+    private void addDomainContestsMenuItem(List<MenuItem> menu, String eventId) {
+        if (eventId == null)
+            return;
+
+        boolean hasAnons = false;
+        for (Contest contest : Event.current().getContests())
+            if (contest.isAvailableForAnon()) {
+                hasAnons = true;
+                break;
+            }
+
+        if (hasAnons)
+            menu.add(new MenuItem("Примеры соревнований", routes.DomainContests.contests(eventId)));
     }
 
     private static class RestrictedAccessMenuItem {

@@ -288,6 +288,15 @@ public class Forms {
                                     "required", true
                             ),
                             Utils.mapify(
+                                    "name", "domain",
+                                    "view", Utils.mapify(
+                                            "type", "string",
+                                            "title", "Домен",
+                                            "placeholder", "Введите домен"
+                                    ),
+                                    "required", true
+                            ),
+                            Utils.mapify(
                                     "name", "tables",
                                     "view", Utils.mapify(
                                             "type", "json list",

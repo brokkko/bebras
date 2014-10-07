@@ -2,12 +2,15 @@ package models;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import controllers.Domains;
 import controllers.MongoConnection;
 import models.forms.InputForm;
 import models.newserialization.*;
 import models.utils.Utils;
 import play.cache.Cache;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 public class Domain implements SerializableUpdatable {
@@ -56,6 +59,8 @@ public class Domain implements SerializableUpdatable {
     private String googleCounter = "";
     private String yandexMetrika = "";
     private String defaultEvent = "default";
+
+    private List<Contest> contests = null; // cached list of contests
 
     public static Domain getInstance(final String name) {
         try {
@@ -138,5 +143,24 @@ public class Domain implements SerializableUpdatable {
 
     public String getDefaultEvent() {
         return defaultEvent;
+    }
+
+    public List<Contest> getContestsList() {
+        if (contests == null) {
+            List<String> domainEvents = Domains.getDomainEvents(name);
+            contests = new ArrayList<>();
+            for (String domainEvent : domainEvents) {
+                Event event = Event.getInstance(domainEvent);
+                for (Contest contest : event.getContests())
+                    if (contest.isAvailableForAnon())
+                        contests.add(contest);
+            }
+        }
+
+        return contests;
+    }
+
+    public void invalidateContestsList() {
+        contests = null;
     }
 }

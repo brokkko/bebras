@@ -1,29 +1,24 @@
 package controllers;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import controllers.actions.Authenticated;
 import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
-import models.Contest;
 import models.Event;
 import models.User;
+import models.UserRole;
+import models.forms.InputForm;
+import models.forms.RawForm;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.FormDeserializer;
 import models.newserialization.FormSerializer;
-import models.forms.InputForm;
-import models.forms.RawForm;
 import models.newserialization.SerializationType;
 import models.results.InfoPattern;
 import org.bson.types.ObjectId;
 import play.mvc.Controller;
-
 import play.mvc.Result;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,7 +33,10 @@ public class UserInfo extends Controller {
 
     @SuppressWarnings("UnusedParameters")
     public static Result contestsList(String eventId) {
-        return ok(views.html.contests_list.render(new RawForm()));
+        if (User.currentRole() == UserRole.ANON)
+            return redirect(routes.DomainContests.contests(eventId));
+        else
+            return ok(views.html.contests_list.render(new RawForm()));
     }
 
     private static boolean mayChangeUserInfo() {

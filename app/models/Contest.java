@@ -7,10 +7,10 @@ import controllers.MongoConnection;
 import models.data.TableDescription;
 import models.forms.InputForm;
 import models.forms.RawForm;
+import models.newproblems.ConfiguredProblem;
 import models.newproblems.newproblemblock.ProblemBlock;
 import models.newproblems.newproblemblock.ProblemBlockFactory;
 import models.newserialization.*;
-import models.newproblems.ConfiguredProblem;
 import models.results.CombinedTranslator;
 import models.results.EmptyTranslator;
 import models.results.InfoPattern;
@@ -18,7 +18,10 @@ import models.results.Translator;
 import org.bson.types.ObjectId;
 import play.mvc.Http;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -181,6 +184,8 @@ public class Contest {
     }
 
     public boolean isAvailableForUser(User user) {
+        if (isAvailableForAnon())
+            return true;
         if (user == null)
             return false;
         if (rights.isEmpty())
@@ -192,6 +197,10 @@ public class Contest {
                 return true;
 
         return false;
+    }
+
+    public boolean isAvailableForAnon() {
+        return rights.contains("anon");
     }
 
     public String getBlockTitle() {

@@ -1,11 +1,12 @@
 package plugins.certificates;
 
 import models.newserialization.SerializableTreeSerializationType;
-import plugins.certificates.dmti.DmTiCertificate;
 import plugins.certificates.dmti.DmTiCertificateFactory;
-import plugins.certificates.dmti.ThankYouLetter;
 import plugins.certificates.dmti.ThankYouLetterFactory;
-import plugins.certificates.kio.*;
+import plugins.certificates.kio.KioCertificateFactory;
+import plugins.certificates.kio.KioDiplomaFactory;
+import plugins.certificates.kio.KioProblemDiplomaFactory;
+import plugins.certificates.kio.KioTeacherGramotaFactory;
 
 public class DiplomaFactorySerializationType extends SerializableTreeSerializationType<DiplomaFactory> {
 

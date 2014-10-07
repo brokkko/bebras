@@ -1,10 +1,8 @@
 package models.data;
 
-import models.Contest;
 import models.Event;
 import models.User;
 import models.newserialization.SerializableUpdatable;
-import play.mvc.Call;
 
 import java.util.List;
 

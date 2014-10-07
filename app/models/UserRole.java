@@ -4,8 +4,12 @@ import models.forms.InputField;
 import models.forms.InputForm;
 import models.newserialization.*;
 import models.results.InfoPattern;
+import models.utils.Utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,9 +20,37 @@ import java.util.*;
 public class UserRole implements SerializableUpdatable {
 
     public static final UserRole EMPTY = new UserRole();
+    public static final UserRole ANON = new UserRole();
 
     static {
         EMPTY.update(new MemoryDeserializer("name", "EMPTY"));
+
+        ANON.update(new MemoryDeserializer("name", "ANON"));
+        ANON.setUsersForm(InputForm.deserialize(
+                new MemoryDeserializer(
+                        "fields",
+                        Utils.listify(
+                                Utils.mapify(
+                                        "name", User.FIELD_LOGIN,
+                                        "view", Utils.mapify(
+                                                "type", "string",
+                                                "title", "Логин"
+                                        ),
+                                        "required", true
+                                ),
+                                Utils.mapify(
+                                        "name", User.FIELD_EMAIL,
+                                        "view", Utils.mapify(
+                                                "type", "string",
+                                                "title", "Email"
+                                        ),
+                                        "required", true
+                                )
+                        ),
+                        "validators",
+                        Utils.listify()
+                )
+        ));
     }
 
     public static final String DEFAULT_ENTER_URL = "contests";
@@ -41,7 +73,11 @@ public class UserRole implements SerializableUpdatable {
     }
 
     public boolean hasRight(String right) {
-        return rights != null && rights.contains(right);
+        return "anon".equals(right) || rights != null && rights.contains(right);
+    }
+
+    public boolean hasEventAdminRight() {
+        return hasRight("event admin");
     }
 
     public Set<? extends String> getRights() {

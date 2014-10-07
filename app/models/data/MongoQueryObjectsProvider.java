@@ -3,8 +3,6 @@ package models.data;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import models.newserialization.Deserializer;
-import models.newserialization.Serializer;
 
 /**
  * Created with IntelliJ IDEA.

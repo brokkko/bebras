@@ -4,7 +4,6 @@ import plugins.bebraspdf.model.enums.PdfFile;
 import plugins.bebraspdf.model.enums.UserClass;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

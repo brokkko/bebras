@@ -1,9 +1,8 @@
 package models.applications;
 
 import models.User;
-import models.utils.Utils;
 import models.results.Info;
-import org.bson.types.ObjectId;
+import models.utils.Utils;
 import plugins.Applications;
 
 import java.io.File;

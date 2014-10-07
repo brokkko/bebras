@@ -2,7 +2,10 @@ package models.newserialization;
 
 import models.utils.Utils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.

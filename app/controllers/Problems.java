@@ -17,10 +17,6 @@ import org.bson.types.ObjectId;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
-import views.html.error;
-import views.html.problem_view;
-import views.html.problem_view_raw;
-import views.html.problems_folder;
 
 import java.util.HashMap;
 import java.util.LinkedList;

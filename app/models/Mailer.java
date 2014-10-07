@@ -1,7 +1,10 @@
 package models;
 
 import models.forms.InputForm;
-import models.newserialization.*;
+import models.newserialization.Deserializer;
+import models.newserialization.MemoryDeserializer;
+import models.newserialization.SerializableUpdatable;
+import models.newserialization.Serializer;
 import models.utils.Utils;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;

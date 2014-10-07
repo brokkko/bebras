@@ -1,7 +1,5 @@
 package models.data;
 
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
