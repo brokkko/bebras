@@ -12,6 +12,7 @@ import play.mvc.Result;
 
 import java.io.*;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.util.concurrent.Callable;
 
 public class Resources extends Controller {
@@ -32,22 +33,13 @@ public class Resources extends Controller {
                 @Override
                 public byte[] call() throws Exception {
                     File resource = ServerConfiguration.getInstance().getResource(decodedFile);
-                    if (!resource.exists())
-                        return null;
 
-                    //read file to byte array
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    byte[] buffer = new byte[1024 * 8];
-                    try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(resource))) {
-                        int read;
-                        while ((read = in.read(buffer)) > 0)
-                            baos.write(buffer, 0, read);
+                    try {
+                        return Files.readAllBytes(resource.toPath());
                     } catch (Exception e) {
                         Logger.warn("Failed to read resource " + decodedFile, e);
                         return null;
                     }
-
-                    return baos.toByteArray();
                 }
             }, 30 * 60);  //30 minutes
         } catch (Exception ignored) {
