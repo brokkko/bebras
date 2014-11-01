@@ -977,17 +977,21 @@ public class User implements SerializableUpdatable {
         return hasRight("event admin");
     }
 
-    public void invalidateEventResults() {
-        eventResults = null;
+    private void invalidateEventResults() {
         cachedAllSubmissions.clear();
-        store();
+        if (eventResults != null) {
+            eventResults = null;
+            store();
+        }
     }
 
     public void invalidateContestResults(String contestId) {
         ContestInfoForUser contestInfo = getContestInfoCreateIfNeeded(contestId);
-        contestInfo.setFinalResults(null);
+        if (contestInfo.getFinalResults() != null) {
+            contestInfo.setFinalResults(null);
+            store();
+        }
         invalidateEventResults();
-        store();
     }
 
     public void invalidateAllResults() {
@@ -996,6 +1000,9 @@ public class User implements SerializableUpdatable {
         invalidateEventResults();
     }
 
+    //TODO move contest and event results out of the user class
+
+    //TODO invalidations for all users do not test clear caches that may have cached users
     private static void invalidateOneContestResults(Event event, Contest contest) {
         DBCollection usersCollection = MongoConnection.getUsersCollection();
         DBObject query = new BasicDBObject("event_id", event.getId());

@@ -3,13 +3,14 @@ import models.ServerConfiguration;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
+import play.api.PlayException;
 import play.mvc.SimpleResult;
 import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
-import play.mvc.Result;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
@@ -23,7 +24,6 @@ public class Global extends GlobalSettings {
 
     @Override
     public void onStart(Application app) {
-        Logger.info("Application started");
         Announcement.scheduleOneSending(1);
     }
 
@@ -51,15 +51,24 @@ public class Global extends GlobalSettings {
         return super.onRequest(request, method);
     }
 
-    /*@Override
-    public Result onHandlerNotFound(Http.RequestHeader requestHeader) {
-        Logger.info("Handler not found: " + requestHeader.method() + " " + requestHeader.host() + requestHeader.uri());
-        return super.onHandlerNotFound(requestHeader);
-    }*/
-
     @Override
     public F.Promise<SimpleResult> onBadRequest(Http.RequestHeader requestHeader, String error) {
         Logger.info("Bad request: " + requestHeader.method() + " " + requestHeader.host() + requestHeader.uri());
         return super.onBadRequest(requestHeader, error);
+    }
+
+    @Override
+    public F.Promise<SimpleResult> onError(Http.RequestHeader request, Throwable t) {
+        if (t instanceof PlayException) {
+            String exceptionId = ((PlayException) t).id;
+
+            StringBuilder headers = new StringBuilder();
+            headers.append(request.method()).append(" ").append(request.host()).append(request.uri()).append("\n");
+            for (Map.Entry<String, String[]> entry : request.headers().entrySet())
+                headers.append(entry.getKey()).append(": ").append(Arrays.toString(entry.getValue())).append("\n");
+
+            Logger.error("Headers for exception @" + exceptionId + "\n" + headers);
+        }
+        return super.onError(request, t);
     }
 }

@@ -175,6 +175,10 @@ public class MongoConnection {
                 eventAndRoleIndex.put(User.FIELD_USER_ROLE, 1);
                 collection.createIndex(eventAndRoleIndex);
 
+                DBObject eventAndEmailIndex = new BasicDBObject(User.FIELD_EVENT, 1);
+                eventAndLoginIndex.put(User.FIELD_EMAIL, 1);
+                collection.createIndex(eventAndEmailIndex); //TODO make unique (now there are exceptions in DB)
+
                 collection.createIndex(new BasicDBObject(User.FIELD_CONFIRMATION_UUID, 1));
                 collection.createIndex(new BasicDBObject(User.FIELD_REGISTRATION_UUID, 1));
                 collection.createIndex(new BasicDBObject(User.FIELD_REGISTERED_BY, 1));

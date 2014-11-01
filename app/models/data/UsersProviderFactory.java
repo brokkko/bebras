@@ -26,6 +26,7 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
     private String role;
     private boolean loadEventResults;
     private String sortField;
+    private boolean sortBackwards;
     private boolean onlySubUsers;
     //TODO load results for separate contests
 
@@ -63,7 +64,7 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
 
         DBObject sort = null;
         if (sortField != null)
-            sort = new BasicDBObject(sortField, 1);
+            sort = new BasicDBObject(sortField, sortBackwards ? -1 : 1);
 
         return new UsersProvider(loadEventResults, query, sort);
     }
@@ -88,6 +89,8 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
         serializer.write("role", role);
         serializer.write("load event results", loadEventResults);
         serializer.write("sort", sortField);
+        if (sortField != null)
+            serializer.write("sort back", sortBackwards);
         serializer.write("only subusers", onlySubUsers);
     }
 
@@ -96,6 +99,7 @@ public class UsersProviderFactory implements ObjectsProviderFactory<User> {
         role = deserializer.readString("role");
         loadEventResults = deserializer.readBoolean("load event results", false);
         sortField = deserializer.readString("sort");
+        sortBackwards = deserializer.readBoolean("sort back", false);
         onlySubUsers = deserializer.readBoolean("only subusers", true);
     }
 }
