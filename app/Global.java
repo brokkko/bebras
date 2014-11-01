@@ -23,7 +23,6 @@ public class Global extends GlobalSettings {
 
     @Override
     public void onStart(Application app) {
-        Logger.info("Application started");
         Announcement.scheduleOneSending(1);
     }
 
@@ -50,12 +49,6 @@ public class Global extends GlobalSettings {
         }
         return super.onRequest(request, method);
     }
-
-    /*@Override
-    public Result onHandlerNotFound(Http.RequestHeader requestHeader) {
-        Logger.info("Handler not found: " + requestHeader.method() + " " + requestHeader.host() + requestHeader.uri());
-        return super.onHandlerNotFound(requestHeader);
-    }*/
 
     @Override
     public F.Promise<SimpleResult> onBadRequest(Http.RequestHeader requestHeader, String error) {
