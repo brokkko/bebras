@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.actions.*;
-import models.Contest;
-import models.Event;
-import models.Submission;
-import models.User;
+import models.*;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
 import models.newserialization.JSONDeserializer;
@@ -15,6 +12,7 @@ import models.newserialization.JSONSerializer;
 import models.newserialization.ListSerializer;
 import models.newserialization.Serializer;
 import models.results.Info;
+import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -102,6 +100,8 @@ public class Contests extends Controller {
             if (!user.contestFinished(contest)) { //don't mark that user started contest if he can not start it. TODO check this condition in some other way
                 user.setContestStartTime(contestId, contestStartTime);
                 user.store();
+
+                logUserStartedContest(eventId, contestId, user, contestStartTime);
             }
         }
 
@@ -162,6 +162,16 @@ public class Contests extends Controller {
                                                        event.getExtraField("contests_no_bottom_pages", false) == Boolean.FALSE,
                                                        event.getExtraField("contests_no_next_buttons", false) == Boolean.FALSE
             ));
+    }
+
+    private static void logUserStartedContest(String eventId, String contestId, User user, Date contestStartTime) {
+        // do not log anonymous users
+        if (user.getRole().equals(UserRole.ANON))
+            return;
+
+        Logger.info(String.format("Event %s user %s started contest %s at %tc",
+                eventId, user.getId(), contestId, contestStartTime
+        ));
     }
 
     public static Result allContestProblems(String eventId, String contestId, boolean showAnswers) {
