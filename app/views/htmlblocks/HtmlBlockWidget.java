@@ -16,7 +16,6 @@ import java.util.List;
 public class HtmlBlockWidget implements Widget {
 
     private static final ResourceLink css = new ResourceLink("html-block.css");
-    private static final ResourceLink helpCss = new ResourceLink("help.css");
     private static final ResourceLink jsEditor = new ResourceLink("wymeditor/jquery.wymeditor.min.js");
     private static final ResourceLink jsUploadPlugin = new ResourceLink("wymeditor/plugins/image_upload/jquery.wymeditor.image_upload.js");
     private static final ResourceLink jsBlock = new ResourceLink("html-block.js");
@@ -26,9 +25,9 @@ public class HtmlBlockWidget implements Widget {
     private HtmlBlockWidget() {
         User user = User.current();
         if (user != null && user.hasEventAdminRight())
-            links = Arrays.asList(css, helpCss, jsEditor, jsUploadPlugin, jsBlock);
+            links = Arrays.asList(css, jsEditor, jsUploadPlugin, jsBlock);
         else
-            links = Arrays.asList(css, helpCss);
+            links = Arrays.asList(css);
     }
 
     @Override

@@ -1,7 +1,0 @@
-@(eventId:String, blockId:String)
-@import views.htmlblocks.HtmlBlockWidget
-@import views.htmlblocks.HtmlBlock
-@import scala.List
-@main_with_menu(Event.current.getTitle)(List(HtmlBlockWidget.get)) { } {
-    @HtmlBlock.load(eventId, blockId).format
-}

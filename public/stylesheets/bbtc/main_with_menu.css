@@ -444,3 +444,42 @@ a, a:visited {
 .wym_area_top ul li {
     list-style: none;
 }
+
+/* from help.css */
+
+.two-columns-page {
+    width: 100%;
+    border-spacing: 0;
+}
+
+.two-columns-page td.info-col {
+    padding-left: 8pt;
+    padding-right: 4pt;
+    vertical-align: text-top;
+    width: 50%;
+}
+
+.contents {
+    line-height: 1.2;
+}
+
+h3 {
+    font-weight: bold;
+    margin-bottom: 0.3em;
+}
+
+table.kvit-data {
+    line-height: 1.4;
+}
+
+table.kvit-data td {
+    padding-bottom: 0.5em;
+}
+
+.two-columns-page td {
+    width: 50%;
+}
+
+span.pre {
+    font-family: monospace;
+}
