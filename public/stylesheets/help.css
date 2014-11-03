@@ -1,6 +1,4 @@
-span.pre {
-    font-family: monospace;
-}
+/*TODO get rid of #text-area*/
 
 #text-area img {
     margin: 0 3pt 3pt 3pt;
@@ -55,6 +53,20 @@ span.pre {
     color: #000000;
 }
 
+/* ---------------------------- */
+
+.two-columns-page {
+    width: 100%;
+    border-spacing: 0;
+}
+
+.two-columns-page td.info-col {
+    padding-left: 8pt;
+    padding-right: 4pt;
+    vertical-align: text-top;
+    width: 50%;
+}
+
 .contents {
     line-height: 1.2;
 }
@@ -74,4 +86,8 @@ table.kvit-data td {
 
 .two-columns-page td {
     width: 50%;
+}
+
+span.pre {
+    font-family: monospace;
 }

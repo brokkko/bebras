@@ -1,8 +1,8 @@
 package views.widgets;
 
 import models.Event;
-import models.ServerConfiguration;
 import play.Play;
+import play.mvc.Call;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,6 +36,12 @@ public class ResourceLink implements Widget {
             "css",
             null
     );
+
+    private static final String resourcesVersion;
+
+    static {
+        resourcesVersion = Play.application().configuration().getString("resources_version");
+    }
 
     private String localUrl;
     private String externalUrl;
@@ -85,6 +91,11 @@ public class ResourceLink implements Widget {
         return url.substring(point + 1);
     }
 
+    public static Call getFavicon() {
+        String localUrl = "images/favicon." + Event.current().getSkin() + ".png";
+        return controllers.routes.Assets.at(versionizeUrl(localUrl));
+    }
+
     public String apply() {
         boolean returnLocal = false;
 
@@ -96,10 +107,14 @@ public class ResourceLink implements Widget {
                 returnLocal = true;
         }
 
-        if (returnLocal)
-            return controllers.routes.Assets.at(localUrl).url();
-        else
+        if (returnLocal) {
+            return controllers.routes.Assets.at(versionizeUrl(localUrl)).url();
+        } else
             return externalUrl;
+    }
+
+    private static String versionizeUrl(String url) {
+        return resourcesVersion == null ? url : url + "?" + resourcesVersion;
     }
 
     @Override

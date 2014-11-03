@@ -1,0 +1,19 @@
+@(entries: java.util.List[models.UserActivityEntry])
+<table class="visits-list">
+    <thead>
+        <tr>
+            <td>Последнее посещение</td>
+            <td>IP</td>
+            <td>User agent</td>
+        </tr>
+    </thead>
+    <tbody>
+        @for(entry <- entries) {
+            <tr>
+                <td>@entry.getDate</td>
+                <td><a target="_blank" href="http://ipinfo.io/@entry.getIp">@entry.getIp</a></td>@*TODO /json at the and of url returns info in JSON*@
+                <td>@entry.getUa</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -98,6 +98,7 @@ public class Application extends Controller {
         if (pos < 0)
             return notFound();
 
+        //TODO anon enter URL should be as anonymous enter url
         return redirect(url.substring(0, pos) + "/" + User.currentRole().getEnterUrl());
     }
 
