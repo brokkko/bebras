@@ -79,6 +79,7 @@ header {
     background-color: white;
     border-left: 2px solid #f5972d;
     overflow: hidden;
+    font-size: 11pt;
 }
 
 .content-footer, .content-header {
@@ -453,8 +454,9 @@ a:hover {
 }
 
 .two-columns-page td.info-col {
-    padding-left: 8pt;
-    padding-right: 4pt;
+    /*padding-left: 0.6em;*/
+    /*padding-right: 0.3em;*/
+    padding-right: 1em;
     vertical-align: text-top;
     width: 50%;
 }
@@ -482,4 +484,30 @@ table.kvit-data td {
 
 span.pre {
     font-family: monospace;
+}
+
+/* additional navigation */
+.additional-navigation {
+    display: table;
+}
+
+.additional-navigation li {
+    display: inline-block;
+    margin: 0 0.6em 0 0;
+}
+
+.additional-navigation li a {
+    color: #fff0b2;
+    padding: 0.3em 0.8em 0.4em 0.8em;
+    text-decoration: none;
+    text-shadow: 2px 2px 2px #646c37;
+    background: #646c37 url(../../images/header02.png);
+    /*box-shadow: 1px 1px #646c37;*/
+    box-shadow: none;
+    border-radius: 3px;
+    /*font-weight: bold;*/
+}
+
+.additional-navigation li a:hover {
+    color: #fff;
 }
