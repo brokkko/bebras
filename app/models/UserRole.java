@@ -53,6 +53,8 @@ public class UserRole implements SerializableUpdatable {
         ));
     }
 
+    //TODO define ANONYMOUS role here
+
     public static final String DEFAULT_ENTER_URL = "contests";
 
     private String name;

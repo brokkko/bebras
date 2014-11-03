@@ -1,0 +1,9 @@
+@(user: User, visits:java.util.List[models.UserActivityEntry])
+@import views.widgets.AdminWidget
+@import views.htmlblocks.HtmlBlockWidget
+@main_with_menu("Просмотр посещений пользователя")(scala.List(HtmlBlockWidget.get, AdminWidget.get)) { } {
+    <h1>Посещения пользователя @user.getLogin</h1>
+    <p>Вернуться к данным пользователя @htmlfeatures.user_link(user.getId.toString, Event.currentId, user.getLogin)</p>
+
+    @user_visit(visits)
+}

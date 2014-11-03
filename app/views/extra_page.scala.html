@@ -1,7 +1,33 @@
-@(eventId:String, blockId:String)
+@(eventId: String, subpage: plugins.ExtraPage.SubPage, subpages: List[plugins.ExtraPage.SubPage])
+@import plugins.ExtraPage
+@import plugins.ExtraPage.SubPage
 @import views.htmlblocks.HtmlBlockWidget
 @import views.htmlblocks.HtmlBlock
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List(HtmlBlockWidget.get)) { } {
-    @HtmlBlock.load(eventId, blockId).format
+    @if(subpages.size > 1) {
+        <nav class="additional-navigation">
+            <ul>
+            @for(link <- subpages) {<li>
+                    <a href="@link.getCall">@link.getSubtitle</a>
+            </li>}
+            </ul>
+            <div style="clear : both">&nbsp;</div>
+        </nav>
+    }
+
+    @if(subpage.isTwoColumns) {
+        <table class="two-columns-page">
+            <tr>
+                <td class="info-col">
+                @HtmlBlock.load(eventId, subpage.getBlockId + "-col1").format
+                </td>
+                <td class="info-col">
+                @HtmlBlock.load(eventId, subpage.getBlockId + "-col2").format
+                </td>
+            </tr>
+        </table>
+    } else {
+        @HtmlBlock.load(eventId, subpage.getBlockId).format
+    }
 }
