@@ -54,21 +54,20 @@
         </div>
     }
 
-    @if(otherUser) {
+    @if(otherUser || user.hasEventAdminRight) { @*Only event admin can see own visit info*@
         <div class='info-box'>
-            @defining(user.getUserActivityEntry) { ua =>
-                @if(ua == null) {
-                    <p>Посещений не было</p>
-                } else {
-                    <table>
-                        <tr><td>Последнее посещение</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@ua.getDate</b></td></tr>
-                        <tr><td>ip</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getIp</b></td></tr>
-                        <tr><td>user agent</td><td>&nbsp;&nbsp;&nbsp;</td><td><b>@user.getUserActivityEntry.getUa</b></td></tr>
-                    </table>
-                }
+        @defining(user.getUserActivityEntry) { ua =>
+            @if(ua == null) {
+                <p>Посещений не было</p>
+            } else {
+                @user_visit(java.util.Arrays.asList(ua))
+                <a href="@routes.UserInfo.showVisitInfo(Event.currentId, user.getId.toString)">еще...</a>
             }
+        }
         </div>
+    }
 
+    @if(otherUser) {
         <div class='info-box'>
             <form class='submit actions-substitute-user' method="post" action="@routes.Application.substituteUser(Event.currentId, user.getId.toString)"></form>
             <p>Зайти от имени пользователя <b><a href="#" class="submit actions-substitute-user" title="Зайти от имени пользователя @user.getLogin">@user.getLogin</a></b></p>

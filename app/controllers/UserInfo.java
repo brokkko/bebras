@@ -1,25 +1,29 @@
 package controllers;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import controllers.actions.Authenticated;
 import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.Event;
 import models.User;
+import models.UserActivityEntry;
 import models.UserRole;
 import models.forms.InputForm;
 import models.forms.RawForm;
-import models.newserialization.BasicSerializationType;
-import models.newserialization.FormDeserializer;
-import models.newserialization.FormSerializer;
-import models.newserialization.SerializationType;
+import models.newserialization.*;
 import models.results.InfoPattern;
 import org.bson.types.ObjectId;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
+import views.html.user_visits;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -130,6 +134,35 @@ public class UserInfo extends Controller {
         return wasPartial && oneUserChangesHimOrHerself ?
                 redirect(routes.Application.enter(eventId)) :
                 redirect(routes.UserInfo.info(eventId, oneUserChangesHimOrHerself ? null : userToChange.getId().toString()));
+    }
+
+    public static Result showVisitInfo(String eventId, String userId) {
+        User user = User.current();
+
+        ObjectId userIdAsObject;
+        try {
+            userIdAsObject = new ObjectId(userId);
+        } catch (IllegalArgumentException ignored) {
+            return Results.notFound();
+        }
+        User userToView = User.getUserById(userIdAsObject);
+
+        if (!mayChange(user, userToView)) //TODO may change is not the same as may view visits
+            return forbidden();
+
+        //search in users table
+        List<UserActivityEntry> visits = new ArrayList<>();
+        DBCursor allVisitsCursor = MongoConnection.getActivityCollection().find(
+                new BasicDBObject(UserActivityEntry.FIELD_USER, userToView.getId())
+        ).sort(
+                new BasicDBObject(UserActivityEntry.FIELD_DATE, -1)
+        );
+        while (allVisitsCursor.hasNext()) {
+            DBObject visitObject = allVisitsCursor.next();
+            visits.add(UserActivityEntry.deserialize(new MongoDeserializer(visitObject)));
+        }
+
+        return ok(user_visits.render(userToView, visits));
     }
 
     public static Result removeUser(String eventId, String userId) {

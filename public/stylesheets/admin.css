@@ -27,3 +27,18 @@ a.submit:hover {
 .block-config-info {
     color: #888;
 }
+
+/*table with user visits*/
+
+.visits-list {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.visits-list thead {
+}
+
+.visits-list td {
+    border: 1px solid #000000;
+    padding: 0.2em 0.4em;
+}

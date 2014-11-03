@@ -6,6 +6,8 @@ import models.newserialization.MongoSerializer;
 import models.newserialization.Serializer;
 import org.bson.types.ObjectId;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 
 /**
