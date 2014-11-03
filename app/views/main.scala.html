@@ -5,7 +5,7 @@
 <html@if(no_scroll){ class="no-scroll"}>
     <head>
         <title>@title</title>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon." + Event.current.getSkin + ".png")">
+        <link rel="shortcut icon" type="image/png" href="@ResourceLink.getFavicon">
         <link media="screen,print" rel="stylesheet" href="@ResourceLink.RESET">
         @for(widget <- widgets; link <- widget.links if link.getType == "css") {
             <link media="screen,print" rel="stylesheet" href="@link">
