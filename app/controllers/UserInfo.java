@@ -17,6 +17,7 @@ import models.results.InfoPattern;
 import org.bson.types.ObjectId;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Results;
 
 import java.util.Date;
 
@@ -39,6 +40,20 @@ public class UserInfo extends Controller {
             return ok(views.html.contests_list.render(new RawForm()));
     }
 
+    public static boolean mayChange(User user, User userToChange) {
+        if (user.hasEventAdminRight())
+            return true;
+
+        User currentUser = userToChange;
+        while (currentUser != null) {
+            if (user.getId().equals(currentUser.getId()))
+                return true;
+            currentUser = currentUser.getRegisteredByUser();
+        }
+
+        return false;
+    }
+
     private static boolean mayChangeUserInfo() {
         Date userInfoChangeClosed = Event.current().getUserInfoChangeClosed();
         boolean mayChange = userInfoChangeClosed == null || userInfoChangeClosed.after(AuthenticatedAction.getRequestTime());
@@ -51,7 +66,13 @@ public class UserInfo extends Controller {
     public static Result info(String eventId, String userId) { //TODO use event id
         User user = User.current();
 
-        User userToChange = userId == null ? user : User.getInstance("_id", new ObjectId(userId)); //TODO wrong id leads to an exception
+        ObjectId userIdAsObject;
+        try {
+            userIdAsObject = userId == null ? null : new ObjectId(userId);
+        } catch (IllegalArgumentException ignored) {
+            return Results.notFound();
+        }
+        User userToChange = userIdAsObject == null ? user : User.getUserById(userIdAsObject);
 
         if (userToChange == null)
             return badRequest();
@@ -109,10 +130,6 @@ public class UserInfo extends Controller {
         return wasPartial && oneUserChangesHimOrHerself ?
                 redirect(routes.Application.enter(eventId)) :
                 redirect(routes.UserInfo.info(eventId, oneUserChangesHimOrHerself ? null : userToChange.getId().toString()));
-    }
-
-    private static boolean mayChange(User user, User userToChange) {
-        return user == userToChange || user.hasEventAdminRight() || user.getId().equals(userToChange.getRegisteredBy());
     }
 
     public static Result removeUser(String eventId, String userId) {

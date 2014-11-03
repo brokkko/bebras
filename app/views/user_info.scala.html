@@ -42,15 +42,17 @@
 
     @Event.current.getHtmlBlock("user_info_down").format
 
-    <div class='info-box'>
-        <p>
+    @if(UserInfo.mayChange(User.current, user.getRegisteredByUser)) {
+        <div class='info-box'>
+            <p>
             @if(user.getRegisteredByUser != null) {
                 Зарегистрирован через: @htmlfeatures.user_link(user.getRegisteredBy.toString, Event.currentId, user.getRegisteredByUser.getLogin)
             } else {
                 Зарегистрирован напрямую
             }
-        </p>
-    </div>
+            </p>
+        </div>
+    }
 
     @if(otherUser) {
         <div class='info-box'>
