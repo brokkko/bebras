@@ -5,6 +5,7 @@
 # Home page
 
 GET         /                                                          controllers.Application.root()
+GET         /ping                                                      controllers.Application.ping()
 
 #registration
 GET         /:event/register                                           controllers.Registration.registration(event)

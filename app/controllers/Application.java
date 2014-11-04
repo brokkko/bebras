@@ -220,4 +220,9 @@ public class Application extends Controller {
 
         return ok("ip status changed");
     }
+
+    public static Result ping() {
+        String json = "{\"bebras\": 4239}";
+        return ok(json).as("application/json");
+    }
 }

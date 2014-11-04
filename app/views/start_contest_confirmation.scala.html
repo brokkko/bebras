@@ -1,9 +1,10 @@
-@()
+@(testConnectionTime:Int)
+@import views.widgets.CssJsWidget
 @import views.widgets.ResourceLink
 @import models.Contest
 @import models.Event
 @import scala.List
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"))) { } {
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), CssJsWidget.get("start_contest"))) { } {
     @defining(Contest.current) { contest =>
         <h1>Подтвердите, что собираетесь начать</h1>
         <p>Вы собираетесь начать соревнование <b>@contest.getName</b>.</p>
@@ -18,7 +19,36 @@
         }
         </p>
         <p class='contest-select'>
-            <a class='link-button' href='@routes.Contests.contest(Event.current.getId, contest.getId, "normal")'>Начать</a>
+            <img class='connection-gif' src="@routes.Assets.at("images/connection.gif")">
+            <span class="connection-text">Пожалуйста, подождите. Проверка соединения с Интернетом...</span>
+            <span class="connection-failed">Не удалось соединиться с сервером соревнования!</span>
+            <a class='start-contest-button link-button' href='@routes.Contests.contest(Event.current.getId, contest.getId, "normal")'>Начать</a>
         </p>
+
+        <span class="test-connection-time">@testConnectionTime</span>
+
+        <div class="connection-info">
+            <p>Ваш браузер не смог получить ответ от сервера соревнования.
+                Это значит, что ваши ответы, скорее всего, тоже не дойдут до сервера, не будут сохранены и не будут участвовать
+                в подведении итогов.</p>
+            <p>Возможные варианты действий:</p>
+            <ol>
+                <li>Попробуйте <a href="javascript:window.location.href=window.location.href">обновить страницу</a>. Если проблема временная, то
+                после обновления страницы соединение восстановится.</li>
+                <li>Проверьте, хорошо ли работает Интернет, быстро ли загружаются страницы. Например, <a href="http://ya.ru" target="_blank">откройте сайт яндекса</a>.</li>
+                <li>Возможно, вам нужно использовать <a href="http://browsehappy.com/">другой браузер</a>.
+                    Мы поддерживаем последние версии
+                    <a href="http://www.google.com/chrome">Google Chrome</a>,
+                    <a href="http://www.firefox.com/">Mozilla Firefox</a>,
+                    <a href="http://www.apple.com/safari/">Safari</a>,
+                    <a href="http://www.opera.com/">Opera</a>,
+                    <a href="http://browser.yandex.ru/">Яндекс.Браузер</a>,
+                    <a href="http://windows.microsoft.com/ie">Internet Explorer</a> не менее 10-ой версии.
+                    (Ваш браузер по нашим данным: <span class="detected-browser"></span>).
+                </li>
+                <li>Вы можете все равно <a href='@routes.Contests.contest(Event.current.getId, contest.getId, "normal")'>перейти к решению заданий</a>, но
+                после этого обязательно свяжитесь с оргкомитетом, чтобы узнать, получили ли мы ваши ответы.</li>
+            </ol>
+        </div>
     }
 }

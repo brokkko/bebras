@@ -39,7 +39,17 @@ public class Contests extends Controller {
         if (User.current() == null)
             autoRegisterUser();
 
-        return ok(views.html.start_contest_confirmation.render());
+        Event event = Event.current();
+        //TODO allow getting extra field as int
+        String testConnectionTimeAsString = event.getExtraField("test-connection-time", "0").toString();
+        int testConnectionTime;
+        try {
+            testConnectionTime = Integer.parseInt(testConnectionTimeAsString);
+        } catch (NumberFormatException ignored) {
+            testConnectionTime = 0;
+        }
+
+        return ok(views.html.start_contest_confirmation.render(testConnectionTime));
     }
 
     private static void autoRegisterUser() {
