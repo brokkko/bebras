@@ -29,7 +29,7 @@ public class QuestionnairePlugin extends Plugin {
     private List<QuestionBlock> blocks = new ArrayList<>();
     private String right;
     private String userField;
-    private int showRegime = 0; //0 means may show always, 1 means need at least 1 contest, 2 means need all contests
+    private int showRegime = 1; //0 means may show always, 1 means need at least 1 contest, 2 means need all contests
     private String titleBefore;
     private String titleAfter;
 
@@ -44,21 +44,35 @@ public class QuestionnairePlugin extends Plugin {
         if (!User.isAuthorized())
             return;
         User user = User.current();
+
+        boolean showInMenu = user.hasEventAdminRight() || availableForUser(user);
+        if (showInMenu)
+            Menu.addMenuItem("Анкета участника", getCall(), right);
+    }
+
+    public boolean availableForUser(User user) {
         if (!user.hasRight(right))
-            return;
+            return false;
+
         List<Contest> contests = Event.current().getContestsAvailableForUser(user);
+        //filter contests that are available for anon
 
         boolean oneFinished = false;
         boolean allFinished = true;
-        for (Contest contest : contests)
+        for (Contest contest : contests) {
+            if (contest.isAvailableForAnon())
+                continue;
+
             if (user.userParticipatedAndFinished(contest))
                 oneFinished = true;
             else
                 allFinished = false;
+        }
 
-        boolean showMenu = (showRegime == 2) && allFinished || (showRegime == 1) && oneFinished || showRegime == 0;
-        if (showMenu)
-            Menu.addMenuItem("Анкета участника", getCall(), right);
+        if (contests.size() == 0)
+            allFinished = false;
+
+        return (showRegime == 2) && allFinished || (showRegime == 1) && oneFinished || showRegime == 0;
     }
 
     @Override
