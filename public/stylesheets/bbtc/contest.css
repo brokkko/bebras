@@ -104,3 +104,13 @@
 #contest-finished-info {
     margin: 1em;
 }
+
+.stop-contest-warning {
+    display: none;
+    margin: 1em 0.6em;
+    text-align: left;
+    line-height: 1;
+    font-size: 0.9em;
+    /*font-size: smaller;*/
+    color: #c2233d;
+}

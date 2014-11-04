@@ -34,9 +34,18 @@
         } else {
             <div id='time-status-info'>Осталось</div>
             <div id='time-info'>? минут</div>
-            <div id='stop-contest'><span class='page-button'>Завершить досрочно</span></div>
+            <div id='stop-contest'>
+                <span class='page-button'>Завершить досрочно</span>
+                <span class="stop-contest-warning">
+                    Будьте аккуратны! Эта кнопка завершит соревнование. После этого вы не сможете решать задачи. Переключайте задачи внизу экрана.
+                </span>
+            </div>
         }
-        <div id='stop-confirmation' class='hidden'><span class='page-button'>Подтвердите</span></div>
+        <div id='stop-confirmation' class='hidden'>
+            <span class="stop-contest-warning">Вы собираетесь завершить соревнование, но у вас еще есть время на решение.
+            Вы действительно хотите завершить соревнование?</span>
+            <span class='page-button'>Подтвердите</span>
+        </div>
     </div>
     @if(status != "going" && !show_menu) {
         <nav><a class='menu-item' href="@routes.Application.enter(Event.currentId)">Назад</a></nav>
