@@ -79,4 +79,69 @@
             <p>Зайти от имени пользователя <b><a href="#" class="submit actions-substitute-user" title="Зайти от имени пользователя @user.getLogin">@user.getLogin</a></b></p>
         </div>
     }
+
+    @* block with list of started contests *@
+
+    @if(User.currentRole().hasRight("edit contest time")) {
+        <div class="info-box">
+            @defining(UserInfo.listOfContestsStartedByUser(user)) { contests =>
+              @if(contests.isEmpty) {
+                  Пользователь еще не начинал соревнований
+              } else {
+                  <table class="visits-list">
+                      <thead>
+                          <tr>
+                              <td>Соревнование</td>
+                              <td>Начало</td>
+                              <td>Окончание</td>
+                              <td>Статус</td>
+                              @*<td>Сбросить окончание</td> TODO: implement*@
+                              <td>Сбросить участие</td>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          @for(contest <- contests) {
+                              @defining(user.getContestInfoCreateIfNeeded(contest.getId)) { info =>
+                                  <tr>
+                                    <td>@contest.getName</td>
+                                    <td>@if(info.getStarted == null) { - } else { @info.getStarted }</td>
+                                    <td>@if(info.getFinished == null) { - } else { @info.getFinished }</td>
+                                    <td>@if(info.getStarted == null) { - } else {
+                                        @if(user.userParticipatedAndFinished(contest)) {
+                                            завершено
+                                        } else {
+                                            в процессе
+                                        }
+                                    }</td>
+                                    @*
+                                    <td>
+                                        <form class="submit actions-reset-finish-@contest.getId" action="." method="POST"></form>
+                                        <a href="#" class="submit actions-reset-finish-@contest.getId" title="Сбросить окончание @contest.getName">сбросить</a>
+                                    </td>
+                                    *@
+                                    <td>
+                                        @if(user.userParticipatedAndFinished(contest)) {
+                                            <form
+                                            class="submit actions-reset-finish-@contest.getId"
+                                            action="@routes.Contests.restartForUser(Event.currentId, contest.getId, user.getId.toString)"
+                                            method="POST"
+                                            ></form>
+                                            <a
+                                            href="#"
+                                            class="submit actions-reset-finish-@contest.getId"
+                                            title="Сбросить участие в @contest.getName"
+                                            >сбросить</a>
+                                        } else {
+                                            -
+                                        }
+                                    </td>
+                                  </tr>
+                              }
+                          }
+                      </tbody>
+                  </table>
+              }
+            }
+        </div>
+    }
 }
