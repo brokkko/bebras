@@ -45,17 +45,7 @@ public class UserInfo extends Controller {
     }
 
     public static boolean mayChange(User user, User userToChange) {
-        if (user.hasEventAdminRight())
-            return true;
-
-        User currentUser = userToChange;
-        while (currentUser != null) {
-            if (user.getId().equals(currentUser.getId()))
-                return true;
-            currentUser = currentUser.getRegisteredByUser();
-        }
-
-        return false;
+        return user.hasEventAdminRight() || user.isUpper(userToChange);
     }
 
     private static boolean mayChangeUserInfo() {

@@ -441,7 +441,16 @@ public class User implements SerializableUpdatable {
     }
 
     public static String getSubstitutedUser() {
-        return Http.Context.current().session().get(getSuUsernameSessionKey());
+        String login = Http.Context.current().session().get(getSuUsernameSessionKey());
+
+        if (login == null)
+            return null;
+
+        int delimiterPos = login.lastIndexOf("||");
+        if (delimiterPos < 0)
+            return login;
+
+        return login.substring(delimiterPos + 2);
     }
 
     public ObjectId getId() {
@@ -1050,6 +1059,23 @@ public class User implements SerializableUpdatable {
         Cache.remove(idCacheKey);
 
         usersCollection.remove(remove);
+    }
+
+    public boolean isUpper(User lowerUser) {
+        return isUpper(this, lowerUser);
+    }
+
+    public static boolean isUpper(User upperUser, User lowerUser) {
+        if (lowerUser == null || upperUser == null)
+            return false;
+
+        User currentUser = lowerUser;
+        while (currentUser != null) {
+            if (upperUser.getId().equals(currentUser.getId()))
+                return true;
+            currentUser = currentUser.getRegisteredByUser();
+        }
+        return false;
     }
 
 }

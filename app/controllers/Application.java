@@ -164,11 +164,15 @@ public class Application extends Controller {
         if (suUser == null)
             return badRequest();
 
-        if (!user.hasEventAdminRight() && !user.getId().equals(suUser.getRegisteredBy()))
+        if (!user.hasEventAdminRight() && !user.isUpper(suUser))
             return forbidden();
 
+        String oldSu = session(User.getSuUsernameSessionKey());
+        if (oldSu == null)
+            oldSu = "";
+
         session(User.getUsernameSessionKey(), suUser.getLogin());
-        session(User.getSuUsernameSessionKey(), user.getLogin());
+        session(User.getSuUsernameSessionKey(), oldSu + "||" + user.getLogin());
 
         return redirect(routes.Application.enter(eventId));
     }
@@ -203,8 +207,18 @@ public class Application extends Controller {
         String login = session(User.getSuUsernameSessionKey());
         if (login == null)
             return badRequest();
-        session(User.getUsernameSessionKey(), login);
-        session().remove(User.getSuUsernameSessionKey());
+
+        int delimiterPos = login.lastIndexOf("||");
+        if (delimiterPos < 0) {
+            session(User.getUsernameSessionKey(), login);
+            session().remove(User.getSuUsernameSessionKey());
+        } else {
+            String left = login.substring(0, delimiterPos);
+            String right = login.substring(delimiterPos + 2);
+
+            session(User.getUsernameSessionKey(), right);
+            session(User.getSuUsernameSessionKey(), left);
+        }
 
         return redirect(routes.Application.enter(eventId));
     }

@@ -42,6 +42,8 @@
 
     @Event.current.getHtmlBlock("user_info_down").format
 
+    @* block 'registered by' *@
+
     @if(UserInfo.mayChange(User.current, user.getRegisteredByUser)) {
         <div class='info-box'>
             <p>
@@ -53,6 +55,8 @@
             </p>
         </div>
     }
+
+    @* block with visits information *@
 
     @if(otherUser || user.hasEventAdminRight) { @*Only event admin can see own visit info*@
         <div class='info-box'>
@@ -66,6 +70,8 @@
         }
         </div>
     }
+
+    @* block to substitute user (TODO: a right to see a user == a right to substitute a user) *@
 
     @if(otherUser) {
         <div class='info-box'>
