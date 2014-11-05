@@ -811,7 +811,7 @@ public class EventAdministration extends Controller {
                         line[charToIndex('H')],
                         "От новосибиского рег.пр.",
                         "(boolean)false",
-                        "shkola-plus",
+                        "school_plus",
                         "SCHOOL_ORG"
                 };
             case "novosib_porticipants":
