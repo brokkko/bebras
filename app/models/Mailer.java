@@ -188,6 +188,9 @@ public class Mailer implements SerializableUpdatable {
     }
 
     public String sendEmail(String to, String subject, String message, String htmlMessage, String listUnsubscribe) throws EmailException {
+        if (to.endsWith("@autoregistered"))
+            return "";
+
         boolean isHtml = htmlMessage != null;
 
         if (isHtml) {

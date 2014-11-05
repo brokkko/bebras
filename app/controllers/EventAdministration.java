@@ -730,7 +730,7 @@ public class EventAdministration extends Controller {
         switch (transformation) {
             case "novosib_tichers":
                 //get name and patronymic
-                String namePatro = line[charToIndex('K')].trim();
+                String namePatro = line[charToIndex('H')].trim();
                 int spPos = namePatro.indexOf(' ');
                 String name = namePatro;
                 String patro = "";
@@ -797,21 +797,24 @@ public class EventAdministration extends Controller {
                         Logger.warn("Upload fields: Unknown region "+ regionName);
                 }
 
+                String login = line[charToIndex('J')];
+                String email = login + "@autoregistered";
+
                 return new String[] {
-                        line[charToIndex('N')],
-                        line[charToIndex('O')],
-                        line[charToIndex('L')],
-                        line[charToIndex('J')],
+                        login,
+                        line[charToIndex('K')],
+                        email,
+                        line[charToIndex('G')],
                         name,
                         patro,
                         region,
-                        line[charToIndex('I')],
+                        "000-00-00",
                         line[charToIndex('C')],
-                        line[charToIndex('G')],
-                        line[charToIndex('H')],
+                        "000000",
+                        line[charToIndex('E')] + " " + line[charToIndex('E')],
                         "От новосибиского рег.пр.",
                         "(boolean)false",
-                        "shkola-plus",
+                        "school_plus",
                         "SCHOOL_ORG"
                 };
             case "novosib_porticipants":

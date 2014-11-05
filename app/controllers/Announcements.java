@@ -22,9 +22,9 @@ import java.util.List;
  * Date: 28.10.13
  * Time: 15:01
  */
-@DcesController
 @LoadEvent
 @Authenticated(admin = true)
+@DcesController
 public class Announcements extends Controller {
 
     public static Result prepareAnnouncement(String eventId) {
