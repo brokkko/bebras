@@ -170,9 +170,11 @@ public class Application extends Controller {
         String oldSu = session(User.getSuUsernameSessionKey());
         if (oldSu == null)
             oldSu = "";
+        else
+            oldSu += "||";
 
         session(User.getUsernameSessionKey(), suUser.getLogin());
-        session(User.getSuUsernameSessionKey(), oldSu + "||" + user.getLogin());
+        session(User.getSuUsernameSessionKey(), oldSu + user.getLogin());
 
         return redirect(routes.Application.enter(eventId));
     }
