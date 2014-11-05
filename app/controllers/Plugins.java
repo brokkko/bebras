@@ -16,8 +16,8 @@ import plugins.Plugin;
  * Date: 24.08.13
  * Time: 14:37
  */
-@DcesController
 @LoadEvent
+@DcesController
 public class Plugins extends Controller {
 
     @Authenticated(redirectToLogin = false)

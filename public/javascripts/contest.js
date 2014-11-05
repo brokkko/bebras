@@ -132,8 +132,8 @@ var submit_answer; //function (problem_id, answer)
         $('.page-selector').click(page_selector_click);
         $('.page-back').click(function(){select_page(current_page - 1);}); //TODO in scrolling regime this should also work
         $('.page-forward').click(function(){select_page(current_page + 1);});
-        $('#stop-contest').click(stop_contest_click);
-        $('#stop-confirmation').click(stop_confirmation_click);
+        $('#stop-contest').find('.page-button').click(stop_contest_click);
+        $('#stop-confirmation').find('.page-button').click(stop_confirmation_click);
 
         contest_info = $.parseJSON($('.contest-info').text());
 

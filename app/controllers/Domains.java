@@ -20,9 +20,9 @@ import views.html.domains;
 import java.util.ArrayList;
 import java.util.List;
 
-@DcesController
 @Authenticated(admin = true)
 @LoadEvent
+@DcesController
 public class Domains extends Controller {
 
     public static Result domainInfo(String eventId, String domainName) {

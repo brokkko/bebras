@@ -7,9 +7,9 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.contests_list_domain;
 
-@DcesController
 @LoadEvent
 @Authenticated(autoRegister = true)
+@DcesController
 public class DomainContests extends Controller {
 
     public static Result contests(String eventId) {
