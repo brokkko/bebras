@@ -49,6 +49,7 @@ public class User implements SerializableUpdatable {
 
     public static final String FIELD_LOGIN = "login";
     public static final String FIELD_NAME = "name";
+    public static final String FIELD_SURNAME = "surname";
     public static final String FIELD_PATRONYMIC = "patronymic";
     public static final String FIELD_EMAIL = "email";
     public static final String FIELD_RAW_PASS = "raw_pass";
@@ -789,6 +790,26 @@ public class User implements SerializableUpdatable {
             return name.toString();
 
         return null;
+    }
+
+    public String getFullName() {
+        Object name = info.get(FIELD_NAME);
+        Object surname = info.get(FIELD_SURNAME);
+        Object patronymic = info.get(FIELD_PATRONYMIC);
+
+        String fullName = "";
+        if (surname != null)
+            fullName += surname + " ";
+        if (name != null)
+            fullName += name + " ";
+        if (patronymic != null)
+            fullName += patronymic + " ";
+
+        fullName = fullName.trim();
+        if (fullName.isEmpty())
+            fullName = getLogin();
+
+        return fullName;
     }
 
     //registration info getters and setters
