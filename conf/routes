@@ -5,6 +5,7 @@
 # Home page
 
 GET         /                                                          controllers.Application.root()
+GET         /ping                                                      controllers.Application.ping()
 
 #registration
 GET         /:event/register                                           controllers.Registration.registration(event)
@@ -49,6 +50,7 @@ GET         /:event/:contest/print_contest_ans                         controlle
 POST        /:event/:contest/submit                                    controllers.Contests.submit(event, contest)
 POST        /:event/:contest/stop                                      controllers.Contests.stop(event, contest)
 POST        /:event/:contest/restart                                   controllers.Contests.restart(event, contest)
+POST        /:event/:contest/:user/restart                             controllers.Contests.restartForUser(event, contest, user)
 
 #admin event
 GET         /:event/admin                                              controllers.EventAdministration.admin(event)

@@ -33,7 +33,7 @@ public class Contest {
 
     public static final String CONTEST_COLLECTION_NAME_PREFIX = "contest-";
 
-    private Event event;
+    private Event event; //TODO do we need to make this String eventId (because of event caching)
 
     private String id;
     private String name;

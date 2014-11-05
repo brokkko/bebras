@@ -12,6 +12,7 @@ import models.newserialization.JSONSerializer;
 import models.newserialization.ListSerializer;
 import models.newserialization.Serializer;
 import models.results.Info;
+import org.bson.types.ObjectId;
 import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
@@ -39,7 +40,17 @@ public class Contests extends Controller {
         if (User.current() == null)
             autoRegisterUser();
 
-        return ok(views.html.start_contest_confirmation.render());
+        Event event = Event.current();
+        //TODO allow getting extra field as int
+        String testConnectionTimeAsString = event.getExtraField("test-connection-time", "0").toString();
+        int testConnectionTime;
+        try {
+            testConnectionTime = Integer.parseInt(testConnectionTimeAsString);
+        } catch (NumberFormatException ignored) {
+            testConnectionTime = 0;
+        }
+
+        return ok(views.html.start_contest_confirmation.render(testConnectionTime));
     }
 
     private static void autoRegisterUser() {
@@ -257,17 +268,44 @@ public class Contests extends Controller {
         return ok();
     }
 
+    public static Result restartForUser(String eventId, String contestId, String userId) {
+        Contest contest = Contest.current();
+        User user = User.current();
+        User restartingUser = User.getUserById(new ObjectId(userId));
+
+        if (restartingUser == null)
+            return forbidden();
+
+        if (!user.hasRight("edit contest time"))
+            return forbidden();
+        if (!user.hasEventAdminRight() && !user.isUpper(restartingUser))
+            return forbidden();
+        if (!user.userParticipatedAndFinished(contest))
+            return forbidden();
+
+        doRestartUser(user, contest);
+
+        return redirect(routes.UserInfo.info(eventId, userId));
+    }
+
     public static Result restart(String eventId, String contestId) {
         Contest contest = Contest.current();
 
-        if (!contest.isAllowRestart() && !User.current().hasEventAdminRight())
-            return forbidden();
-
         User user = User.current();
+
+        if (!contest.isAllowRestart() && !user.hasEventAdminRight())
+            return forbidden();
 
         if (!user.userParticipatedAndFinished(contest))
             return forbidden();
 
+        doRestartUser(user, contest);
+
+        return redirect(routes.UserInfo.contestsList(eventId));
+    }
+
+    private static void doRestartUser(User user, Contest contest) {
+        String contestId = contest.getId();
         user.setContestStartTime(contestId, null);
         user.setContestFinishTime(contestId, null);
         user.generateContestRandSeed(contestId);
@@ -275,8 +313,6 @@ public class Contests extends Controller {
         user.store();
 
         Submission.removeAllAnswersForUser(user.getId(), contest);
-
-        return redirect(routes.UserInfo.contestsList(eventId));
     }
 
     public static Widget getProblemsWidgets(List<List<ConfiguredProblem>> pagedUserProblems) {

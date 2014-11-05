@@ -7,10 +7,7 @@ import controllers.actions.Authenticated;
 import controllers.actions.AuthenticatedAction;
 import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
-import models.Event;
-import models.User;
-import models.UserActivityEntry;
-import models.UserRole;
+import models.*;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newserialization.*;
@@ -45,17 +42,7 @@ public class UserInfo extends Controller {
     }
 
     public static boolean mayChange(User user, User userToChange) {
-        if (user.hasEventAdminRight())
-            return true;
-
-        User currentUser = userToChange;
-        while (currentUser != null) {
-            if (user.getId().equals(currentUser.getId()))
-                return true;
-            currentUser = currentUser.getRegisteredByUser();
-        }
-
-        return false;
+        return user.hasEventAdminRight() || user.isUpper(userToChange);
     }
 
     private static boolean mayChangeUserInfo() {
@@ -206,6 +193,16 @@ public class UserInfo extends Controller {
         user.store();
 
         return redirect(returnTo);
+    }
+
+    public static List<Contest> listOfContestsStartedByUser(User user) {
+        List<Contest> contests = user.getEvent().getContestsAvailableForUser();
+        List<Contest> startedContests = new ArrayList<>();
+        for (Contest contest : contests)
+            if (/*!contest.isAvailableForAnon() &&*/ user.getContestInfoCreateIfNeeded(contest.getId()).getStarted() != null)
+                startedContests.add(contest);
+
+        return startedContests;
     }
 
 }

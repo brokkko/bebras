@@ -469,6 +469,7 @@ public class Event {
         return user;
     }
 
+    //TODO make it return Plugin of the needed type
     public Plugin getPluginByType(Class<? extends Plugin> pluginClass) {
         for (Plugin plugin : plugins.values())
             if (plugin.getClass().equals(pluginClass))

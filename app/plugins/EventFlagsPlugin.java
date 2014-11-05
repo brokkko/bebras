@@ -27,8 +27,15 @@ public class EventFlagsPlugin extends Plugin {
     public void initEvent(Event event) {
         if (flags == null)
             return;
-        for (String flag : flags)
-            event.setExtraField(flag, true);
+
+
+        for (String flag : flags) {
+            int eqPos = flag.indexOf('=');
+            if (eqPos < 0)
+                event.setExtraField(flag, true);
+            else
+                event.setExtraField(flag.substring(0, eqPos), flag.substring(eqPos + 1));
+        }
     }
 
     @Override
