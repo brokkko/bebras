@@ -511,3 +511,11 @@ span.pre {
 .additional-navigation li a:hover {
     color: #fff;
 }
+
+.user-name {
+    font-size: 0.9em;
+    /*margin-left: 0.5em;*/
+    text-align: center;
+    margin-bottom: 0.5em;
+    color: #c2233d;
+}
