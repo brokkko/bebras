@@ -58,7 +58,7 @@ public class User implements SerializableUpdatable {
     private static final PasswordGenerator passwordGenerator = new PasswordGenerator();
 
     private Info info = null;
-    private Event event = null; // should be substituted at update
+    private String eventId = null; // should be substituted at update
     private String passwordHash;
     private ObjectId id = new ObjectId();
 
@@ -81,7 +81,7 @@ public class User implements SerializableUpdatable {
     private Info eventResults = null;
     private UserActivityEntry userActivityEntry;
 
-    private UserRole role = UserRole.EMPTY;
+    private String roleName = UserRole.EMPTY.getName();
     private List<ObjectId> registeredBy = null;
 
     // cache
@@ -98,18 +98,19 @@ public class User implements SerializableUpdatable {
         id = deserializer.readObjectId("_id");
 
         //read event
-        String eventId = deserializer.readString(FIELD_EVENT);
+        eventId = deserializer.readString(FIELD_EVENT);
+        Event event;
         if (eventId != null) {
             event = Event.getInstance(eventId);
             if (event == null)
                 throw new IllegalStateException("Deserializing user with nonexistent event " + eventId); //TODO was here with bebras13 once!! Why??
-        } else
+        } else {
             event = Event.current();
+            eventId = event.getId();
+        }
 
         //read role
-        String roleName = deserializer.readString(FIELD_USER_ROLE);
-        if (roleName != null)
-            role = event.getRole(roleName);
+        roleName = deserializer.readString(FIELD_USER_ROLE);
 
         // -------
         passwordHash = deserializer.readString(FIELD_PASS_HASH);
@@ -147,10 +148,6 @@ public class User implements SerializableUpdatable {
             }
             store();
         }
-
-        //TODO get rid of iposov
-        if (getLogin().equals("iposov"))
-            role = event.getRole("EVENT_ADMIN");
     }
 
     public void updateFromForm(FormDeserializer deserializer, InputForm form) {
@@ -165,7 +162,7 @@ public class User implements SerializableUpdatable {
             return;
 
         for (String contestId : deserializer.fields()) {
-            Contest contest = event.getContestById(contestId);
+            Contest contest = getEvent().getContestById(contestId);
 
             //this may happen if some contest was removed from an event
             if (contest == null)
@@ -204,11 +201,11 @@ public class User implements SerializableUpdatable {
     }
 
     public Event getEvent() {
-        return event;
+        return Event.getInstance(eventId);
     }
 
     public void setEvent(Event event) {
-        this.event = event;
+        this.eventId = event.getId();
     }
 
     public String getPasswordHash() {
@@ -220,11 +217,11 @@ public class User implements SerializableUpdatable {
     }
 
     public UserRole getRole() {
-        return role;
+        return getEvent().getRole(roleName);
     }
 
     public void setRole(UserRole role) {
-        this.role = role;
+        this.roleName = role.getName();
     }
 
     public void setInfo(Info info) {
@@ -444,7 +441,16 @@ public class User implements SerializableUpdatable {
     }
 
     public static String getSubstitutedUser() {
-        return Http.Context.current().session().get(getSuUsernameSessionKey());
+        String login = Http.Context.current().session().get(getSuUsernameSessionKey());
+
+        if (login == null)
+            return null;
+
+        int delimiterPos = login.lastIndexOf("||");
+        if (delimiterPos < 0)
+            return login;
+
+        return login.substring(delimiterPos + 2);
     }
 
     public ObjectId getId() {
@@ -473,6 +479,7 @@ public class User implements SerializableUpdatable {
 
     @Override
     public void serialize(Serializer serializer) {
+        Event event = getEvent();
         getUserInfoPattern().write(info, serializer);
 
         Serializer contestInfoSerializer = serializer.getSerializer(FIELD_CONTEST_INFO);
@@ -487,7 +494,7 @@ public class User implements SerializableUpdatable {
         if (userActivityEntry != null) //it is null if this is not an authorized page, e.g. a registration page
             userActivityEntry.store(serializer.getSerializer(FIELD_LAST_USER_ACTIVITY), false);
 
-        serializer.write(FIELD_USER_ROLE, role.getName());
+        serializer.write(FIELD_USER_ROLE, roleName);
 
         //write registration data
         serializer.write(FIELD_REGISTRATION_UUID, registrationUUID);
@@ -497,7 +504,7 @@ public class User implements SerializableUpdatable {
         serializer.write(FIELD_NEW_RECOVERY_PASSWORD, newRecoveryPassword);
 
         serializer.write("_id", id);
-        serializer.write(FIELD_EVENT, event.getId());
+        serializer.write(FIELD_EVENT, eventId);
         serializer.write(FIELD_PASS_HASH, passwordHash);
 
         SerializationTypesRegistry.list(ObjectId.class).write(serializer, FIELD_REGISTERED_BY, registeredBy);
@@ -509,15 +516,16 @@ public class User implements SerializableUpdatable {
 
     private void cache() {
         int expiration = 10 * 60; // 10 minutes
-        Cache.set(getLoginCacheKey(event.getId(), getLogin()), this, expiration);
+        Cache.set(getLoginCacheKey(eventId, getLogin()), this, expiration);
         Cache.set(getIdCacheKey(id), this, expiration);
     }
 
     private InfoPattern getUserInfoPattern() {
+        UserRole role = getRole();
         //role.getUserInfoPattern() and event plugins extra fields
         return InfoPattern.union(
                 role.getUserInfoPattern(),
-                event.getExtraUserFields(role.getName())
+                getEvent().getExtraUserFields(role.getName())
         );
     }
 
@@ -577,7 +585,7 @@ public class User implements SerializableUpdatable {
     public ContestInfoForUser getContestInfoCreateIfNeeded(String contestId) {
         ContestInfoForUser contestInfo = contest2info.get(contestId);
         if (contestInfo == null) {
-            contestInfo = new ContestInfoForUser(event.getContestById(contestId));
+            contestInfo = new ContestInfoForUser(getEvent().getContestById(contestId));
             contest2info.put(contestId, contestInfo);
         }
 
@@ -647,7 +655,7 @@ public class User implements SerializableUpdatable {
     }
 
     public boolean restrictedResults() {
-        Date restrictedResults = event.getRestrictedResults();
+        Date restrictedResults = getEvent().getRestrictedResults();
         return restrictedResults != null && !hasEventAdminRight() && restrictedResults.before(AuthenticatedAction.getRequestTime());
     }
 
@@ -908,13 +916,15 @@ public class User implements SerializableUpdatable {
     }
 
     public void evaluateAllContestsResults() {
-        for (Contest contest : event.getContests())
+        for (Contest contest : getEvent().getContests())
             getContestResults(contest);
     }
 
     public Info getEventResults() {
         if (eventResults != null)
             return eventResults;
+
+        Event event = getEvent();
 
         Translator resultTranslator = event.getResultTranslator();
 
@@ -950,7 +960,7 @@ public class User implements SerializableUpdatable {
             right = right.substring(0, tildePos);
         }
 
-        return role.hasRight(right);
+        return getRole().hasRight(right);
     }
 
     private boolean hasVirtualRights(String... rights) {
@@ -995,7 +1005,7 @@ public class User implements SerializableUpdatable {
     }
 
     public void invalidateAllResults() {
-        for (Contest contest : event.getContests())
+        for (Contest contest : getEvent().getContests())
             getContestInfoCreateIfNeeded(contest.getId()).setFinalResults(null);
         invalidateEventResults();
     }
@@ -1049,6 +1059,23 @@ public class User implements SerializableUpdatable {
         Cache.remove(idCacheKey);
 
         usersCollection.remove(remove);
+    }
+
+    public boolean isUpper(User lowerUser) {
+        return isUpper(this, lowerUser);
+    }
+
+    public static boolean isUpper(User upperUser, User lowerUser) {
+        if (lowerUser == null || upperUser == null)
+            return false;
+
+        User currentUser = lowerUser;
+        while (currentUser != null) {
+            if (upperUser.getId().equals(currentUser.getId()))
+                return true;
+            currentUser = currentUser.getRegisteredByUser();
+        }
+        return false;
     }
 
 }

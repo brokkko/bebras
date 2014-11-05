@@ -11,7 +11,7 @@ import play.mvc.Call;
  */
 public class FeaturesContext {
 
-    private Event event;
+    private Event event; //TODO convert event to eventId (events are cached)
     private FeaturesContestType type;
     private Call currentCall;
 

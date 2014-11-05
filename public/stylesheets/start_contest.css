@@ -1,0 +1,21 @@
+.contest-select {
+    margin-top: 2em;
+}
+
+.connection-gif, .connection-text {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.connection-failed {
+    font-size: 2em;
+    color: #D22100;
+}
+
+.connection-gif {
+    margin-right: 1em;
+}
+
+.connection-info, .connection-test, .connection-failed, .start-contest-button, .test-connection-time {
+    display: none;
+}
