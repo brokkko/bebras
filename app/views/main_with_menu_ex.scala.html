@@ -12,6 +12,9 @@
         <div class='navigation'>
             <nav>
                 <div class='contest-logo'></div>
+                @if(User.isAuthorized && User.currentRole != UserRole.ANON) {
+                    <div class='user-name'>@User.current.getFullName</div>
+                }
                 @if(show_menu) {
                     @for(menu_item <- views.Menu.current.items) {
                         @if(menu_item.isCurrent) {
