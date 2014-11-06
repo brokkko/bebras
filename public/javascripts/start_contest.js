@@ -14,8 +14,6 @@ $(function () {
         check();
     });
 
-    $('body').append($fr);
-
     var timerId = setTimeout(check, testConnectionTime);
 
     function check() {
