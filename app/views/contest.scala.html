@@ -110,7 +110,7 @@
 
         @*TODO this is an ad-hoc right and ad-hoc checking of plugin*@
         @defining(Event.current.getPluginByType(classOf[QuestionnairePlugin]).asInstanceOf[QuestionnairePlugin]) { questionnairePlugin =>
-            @if(questionnairePlugin != null) { @*TODO test also show regime*@
+            @if(questionnairePlugin != null && !Contest.current.isAvailableForAnon) { @*TODO test also show regime*@
                 <br>
                 <p>Поделитесь с самым главным бобром своими впечатлениями о конкурсе!<br> @*TODO read this text from plugin*@
                     <a class="link-button" href="@questionnairePlugin.getCall">Поделиться впечатлениями!</a>
