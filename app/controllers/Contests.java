@@ -280,10 +280,10 @@ public class Contests extends Controller {
             return forbidden();
         if (!user.hasEventAdminRight() && !user.isUpper(restartingUser))
             return forbidden();
-        if (!user.userParticipatedAndFinished(contest))
+        if (!restartingUser.userParticipatedAndFinished(contest))
             return forbidden();
 
-        doRestartUser(user, contest);
+        doRestartUser(restartingUser, contest);
 
         return redirect(routes.UserInfo.info(eventId, userId));
     }
