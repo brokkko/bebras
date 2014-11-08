@@ -59,9 +59,12 @@ public class QuestionnairePlugin extends Plugin {
 
         boolean oneFinished = false;
         boolean allFinished = true;
+        int count = 0;
         for (Contest contest : contests) {
             if (contest.isAvailableForAnon())
                 continue;
+
+            count++;
 
             if (user.userParticipatedAndFinished(contest))
                 oneFinished = true;
@@ -69,7 +72,7 @@ public class QuestionnairePlugin extends Plugin {
                 allFinished = false;
         }
 
-        if (contests.size() == 0)
+        if (count == 0)
             allFinished = false;
 
         return (showRegime == 2) && allFinished || (showRegime == 1) && oneFinished || showRegime == 0;
