@@ -307,6 +307,19 @@ public class Applications extends Plugin { //TODO test for right in all calls
             return Results.badRequest();
 
         int newState = state == Application.CONFIRMED ? Application.PAYED : Application.CONFIRMED;
+
+        User currentUser = User.current();
+        Logger.info(String.format(
+                "Application %s of user %s (%s) changed to %s by %s (%s) (event %s)",
+                appName,
+                user.getLogin(),
+                user.getId().toString(),
+                newState == Application.CONFIRMED ? "confirmed" : "payed",
+                currentUser == null ? "[nobody]" : currentUser.getLogin(),
+                currentUser == null ? "[nobody]" : currentUser.getId().toString(),
+                Event.currentId()
+        ));
+
         application.setState(newState);
 
         Event event = Event.current();
