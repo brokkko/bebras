@@ -4,6 +4,7 @@ import models.User;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
+import play.i18n.Lang;
 import play.i18n.Messages;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class SumScoresTranslator implements Translator {
     private static final InfoPattern infoPattern = new InfoPattern(
             "scores",
             new BasicSerializationType<>(int.class),
-            Messages.get("results_translator.sum_scores.title.scores")
+            Messages.get(Lang.defaultLang(), "results_translator.sum_scores.title.scores")
     );
 
     @Override
