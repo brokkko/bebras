@@ -277,6 +277,7 @@ public class Event {
     }
 
     public List<Contest> getContestsAvailableForUser(User user) {
+        //TODO do not return anon contests, make a separate method for anon contests
         if (user.hasEventAdminRight())
             return new ArrayList<>(getContests());
 
