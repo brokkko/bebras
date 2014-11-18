@@ -4,6 +4,7 @@ import models.User;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
+import play.i18n.Lang;
 import play.i18n.Messages;
 
 import java.util.List;
@@ -12,6 +13,17 @@ import java.util.List;
  * Created by ilya
  */
 public class BeaverTranslator implements Translator {
+
+    private static final String MSG_SCORES = mGet("results_translator.beaver.title.scores");
+    private static final String MSG_RIGHT = mGet("results_translator.beaver.title.right");
+    private static final String MSG_WRONG = mGet("results_translator.beaver.title.wrong");
+    private static final String MSG_SKIP = mGet("results_translator.beaver.title.skip");
+    private static final String MSG_SCORES_RIGHT = mGet("results_translator.beaver.title.scores_right");
+    private static final String MSG_SCORES_WRONG = mGet("results_translator.beaver.title.scores_wrong");
+
+    private static String mGet(String field) {
+        return Messages.get(Lang.defaultLang(), field);
+    }
 
     private int scores;
     private int penalty;
@@ -75,15 +87,15 @@ public class BeaverTranslator implements Translator {
     @Override
     public InfoPattern getInfoPattern() {
         InfoPattern infoPattern = new InfoPattern(
-                "scores", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.scores"),
-                "r", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.right"),
-                "w", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.wrong"),
-                "n", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.skip")
+                "scores", new BasicSerializationType<>(int.class), MSG_SCORES,
+                "r", new BasicSerializationType<>(int.class), MSG_RIGHT,
+                "w", new BasicSerializationType<>(int.class), MSG_WRONG,
+                "n", new BasicSerializationType<>(int.class), MSG_SKIP
         );
 
         if (separateRightAndWrong) {
-            infoPattern.register("rs", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.scores_right"));
-            infoPattern.register("ws", new BasicSerializationType<>(int.class), Messages.get("results_translator.beaver.title.scores_wrong"));
+            infoPattern.register("rs", new BasicSerializationType<>(int.class), MSG_SCORES_RIGHT);
+            infoPattern.register("ws", new BasicSerializationType<>(int.class), MSG_SCORES_WRONG);
         }
 
         return infoPattern;

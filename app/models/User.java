@@ -511,8 +511,6 @@ public class User implements SerializableUpdatable {
         SerializationTypesRegistry.list(ObjectId.class).write(serializer, FIELD_REGISTERED_BY, registeredBy);
         serializer.write(FIELD_PARTIAL_REG, partialRegistration);
         serializer.write(FIELD_ANNOUNCEMENTS, wantAnnouncements);
-
-        cache();
     }
 
     private void cache() {
@@ -533,6 +531,7 @@ public class User implements SerializableUpdatable {
     public void serialize() {
         MongoSerializer mongoSerializer = new MongoSerializer();
         serialize(mongoSerializer);
+        cache(); // TODO do we need this? this can occur when the user is changed in some other request
         MongoConnection.getUsersCollection().save(mongoSerializer.getObject()); //TODO error log claims here may a be a problem with a duplicate key
     }
 

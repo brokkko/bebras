@@ -5,6 +5,7 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.Utilities;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -46,13 +47,16 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
     private String regionField; //field name to store result in region
     private String russiaField; //field name to store result in russia
     private String roleName; //role of users
+    private boolean showCertificates;
 
     private String gradesDescription; //TODO implement in the other way
 
     @Override
     public void initPage() {
-        Menu.addMenuItem("Мой сертификат", getCall("show_pdf"), "participant");
-        Menu.addMenuItem("Мой сертификат", getCall("show_pdf"), "school org");
+        if (showCertificates) {
+            Menu.addMenuItem("Мой сертификат", getCall("show_pdf"), "participant");
+            Menu.addMenuItem("Мой сертификат", getCall("show_pdf"), "school org");
+        }
     }
 
     @Override
@@ -62,25 +66,29 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
     @Override
     public Result doGet(String action, String params) {
 
-        if (action.equals("show_pdf"))
-            try {
-                return showPdf(Event.current(), params);
-            } catch (Exception e) {
-                return Results.forbidden("Этот сертификат вам недоступен");
-            }
+        if (showCertificates) {
 
-        if (action.equals("all_teachers_gramotas"))
-            return generateAllGramotas();
+            if (action.equals("show_pdf"))
+                try {
+                    return showPdf(Event.current(), params);
+                } catch (Exception e) {
+                    return Results.forbidden("Этот сертификат вам недоступен");
+                }
 
-        if (action.equals("all_pdfs"))
-            return generateAllCertificates(params);
+            if (action.equals("all_teachers_gramotas"))
+                return generateAllGramotas();
 
-        if (action.equals("all_addrs"))
-            return generateAllAddresses();
+            if (action.equals("all_pdfs"))
+                return generateAllCertificates(params);
 
-        // localhost:9000/bebras13/eval_places/all_teachers_gramotas_addrs/p
-        if (action.equals("all_teachers_gramotas_addrs"))
-            return generateAllAddressesForCertificates();
+            if (action.equals("all_addrs"))
+                return generateAllAddresses();
+
+            // localhost:9000/bebras13/eval_places/all_teachers_gramotas_addrs/p
+            if (action.equals("all_teachers_gramotas_addrs"))
+                return generateAllAddressesForCertificates();
+
+        }
 
         if (!action.equals("go"))
             return Results.notFound("unknown action");
@@ -107,7 +115,14 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                                 String login = (String) userInfo.get(User.FIELD_LOGIN);
                                 User user = User.getInstance(User.FIELD_LOGIN, login, eventId);
                                 users.add(user);
-                                ObjectId regBy = (ObjectId) userInfo.get(User.FIELD_REGISTERED_BY);
+                                Object regByField = userInfo.get(User.FIELD_REGISTERED_BY);
+                                ObjectId regBy;
+
+                                if (regByField instanceof ObjectId)
+                                    regBy = (ObjectId) regByField;
+                                else
+                                    regBy = (ObjectId) ((BasicDBList)regByField).get(0);
+
                                 String region = uid2region.get(regBy);
                                 if (region == null) {
                                     User teacher = User.getUserById(regBy);
@@ -222,12 +237,12 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                                 return 1;
 
                             if (compareRegions) {
-                            String region1 = uid2region.get(u1.getRegisteredBy());
-                            String region2 = uid2region.get(u2.getRegisteredBy());
+                                String region1 = uid2region.get(u1.getRegisteredBy());
+                                String region2 = uid2region.get(u2.getRegisteredBy());
 
-                            int regionCompare = region1.compareTo(region2);
-                            if (regionCompare != 0)
-                                return regionCompare;
+                                int regionCompare = region1.compareTo(region2);
+                                if (regionCompare != 0)
+                                    return regionCompare;
                             }
 
                             int s1 = getUsersScores(u1);
@@ -585,6 +600,8 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         int sum = 0;
         List<Contest> contests = event.getContestsAvailableForUser(u);
         for (Contest contest : contests) {
+            if (contest.isAvailableForAnon())
+                continue;
             Info finalResults = u.getContestInfoCreateIfNeeded(contest.getId()).getFinalResults();
             if (finalResults == null)
                 continue;
@@ -606,6 +623,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         russiaField = deserializer.readString("russia field");
         roleName = deserializer.readString("role");
         gradesDescription = deserializer.readString("grades description", "");
+        showCertificates = deserializer.readBoolean("show certificates", false);
     }
 
     @Override
@@ -615,6 +633,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         serializer.write("russia field", russiaField);
         serializer.write("role", roleName);
         serializer.write("grades description", gradesDescription);
+        serializer.write("show certificates", showCertificates);
     }
 
     private Result showPdf(Event event, String userLogin) {
