@@ -18,6 +18,7 @@ import models.UserRole;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
+import models.utils.Utils;
 import org.bson.types.ObjectId;
 import play.libs.Akka;
 import play.libs.F;
@@ -308,7 +309,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                 doc.open();
 
-                Map<Contest, Long> startedCache = new HashMap<>();
+                Map<String, Long> startedCache = new HashMap<>();
                 Map<String, Long> betterCache = new HashMap<>();
 
                 int processedUsers = 0;
@@ -706,7 +707,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         return lines;
     }
 
-    private List<BebrasCertificateLine> getCertificateLinesForParticipant(Event event, User user, boolean needOnlyGreatAndGoodResults, Map<Contest, Long> numStartedCache, Map<String, Long> betterCache) {
+    private List<BebrasCertificateLine> getCertificateLinesForParticipant(Event event, User user, boolean needOnlyGreatAndGoodResults, Map<String, Long> numStartedCache, Map<String, Long> betterCache) {
         int scores = getUsersScores(user);
         Info info = user.getInfo();
         String grade = (String) info.get("grade");
@@ -742,14 +743,15 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         Contest contest = getMainContest(event, user);
 
         //get total participants from cache
+        String totalParticipantsCacheKey = contest.getId() + "|" + grade;
         Long totalParticipants = null;
         if (numStartedCache != null)
-            totalParticipants = numStartedCache.get(contest);
+            totalParticipants = numStartedCache.get(totalParticipantsCacheKey);
 
         if (totalParticipants == null) {
-            totalParticipants = contest.getNumStarted("PARTICIPANT");
+            totalParticipants = contest.getNumStarted("PARTICIPANT", Utils.mapify("grade", grade));
             if (numStartedCache != null)
-                numStartedCache.put(contest, totalParticipants);
+                numStartedCache.put(totalParticipantsCacheKey, totalParticipants);
         }
 
         //get greaterOrEqualParticipants
@@ -785,7 +787,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                 lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + better + " лучших участников по России", 12, false)); //don't write 1%, write instead the whole number
             else
                 lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
-            lines.add(new BebrasCertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
+            lines.add(new BebrasCertificateLine("(всего участников " + grade + " класса: " + totalParticipants + ")", 12, false));
         } else if (scores >= s2) {
             lines.add(new BebrasCertificateLine("Настоящим сертификатом", 12, false));
             lines.add(new BebrasCertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
@@ -794,7 +796,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             lines.add(new BebrasCertificateLine("получил(а) хорошие результаты,", 12, false));
             lines.add(new BebrasCertificateLine("участвуя в конкурсе «Бобёр-" + year + "»", 12, false));
             lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
-            lines.add(new BebrasCertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
+            lines.add(new BebrasCertificateLine("(всего участников " + grade + " класса: " + totalParticipants + ")", 12, false));
         } else if (scores >= s3) {
             if (needOnlyGreatAndGoodResults)
                 return null;
@@ -804,7 +806,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             addSchoolAndAddr(lines, orgInfo, user);
             lines.add(new BebrasCertificateLine("успешно участвовал(а) в конкурсе «Бобёр-" + year + "»", 12, false));
             lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
-            lines.add(new BebrasCertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
+            lines.add(new BebrasCertificateLine("(всего участников " + grade + " класса: " + totalParticipants + ")", 12, false));
         } else {
             if (needOnlyGreatAndGoodResults)
                 return null;
