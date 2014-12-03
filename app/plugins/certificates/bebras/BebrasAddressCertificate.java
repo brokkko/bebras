@@ -57,7 +57,7 @@ public class BebrasAddressCertificate extends Diploma<DiplomaFactory> {
         float WHOM_WIDTH = Utilities.pointsToMillimeters(new Chunk("Кому: ", DEFAULT_FONT_B).getWidthPoint());
         float WHERE_WIDTH = Utilities.pointsToMillimeters(new Chunk("Куда: ", DEFAULT_FONT_B).getWidthPoint());
 
-        printAddrText(writer, BebrasCertificate.getUserCode(user, true), false, x0, y0, position);
+        printAddrText(writer, BebrasCertificate.getUserCode(user, true, 2013), false, x0, y0, position);
 
         y0 -= ls;
 

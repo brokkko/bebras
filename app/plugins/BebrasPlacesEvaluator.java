@@ -48,6 +48,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
     private String russiaField; //field name to store result in russia
     private String roleName; //role of users
     private boolean showCertificates;
+    private int year = 2013;
 
     private String gradesDescription; //TODO implement in the other way
 
@@ -353,7 +354,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                         //some extra skips
 
-                        BebrasCertificate certificate = new BebrasCertificate(user, isOrg, lines);
+                        BebrasCertificate certificate = new BebrasCertificate(user, isOrg, lines, year);
 
                         int position = processedUsers % 6;
                         if (position == 0) {
@@ -482,8 +483,8 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                 Collections.sort(allUsers, new Comparator<User>() {
                     @Override
                     public int compare(User u1, User u2) {
-                        String s1 = BebrasCertificate.getUserCode(u1, true);
-                        String s2 = BebrasCertificate.getUserCode(u2, true);
+                        String s1 = BebrasCertificate.getUserCode(u1, true, year);
+                        String s2 = BebrasCertificate.getUserCode(u2, true, year);
                         return s1.compareTo(s2);
                     }
                 });
@@ -624,6 +625,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         roleName = deserializer.readString("role");
         gradesDescription = deserializer.readString("grades description", "");
         showCertificates = deserializer.readBoolean("show certificates", false);
+        year = deserializer.readInt("year", 2013);
     }
 
     @Override
@@ -634,6 +636,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         serializer.write("role", roleName);
         serializer.write("grades description", gradesDescription);
         serializer.write("show certificates", showCertificates);
+        serializer.write("year", year);
     }
 
     private Result showPdf(Event event, String userLogin) {
@@ -660,7 +663,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             isOrg = false;
         }
 
-        BebrasCertificate certificate = new BebrasCertificate(user, isOrg, lines);
+        BebrasCertificate certificate = new BebrasCertificate(user, isOrg, lines, year);
         File pdf = certificate.createPdf();
 
         Controller.response().setHeader("Content-Disposition", "attachment; filename=bebras-certificate-" + user.getLogin() + ".pdf");
@@ -698,7 +701,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             lines.add(new BebrasCertificateLine("принял(а) активное участие в подготовке", 12, false));
         else
             lines.add(new BebrasCertificateLine("принял(а) участие в подготовке", 12, false));
-        lines.add(new BebrasCertificateLine("и проведении конкурса «Бобёр-2013»", 12, false));
+        lines.add(new BebrasCertificateLine("и проведении конкурса «Бобёр-" + year + "»", 12, false));
 
         return lines;
     }
@@ -775,7 +778,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             lines.add(new BebrasCertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo, user);
             lines.add(new BebrasCertificateLine("получил(а) отличные результаты,", 12, false));
-            lines.add(new BebrasCertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new BebrasCertificateLine("участвуя в конкурсе «Бобёр-" + year + "»", 12, false));
             if (better == 1)
                 lines.add(new BebrasCertificateLine("и занял первое место по России", 12, false));
             else if (percents == 1)
@@ -789,7 +792,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             lines.add(new BebrasCertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo, user);
             lines.add(new BebrasCertificateLine("получил(а) хорошие результаты,", 12, false));
-            lines.add(new BebrasCertificateLine("участвуя в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new BebrasCertificateLine("участвуя в конкурсе «Бобёр-" + year + "»", 12, false));
             lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
             lines.add(new BebrasCertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
         } else if (scores >= s3) {
@@ -799,7 +802,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             lines.add(new BebrasCertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new BebrasCertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo, user);
-            lines.add(new BebrasCertificateLine("успешно участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new BebrasCertificateLine("успешно участвовал(а) в конкурсе «Бобёр-" + year + "»", 12, false));
             lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
             lines.add(new BebrasCertificateLine("(всего " + totalParticipants + " участников " + grade + " класса)", 12, false));
         } else {
@@ -809,7 +812,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             lines.add(new BebrasCertificateLine("удостоверяется, что ученик(ца) "  + grade + " класса", 12, false));
             lines.add(new BebrasCertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo, user);
-            lines.add(new BebrasCertificateLine("участвовал(а) в конкурсе «Бобёр-2013»", 12, false));
+            lines.add(new BebrasCertificateLine("участвовал(а) в конкурсе «Бобёр-" + year + "»", 12, false));
         }
         return lines;
     }
@@ -844,11 +847,19 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         String schoolName = substituteSchoolBebras13((String) orgInfo.get("school_name"), user);
         addProbablyLongLine(lines, schoolName);
 
-        String address = substituteAddrBebras13("(" + orgInfo.get("address") + ")", user);
-        addProbablyLongLine(lines, address);
+        String orgAddress = (String)orgInfo.get("address_for_certificate");
+        if (orgAddress == null || orgAddress.isEmpty())
+            orgAddress = (String) orgInfo.get("address");
+
+        String address = substituteAddrBebras13("(" + orgAddress + ")", user);
+        if (!"-".equals(orgAddress))
+            addProbablyLongLine(lines, address);
     }
 
     private String substituteSchoolBebras13(String schoolName, User user) {
+        if (year != 2013)
+            return schoolName;
+
         switch (user.getLogin()) {
             case "d26cf21.1":
                 return "МБОУ \"Пажгинская СОШ\"";
@@ -864,6 +875,9 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
     }
 
     private String substituteAddrBebras13(String address, User user) {
+        if (year != 2013)
+            return address;
+
         switch (user.getLogin()) {
             case "d26cf21.1":
                 return "Республика Коми, Сыктывдинский район, с. Пажга, 1-й микрорайон, д.23";
