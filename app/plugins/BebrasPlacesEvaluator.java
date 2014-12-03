@@ -739,7 +739,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         User org = user.getRegisteredByUser();
         Info orgInfo = org.getInfo();
 
-        Contest contest = event.getContestsAvailableForUser(user).get(0);
+        Contest contest = getMainContest(event, user);
 
         //get total participants from cache
         Long totalParticipants = null;
@@ -815,6 +815,15 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             lines.add(new BebrasCertificateLine("участвовал(а) в конкурсе «Бобёр-" + year + "»", 12, false));
         }
         return lines;
+    }
+
+    private Contest getMainContest(Event event, User user) {
+        List<Contest> allContests = event.getContestsAvailableForUser(user);
+        for (Contest contest : allContests)
+            if (!contest.isAvailableForAnon())
+                return contest;
+
+        return allContests.get(0); //just return something (or null)
     }
 
     private long getBetter(Event event, int scores, String grade, Contest contest, Map<String, Long> betterCache) {
