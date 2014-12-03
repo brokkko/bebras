@@ -24,13 +24,15 @@ public class BebrasCertificate extends Diploma<DiplomaFactory> {
 
     private boolean org;
     private List<BebrasCertificateLine> lines;
+    private int year = 2013;
 
     public static final ObjectId NOVOSIBIRSK_ID = User.getUserByLogin("bebras13", "shkola-plus").getId();
 
-    public BebrasCertificate(User user, boolean org, List<BebrasCertificateLine> lines) {
+    public BebrasCertificate(User user, boolean org, List<BebrasCertificateLine> lines, int year) {
         super(user);
         this.org = org;
         this.lines = lines;
+        this.year = year;
     }
 
     @Override
@@ -73,13 +75,15 @@ public class BebrasCertificate extends Diploma<DiplomaFactory> {
             printText(writer, line.getBaseFont(), line.getLine(), line.getSize(), x0, y0, position);
         }
 
-        String userCode = getUserCode(user, org);
+        String userCode = getUserCode(user, org, year);
 
         printText(writer, BebrasCertificateLine.DEFAULT_FONT_R, userCode, 12, 49, 4, position);
     }
 
-    public static String getUserCode(User user, boolean org) {
-        String userCode = org ? Application.getCodeForUserHex(user) : user.getLogin(); //TODO this was in 2013, now get rid of HEX
+    public static String getUserCode(User user, boolean org, int year) {
+        String userCode = org ? (
+                year == 2013 ? Application.getCodeForUserHex(user) : Application.getCodeForUser(user)
+        ): user.getLogin();
 
         //write login for novosibirsk teachers
         if (org && NOVOSIBIRSK_ID.equals(user.getRegisteredBy()))
