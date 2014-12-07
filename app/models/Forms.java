@@ -25,25 +25,25 @@ public class Forms {
                             Utils.mapify(
                                     "name", LOGIN_FORM_LOGIN,
                                     "view", Utils.mapify(
-                                    "type", "string",
-                                    "title", "Логин", //TODO do i18n
-                                    "placeholder", "Введите логин"
-                            ),
+                                            "type", "string",
+                                            "title", "Логин", //TODO do i18n
+                                            "placeholder", "Введите логин"
+                                    ),
                                     "required", true
                             ),
                             Utils.mapify(
                                     "name", LOGIN_FORM_PASSWORD,
                                     "view", Utils.mapify(
-                                    "type", "password",
-                                    "title", "Пароль",
-                                    "placeholder", "Введите пароль"
-                            ),
+                                            "type", "password",
+                                            "title", "Пароль",
+                                            "placeholder", "Введите пароль"
+                                    ),
                                     "required", true
                             )
                     ),
                     "validators",
                     Utils.listify(
-                        Utils.mapify("type", "authenticator")
+                            Utils.mapify("type", "authenticator")
                     )
             )
     );
@@ -56,10 +56,10 @@ public class Forms {
                             Utils.mapify(
                                     "name", PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN,
                                     "view", Utils.mapify(
-                                    "type", "string",
-                                    "title", "Email или логин",
-                                    "placeholder", "Введите email или логин"
-                            ),
+                                            "type", "string",
+                                            "title", "Email или логин",
+                                            "placeholder", "Введите email или логин"
+                                    ),
                                     "required", true
                             )
                     ),
@@ -445,15 +445,15 @@ public class Forms {
                                     ),
                                     "required", true,
                                     "validators", Utils.listify(
-                                        Utils.mapify(
-                                                "type", "event id",
-                                                "message", "На сервере уже зарегистрировано событие с этим идентификатором"
-                                        ),
-                                        Utils.mapify(
-                                                "type", "pattern",
-                                                "pattern", "[\\-a-zA-Z0-9]+",
-                                                "message", "Идентификатор может содержать только символы a-z, A-Z, 0-9 и тире"
-                                        )
+                                            Utils.mapify(
+                                                    "type", "event id",
+                                                    "message", "На сервере уже зарегистрировано событие с этим идентификатором"
+                                            ),
+                                            Utils.mapify(
+                                                    "type", "pattern",
+                                                    "pattern", "[\\-a-zA-Z0-9]+",
+                                                    "message", "Идентификатор может содержать только символы a-z, A-Z, 0-9 и тире"
+                                            )
                                     )
                             )
                     ),
@@ -472,22 +472,22 @@ public class Forms {
                             Utils.mapify(
                                     "name", "new_event_id",
                                     "view", Utils.mapify(
-                                    "type", "string",
-                                    "title", "Идентификатор нового события",
-                                    "placeholder", "Введите идентификатор нового события"
-                            ),
+                                            "type", "string",
+                                            "title", "Идентификатор нового события",
+                                            "placeholder", "Введите идентификатор нового события"
+                                    ),
                                     "required", true,
                                     "validators", Utils.listify(
-                                    Utils.mapify(
-                                            "type", "event id",
-                                            "message", "На сервере уже зарегистрировано событие с этим идентификатором"
-                                    ),
-                                    Utils.mapify(
-                                            "type", "pattern",
-                                            "pattern", "[\\-a-zA-Z0-9]+",
-                                            "message", "Идентификатор может содержать только символы a-z, A-Z, 0-9 и тире"
+                                            Utils.mapify(
+                                                    "type", "event id",
+                                                    "message", "На сервере уже зарегистрировано событие с этим идентификатором"
+                                            ),
+                                            Utils.mapify(
+                                                    "type", "pattern",
+                                                    "pattern", "[\\-a-zA-Z0-9]+",
+                                                    "message", "Идентификатор может содержать только символы a-z, A-Z, 0-9 и тире"
+                                            )
                                     )
-                            )
                             )
                     ),
                     "validators",
