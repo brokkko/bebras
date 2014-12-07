@@ -53,7 +53,7 @@ public class ExtraPage extends Plugin {
                 break;
             }
 
-        return Controller.ok(extra_page.render(Event.currentId(), pageToShow, subpages));
+        return Controller.ok(extra_page.render(pageToShow.isGlobal() ? "~global" : Event.currentId(), pageToShow, subpages));
     }
 
     @Override
