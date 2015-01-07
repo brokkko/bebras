@@ -867,7 +867,8 @@ public class User implements SerializableUpdatable {
         this.registeredBy = new ArrayList<>();
         if (user != null) {
             this.registeredBy.add(user.getId());
-            this.registeredBy.addAll(user.registeredBy);
+            if (user.registeredBy != null)
+                this.registeredBy.addAll(user.registeredBy);
         }
     }
 

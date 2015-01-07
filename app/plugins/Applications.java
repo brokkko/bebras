@@ -681,7 +681,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
                         User userWithSameLogin = User.getUserByLogin(destEventId, user.getLogin());
                         if (userWithSameLogin != null) {
                             if (user.getEmail().toLowerCase().equals(userWithSameLogin.getEmail().toLowerCase()))
-                                worker.logWarn("User with this login already exists, but emails equal: " + userWithSameLogin.getLogin());
+                                worker.logWarn("User with this login already exists, and emails equal: " + userWithSameLogin.getLogin());
                             else {
                                 worker.logWarn("User with this login already exists, but emails differ: " + userWithSameLogin.getLogin());
                                 continue;
@@ -712,6 +712,8 @@ public class Applications extends Plugin { //TODO test for right in all calls
                         transferredUsersCount++;
                     }
                 }
+
+                worker.logInfo("finished transfer");
             }
 
             private User transferUser(User user, List<Application> appsToTransfer) {
