@@ -26,7 +26,12 @@ public class BebrasCertificate extends Diploma<DiplomaFactory> {
     private List<BebrasCertificateLine> lines;
     private int year = 2013;
 
-    public static final ObjectId NOVOSIBIRSK_ID = User.getUserByLogin("bebras13", "shkola-plus").getId();
+    private static final ObjectId NOVOSIBIRSK_ID_13 = User.getUserByLogin("bebras13", "shkola-plus").getId();
+    private static final ObjectId NOVOSIBIRSK_ID_14 = User.getUserByLogin("bebras14", "school_plus").getId();
+
+    public static boolean isNovosibirsk(ObjectId objectId) {
+        return NOVOSIBIRSK_ID_13.equals(objectId) || NOVOSIBIRSK_ID_14.equals(objectId);
+    }
 
     public BebrasCertificate(User user, boolean org, List<BebrasCertificateLine> lines, int year) {
         super(user);
@@ -86,7 +91,7 @@ public class BebrasCertificate extends Diploma<DiplomaFactory> {
         ): user.getLogin();
 
         //write login for novosibirsk teachers
-        if (org && NOVOSIBIRSK_ID.equals(user.getRegisteredBy()))
+        if (org && NOVOSIBIRSK_ID_13.equals(user.getRegisteredBy()))
             userCode = user.getLogin() + " " + userCode;
         return userCode;
     }

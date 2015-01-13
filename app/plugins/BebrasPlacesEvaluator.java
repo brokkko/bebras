@@ -15,6 +15,7 @@ import models.Contest;
 import models.Event;
 import models.User;
 import models.UserRole;
+import models.applications.Application;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
@@ -274,7 +275,8 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         if (role == UserRole.EMPTY)
             return Results.badRequest("Unknown role");
 
-        final boolean needBackground = role.getName().equals("SCHOOL_ORG");
+        final boolean schoolOrg = roleName.equals("SCHOOL_ORG");
+        @SuppressWarnings("UnnecessaryLocalVariable") final boolean needBackground = schoolOrg;
 
         final Worker worker = new Worker("Generate all certificates", "Event=" + event.getId() + " role=" + roleName);
         worker.execute(new Worker.Task() {
@@ -312,6 +314,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                 Map<String, Long> startedCache = new HashMap<>();
                 Map<String, Long> betterCache = new HashMap<>();
 
+                List<BebrasCertificate> allCertificates = new ArrayList<>();
                 int processedUsers = 0;
                 try (User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery)) {
                     while (usersEnumeration.hasMoreElements()) {
@@ -320,7 +323,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                         List<BebrasCertificateLine> lines;
                         boolean isOrg;
 
-                        if (roleName.equals("SCHOOL_ORG")) {
+                        if (schoolOrg) {
                             int numberOfParticipants = numberOfParticipants(user);
                             if (numberOfParticipants == 0)
                                 continue;
@@ -329,7 +332,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                             //test novosibirsk
                             ObjectId registeredBy = user.getRegisteredBy();
-                            if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID.equals(registeredBy))
+                            if (!organizerActive && BebrasCertificate.isNovosibirsk(registeredBy))
                                 continue;
 
                             lines = getCertificateLinesForOrg(user, organizerActive);
@@ -344,7 +347,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                             }
 
                             User organizer = user.getRegisteredByUser();
-                            boolean needOnlyGreatAndGoodResults = BebrasCertificate.NOVOSIBIRSK_ID.equals(organizer.getRegisteredBy());
+                            boolean needOnlyGreatAndGoodResults = BebrasCertificate.isNovosibirsk(organizer.getRegisteredBy());
 
                             lines = getCertificateLinesForParticipant(event, user, needOnlyGreatAndGoodResults, startedCache, betterCache);
 
@@ -357,6 +360,38 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                         BebrasCertificate certificate = new BebrasCertificate(user, isOrg, lines, year);
 
+                        allCertificates.add(certificate);
+
+                        processedUsers++;
+                        if (processedUsers == 1 || processedUsers % 200 == 0)
+                            worker.logInfo("processed " + processedUsers + " users");
+                    }
+
+                    // sort certificates
+                    worker.logInfo("sorting");
+                    Collections.sort(allCertificates, new Comparator<BebrasCertificate>() {
+                        @Override
+                        public int compare(BebrasCertificate o1, BebrasCertificate o2) {
+                            User u1 = o1.getUser();
+                            User u2 = o2.getUser();
+
+                            if (!schoolOrg) {
+                                u1 = u1.getRegisteredByUser();
+                                u2 = u2.getRegisteredByUser();
+                            }
+
+                            String i1 = Application.getCodeForUser(u1);
+                            String i2 = Application.getCodeForUser(u2);
+
+                            return i1.compareTo(i2);
+                        }
+                    });
+
+
+                    // now draw all certificates
+                    processedUsers = 0;
+                    worker.logInfo("printing certificates");
+                    for (BebrasCertificate certificate : allCertificates) {
                         int position = processedUsers % 6;
                         if (position == 0) {
                             doc.newPage();
@@ -433,7 +468,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                         //test novosibirsk
 //                        ObjectId registeredBy = user.getRegisteredBy();
-//                        if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID.equals(registeredBy))
+//                        if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID_13.equals(registeredBy))
 //                            continue;
 
                         List<BebrasCertificateLine> lines = new ArrayList<>();//getCertificateLinesForOrg(user, organizerActive);
@@ -514,7 +549,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                         //test novosibirsk
                         ObjectId registeredBy = user.getRegisteredBy();
-                        if (!organizerActive && BebrasCertificate.NOVOSIBIRSK_ID.equals(registeredBy))
+                        if (!organizerActive && BebrasCertificate.isNovosibirsk(registeredBy))
                             continue;
                     }
 

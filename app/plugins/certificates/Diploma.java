@@ -85,6 +85,10 @@ public abstract class Diploma<Factory extends DiplomaFactory> {
 
     public abstract void draw(PdfWriter writer);
 
+    public User getUser() {
+        return user;
+    }
+
     public File createPdf() {
         final Document doc = new Document(
                 new Rectangle(
