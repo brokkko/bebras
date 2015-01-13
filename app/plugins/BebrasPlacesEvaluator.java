@@ -347,7 +347,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                             }
 
                             User organizer = user.getRegisteredByUser();
-                            boolean needOnlyGreatAndGoodResults = BebrasCertificate.isNovosibirsk(organizer.getRegisteredBy());
+                            boolean needOnlyGreatAndGoodResults = false;//BebrasCertificate.isNovosibirsk(organizer.getRegisteredBy());
 
                             lines = getCertificateLinesForParticipant(event, user, needOnlyGreatAndGoodResults, startedCache, betterCache);
 
