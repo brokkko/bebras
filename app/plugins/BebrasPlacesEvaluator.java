@@ -555,7 +555,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                             continue;
                     }
 
-                    BebrasAddressCertificate certificate = new BebrasAddressCertificate(user);
+                    BebrasAddressCertificate certificate = new BebrasAddressCertificate(user, year);
 
                     int position = processedUsers % 11;
                     if (position == 0)
@@ -613,7 +613,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                     if (numberOfParticipants < 20)
                         continue;
 
-                    BebrasAddressCertificate certificate = new BebrasAddressCertificate(user);
+                    BebrasAddressCertificate certificate = new BebrasAddressCertificate(user, year);
 
                     int position = processedUsers % 11;
                     if (position == 0)

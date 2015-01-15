@@ -20,9 +20,11 @@ public class BebrasAddressCertificate extends Diploma<DiplomaFactory> {
 
     private static final Font DEFAULT_FONT_R = new Font(BebrasCertificateLine.DEFAULT_FONT_R, 12f, Font.NORMAL);
     private static final Font DEFAULT_FONT_B = new Font(BebrasCertificateLine.DEFAULT_FONT_B, 12f, Font.NORMAL);
+    private int year;
 
-    public BebrasAddressCertificate(User user) {
+    public BebrasAddressCertificate(User user, int year) {
         super(user);
+        this.year = year;
     }
 
     @Override
@@ -57,7 +59,7 @@ public class BebrasAddressCertificate extends Diploma<DiplomaFactory> {
         float WHOM_WIDTH = Utilities.pointsToMillimeters(new Chunk("Кому: ", DEFAULT_FONT_B).getWidthPoint());
         float WHERE_WIDTH = Utilities.pointsToMillimeters(new Chunk("Куда: ", DEFAULT_FONT_B).getWidthPoint());
 
-        printAddrText(writer, BebrasCertificate.getUserCode(user, true, 2013), false, x0, y0, position);
+        printAddrText(writer, BebrasCertificate.getUserCode(user, true, year), false, x0, y0, position);
 
         y0 -= ls;
 

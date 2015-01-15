@@ -91,7 +91,7 @@ public class BebrasCertificate extends Diploma<DiplomaFactory> {
         ): user.getLogin();
 
         //write login for novosibirsk teachers
-        if (org && NOVOSIBIRSK_ID_13.equals(user.getRegisteredBy()))
+        if (org && isNovosibirsk(user.getRegisteredBy()))
             userCode = user.getLogin() + " " + userCode;
         return userCode;
     }
