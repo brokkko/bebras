@@ -205,4 +205,23 @@ public class UserInfo extends Controller {
         return startedContests;
     }
 
+    public static Result changeRegisteredBy(String event, String user, String userBy) {
+        if (!User.currentRole().hasEventAdminRight())
+            return Results.forbidden("Do not do this again");
+
+        User userLower = User.getUserByLogin(user);
+
+        if (userLower == null)
+            return Results.ok("failed to find first user");
+
+        User userUpper = User.getUserByLogin(userBy);
+
+        if (userUpper == null)
+            return Results.ok("failed to find second user");
+
+        userLower.setRegisteredBy(userUpper);
+        userLower.store();
+
+        return Results.ok("User updated");
+    }
 }
