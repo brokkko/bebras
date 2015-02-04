@@ -73,7 +73,7 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
 
             formatGramotaData(writer);
 
-            formatDiplomGramotaFooter(writer);
+            formatDiplomGramotaFooter(writer, false);
 
         } catch (Exception e) {
             Logger.error("failed to write text", e);
@@ -112,7 +112,7 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
         }
     }
 
-    public static void formatDiplomGramotaFooter(PdfWriter writer) {
+    public static void formatDiplomGramotaFooter(PdfWriter writer, boolean shorterSkipForDiploma) {
         float y0 = 101;
         float x0 = 216 / 2;
         float size = 11;
@@ -134,6 +134,9 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
         y0 -= lineSkipSmall * 1.4f;
         printDiplomGramotaText(writer, "М. И. Башмаков", size, false, x0 + 50, y0, false);
         y0 -= lineSkipBig;
+
+        if (shorterSkipForDiploma)
+            y0 += 4;
 
         printDiplomGramotaText(writer, "Главный редактор журнала «Компьютерные инструменты в образовании»,", size, false, x0, y0);
         y0 -= lineSkipSmall;

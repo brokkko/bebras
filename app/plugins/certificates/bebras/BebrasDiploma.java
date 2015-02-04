@@ -84,6 +84,6 @@ public class BebrasDiploma extends Diploma<BebrasDiplomaFactory> {
         canvas.endText();
         canvas.restoreState();
 
-        BebrasGramotaCertificate.formatDiplomGramotaFooter(writer);
+        BebrasGramotaCertificate.formatDiplomGramotaFooter(writer, true);
     }
 }
