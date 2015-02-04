@@ -27,7 +27,7 @@ public class BebrasDiplomaFactory extends DiplomaFactory {
     public void update(Deserializer deserializer) {
         super.update(deserializer);
         year = deserializer.readInt("year", 2014);
-        userDiplomaLevelField = deserializer.readString("diploma level field", "diploma level");
+        userDiplomaLevelField = deserializer.readString("diploma level field", "diploma_level");
     }
 
     public int getYear() {

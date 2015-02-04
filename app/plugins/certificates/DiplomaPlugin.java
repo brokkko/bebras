@@ -93,6 +93,7 @@ public class DiplomaPlugin extends Plugin {
         User user = User.current();
         if (!user.hasEventAdminRight())
             query.put(User.FIELD_REGISTERED_BY, user.getId());
+        query.put(User.FIELD_EVENT, Event.currentId());
 
         //TODO now page size is fixed, implement positions as in bebras certificate
         final Document doc = new Document(

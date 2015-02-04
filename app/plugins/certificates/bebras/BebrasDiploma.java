@@ -19,7 +19,7 @@ public class BebrasDiploma extends Diploma<BebrasDiplomaFactory> {
         try {
             level = Integer.parseInt((String) user.getInfo().get(factory.getUserDiplomaLevelField()));
         } catch (NumberFormatException e) {
-            level = 1; //TODO change to after debug 0
+            level = 0;
         }
     }
 

@@ -11,7 +11,6 @@ import models.ServerConfiguration;
 import models.User;
 import play.Logger;
 import plugins.BebrasPlacesEvaluator;
-import plugins.Plugin;
 import plugins.certificates.Diploma;
 import plugins.certificates.DiplomaFactory;
 
@@ -114,7 +113,7 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
 
     public static void formatDiplomGramotaFooter(PdfWriter writer, boolean shorterSkipForDiploma) {
         float y0 = 101;
-        float x0 = 216 / 2;
+        float x0 = shorterSkipForDiploma ? 210 / 2 : 216 / 2;
         float size = 11;
         float lineSkipSmall = Utilities.pointsToMillimeters(size) * 1.5f;
         float lineSkipBig = 4.9f + lineSkipSmall;
