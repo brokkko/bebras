@@ -112,7 +112,7 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
         }
     }
 
-    private static void formatDiplomGramotaFooter(PdfWriter writer) throws IOException {
+    public static void formatDiplomGramotaFooter(PdfWriter writer) {
         float y0 = 101;
         float x0 = 216 / 2;
         float size = 11;
@@ -146,11 +146,11 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
         printDiplomGramotaText(writer, "награждается", 12, false, 216 / 2, 165 + 1);
     }
 
-    private static void printDiplomGramotaText(PdfWriter writer, String text, float size, boolean isBold, float x0, float y0) throws IOException {
+    private static void printDiplomGramotaText(PdfWriter writer, String text, float size, boolean isBold, float x0, float y0) {
         printDiplomGramotaText(writer, text, size, isBold, x0, y0, true);
     }
 
-    private static void printDiplomGramotaText(PdfWriter writer, String text, float size, boolean isBold, float x0, float y0, boolean center) throws IOException {
+    private static void printDiplomGramotaText(PdfWriter writer, String text, float size, boolean isBold, float x0, float y0, boolean center) {
         BaseFont baseFont = isBold ? ARIAL_FONT_B : ARIAL_FONT_R;
 
         PdfContentByte canvas = writer.getDirectContent();

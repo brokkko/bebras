@@ -927,9 +927,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         String schoolName = substituteSchoolBebras13((String) orgInfo.get("school_name"), user);
         addProbablyLongLine(lines, schoolName);
 
-        String orgAddress = (String) orgInfo.get("address_for_certificate");
-        if (orgAddress == null || orgAddress.isEmpty())
-            orgAddress = (String) orgInfo.get("address");
+        String orgAddress = getOrgAddress(orgInfo);
 
         String address = substituteAddrBebras13("(" + orgAddress + ")", user);
         if (!"-".equals(orgAddress))
@@ -978,8 +976,19 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
     }
 
     public static String[] splitProbablyLongLine(String line) {
+        return splitProbablyLongLine(line, 50);
+    }
+
+    public static String getOrgAddress(Info orgInfo) {
+        String orgAddress = (String) orgInfo.get("address_for_certificate");
+        if (orgAddress == null || orgAddress.isEmpty())
+            orgAddress = (String) orgInfo.get("address");
+        return orgAddress;
+    }
+
+    public static String[] splitProbablyLongLine(String line, int maxLength) {
         int len = line.length();
-        if (len < 50)
+        if (len < maxLength)
             return new String[]{line};
 
         int i1 = line.indexOf(" ", len / 2); //second half

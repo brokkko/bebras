@@ -1,6 +1,7 @@
 package plugins.certificates;
 
 import models.newserialization.SerializableTreeSerializationType;
+import plugins.certificates.bebras.BebrasDiplomaFactory;
 import plugins.certificates.dmti.DmTiCertificateFactory;
 import plugins.certificates.dmti.ThankYouLetterFactory;
 import plugins.certificates.kio.KioCertificateFactory;
@@ -17,5 +18,6 @@ public class DiplomaFactorySerializationType extends SerializableTreeSerializati
         registerClass("kio teacher gramota", KioTeacherGramotaFactory.class);
         registerClass("dm ti thank you letter", ThankYouLetterFactory.class);
         registerClass("dm ti certificate", DmTiCertificateFactory.class);
+        registerClass("bebras diploma", BebrasDiplomaFactory.class);
     }
 }
