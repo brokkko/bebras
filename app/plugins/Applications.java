@@ -407,7 +407,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return Results.ok(views.html.applications.org_apps.render(Event.current(), applications, addForm, transferForm, this, kvit));
     }
 
-    private List<Application> getApplications(User user) { //TODO report: extract method does not extract //noinspection
+    public List<Application> getApplications(User user) { //TODO report: extract method does not extract //noinspection
         //noinspection unchecked
         return (List<Application>) user.getInfo().get(userField);
     }

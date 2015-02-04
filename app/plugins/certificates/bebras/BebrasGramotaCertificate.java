@@ -10,6 +10,8 @@ import models.Event;
 import models.ServerConfiguration;
 import models.User;
 import play.Logger;
+import plugins.BebrasPlacesEvaluator;
+import plugins.Plugin;
 import plugins.certificates.Diploma;
 import plugins.certificates.DiplomaFactory;
 
@@ -18,9 +20,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
-    public static final File R_ARIAL_FONT_FILE = ServerConfiguration.getInstance().getResource("Arial-R.ttf");
+    public static final File R_ARIAL_FONT_FILE = ServerConfiguration.getInstance().getPluginFile(BebrasPlacesEvaluator.PLUGIN_NAME, "Arial-R.ttf");
     public static BaseFont ARIAL_FONT_R;
-    public static final File B_ARIAL_FONT_FILE = ServerConfiguration.getInstance().getResource("Arial-B.ttf");
+    public static final File B_ARIAL_FONT_FILE = ServerConfiguration.getInstance().getPluginFile(BebrasPlacesEvaluator.PLUGIN_NAME, "Arial-B.ttf");
     public static BaseFont ARIAL_FONT_B;
 
     static {
@@ -33,11 +35,13 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
     }
 
     private boolean isActive;
+    private int year;
     private List<BebrasCertificateLine> schoolAddrLines;
 
-    public BebrasGramotaCertificate(User user, boolean isActive, List<BebrasCertificateLine> schoolAddrLines) {
+    public BebrasGramotaCertificate(User user, boolean isActive, int year, List<BebrasCertificateLine> schoolAddrLines) {
         super(user);
         this.isActive = isActive;
+        this.year = year;
         this.schoolAddrLines = schoolAddrLines;
     }
 
@@ -65,19 +69,6 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
     public void draw(PdfWriter writer) {
         try {
 
-            float x0 = 105;
-            float y0 = 20;
-
-            float lineSkip = 1.5f;
-
-            boolean firstLine = true;
-//            for (BebrasCertificateLine line : schoolAddrLines) {
-//                if (firstLine)
-//                    firstLine = false;
-//                else
-//                    y0 -= Utilities.pointsToMillimeters(line.getSize() * lineSkip);
-//                printDiplomGramotaText(writer, line.getLine(), 14, false, x0, y0);
-//            }
             formatDiplomGramotaHeader(writer);
 
             formatGramotaData(writer);
@@ -111,7 +102,7 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
         }
         printDiplomGramotaText(writer, "за активное участие в подготовке и проведении", size, false, x0, y0);
         y0 -= lineSkip;
-        printDiplomGramotaText(writer, "Международного конкурса по информатике «Бобер-2013»" + (isActive ? "," : ""), size, false, x0, y0);
+        printDiplomGramotaText(writer, "Международного конкурса по информатике «Бобер-" + year + "»" + (isActive ? "," : ""), size, false, x0, y0);
         if (isActive) {
             y0 -= lineSkip;
             if (((String)user.getInfo().get("patronymic")).toUpperCase().endsWith("Ч"))

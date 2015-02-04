@@ -219,6 +219,9 @@ public class UserInfo extends Controller {
         if (userUpper == null)
             return Results.ok("failed to find second user");
 
+        if (!userUpper.getRole().mayRegister(userLower.getRole()))
+            return Results.ok("User role " + userUpper.getRole().getName() + " can not register role " + userLower.getRole().getName());
+
         userLower.setRegisteredBy(userUpper);
         userLower.store();
 

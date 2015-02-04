@@ -471,10 +471,10 @@ public class Event {
     }
 
     //TODO make it return Plugin of the needed type
-    public Plugin getPluginByType(Class<? extends Plugin> pluginClass) {
+    public <T extends Plugin> T getPluginByType(Class<T> pluginClass) {
         for (Plugin plugin : plugins.values())
             if (plugin.getClass().equals(pluginClass))
-                return plugin;
+                return (T)plugin;
 
         return null;
     }
