@@ -983,6 +983,9 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         String orgAddress = (String) orgInfo.get("address_for_certificate");
         if (orgAddress == null || orgAddress.isEmpty())
             orgAddress = (String) orgInfo.get("address");
+
+        orgAddress = orgAddress.replaceAll("(\\t|\\r?\\n)+", " ");
+
         return orgAddress;
     }
 
