@@ -585,6 +585,10 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                         ObjectId registeredBy = user.getRegisteredBy();
                         if (!organizerActive && BebrasCertificate.isNovosibirsk(registeredBy))
                             continue;
+                        /* generate addresses only for those who have a certificate
+                        if (getBebrasGramotaCertificate(event, user) == null)
+                            continue;
+                        */
                     }
 
                     BebrasAddressCertificate certificate = new BebrasAddressCertificate(user, year);

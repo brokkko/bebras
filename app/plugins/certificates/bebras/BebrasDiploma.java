@@ -58,7 +58,7 @@ public class BebrasDiploma extends Diploma<BebrasDiplomaFactory> {
         float y0 = 156;
         canvas.showTextAligned(Element.ALIGN_CENTER, "НАГРАЖДАЕТСЯ ПОБЕДИТЕЛЬ", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
         y0 -= 7;
-        canvas.showTextAligned(Element.ALIGN_CENTER, "МЕЖДУНАРОДНГО КОНКУРСА ПО ИНФОРМАТИКЕ «Бобёр-" + factory.getYear() + "»", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
+        canvas.showTextAligned(Element.ALIGN_CENTER, "МЕЖДУНАРОДНОГО КОНКУРСА ПО ИНФОРМАТИКЕ «Бобёр-" + factory.getYear() + "»", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
         y0 -= 9;
         canvas.setFontAndSize(BebrasGramotaCertificate.ARIAL_FONT_B, 14);
         canvas.showTextAligned(Element.ALIGN_CENTER, user.getInfo().get("surname") + " " + user.getInfo().get("name"), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
