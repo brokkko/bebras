@@ -7,6 +7,8 @@ import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
 import models.newproblems.kio.KioProblem;
 import models.newserialization.BasicSerializationType;
+import models.newserialization.Deserializer;
+import models.newserialization.Serializer;
 import org.bson.types.ObjectId;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -21,6 +23,9 @@ import java.util.List;
 
 //TODO get rid of the plugin. Problems should be able to send solutions by themselves
 public class KioProblemPlugin extends Plugin {
+
+    private int year = 2014;
+
     @Override
     public void initPage() {
     }
@@ -173,5 +178,26 @@ public class KioProblemPlugin extends Plugin {
             return null;
 
         return new Date(max);
+    }
+
+    @Override
+    public void serialize(Serializer serializer) {
+        super.serialize(serializer);
+        serializer.write("year", year);
+
+    }
+
+    @Override
+    public void update(Deserializer deserializer) {
+        super.update(deserializer);
+        year = deserializer.readInt("year", 2014);
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public String getLink(int level) {
+        return "http://ipo.spb.ru/kio-files/kio-" + (year % 100) + "/KIO_" + level + "_ru.zip";
     }
 }
