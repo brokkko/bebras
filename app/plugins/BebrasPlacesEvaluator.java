@@ -399,7 +399,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                         int position = processedUsers % 6;
                         if (position == 0) {
                             doc.newPage();
-                            if (needBackground)
+                            if (bgImage != null)
                                 doc.add(bgImage);
                         }
                         certificate.draw(writer, position);
