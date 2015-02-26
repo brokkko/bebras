@@ -300,9 +300,9 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                 PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
 
                 Image bgImage = null;
-                if (needBackground) {
+                if (needBackground || !needBackground) {
                     try {
-                        bgImage = Image.getInstance(event.getEventDataFolder().getAbsolutePath() + "/bg-organizers-all.png");
+                        bgImage = Image.getInstance(event.getEventDataFolder().getAbsolutePath() + (schoolOrg ? "/bg-organizers-all.png" : "/bg-participants-all.png"));
                     } catch (Exception e) {
                         worker.logError("Failed to read bg", e);
                         return;
