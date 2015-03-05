@@ -1,5 +1,6 @@
 package plugins;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import models.Contest;
 import models.Event;
 import models.User;
@@ -10,16 +11,18 @@ import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import org.bson.types.ObjectId;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 //TODO get rid of the plugin. Problems should be able to send solutions by themselves
 public class KioProblemPlugin extends Plugin {
@@ -145,6 +148,12 @@ public class KioProblemPlugin extends Plugin {
         File solutionFile = problem.processFile(level, file);
 
         if (solutionFile != null) {
+            //first store previous version
+            try {
+                File previousVersion = new File(solutionFile.getAbsolutePath() + ".old." + new Date().getTime());
+                Files.move(solutionFile.toPath(), previousVersion.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException ignored) {}
+
             try {
                 Files.move(file.toPath(), solutionFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
@@ -159,6 +168,18 @@ public class KioProblemPlugin extends Plugin {
     }
 
     public static Date solutionTime(User user) {
+        File file = solutionFile(user);
+        if (file == null)
+            return null;
+
+        long lm = file.lastModified();
+        if (lm == 0)
+            return null;
+
+        return new Date(lm);
+    }
+
+    public static File solutionFile(User user) {
         File dataFolder = Event.current().getEventDataFolder();
         File resultsFolder = new File(dataFolder, "solutions");
 
@@ -172,13 +193,29 @@ public class KioProblemPlugin extends Plugin {
         long m1 = level1.lastModified();
         long m2 = level2.lastModified();
 
-        long max = Math.max(Math.max(m0, m1), m2);
+        if (m0 > m1 && m0 > m2)
+            return level0;
+        if (m1 > m0 && m1 > m2)
+            return level1;
+        if (m2 > m0 && m2 > m1)
+            return level2;
 
-        if (max == 0)
-            return null;
-
-        return new Date(max);
+        return null;
     }
+
+    public static int solutionFile2level(File file) {
+        String path = file.getPath();
+        return path.charAt(path.length() - 1) - '0';
+    }
+
+    /*public Map<String, Map<String, Object>> getBests(File file) throws IOException {
+        try {
+            try (InputStream in = new FileInputStream(file)) {
+                JsonNode global = Json.parse(in);
+                global.get("")
+            }
+        }
+    }*/
 
     @Override
     public void serialize(Serializer serializer) {
@@ -200,4 +237,57 @@ public class KioProblemPlugin extends Plugin {
     public String getLink(int level) {
         return "http://ipo.spb.ru/kio-files/kio-" + (year % 100) + "/KIO_" + level + "_ru.zip";
     }
+
+    // different years
+
+    public static List<String> getProblemNames(int year, int level) {
+        switch (year) {
+            case 2015:
+                return Arrays.asList("traincars", "markov", "spider");
+        }
+        return Arrays.asList();
+    }
+
+    public static String getProblemName(String id, int year, int level) {
+        switch (year) {
+            case 2015:
+                switch (id) {
+                    case "markov":
+                        switch (level) {
+                            case 0:
+                                return "Прополка";
+                            case 1:
+                            case 2:
+                                return "Калькулятор";
+                        }
+                    case "spider":
+                        return "Паук";
+                    case "traincars":
+                        return "Поезда";
+                }
+        }
+        return "???";
+    }
+
+    /*public static List<String> getResultInfo(String id, int year, int level) {
+        switch (year) {
+            case 2015:
+                switch (id) {
+                    case "markov":
+                        switch (level) {
+                            case 0:
+                                return "Прополка";
+                            case 1:
+                            case 2:
+                                return "Калькулятор";
+                        }
+                    case "spider":
+                        return Arrays.asList("");
+                    case "traincars":
+                        return "Поезда";
+                }
+        }
+        return "???";
+    }*/
+
 }
