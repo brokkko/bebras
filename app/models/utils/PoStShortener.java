@@ -19,6 +19,8 @@ public class PoStShortener {
                 @Override
                 public String call() throws Exception {
                     String apiKey = Play.application().configuration().getString("po.st.api_key");
+                    if (apiKey == null || apiKey.isEmpty())
+                        return filteredUrl;
 
                     WS.Response response = WS.url("http://po.st/api/shorten")
                             .setQueryParameter("apiKey", apiKey)
