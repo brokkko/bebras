@@ -26,8 +26,9 @@ public class JsonObjectsComparator implements Comparator<JsonNode> {
             JsonNode f1 = o1.get(field);
             JsonNode f2 = o2.get(field);
 
-            if (f1 == null || f2 == null)
-                return 0;
+            int nullCmp = compareNulls(f1, f2);
+            if (nullCmp != 2)
+                return nullCmp;
 
             switch (type) {
                 case 'i':
@@ -48,5 +49,15 @@ public class JsonObjectsComparator implements Comparator<JsonNode> {
         }
 
         return 0;
+    }
+
+    protected int compareNulls(Object n1, Object n2) {
+        if (n1 == null && n2 == null)
+            return 0;
+        if (n1 == null)
+            return -1;
+        if (n2 == null)
+            return 1;
+        return 2;
     }
 }

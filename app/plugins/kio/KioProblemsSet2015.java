@@ -1,7 +1,5 @@
 package plugins.kio;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,7 +36,11 @@ public class KioProblemsSet2015 extends KioProblemSet {
                     case 2: return kioParameters("correctAmount+i:верно~%", "ruleAmount-i:правил");
                 }
             case "spider":
-                return kioParameters("t-d:время~ с", "m-d:материал~ см");
+                switch (level) {
+                    case 0: return kioParameters("t-d:время~0 с", "m-d:материал~ см");
+                    case 1:
+                    case 2: return kioParameters("t-d:время~ с", "m-d:материал~ см");
+                }
             case "traincars":
                 switch (level) {
                     case 0: return kioParameters("c+i:верно", "t-i:беспорядок", "h-i:действий");
@@ -49,16 +51,4 @@ public class KioProblemsSet2015 extends KioProblemSet {
         return null;
     }
 
-    @Override
-    public JsonObjectsComparator comparator(int level, String id) {
-        /*if ("spider".equals(id))
-            return new JsonObjectsComparator(getParams(level, id)) {
-                @Override
-                public int compare(JsonNode o1, JsonNode o2) {
-                    return super.compare(o1, o2);
-                }
-            };*/
-
-        return super.comparator(level, id);
-    }
 }
