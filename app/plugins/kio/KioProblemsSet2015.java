@@ -1,5 +1,7 @@
 package plugins.kio;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,4 +49,16 @@ public class KioProblemsSet2015 extends KioProblemSet {
         return null;
     }
 
+    @Override
+    public JsonObjectsComparator comparator(int level, String id) {
+        /*if ("spider".equals(id))
+            return new JsonObjectsComparator(getParams(level, id)) {
+                @Override
+                public int compare(JsonNode o1, JsonNode o2) {
+                    return super.compare(o1, o2);
+                }
+            };*/
+
+        return super.comparator(level, id);
+    }
 }

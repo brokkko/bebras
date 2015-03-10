@@ -2,7 +2,7 @@ package plugins.kio.logs;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.util.Base64;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,7 +24,14 @@ public class LogParser {
         if (base64Node == null)
             return;
 
-        byte[] rawData = Base64.getDecoder().decode(base64Node.asText());
+        byte[] rawData; //Base64.getDecoder().decode(base64Node.asText());
+        try {
+            //got from http://www.iharder.net/current/java/base64/
+            //TODO migrate to Java 8 with Base64
+            rawData = Base64.decode(base64Node.asText());
+        } catch (IOException e) {
+            return;
+        }
         ByteArray data = new ByteArray(rawData);
 
         long last_log_start = 0;
