@@ -159,8 +159,8 @@ public class KioProblem implements Problem {
 
         // try read file contents
         ObjectMapper mapper = new ObjectMapper();
-        JsonFactory jfactory = mapper.getJsonFactory();
-        try (JsonParser jParser = jfactory.createJsonParser(solutionFile)) {
+        JsonFactory jfactory = mapper.getFactory();
+        try (JsonParser jParser = jfactory.createParser(solutionFile)) {
             JsonNode jsonNode = jParser.readValueAsTree();
 
             JsonNode kioBase = jsonNode.get("kio_base");

@@ -1,4 +1,4 @@
-package plugins;
+package plugins.kio;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.Contest;
@@ -11,23 +11,25 @@ import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import org.bson.types.ObjectId;
-import play.libs.Json;
+import play.Logger;
+import play.Play;
+import play.api.templates.Html;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
+import plugins.Plugin;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 import java.util.Map;
 
 //TODO get rid of the plugin. Problems should be able to send solutions by themselves
 public class KioProblemPlugin extends Plugin {
 
     private int year = 2014;
+    private KioProblemSet problemSet = KioProblemSet.getInstance(year);
 
     @Override
     public void initPage() {
@@ -140,7 +142,7 @@ public class KioProblemPlugin extends Plugin {
             return;
         }
 
-        int level = fileName.charAt(fileName.length() - 1) - '0';
+        int level = userFileNameToLevel(fileName);
 
         //copy file
 
@@ -162,6 +164,10 @@ public class KioProblemPlugin extends Plugin {
         }
     }
 
+    private int userFileNameToLevel(String fileName) {
+        return fileName.charAt(fileName.length() - 1) - '0';
+    }
+
     @Override
     public boolean needsAuthorization() {
         return true;
@@ -178,6 +184,75 @@ public class KioProblemPlugin extends Plugin {
 
         return new Date(lm);
     }
+
+    public static class RecordResultsInfo {
+        public int level;
+        public KioProblemSet problemSet;
+        public Map<String, JsonNode> recordResults;
+
+        public RecordResultsInfo(int level, KioProblemSet problemSet, Map<String, JsonNode> recordResults) {
+            this.level = level;
+            this.problemSet = problemSet;
+            this.recordResults = recordResults;
+        }
+    }
+
+    public RecordResultsInfo recordResults(User user) {
+        File solutionFile = solutionFile(user);
+
+        if (solutionFile == null)
+            return null;
+
+        final KioProblemSet problemSet = KioProblemSet.getInstance(year);
+
+        final int level = userFileNameToLevel(solutionFile.getName());
+
+        final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + solutionFile.getName() + ".old.*");
+        SolutionsFile solution = new SolutionsFile(solutionFile, level, problemSet);
+        final List<Map<String, JsonNode>> results = new ArrayList<>();
+
+        try {
+            Files.walkFileTree(solutionFile.toPath().getParent(), new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Objects.requireNonNull(file);
+                    Objects.requireNonNull(attrs);
+
+                    Path name = file.getFileName();
+                    if (matcher.matches(name)) {
+                        SolutionsFile solution = new SolutionsFile(file.toFile(), level, problemSet);
+                        Map<String, JsonNode> newResults = solution.uniteLogAndProblemResults();
+                        results.add(newResults);
+                    }
+
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            return null;
+        }
+
+        Map<String, JsonNode> result = solution.uniteLogAndProblemResults();
+        for (Map<String, JsonNode> newResult : results)
+            result = solution.unite(result, newResult); //TODO not really well written, because solution also corresponds to file, not only to problemSet
+
+        return new RecordResultsInfo(level, problemSet, result);
+    }
+
+    /*public Html renderUserRecords(User user) {
+        RecordResultsInfo results = null;
+        try {
+            results = recordResults(user);
+        } catch (IOException e) {
+            Logger.error("Failed to render user Records", e);
+            results = null;
+        }
+
+        if (results == null)
+            return null;
+
+        return views.html.kio.kio_problem_result.render(results.level, results.problemSet, results.recordResults);
+    }*/
 
     public static File solutionFile(User user) {
         File dataFolder = Event.current().getEventDataFolder();
@@ -203,20 +278,6 @@ public class KioProblemPlugin extends Plugin {
         return null;
     }
 
-    public static int solutionFile2level(File file) {
-        String path = file.getPath();
-        return path.charAt(path.length() - 1) - '0';
-    }
-
-    /*public Map<String, Map<String, Object>> getBests(File file) throws IOException {
-        try {
-            try (InputStream in = new FileInputStream(file)) {
-                JsonNode global = Json.parse(in);
-                global.get("")
-            }
-        }
-    }*/
-
     @Override
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
@@ -228,6 +289,8 @@ public class KioProblemPlugin extends Plugin {
     public void update(Deserializer deserializer) {
         super.update(deserializer);
         year = deserializer.readInt("year", 2014);
+
+        problemSet = KioProblemSet.getInstance(year);
     }
 
     public int getYear() {
@@ -237,57 +300,5 @@ public class KioProblemPlugin extends Plugin {
     public String getLink(int level) {
         return "http://ipo.spb.ru/kio-files/kio-" + (year % 100) + "/KIO_" + level + "_ru.zip";
     }
-
-    // different years
-
-    public static List<String> getProblemNames(int year, int level) {
-        switch (year) {
-            case 2015:
-                return Arrays.asList("traincars", "markov", "spider");
-        }
-        return Arrays.asList();
-    }
-
-    public static String getProblemName(String id, int year, int level) {
-        switch (year) {
-            case 2015:
-                switch (id) {
-                    case "markov":
-                        switch (level) {
-                            case 0:
-                                return "Прополка";
-                            case 1:
-                            case 2:
-                                return "Калькулятор";
-                        }
-                    case "spider":
-                        return "Паук";
-                    case "traincars":
-                        return "Поезда";
-                }
-        }
-        return "???";
-    }
-
-    /*public static List<String> getResultInfo(String id, int year, int level) {
-        switch (year) {
-            case 2015:
-                switch (id) {
-                    case "markov":
-                        switch (level) {
-                            case 0:
-                                return "Прополка";
-                            case 1:
-                            case 2:
-                                return "Калькулятор";
-                        }
-                    case "spider":
-                        return Arrays.asList("");
-                    case "traincars":
-                        return "Поезда";
-                }
-        }
-        return "???";
-    }*/
 
 }

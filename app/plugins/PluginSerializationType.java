@@ -3,6 +3,7 @@ package plugins;
 import models.newserialization.SerializableTreeSerializationType;
 import plugins.bebraspdf.BebrasPDFs;
 import plugins.certificates.DiplomaPlugin;
+import plugins.kio.KioProblemPlugin;
 import plugins.questionnaire.QuestionnairePlugin;
 
 /**

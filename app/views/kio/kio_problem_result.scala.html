@@ -1,0 +1,16 @@
+@(level:Int, problems:plugins.kio.KioProblemSet, data:java.util.Map[String,com.fasterxml.jackson.databind.JsonNode])
+@import com.fasterxml.jackson.databind.JsonNode
+@import plugins.kio.KioProblemSet
+@for(pid <- problems.getProblemIds(level)) {
+    <div class="kio-problem-results-description">
+        <span class="kio-problem-name">@problems.getProblemName(level, pid):</span>
+        @for(param <- problems.getParams(level, pid)) {
+            <span class="kio-problem-param-name">@param.getName</span>
+            @defining(data.get(pid)) { pData =>
+                <span class="kio-problem-param-value">
+                    @if(pData != null) { @pData.get(param.getId).asText()@param.getPostfix. } else { - }
+                </span>
+            }
+        }
+    </div>
+}

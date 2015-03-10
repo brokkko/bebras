@@ -1,5 +1,8 @@
 @(kio_id:org.bson.types.ObjectId, is_org:Boolean, sub_users:java.util.List[models.User])
-@import plugins.KioProblemPlugin
+@import plugins.kio.KioProblemPlugin
+@import plugins.kio.KioProblemPlugin
+@import plugins.kio.KioProblemPlugin
+@import plugins.kio.KioProblemPlugin
 @import models.newproblems.kio.KioProblem
 @import models.utils.Utils
 @defining(Event.current.getPluginByType(classOf[KioProblemPlugin])) { plugin =>
@@ -16,7 +19,7 @@
 @if(is_org) {
     <table class="kio-problem-users-table">
         <thead>
-            <tr><td>Фамилия имя</td><td>Решение загружено</td></tr>
+            <tr><td>Фамилия имя</td><td>Решение загружено</td><td>Уровень</td><td>Рекорды</td></tr>
         </thead>
         <tbody>
             @for(user <- sub_users) {
@@ -31,6 +34,23 @@
                          }
                      }
                      </td>
+                     @defining(plugin.recordResults(user)) { info =>
+                             @if(info == null) {
+                                 <td>
+                                 -
+                                 </td>
+                                 <td>
+                                 -
+                                 </td>
+                             } else {
+                                 <td>
+                                 @info.level
+                                 </td>
+                                 <td>
+                                 @kio_problem_result(info.level, info.problemSet, info.recordResults)
+                                 </td>
+                             }
+                     }
                  </tr>
             }
         </tbody>
@@ -40,6 +60,15 @@
 
         @if(upload_time != null) {
             <h2>Последнее решение было загружено: @Utils.formatObjectCreationTime(upload_time)</h2>
+            <p>
+            @defining(plugin.recordResults(User.current())) { info =>
+                Уровень
+                @if(info == null) { ? } else { @info.level. }
+            @if(info != null) {
+                @kio_problem_result(info.level, info.problemSet, info.recordResults)
+            }
+            }
+            </p>
         } else {
             <h2>Загруженных решений пока нет</h2>
         }
@@ -55,7 +84,7 @@
     @defining(flash.get(KioProblem.MESSAGE_KEY)) { upload_message =>
         <p class="kio-problem-message@if(upload_message != "ok") { error}">
         @if(upload_message == "ok") {
-            Ваше решение успешно загружено
+            Ваше решение успешно загружено.
         } else {
             Файл не загружен! @upload_message
         }
