@@ -616,6 +616,7 @@ public class EventAdministration extends Controller {
             }
 
         user.invalidateAllResults();
+        user.store();
     }
 
     private static void createUser(Event event, String[] title, String[] line) {
