@@ -53,4 +53,30 @@ public class KioParameter {
     public char getType() {
         return type;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        KioParameter that = (KioParameter) o;
+
+        if (sortDirection != that.sortDirection) return false;
+        if (type != that.type) return false;
+        if (!id.equals(that.id)) return false;
+        if (!name.equals(that.name)) return false;
+        if (!postfix.equals(that.postfix)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + sortDirection;
+        result = 31 * result + postfix.hashCode();
+        result = 31 * result + (int) type;
+        return result;
+    }
 }
