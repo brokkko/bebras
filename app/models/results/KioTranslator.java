@@ -9,7 +9,6 @@ import plugins.kio.KioParameter;
 import plugins.kio.KioProblemSet;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class KioTranslator implements Translator {
 
@@ -73,7 +72,7 @@ public class KioTranslator implements Translator {
                 String name = kioProblemSet.getProblemName(level, pid);
                 names.add(name);
             }
-            String name = names.stream().collect(Collectors.joining(", "));
+            String name = join(names, ", ");
 
             field2title.put("scores_" + pid, "Баллы (" + name + ")");
             field2type.put("scores_" + pid, new BasicSerializationType<>(String.class));
@@ -97,6 +96,16 @@ public class KioTranslator implements Translator {
             field2type.put("rank_" + pid, new BasicSerializationType<>(String.class));
         }
         return InfoPattern.union(contest, new InfoPattern(field2type, field2title));
+    }
+
+    private String join(Collection<String> names, String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        for (String name : names) {
+            if (sb.length() != 0)
+                sb.append(delimiter);
+            sb.append(name);
+        }
+        return sb.toString();
     }
 
     @Override
