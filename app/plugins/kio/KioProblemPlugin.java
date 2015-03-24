@@ -1,6 +1,8 @@
 package plugins.kio;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.Contest;
 import models.Event;
 import models.User;
@@ -10,6 +12,7 @@ import models.newproblems.kio.KioProblem;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
+import models.results.Info;
 import org.bson.types.ObjectId;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -34,8 +37,46 @@ public class KioProblemPlugin extends Plugin {
 
     @Override
     public void initEvent(Event event) {
+        if (year == 2014) {
+            registerUserFields2014(event);
+            return;
+        }
+
         for (String right : new String[]{"participant", "self participant"})
-            for (String prefix: new String[]{"kio_0_", "kio_1_", "kio_2_"}) {
+            for (int level = 0; level <= 2; level++) {
+                String prefix = "kio_" + level + "_";
+                event.registerExtraUserField(right, "kio_level", new BasicSerializationType<>(String.class), "Уровень");
+                event.registerExtraUserField(right, prefix + "scores", new BasicSerializationType<>(String.class), "Баллы");
+                event.registerExtraUserField(right, prefix + "rank", new BasicSerializationType<>(String.class), "Место");
+
+                for (String pid : problemSet.getProblemIds(level)) {
+                    for (KioParameter parameter : problemSet.getParams(level, pid))
+                        event.registerExtraUserField(
+                                right,
+                                prefix + pid + "_" + parameter.getId(),
+                                new BasicSerializationType<>(String.class),
+                                parameter.getName() + " (" + problemSet.getProblemName(level, pid) + ")"
+                        );
+                    event.registerExtraUserField(
+                            right,
+                            prefix + "scores_" + pid,
+                            new BasicSerializationType<>(String.class),
+                            "Баллы (" + problemSet.getProblemName(level, pid) + ")"
+                    );
+                    event.registerExtraUserField(
+                            right,
+                            prefix + "rank_" + pid,
+                            new BasicSerializationType<>(String.class),
+                            "Место (" + problemSet.getProblemName(level, pid) + ")"
+                    );
+                }
+            }
+    }
+
+    private void registerUserFields2014(Event event) {
+        //TODO move this to KioProblemSet
+        for (String right : new String[]{"participant", "self participant"})
+            for (String prefix : new String[]{"kio_0_", "kio_1_", "kio_2_"}) {
                 event.registerExtraUserField(right, prefix + "total_number_of_difference_graphs", new BasicSerializationType<>(String.class), "Различных созвездий");
                 event.registerExtraUserField(right, prefix + "total_number_of_right_graphs", new BasicSerializationType<>(String.class), "Всего созвездий");
                 event.registerExtraUserField(right, prefix + "sum_of_lines", new BasicSerializationType<>(String.class), "Длина линий");
@@ -151,7 +192,8 @@ public class KioProblemPlugin extends Plugin {
             try {
                 File previousVersion = new File(solutionFile.getAbsolutePath() + ".old." + new Date().getTime());
                 Files.move(solutionFile.toPath(), previousVersion.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
 
             try {
                 Files.move(file.toPath(), solutionFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -195,6 +237,33 @@ public class KioProblemPlugin extends Plugin {
     }
 
     public RecordResultsInfo recordResults(User user) {
+        Info info = user.getInfo();
+        String levelS = (String) info.get("kio_level");
+        if (levelS == null)
+            return null;
+        int level = Integer.parseInt(levelS);
+        String prefix = "kio_" + level + "_";
+
+        Map<String, JsonNode> result = new HashMap<>();
+        for (String pid : problemSet.getProblemIds(level)) {
+            ObjectNode pNode = JsonNodeFactory.instance.objectNode();
+            for (KioParameter parameter : problemSet.getParams(level, pid)) {
+                pNode.put(parameter.getId(), (String) info.get(prefix + pid + "_" + parameter.getId()));
+            }
+            pNode.put("_scores", (String) info.get(prefix + "scores_" + pid));
+            pNode.put("_rank", (String) info.get(prefix + "rank_" + pid));
+            result.put(pid, pNode);
+        }
+        ObjectNode _all = JsonNodeFactory.instance.objectNode();
+        _all.put("_scores", (String) info.get(prefix + "scores"));
+        _all.put("_rank", (String) info.get(prefix + "rank"));
+        result.put("_all", _all);
+
+        return new RecordResultsInfo(level, problemSet, result);
+    }
+
+    //TODO make this optional variant instead of recordResults, put it to settings
+    public RecordResultsInfo recordResultsFromFiles(User user) {
         File solutionFile = solutionFile(user);
 
         if (solutionFile == null)

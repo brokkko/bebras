@@ -1,14 +1,31 @@
-@(level:Int, problems:plugins.kio.KioProblemSet, data:java.util.Map[String,com.fasterxml.jackson.databind.JsonNode])
+@(level: Int, problems: plugins.kio.KioProblemSet, data: java.util.Map[String, com.fasterxml.jackson.databind.JsonNode])
 @import com.fasterxml.jackson.databind.JsonNode
 @import plugins.kio.KioProblemSet
+
+@defining(data.get("_all")) { all =>
+    @if(all != null) {
+        <span class="kio-problem-name">Баллов</span>
+        <span class="kio-problem-param-value">@all.get("_scores")</span>
+        <span class="kio-problem-name">Место</span>
+        <span class="kio-problem-param-value">@all.get("_rank")</span>
+    }
+}
+
 @for(pid <- problems.getProblemIds(level)) {
     <div class="kio-problem-results-description">
         <span class="kio-problem-name">@problems.getProblemName(level, pid):</span>
-        @for(param <- problems.getParams(level, pid)) {
-            <span class="kio-problem-param-name">@param.getName</span>
-            @defining(data.get(pid)) { pData =>
+        @defining(data.get(pid)) { pData =>
+            @if(pData.get("_scores") != null) {
+                <span class="kio-problem-param-name">баллов</span>
+                <span class="kio-problem-param-value">@pData.get("_scores")</span>
+                <span class="kio-problem-param-name">место</span>
+                <span class="kio-problem-param-value">@pData.get("_rank")</span>
+            }
+            @for(param <- problems.getParams(level, pid)) {
+                <span class="kio-problem-param-name">@param.getName</span>
                 <span class="kio-problem-param-value">
-                    @if(pData != null) { @pData.get(param.getId).asText()@param.getPostfix. } else { - }
+                @if(pData != null) {
+                    @pData.get(param.getId).asText()@param.getPostfix. } else { - }
                 </span>
             }
         }

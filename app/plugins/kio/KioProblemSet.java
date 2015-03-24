@@ -7,6 +7,7 @@ public abstract class KioProblemSet {
 
     public static KioProblemSet getInstance(int year) {
         switch (year) {
+            case 2014: return new KioProblemsSet2014();
             case 2015: return new KioProblemsSet2015();
         }
         return null;

@@ -64,7 +64,7 @@
             @defining(plugin.recordResults(User.current())) { info =>
                 Уровень
                 @if(info == null) { ? } else { @info.level. }
-            @if(info != null) {
+            @if(info != null && info.problemSet != null) {
                 @kio_problem_result(info.level, info.problemSet, info.recordResults)
             }
             }
