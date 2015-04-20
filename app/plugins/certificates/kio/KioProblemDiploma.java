@@ -36,10 +36,26 @@ public class KioProblemDiploma extends Diploma<KioProblemDiplomaFactory> {
     }
 
     private boolean isGroup() {
-        String diploma = (String) user.getInfo().get(factory.getDiplomaField());
+        String diploma = getDiplomaLevel();
         if (diploma == null)
             throw new IllegalStateException("Problem diploma illegal state");
         return diploma.endsWith("g");
+    }
+
+    private String getDiplomaLevel() {
+        return (String) user.getInfo().get(factory.getDiplomaField());
+    }
+
+    private String getDiplomaLevelRoman() {
+        switch (getDiplomaLevel()) {
+            case "1":
+                return "I";
+            case "2":
+                return "II";
+            case "3":
+                return "III";
+        }
+        return "?";
     }
 
     private int getLevel() {
@@ -77,6 +93,8 @@ public class KioProblemDiploma extends Diploma<KioProblemDiplomaFactory> {
             canvas.showTextAligned(Element.ALIGN_CENTER, "(в команде)", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
             y0 -= lineSkip;
         }
+
+        canvas.showTextAligned(Element.ALIGN_CENTER, getDiplomaLevelRoman() + " степени", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(172), 0);
 
         String problemDescription = String.format("Задача «%s»: %s место", factory.getProblemName(getLevel()), getResult(factory.getProblemRankField()));
         canvas.showTextAligned(Element.ALIGN_CENTER, problemDescription, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);

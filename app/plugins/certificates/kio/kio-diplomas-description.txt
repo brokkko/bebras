@@ -77,3 +77,264 @@ teacher_gramota     1
   "required" : false,
   "validators" : [ ]
 }
+
+======================== 2015 =============================
+
+[
+  {
+    "ref" : "certificate",
+    "view right" : "certificate",
+    "diploma" : {
+      "contest" : "kio14",
+      "problems by levels" : [
+        [
+          0,
+          3,
+          5
+        ],
+        [
+          1,
+          4,
+          6
+        ],
+        [
+          2,
+          4,
+          6
+        ]
+      ],
+      "participants by levels" : [
+        763,
+        471,
+        365
+      ],
+      "problems" : [
+        {
+          "name" : "Поезда",
+          "pattern" : "верно: %s,\nбеспорядок: %s, действий: %s",
+          "scores" : "rank_traincars",
+          "fields" : [
+            "traincars_c",
+            "traincars_t",
+            "traincars_h"
+          ]
+        },
+        {
+          "name" : "Поезда",
+          "pattern" : "верно: %s,\nбеспорядок: %s, действий: %s+%s",
+          "scores" : "rank_traincars",
+          "fields" : [
+            "traincars_c",
+            "traincars_t",
+            "traincars_uh",
+            "traincars_dh"
+          ]
+        },
+        {
+          "name" : "Поезда",
+          "pattern" : "верно: %s,\nтранспозиций: %s, действий: %s+%s",
+          "scores" : "rank_traincars",
+          "fields" : [
+            "traincars_c",
+            "traincars_t",
+            "traincars_uh",
+            "traincars_dh"
+          ]
+        },
+
+        {
+          "name" : "Прополка",
+          "pattern" : "различий: %s,\nправил: %s, операций: %s",
+          "scores" : "rank_markov",
+          "fields" : [
+            "markov_ridgeDiff",
+            "markov_ruleAmount",
+            "markov_applyOperations"
+          ]
+        },
+        {
+          "name" : "Калькулятор",
+          "pattern" : "верно: %s%%, правил: %s",
+          "scores" : "rank_markov",
+          "fields" : [
+            "markov_correctAmount",
+            "markov_ruleAmount"
+          ]
+        },
+
+        {
+          "name" : "Паук",
+          "pattern" : "время: %s, материал %s",
+          "scores" : "rank_spider",
+          "fields" : [
+            "spider_t",
+            "spider_m"
+          ]
+        },
+        {
+          "name" : "Паук",
+          "pattern" : "время: %s0, материал %s",
+          "scores" : "rank_spider",
+          "fields" : [
+            "spider_t",
+            "spider_m"
+          ]
+        }
+      ],
+      "year" : 2015,
+      "type" : "kio certificate"
+    },
+    "view title" : "Мой сертификат",
+    "type" : "diploma"
+  },
+
+
+  {
+    "ref" : "diploma",
+    "view right" : "certificate",
+    "diploma" : {
+      "contest" : "kio14",
+      "year" : 2015,
+      "type" : "kio diploma"
+    },
+    "view title" : "Мой диплом",
+    "type" : "diploma"
+  },
+  {
+    "ref" : "diploma1",
+    "view right" : "certificate",
+    "diploma" : {
+      "contest" : "kio14",
+      "diploma field" : "diploma_problem_1",
+      "rank field" : "rank_traincars",
+      "year" : 2015,
+      "name" : "Поезда",
+      "type" : "kio problem diploma"
+    },
+    "view title" : "Мой диплом по задаче 1",
+    "type" : "diploma"
+  },
+  {
+    "ref" : "diploma2",
+    "view right" : "certificate",
+    "diploma" : {
+      "contest" : "kio14",
+      "diploma field" : "diploma_problem_2",
+      "rank field" : "rank_markov",
+      "year" : 2015,
+      "names" : ["Прополка", "Калькулятор", "Калькулятор"],
+      "type" : "kio problem diploma"
+    },
+    "view title" : "Мой диплом по задаче 2",
+    "type" : "diploma"
+  },
+  {
+    "ref" : "diploma3",
+    "view right" : "certificate",
+    "diploma" : {
+      "contest" : "kio14",
+      "diploma field" : "diploma_problem_3",
+      "rank field" : "rank_spider",
+      "year" : 2015,
+      "name" : "Паук",
+      "type" : "kio problem diploma"
+    },
+    "view title" : "Мой диплом по задаче 3",
+    "type" : "diploma"
+  },
+
+
+  {
+    "ref" : "teacher_gramota",
+    "view right" : "teacher gramota",
+    "diploma" : {
+      "year" : 2015,
+      "type" : "kio teacher gramota"
+    },
+    "view title" : "Моя грамота",
+    "type" : "diploma"
+  }
+]
+
+//--------------------------------------------------------
+
+    "diploma" : null,
+	"diploma_problem_1" : null,
+	"diploma_problem_2" : null,
+	"diploma_problem_3" : null,
+
+	"kio_level" : null,
+
+	"kio_0_scores" : null,
+	"kio_0_rank" : null,
+
+	"kio_0_traincars_c" : null,
+	"kio_0_traincars_t" : null,
+	"kio_0_traincars_h" : null,
+	"kio_0_scores_traincars" : null,
+	"kio_0_rank_traincars" : null,
+	"kio_0_markov_ridgeDiff" : null,
+	"kio_0_markov_ruleAmount" : null,
+	"kio_0_markov_applyOperations" : null,
+	"kio_0_scores_markov" : null,
+	"kio_0_rank_markov" : null,
+	"kio_0_spider_t" : null,
+	"kio_0_spider_m" : null,
+	"kio_0_scores_spider" : null,
+	"kio_0_rank_spider" : null,
+	"kio_1_scores" : null,
+	"kio_1_rank" : null,
+	"kio_1_traincars_c" : null,
+	"kio_1_traincars_t" : null,
+	"kio_1_traincars_uh" : null,
+	"kio_1_traincars_dh" : null,
+	"kio_1_scores_traincars" : null,
+	"kio_1_rank_traincars" : null,
+	"kio_1_markov_correctAmount" : null,
+	"kio_1_markov_ruleAmount" : null,
+	"kio_1_scores_markov" : null,
+	"kio_1_rank_markov" : null,
+	"kio_1_spider_t" : null,
+	"kio_1_spider_m" : null,
+	"kio_1_scores_spider" : null,
+	"kio_1_rank_spider" : null,
+	"kio_2_scores" : null,
+	"kio_2_rank" : null,
+	"kio_2_traincars_c" : null,
+	"kio_2_traincars_t" : null,
+	"kio_2_traincars_uh" : null,
+	"kio_2_traincars_dh" : null,
+	"kio_2_scores_traincars" : null,
+	"kio_2_rank_traincars" : null,
+	"kio_2_markov_correctAmount" : null,
+	"kio_2_markov_ruleAmount" : null,
+	"kio_2_scores_markov" : null,
+	"kio_2_rank_markov" : null,
+	"kio_2_spider_t" : null,
+	"kio_2_spider_m" : null,
+	"kio_2_scores_spider" : null,
+	"kio_2_rank_spider" : null,
+
+{
+  "ref" : "winners",
+  "right" : "anon",
+  "title" : "Победители",
+  "subpages" : [
+    {
+      "title" : "Дипломы"
+    },
+    {
+      "id" : "1st",
+      "title" : "Задача «Поезда»"
+    },
+    {
+      "id" : "2nd",
+      "title" : "Задачи «Прополка» и «Калькулятор»"
+    },
+    {
+      "id" : "3rd",
+      "title" : "Задача «Паук»"
+    }
+  ],
+  "type" : "extra page"
+}
