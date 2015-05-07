@@ -32,7 +32,8 @@ public class KioProblemDiploma extends Diploma<KioProblemDiplomaFactory> {
 
     @Override
     public boolean isHonored() {
-        return user.getInfo().get(factory.getDiplomaField()) != null;
+        Object value = user.getInfo().get(factory.getDiplomaField());
+        return value != null && !value.equals("");
     }
 
     private boolean isGroup() {
@@ -94,10 +95,11 @@ public class KioProblemDiploma extends Diploma<KioProblemDiplomaFactory> {
             y0 -= lineSkip;
         }
 
-        canvas.showTextAligned(Element.ALIGN_CENTER, getDiplomaLevelRoman() + " степени", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(172), 0);
+//        canvas.showTextAligned(Element.ALIGN_CENTER, getDiplomaLevelRoman() + " степени", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(172), 0);
 
-        String problemDescription = String.format("Задача «%s»: %s место", factory.getProblemName(getLevel()), getResult(factory.getProblemRankField()));
-        canvas.showTextAligned(Element.ALIGN_CENTER, problemDescription, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
+//        String scores = ???;
+//        String problemDescription = String.format("Задача «%s»: %s баллов", factory.getProblemName(getLevel()), scores);
+//        canvas.showTextAligned(Element.ALIGN_CENTER, problemDescription, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
 
         y0 -= lineSkip * 1.4f;
         KioCertificate.drawUserFrom(canvas, user, y0);
