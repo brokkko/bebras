@@ -98,8 +98,8 @@ public class KioProblemDiploma extends Diploma<KioProblemDiplomaFactory> {
 //        canvas.showTextAligned(Element.ALIGN_CENTER, getDiplomaLevelRoman() + " степени", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(172), 0);
 
 //        String scores = ???;
-//        String problemDescription = String.format("Задача «%s»: %s баллов", factory.getProblemName(getLevel()), scores);
-//        canvas.showTextAligned(Element.ALIGN_CENTER, problemDescription, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
+        String problemDescription = String.format("Задача «%s»", factory.getProblemName(getLevel()));
+        canvas.showTextAligned(Element.ALIGN_CENTER, problemDescription, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
 
         y0 -= lineSkip * 1.4f;
         KioCertificate.drawUserFrom(canvas, user, y0);
