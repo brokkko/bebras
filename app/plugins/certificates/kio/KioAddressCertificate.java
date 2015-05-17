@@ -169,7 +169,7 @@ public class KioAddressCertificate extends Diploma<DiplomaFactory> {
         Font font = bold ? DEFAULT_FONT_B : DEFAULT_FONT_R;
         if (extra)
             font = new Font(font.getBaseFont(), font.getSize(), font.getStyle(), new BaseColor(128, 128, 128));
-        float textWidth = font.getBaseFont().getWidthPoint(text, font.getSize());
+        float textWidth = font.getBaseFont().getWidthPoint(text, font.getSize());*
         float textWidthMM = Utilities.pointsToMillimeters(textWidth);
         boolean wasError = false;
         if (textWidthMM + x0 > ADDRESS_BOX_WIDTH) {
