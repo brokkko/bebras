@@ -113,7 +113,7 @@ public class KioAddressCertificate extends Diploma<DiplomaFactory> {
         if (roleName.equals("SELF_PARTICIPANT"))
             return null;
 
-        User addressUser = user.getRegisteredByUser();
+        User addressUser = roleName.equals("SCHOOL_ORG") ? user : user.getRegisteredByUser();
         Object sendTo = addressUser.getInfo().get("send_to");
         if (!"school".equals(sendTo))
             return null;
@@ -169,7 +169,7 @@ public class KioAddressCertificate extends Diploma<DiplomaFactory> {
         Font font = bold ? DEFAULT_FONT_B : DEFAULT_FONT_R;
         if (extra)
             font = new Font(font.getBaseFont(), font.getSize(), font.getStyle(), new BaseColor(128, 128, 128));
-        float textWidth = font.getBaseFont().getWidthPoint(text, font.getSize());*
+        float textWidth = font.getBaseFont().getWidthPoint(text, font.getSize());
         float textWidthMM = Utilities.pointsToMillimeters(textWidth);
         boolean wasError = false;
         if (textWidthMM + x0 > ADDRESS_BOX_WIDTH) {
