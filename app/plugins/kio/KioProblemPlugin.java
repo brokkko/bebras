@@ -3,9 +3,17 @@ package plugins.kio;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.Utilities;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import controllers.worker.Worker;
 import models.Contest;
 import models.Event;
 import models.User;
+import models.UserRole;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
 import models.newproblems.kio.KioProblem;
@@ -18,6 +26,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 import plugins.Plugin;
+import plugins.certificates.bebras.BebrasAddressCertificate;
+import plugins.certificates.kio.KioAddressCertificate;
 
 import java.io.*;
 import java.nio.file.*;
@@ -110,7 +120,10 @@ public class KioProblemPlugin extends Plugin {
 
     @Override
     public Result doGet(String action, String params) {
-        return null;
+        if ("all_addresses".equals(action))
+            return generateAllAddresses(params); //role
+        else
+            return null;
     }
 
     @Override
@@ -367,4 +380,75 @@ public class KioProblemPlugin extends Plugin {
         return "http://ipo.spb.ru/kio-files/kio-" + (year % 100) + "/KIO_" + level + "_ru.zip";
     }
 
+    //----------------------------------------------------------------------------------
+    //                             addresses
+    //----------------------------------------------------------------------------------
+    private Result generateAllAddresses(final String roleName) {
+        final Event event = Event.current();
+        final UserRole role = event.getRole(roleName);
+
+        if (role == UserRole.EMPTY)
+            return Results.badRequest("Unknown role");
+
+        final Worker worker = new Worker("Generate all addresses", "Event=" + event.getId() + " role=" + roleName);
+        worker.execute(new Worker.Task() {
+            @Override
+            public void run() throws Exception {
+                DBObject usersQuery = new BasicDBObject(User.FIELD_EVENT, event.getId());
+                usersQuery.put(User.FIELD_USER_ROLE, roleName);
+
+                User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery);
+                List<User> allUsers = usersEnumeration.readToMemory();
+
+                File outputPath = new File(event.getEventDataFolder(), "all-addresses-" + roleName + ".pdf");
+
+                Document doc = new Document(
+                        new Rectangle(
+                                Utilities.millimetersToPoints(210), Utilities.millimetersToPoints(297)
+                        ),
+                        0, 0, 0, 0
+                );
+
+                PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
+
+                doc.open();
+
+                int processedUsers = 0;
+                for (User user : allUsers) {
+                    if (!isHonouredDiploma(user))
+                        continue;
+
+                    KioAddressCertificate certificate = new KioAddressCertificate(user, year);
+
+                    int position = processedUsers % 11;
+                    if (position == 0)
+                        doc.newPage();
+                    certificate.draw(writer, position);
+
+                    processedUsers++;
+                    if (processedUsers == 1 || processedUsers % 100 == 0)
+                        worker.logInfo("processed " + processedUsers + " users");
+                }
+
+                doc.close();
+
+                worker.logInfo("Finished: " + controllers.routes.Resources.returnDataFile(event.getId(), outputPath.getName()));
+            }
+        });
+
+        return Results.redirect(controllers.routes.EventAdministration.workersList(event.getId()));
+    }
+
+    private boolean isHonouredDiploma(User user) {
+        Info info = user.getInfo();
+
+        String[] fields = {"diploma", "diploma_problem_1", "diploma_problem_2", "diploma_problem_3", "teacher_gramota"};
+        for (String field : fields) {
+            Object i = info.get(field);
+            if (i != null && !i.equals(""))
+                return true;
+        }
+
+        return false;
+    }
 }
