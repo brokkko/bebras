@@ -44,6 +44,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
     private String adminRight = "region org";
     private String userField = "apps";
     private String menuTitle = "Заявки";
+    private boolean showKvits = true;
     private List<ApplicationType> applicationTypes;
 
     @Override
@@ -555,6 +556,10 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return userField;
     }
 
+    public boolean isShowKvits() {
+        return showKvits;
+    }
+
     public ApplicationType getTypeByName(String typeName) {
         for (ApplicationType applicationType : applicationTypes)
             if (applicationType.getTypeName().equals(typeName))
@@ -570,6 +575,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         serializer.write("right", right);
         serializer.write("admin right", adminRight);
         serializer.write("menu", menuTitle);
+        serializer.write("show kvits", showKvits);
         SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).write(serializer, "types", applicationTypes);
     }
 
@@ -580,6 +586,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         right = deserializer.readString("right", "school org");
         adminRight = deserializer.readString("admin right", "region org");
         menuTitle = deserializer.readString("menu", "Заявки");
+        showKvits = deserializer.readBoolean("show kvits", true);
         applicationTypes = SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).read(deserializer, "types");
     }
 

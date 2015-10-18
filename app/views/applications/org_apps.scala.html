@@ -17,7 +17,9 @@
                     <td>Код заявки</td>
                     <td>Участников</td>
                     <td>Статус оплаты</td>
-                    <td>Квитанция</td>
+                    @if(plugin.isShowKvits) {
+                        <td>Квитанция</td>
+                    }
                     <td>Дата оплаты</td>
                     <td>Удаление</td>
                 </tr>
@@ -40,7 +42,9 @@
                                 case 2 => {@*Подтврждено*@&#x2714;}
                             }
                         </td>
-                        <td>@plugin.getKvitHtml(User.current, application, kvit)</td>
+                        @if(plugin.isShowKvits) {
+                            <td>@plugin.getKvitHtml(User.current, application, kvit)</td>
+                        }
                         <td>
                             @if(application.getState != Application.NEW) {
                                 @application.getComment

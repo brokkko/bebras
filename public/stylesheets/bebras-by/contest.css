@@ -1,0 +1,118 @@
+.page {
+    page-break-after: always;
+}
+
+.page-selectors {
+    text-align: center;
+    line-height: 2;
+}
+
+.page-button {
+    padding: 0.3em 0.5em;
+    border: 1px solid #5b5e35;
+    margin: 0 0.2em;
+    font-weight: bold;
+    border-radius: 4px;
+    background-color: #f5e7cb;
+    box-shadow: 1px 1px 1px 1px #008000;
+    color: #5b5e35;
+    cursor: pointer;
+
+    /*don't allow to select TODO */
+}
+
+.page-button:hover:not(.active) {
+    color: #77873b;
+    background-color: #f5c593;
+}
+
+.page-button.active {
+    background-color: #f5c593;
+    box-shadow: 1px 1px 1px #008000;
+    /*border-color: #f5972d;*/
+}
+
+.dont-move-down {
+    margin-top: 0;
+}
+
+/* time */
+#contest-time {
+    margin-top: 2em;
+    text-align: center;
+}
+
+#time-info {
+    font-weight: bold;
+}
+
+#stop-contest {
+    margin-top: 0.4em;
+}
+
+#stop-confirmation {
+    margin-top: 0.4em;
+}
+
+/*Текст об отсылке данных на сервер*/
+
+.answer-sending-info-do {
+    color: blue;
+}
+
+.answer-sending-info-ok {
+    color: green;
+}
+
+.problem {
+    padding: 1em 1em 0.4em;
+    margin-bottom: 0.5em;
+    overflow: hidden;
+}
+
+.problem .footer {
+    clear: both;
+}
+
+.change-problem input {
+    margin-top: 0.5em;
+    font-size: 1.2em;
+}
+
+.exit-button {
+    text-align: center;
+}
+
+/* contest finished and results */
+
+#contest-results {
+    background-color: #F3A25F;
+    padding: 1em 1em 1em;
+    margin-bottom: 1em;
+}
+
+#contest-results h1 {
+    margin-top: 0;
+}
+
+#contest-results tr td:nth-child(even) {
+    font-weight: bold;
+}
+
+#contest-results tr td:nth-child(odd) {
+    padding-right: 1em;
+}
+
+#contest-finished-info {
+    margin: 1em;
+}
+
+.stop-contest-warning {
+    display: block;
+    margin: 1em 0.6em;
+    text-align: left;
+    line-height: 1;
+    font-size: 0.9em;
+    /*font-size: smaller;*/
+    color: #c2233d;
+}
