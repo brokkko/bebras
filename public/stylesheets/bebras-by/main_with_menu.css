@@ -35,16 +35,16 @@ html.no-scroll, body.no-scroll {
 }
 
 header {
-    background: #646c37 url(../../images/header02.png);
-    border-bottom: 2px #646c37 solid;
-    font-size: 2em;
-    color: #fff0b2;
-    padding: 6px;
+    background: #5bbb55;
+    border-bottom: 2px #006600 solid;
+    font-size: 1.5em;
+    color: #fff;
+    padding: 8px 6px 4px 6px;
     text-align: center;
     font-family: "Arial", serif;
     font-weight: 600;
-    text-shadow: 2px 2px 2px #646c37;
-    height: 34px; /*2em + 2px*/
+    text-shadow: 2px 2px 2px #006600;
+    height: 26px; /*2em + 2px*/
 }
 
 /* wrapper, content, navigation */
@@ -64,7 +64,7 @@ header {
 }
 
 .wrapper {
-    background: #fceaa4 url(../../images/nav01.png) repeat;
+    background: #fff url(../../images/by/orn.png) repeat-y;
     /*background-color: #2993dd;*/
     min-height: 100%;
     height: auto !important;
@@ -77,7 +77,7 @@ header {
     margin: 0 0 -32000px 284px;
     padding: 1em 1em 32010px;
     background-color: white;
-    border-left: 2px solid #f5972d;
+    border-left: 2px solid #f19f5f;
     overflow: hidden;
     font-size: 11pt;
 }
@@ -99,7 +99,7 @@ header {
 
 .wrapper.menu-to-right .content:not(.auto-size) {
     border-left: 0;
-    border-right: 2px solid #f5972d;
+    border-right: 2px solid #f19f5f;
 }
 
 .wrapper.menu-to-right .content, .wrapper.menu-to-right .content-footer, .wrapper.menu-to-right .content-header {
@@ -120,8 +120,8 @@ footer {
     color: white;
     padding: 2px;
 
-    background: #01a1de url(../../images/header02.png);
-    border-top: 2px #646c37 solid;
+    background: #5bbb55;
+    border-top: 2px #006600 solid;
 
     position: relative;
     height: 26px; /*0.75 em + 0.75 em */
@@ -166,7 +166,7 @@ nav img {
 /*menu items*/
 nav .menu-item {
     display: block;
-    margin: 2px 0.5em;
+    margin: 2px 0.5em 2px 46px;
     line-height: 1;
     /*border: 2px solid #f5972d;*/
     text-decoration: none;
@@ -176,23 +176,22 @@ nav .menu-item {
 }
 
 nav a {
-    background-color: #f3a25f;
+    background-color: #f19f5f;
     box-shadow: 1px 1px 1px #8e6a4c;
 }
 
 nav span {
-    background-color: #f6b882;
+    background-color: #eebe1f;
     box-shadow: 1px 1px 1px #f5c593;
 }
 
 nav .menu-item, nav .menu-item:visited {
-    color: #5b5e35;
-    font-weight: bold;
+    color: #000;
     font-family: "Arial", serif;
 }
 
 nav a.menu-item:hover {
-    color: #77873b;
+    color: #2f2f73;
 }
 
 .hidden {
@@ -200,14 +199,14 @@ nav a.menu-item:hover {
 }
 
 nav div.contest-logo {
-    background: url(../../images/bebras-logo-2.png);
-    width: 272px;
-    height: 272px;
-    margin: 0 auto 1em;
+    background: url(../../images/by/logo.png);
+    width: 240px;
+    height: 121px;
+    margin: 0 4px 1em 44px;
 }
 
 .notification {
-    color: red;
+    color: #cc0000;
     font-size: 1.2em;
     margin: 0.5em;
     line-height: 1;
@@ -233,7 +232,7 @@ nav div.contest-logo {
 
 .info-box {
     /*border-radius: 1em;*/
-    background-color: #fceaa4;
+    background-color: #eebe1f;
     padding: 0.5em 1em;
     margin: 0.4em 1em;
     color: #000000;
@@ -278,7 +277,7 @@ nav div.contest-logo {
 }
 
 .info-box .header {
-    font-weight: 800;
+    font-weight: normal;
 }
 
 .info-box .skip {
@@ -333,7 +332,7 @@ nav div.contest-logo {
 }
 
 a, a:visited {
-    color: #5b5e35;
+    color: #000;
 }
 
 a:hover {
@@ -350,9 +349,9 @@ a:hover {
     font-weight: bold;
     border: 1px solid black;
     margin-top: 0.9em;
-    background-color: #5b5e35;
+    background-color: rgb(190, 204, 255);
     padding: 0.4em 0.8em;
-    color: white !important;
+    color: black !important;
     cursor: pointer;
 }
 
@@ -392,18 +391,18 @@ a:hover {
 }
 
 .file-upload-form input[type='file'] {
-    border: 2px solid #5b5e35;
+    border: 2px solid #000;
     padding: 0.2em 0.5em;
     /*font-weight: bold;*/
-    /*background-color: #fceaa4;*/
+    /*background-color: #eebe1f;*/
     width: 100%;
     font-size: 1em;
 }
 
 .file-upload-form input[type='submit'] {
-    color: #5b5e35;
-    background-color: #fceaa4;
-    border: 2px solid #5b5e35;
+    color: #000;
+    background-color: #eebe1f;
+    border: 2px solid #000;
     cursor: pointer;
     font-weight: bold;
     font-size: 1em;
@@ -497,12 +496,12 @@ span.pre {
 }
 
 .additional-navigation li a {
-    color: #fff0b2;
+    color: #fff;
     padding: 0.3em 0.8em 0.4em 0.8em;
     text-decoration: none;
-    text-shadow: 2px 2px 2px #646c37;
-    background: #646c37 url(../../images/header02.png);
-    /*box-shadow: 1px 1px #646c37;*/
+    text-shadow: 2px 2px 2px #5bbb55;
+    background: #5bbb55;
+    /*box-shadow: 1px 1px #5bbb55;*/
     box-shadow: none;
     border-radius: 3px;
     /*font-weight: bold;*/
@@ -517,5 +516,6 @@ span.pre {
     /*margin-left: 0.5em;*/
     text-align: center;
     margin-bottom: 0.5em;
-    color: #c2233d;
+    margin-left: 46px;
+    color: #cc0000;
 }

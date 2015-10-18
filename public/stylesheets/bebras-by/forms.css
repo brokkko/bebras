@@ -187,7 +187,7 @@ form.basic-form .addr-input-field {
     /*border: 1px solid #01a1de;*/
     padding: 4px 8px;
     margin: 4px;
-    background-color: #77873B;
+    background-color: #5bbb55;
     /*background: #900 url(../images/bt01.png) repeat-x 50%;*/
     text-shadow: 1px 1px 1px #5B5E35;
     border-radius: 2px;
@@ -207,7 +207,7 @@ form.basic-form .addr-input-field {
 }
 
 .form-button:hover {
-    color: #fceaa4;
+    color: #ffc529;
     cursor: pointer;
 }
 
