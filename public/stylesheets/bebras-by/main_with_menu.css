@@ -77,7 +77,7 @@ header {
     margin: 0 0 -32000px 284px;
     padding: 1em 1em 32010px;
     background-color: white;
-    border-left: 2px solid #f19f5f;
+    border-left: 2px solid #f08a48;
     overflow: hidden;
     font-size: 11pt;
 }
@@ -99,7 +99,7 @@ header {
 
 .wrapper.menu-to-right .content:not(.auto-size) {
     border-left: 0;
-    border-right: 2px solid #f19f5f;
+    border-right: 2px solid #f08a48;
 }
 
 .wrapper.menu-to-right .content, .wrapper.menu-to-right .content-footer, .wrapper.menu-to-right .content-header {
@@ -176,13 +176,13 @@ nav .menu-item {
 }
 
 nav a {
-    background-color: #f19f5f;
-    box-shadow: 1px 1px 1px #8e6a4c;
+    background-color: #f08a48;/*f19f5f;*/
+    /*box-shadow: 1px 1px 1px #8e6a4c;*/
 }
 
 nav span {
-    background-color: #eebe1f;
-    box-shadow: 1px 1px 1px #f5c593;
+    background-color: #ffdb00;
+    /*box-shadow: 1px 1px 1px #f5c593;*/
 }
 
 nav .menu-item, nav .menu-item:visited {
@@ -232,7 +232,7 @@ nav div.contest-logo {
 
 .info-box {
     /*border-radius: 1em;*/
-    background-color: #eebe1f;
+    background-color: #ffdb00;/*ffdb00;*/
     padding: 0.5em 1em;
     margin: 0.4em 1em;
     color: #000000;
@@ -394,14 +394,14 @@ a:hover {
     border: 2px solid #000;
     padding: 0.2em 0.5em;
     /*font-weight: bold;*/
-    /*background-color: #eebe1f;*/
+    /*background-color: #ffdb00;*/
     width: 100%;
     font-size: 1em;
 }
 
 .file-upload-form input[type='submit'] {
     color: #000;
-    background-color: #eebe1f;
+    background-color: #ffdb00;
     border: 2px solid #000;
     cursor: pointer;
     font-weight: bold;
