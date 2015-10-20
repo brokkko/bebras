@@ -28,7 +28,6 @@ public class EventFlagsPlugin extends Plugin {
         if (flags == null)
             return;
 
-
         for (String flag : flags) {
             int eqPos = flag.indexOf('=');
             if (eqPos < 0)

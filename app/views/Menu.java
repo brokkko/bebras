@@ -6,6 +6,7 @@ import models.Event;
 import models.User;
 import models.UserRole;
 import models.data.TableDescription;
+import models.forms.inputtemplate.BooleanInputTemplate;
 import play.mvc.Call;
 import play.mvc.Http;
 
@@ -67,13 +68,17 @@ public class Menu {
     }
 
     private void fillMenuForAnon(List<MenuItem> menu, Event event, String eventId) {
-        menu.add(new MenuItem("Вход", routes.Registration.login(eventId)));
+        boolean loginFieldsNeeded = !Boolean.TRUE.equals(event.getExtraField("no_login_in_menu", false));
+
+        if (loginFieldsNeeded)
+            menu.add(new MenuItem("Вход", routes.Registration.login(eventId)));
 
         UserRole role = event.getAnonymousRole();
         if (role.mayRegisterSomebody())
             menu.add(new MenuItem("Регистрация", routes.Registration.registration(eventId)));
 
-        menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(eventId)));
+        if (loginFieldsNeeded)
+            menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(eventId)));
 
         addDomainContestsMenuItem(menu, eventId);
 
