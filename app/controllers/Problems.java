@@ -39,6 +39,7 @@ public class Problems extends Controller {
     }
 
     public static Result viewProblem(String eventId, String link) {
+        link = link.replaceAll("%20", " ");
         ProblemLink pLink = new ProblemLink(link);
 
         if (pLink.get() == null)
@@ -87,14 +88,20 @@ public class Problems extends Controller {
         form.bindFromRequest();
         String newPath = form.get("extra-value");
         if (!newPath.startsWith("/"))
-            newPath = parent.getLink() + '/' + newPath;
+            newPath = (parent != null ? parent.getLink() + '/' : "") + newPath;
         else
             newPath = newPath.substring(1);
 
+        newPath = removeUnsupportedSymbols(newPath);
+
         if (!link.move(newPath))
-            return redirect(routes.Problems.viewProblem(eventId, path));
+            return redirect(controllers.routes.Problems.viewProblem(eventId, path));
 
         return redirect(routes.Problems.viewProblem(eventId, newPath));
+    }
+
+    private static String removeUnsupportedSymbols(String path) {
+        return path.replaceAll("[^\\-a-zA-Z0-9_/]", "");
     }
 
     public static Result removeLink(String eventId, String path) {

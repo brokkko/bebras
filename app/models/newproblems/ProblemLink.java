@@ -213,6 +213,8 @@ public class ProblemLink {
             return false;
         if (!isProblem())
             return false;
+        if ("".equals(newPath))
+            return false;
 
         ProblemLink newLink = new ProblemLink(newPath);
         if (newLink.exists())

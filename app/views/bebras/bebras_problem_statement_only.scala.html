@@ -1,0 +1,11 @@
+@(index:String, title:String, statement:String)
+@import scala.List
+@import models.newproblems.bbtc.BBTCProblem
+<div class='task-title section-title'>
+    <span class='problem-index'>Слайд @index.</span>
+    <span class='problem-title'>@Html(title)</span>
+</div>
+<div class='task-statement'>
+    @Html(statement)
+</div>
+<div class='footer'></div>

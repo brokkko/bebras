@@ -112,12 +112,17 @@ public class BebrasProblem implements Problem {
                 scores = (Integer) oScores;
         }
 
-        return views.html.bebras.bebras_problem.render(
-                index, scores, showSolutions, title, country,
-                COUNTRY_TO_NAME.get(country), statement, question,
-                answersHtml, realAnswerToUserAnswer(rightAnswer, randSeed),
-                explanation, informatics
-        );
+        boolean showStatementOnly = "statement only".equals(question);
+
+        if (!showStatementOnly)
+            return views.html.bebras.bebras_problem.render(
+                    index, scores, showSolutions, title, country,
+                    COUNTRY_TO_NAME.get(country), statement, question,
+                    answersHtml, realAnswerToUserAnswer(rightAnswer, randSeed),
+                    explanation, informatics
+            );
+        else
+            return views.html.bebras.bebras_problem_statement_only.render(index, title, statement);
     }
 
     @Override

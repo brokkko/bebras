@@ -50,7 +50,7 @@
             @if(user.getRegisteredByUser != null) {
                 Зарегистрирован через: @htmlfeatures.user_link(user.getRegisteredBy.toString, Event.currentId, user.getRegisteredByUser.getLogin)
             } else {
-                Зарегистрирован напрямую
+                Зарегистрирован напрямую @*TODO never shown, because of mayChange test*@
             }
             </p>
         </div>
