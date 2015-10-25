@@ -22,8 +22,8 @@ public class ProblemBlockFactory {
     private static final Pattern ONE_PROBLEM = Pattern.compile("problem (.*)");                            //problem /PROB
     private static final Pattern FOLDER = Pattern.compile("folder (.*)");                                  //folder  /FOLDER
     private static final Pattern RANDOM_FOLDER = Pattern.compile("(\\d+) (first )?random <- (.*)");        //2 random <- /FOLDER
-    private static final Pattern RANDOM = Pattern.compile("(\\d+) random from (.*?)( in (.*))?");           //5 random from [] [] [] [] (in [])
-    private static final Pattern DIRECT = Pattern.compile("problems (.*?)( in (.*))?");                     //problems [] [] [] [] (in [])
+    private static final Pattern RANDOM = Pattern.compile("(\\d+) random from (.*?)( in (.*))?");          //5 random from [] [] [] [] (in [])
+    private static final Pattern DIRECT = Pattern.compile("problems (.*?)( in (.*))?");                    //problems [] [] [] [] (in [])
 
     public static ProblemBlock getBlock(Contest contest, String configuration, Info translatorConfiguration) {
         Matcher matcher;

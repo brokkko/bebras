@@ -140,6 +140,7 @@ GET         /:event/:domain/domain                                     controlle
 POST        /:event/:domain/update_domain                              controllers.Domains.doChangeDomainInfo(event, domain)
 POST        /:event/:domain/update_mailer                              controllers.Domains.doChangeMailerInfo(event, domain)
 GET         /:event/domain_contests                                    controllers.DomainContests.contests(event)
+GET         /:event/:contest/go_domain_contest                         controllers.DomainContests.goDomainContest(event, contest)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /bebras_training/*file                                     controllers.Resources.returnResource(file, base="/public/bebras-training")

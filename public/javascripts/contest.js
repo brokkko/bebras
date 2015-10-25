@@ -32,8 +32,7 @@ var submit_answer; //function (problem_id, answer)
     function page_selector_click() {
         var $this = $(this);
         var clicked_page_index = +$this.find('span.-info').text();
-        select_page(clicked_page_index);
-        submit_system_message("page", "" + clicked_page_index);
+        select_page_and_submit_message(clicked_page_index);
     }
 
     function animate_substitute($div_to_hide, $div_to_show, complete) {
@@ -46,6 +45,19 @@ var submit_answer; //function (problem_id, answer)
             }, 200);
             if (complete)
                 complete();
+        });
+    }
+
+    function select_page_and_submit_message(page) {
+        select_page(page);
+        submit_system_message("page", "" + page);
+    }
+
+    function find_page_selector_and_click(page) {
+        $(".page-selectors .-info").each(function() {
+            var $this = $(this);
+            if ($this.text() == page)
+                $this.parent().click();
         });
     }
 
@@ -130,8 +142,18 @@ var submit_answer; //function (problem_id, answer)
         pages_count = $('.page').length;
 
         $('.page-selector').click(page_selector_click);
-        $('.page-back').click(function(){select_page(current_page - 1);}); //TODO in scrolling regime this should also work
-        $('.page-forward').click(function(){select_page(current_page + 1);});
+        $('.page-back').click(function(){
+            if (scrolling_problem_change_regime())
+                find_page_selector_and_click(current_page - 1);
+            else
+                select_page_and_submit_message(current_page - 1);
+        });
+        $('.page-forward').click(function(){
+            if (scrolling_problem_change_regime())
+                find_page_selector_and_click(current_page + 1);
+            else
+                select_page_and_submit_message(current_page + 1);
+        });
         $('#stop-contest').find('.page-button').click(stop_contest_click);
         $('#stop-confirmation').find('.page-button').click(stop_confirmation_click);
 
@@ -177,6 +199,16 @@ var submit_answer; //function (problem_id, answer)
         //split pages if needed
         if (scrolling_problem_change_regime())
             $('#all-problems-in-pages').splitPages('page', $('.content-footer'));
+
+        if (bebras_lesson()) {
+            $('.extra-navigation').hide();
+            $('.page-selectors .page-selector').hide();
+        }
+
+
+        function bebras_lesson() {
+            return document.domain == "localhost" || document.domain == "school.bebras.ru";
+        }
     });
 
     //stopping contest

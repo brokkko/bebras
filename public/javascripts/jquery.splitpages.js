@@ -31,12 +31,16 @@
 
         page_selectors.click(function (e) {
             var page_num = parseInt($(this).find('.-info').text()); //TODO generalize class .-info
+            go_to_page(page_num);
+            e.preventDefault();
+        });
+
+        var go_to_page = function(page_num) {
             swSlider.stop().animate({'margin-left': - page_num * tasks.width()}, 'slow');
             $('.content.auto-size').scrollTop(0);
-            e.preventDefault();
             if (extra_page_action)
                 extra_page_action();
-        });
+        };
 
         var resize_action = function(){
             var $content = $('.content');
