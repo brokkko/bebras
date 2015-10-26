@@ -170,7 +170,7 @@ public class Menu {
                 break;
             }
 
-        if (hasAnons && (!Boolean.TRUE.equals(Event.current().getExtraField("hide_anon_contests")) || User.current().hasEventAdminRight()))
+        if (hasAnons && (!Boolean.TRUE.equals(Event.current().getExtraField("hide_anon_contests")) || User.current() != null && User.current().hasEventAdminRight()))
             menu.add(new MenuItem("Примеры соревнований", routes.DomainContests.contests(eventId)));
     }
 
