@@ -85,6 +85,10 @@ public class BebrasProblem implements Problem {
 
     @Override
     public Html format(String index, boolean showSolutions, Info settings, long randSeed) {
+        if ("certificate only".equals(question)) {
+            return views.html.bebras.school_certificate.render(statement);
+        }
+
         //render answers
         Html answersHtml;
         List<String> userAnswers = getUserAnswers(randSeed);

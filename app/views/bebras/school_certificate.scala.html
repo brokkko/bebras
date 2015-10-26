@@ -1,0 +1,14 @@
+@(statement:String)
+<div class="bebras-school-certificate-form">
+    <div class='task-statement'>
+        @Html(statement)
+    </div>
+    <form id='certificate-form' action="@routes.DomainContests.showBebrasSchoolCertificate(Event.currentId())" method="POST">
+        <p>Имя</p>
+        <input type="text" name="name">
+        <p>Фамилия</p>
+        <input type="text" name="surname">
+        <br>
+        <input type="submit" value="Получить сертификат участника">
+    </form>
+</div>

@@ -227,3 +227,19 @@ form#edit-problem textarea {
 .task-statement.dynamic {
     font-size: 1.4em;
 }
+
+#certificate-form {
+    font-size: 1.4em;
+}
+#certificate-form input[type="submit"] {
+    margin-top: 0.4em;
+}
+
+#certificate-form input {
+    font-size: 1em;
+}
+
+#certificate-form p {
+    margin-bottom: 0.4em;
+    margin-top: 0.4em;
+}
