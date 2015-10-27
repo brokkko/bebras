@@ -198,7 +198,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
     }
 
     private Application getExampleApplication() {
-        return new Application(User.current(), 100, 1, applicationTypes.get(0).getTypeName());
+        return new Application(User.current(), 100, 1, applicationTypes.get(0).getTypeName(), Application.NEW);
     }
 
     private Result addApplication() {
@@ -234,7 +234,12 @@ public class Applications extends Plugin { //TODO test for right in all calls
         if (appsSize != 0)
             number = applications.get(appsSize - 1).getNumber() + 1;
 
-        Application newApplication = new Application(user, size, number, appType.getTypeName());
+        int state = Application.NEW;
+        boolean noPay = appType.getPrice() == 0;
+        if (noPay)
+            state = Application.PAYED;
+
+        Application newApplication = new Application(user, size, number, appType.getTypeName(), state);
 
         if (!appType.isNeedsConfirmation()) {
             newApplication.setState(Application.CONFIRMED);

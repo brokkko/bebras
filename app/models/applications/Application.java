@@ -88,12 +88,14 @@ public class Application implements SerializableUpdatable {
     }
 
     //TODO name generation may produce colliding ids
-    public Application(User organizer, int size, int number, String type) {
+    public Application(User organizer, int size, int number, String type, int state) {
         this.name = organizer.getInfo().get("region") + "-" + getCodeForUser(organizer) + "-" + number + type;
         this.number = number;
         this.size = size;
         this.type = type;
         this.created = new Date();
+        this.state = state;
+        this.comment = "";
     }
 
     public String getName() {
