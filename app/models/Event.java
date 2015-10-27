@@ -241,6 +241,12 @@ public class Event {
         return roles.values();
     }
 
+    public Collection<UserRole> getRolesIncludingAnon() {
+        List<UserRole> roles = new LinkedList<>(getRoles());
+        roles.add(UserRole.ANON);
+        return roles;
+    }
+
     public UserRole getAnonymousRole() {
         return getRole("ANONYMOUS");
     }
