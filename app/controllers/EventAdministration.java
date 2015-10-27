@@ -548,8 +548,6 @@ public class EventAdministration extends Controller {
         int idInd = findIndexInArray(title, "_id");
         int loginInd = findIndexInArray(title, User.FIELD_LOGIN);
 
-        System.out.println(idInd);
-
         String[] line;
 
         while ((line = reader.readNext()) != null) {
@@ -624,6 +622,7 @@ public class EventAdministration extends Controller {
         User register = null;
         Info info = new Info();
         UserRole role = null;
+        boolean partial = false;
 
         for (int i = 0; i < title.length; i++) {
             switch (title[i]) {
@@ -652,6 +651,8 @@ public class EventAdministration extends Controller {
                     }
                     info.put(User.FIELD_LOGIN, line[i]);
                     break;
+                case User.FIELD_PARTIAL_REG:
+                    partial = "(boolean)true".equals(line[i]);
                 default:
                     //TODO not very good. May be it is better to take InfoPattern from role
                     switch (line[i]) {
@@ -668,7 +669,7 @@ public class EventAdministration extends Controller {
             }
         }
 
-        event.createUser(password, role, info, register, false);
+        event.createUser(password, role, info, register, partial);
     }
 
     public static Result workersList(String eventId) {
