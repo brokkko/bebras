@@ -21,8 +21,8 @@ public class ByRegionsGenerator {
     public ByRegionsGenerator() throws IOException {
 //        updateRegionsListFile();
         readList();
-//        writeListForCode();
-        writeUsersList();
+        writeListForCode();
+//        writeUsersList();
     }
 
     private void updateRegionsListFile() throws FileNotFoundException {

@@ -298,7 +298,15 @@ public class DropdownInputTemplate extends InputTemplate<String> {
 
     private static List<String> BY_REGION_VARIANTS = Arrays.asList(
             "~group",
-            "MNS",
+            "MNS1",
+            "MNS2",
+            "MNS3",
+            "MNS4",
+            "MNS5",
+            "MNS6",
+            "MNS7",
+            "MNS8",
+            "MNS9",
             "~group",
             "BRS1",
             "BRS2",
@@ -449,7 +457,15 @@ public class DropdownInputTemplate extends InputTemplate<String> {
 
     private static List<String> BY_REGION_TITLES = Arrays.asList(
             "г. Минск",
-            "г. Минск",
+            "Советский р-н",
+            "Первомайский р-н",
+            "Центральный р-н",
+            "Фрунзенский р-н",
+            "Ленинский р-н",
+            "Заводской р-н",
+            "Партизанский р-н",
+            "Октябрьский р-н",
+            "Московский р-н",
             "Брестская область",
             "г. Барановичи",
             "г. Пинск",
