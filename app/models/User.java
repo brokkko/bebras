@@ -1,9 +1,6 @@
 package models;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import controllers.MongoConnection;
 import controllers.actions.AuthenticatedAction;
 import models.data.TableDescription;
@@ -507,10 +504,47 @@ public class User implements SerializableUpdatable {
         serializer.write("_id", id);
         serializer.write(FIELD_EVENT, eventId);
         serializer.write(FIELD_PASS_HASH, passwordHash);
+        
+        fixRegisteredByWithRegions(event);
 
         SerializationTypesRegistry.list(ObjectId.class).write(serializer, FIELD_REGISTERED_BY, registeredBy);
         serializer.write(FIELD_PARTIAL_REG, partialRegistration);
         serializer.write(FIELD_ANNOUNCEMENTS, wantAnnouncements);
+    }
+
+    private boolean roleContainsField(UserRole role, String field) {
+        InfoPattern rolePattern = role.getUserInfoPattern();
+        return rolePattern.getFields().contains(field);
+    }
+
+    private void fixRegisteredByWithRegions(Event event) {
+//        if (registeredBy != null && !registeredBy.isEmpty())
+//            return;
+
+        if (!roleContainsField(getRole(), "region"))
+            return;
+
+        //find roles with region_catch field
+        for (UserRole userRole : event.getRoles()) {
+            if (!roleContainsField(userRole, "region_catch"))
+                continue;
+            User u = findRegionCatcher(userRole.getName(), (String) getInfo().get("region"));
+            if (u != null) {
+                setRegisteredBy(u);
+                return;
+            }
+        }
+    }
+
+    private User findRegionCatcher(String roleName, String region) {
+        DBObject query = new BasicDBObject();
+        query.put(User.FIELD_EVENT, eventId);
+        query.put("_role", roleName);
+        query.put("region_catch", region);
+        DBObject user = MongoConnection.getUsersCollection().findOne(query, new BasicDBObject("_id", 1));
+        if (user == null)
+            return null;
+        return User.getUserById((ObjectId) user.get("_id"));
     }
 
     private void cache() {

@@ -21,7 +21,7 @@ public class ByRegionsGenerator {
     public ByRegionsGenerator() throws IOException {
 //        updateRegionsListFile();
         readList();
-        writeListForCode();
+        writeUsersList();
 //        writeUsersList();
     }
 
@@ -120,7 +120,7 @@ public class ByRegionsGenerator {
         File outF = new File("by_local_orgs.csv");
 
         try (CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(outF), "windows-1251"), ';', '"')) {
-            String[] titles = {"login", "region_name", "password", "_reg_by", "_p_reg", "_role"};
+            String[] titles = {"login", "region_name", "password", "_reg_by", "_p_reg", "_role", "region_catch"};
             List<String> titlesList = Arrays.asList(titles);
 
             int loginField = titlesList.indexOf("login");
@@ -129,7 +129,7 @@ public class ByRegionsGenerator {
             int regByField = titlesList.indexOf("_reg_by");
             int partialRegField = titlesList.indexOf("_p_reg");
             int roleField = titlesList.indexOf("_role");
-
+            int regionCatchField = titlesList.indexOf("region_catch");
 
             writer.writeNext(titles);
 
@@ -141,6 +141,7 @@ public class ByRegionsGenerator {
                 line[regByField] = "iposov";
                 line[partialRegField] = "(boolean)true";
                 line[roleField] = "REGION_ORG";
+                line[regionCatchField] = "";
                 writer.writeNext(line);
 
                 String code = region2code.get(region);
@@ -153,6 +154,7 @@ public class ByRegionsGenerator {
                     line[regByField] = region2user.get(region);
                     line[partialRegField] = "(boolean)true";
                     line[roleField] = "LOCAL_ORG";
+                    line[regionCatchField] = code + district.getCode();
                     writer.writeNext(line);
                 }
 
