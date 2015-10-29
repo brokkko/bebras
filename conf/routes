@@ -150,3 +150,5 @@ GET         /:event/~dat/*file                                         controlle
 
 GET         /convert_bebras_problems_HJKsdCVsdflQsWjhfJKweahfih        controllers.BebrasProblemsConverter.convertProblems()
 POST        /:event/show_bebras_school_certificate                     controllers.DomainContests.showBebrasSchoolCertificate(event)
+
+GET         /:event/:role/store_again_all_users                        controllers.EventAdministration.storeAgainAllUsers(event, role)

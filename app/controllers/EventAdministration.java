@@ -12,9 +12,11 @@ import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import controllers.worker.Worker;
 import models.*;
+import models.data.*;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.forms.validators.FileListValidator;
+import models.migration.DBObjectTranslator;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.ProblemInfo;
 import models.newproblems.ProblemLink;
@@ -49,9 +51,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -860,5 +860,23 @@ public class EventAdministration extends Controller {
 
     private static int charToIndex(char c) {
         return c - 'A';
+    }
+
+    public static Result storeAgainAllUsers(String event, String role) {
+        if (!User.current().hasEventAdminRight())
+            return forbidden();
+
+        DBObject query = new BasicDBObject();
+        query.put(User.FIELD_EVENT, event);
+        query.put(User.FIELD_USER_ROLE, role);
+        MongoQueryObjectsProvider mqop = new MongoQueryObjectsProvider(MongoConnection.getUsersCollection(), query, new BasicDBObject());
+
+        while (mqop.hasNext()) {
+            DBObject u = mqop.next();
+            User uu = User.getUserById((ObjectId) u.get("_id")); //make sure it is taken from cache
+            uu.store();
+        }
+
+        return ok("everything ok");
     }
 }
