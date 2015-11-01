@@ -89,11 +89,11 @@ public class UserFeatures implements FeaturesSet<User> {
         if (featureName.startsWith("~")) {
             switch (featureName) {
                 case "~oid_inc":
-                    return Long.toHexString(id.getInc()).toUpperCase();
+                    return Long.toHexString(id.getCounter()).toUpperCase();
                 case "~oid_time":
-                    return Long.toHexString(id.getTimeSecond()).toUpperCase();
+                    return Long.toHexString(id.getTimestamp()).toUpperCase();
                 case "~oid_machine":
-                    return Long.toHexString(id.getMachine()).toUpperCase();
+                    return Long.toHexString(id.getMachineIdentifier()).toUpperCase();
                 case "~sex":
                     return determineSex(effectiveRawForm);
                 default:

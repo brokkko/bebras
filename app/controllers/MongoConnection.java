@@ -213,20 +213,15 @@ public class MongoConnection {
                 }
             }, 0);
         } catch (Exception e) {
-            try {
-                Logger.error("Failed to get mongo DB from cache", e);
+            Logger.error("Failed to get mongo DB from cache", e);
 
-                Configuration configuration = Play.application().configuration(); //TODO small code duplication
+            Configuration configuration = Play.application().configuration(); //TODO small code duplication
 
-                final String host = configuration.getString("mongodb.host");
-                final Integer configPort = configuration.getInt("mongodb.port");
-                final int port = configPort == null ? 27017 : configPort;
+            final String host = configuration.getString("mongodb.host");
+            final Integer configPort = configuration.getInt("mongodb.port");
+            final int port = configPort == null ? 27017 : configPort;
 
-                return new MongoClient(host, port);
-            } catch (UnknownHostException e1) {
-                Logger.error("Failed to get mongo DB", e1);
-                return null;
-            }
+            return new MongoClient(host, port);
         }
     }
 

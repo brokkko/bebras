@@ -11,6 +11,8 @@ import models.results.InfoPattern;
 import models.utils.Utils;
 import play.Logger;
 import play.api.templates.Html;
+import scala.collection.mutable.*;
+import scala.collection.mutable.StringBuilder;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;

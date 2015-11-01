@@ -57,15 +57,15 @@ public class Application implements SerializableUpdatable {
     }
 
     public static String getCodeForUserHex(User user) { //TODO remove Fffff
-        int inc = user.getId().getInc();
-        int machine = user.getId().getMachine();
+        int inc = user.getId().getCounter();
+        int machine = user.getId().getMachineIdentifier();
 
         return hexBytes(machine, 2) + hexBytes(inc, 4);
     }
 
     public static String getCodeForUser(User user) {
-        int inc = user.getId().getInc();
-        int machine = user.getId().getMachine();
+        int inc = user.getId().getCounter();
+        int machine = user.getId().getMachineIdentifier();
 
         return decBytes(machine, 1) + decBytes(inc, 6);
     }
