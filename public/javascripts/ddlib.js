@@ -1,24 +1,66 @@
 /*
- Мини-библиотека для автоматизация типовых Drag-And-Drop задач.
- Константин Данилов / mail@xomak.net
+ РњРёРЅРё-Р±РёР±Р»РёРѕС‚РµРєР° РґР»СЏ Р°РІС‚РѕРјР°С‚РёР·Р°С†РёСЏ С‚РёРїРѕРІС‹С… Drag-And-Drop Р·Р°РґР°С‡.
+ РљРѕРЅСЃС‚Р°РЅС‚РёРЅ Р”Р°РЅРёР»РѕРІ / mail@xomak.net
  */
+
+// From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+if (!Object.keys) {
+    Object.keys = (function () {
+        'use strict';
+        var hasOwnProperty = Object.prototype.hasOwnProperty,
+            hasDontEnumBug = !({toString: null}).propertyIsEnumerable('toString'),
+            dontEnums = [
+                'toString',
+                'toLocaleString',
+                'valueOf',
+                'hasOwnProperty',
+                'isPrototypeOf',
+                'propertyIsEnumerable',
+                'constructor'
+            ],
+            dontEnumsLength = dontEnums.length;
+
+        return function (obj) {
+            if (typeof obj !== 'object' && (typeof obj !== 'function' || obj === null)) {
+                throw new TypeError('Object.keys called on non-object');
+            }
+
+            var result = [], prop, i;
+
+            for (prop in obj) {
+                if (hasOwnProperty.call(obj, prop)) {
+                    result.push(prop);
+                }
+            }
+
+            if (hasDontEnumBug) {
+                for (i = 0; i < dontEnumsLength; i++) {
+                    if (hasOwnProperty.call(obj, dontEnums[i])) {
+                        result.push(dontEnums[i]);
+                    }
+                }
+            }
+            return result;
+        };
+    }());
+}
+
 /*
- Создает объект класса Place, описывающий экранный объект или место
- _x - x координата
- _y - y координата
- _width - ширина
- _height - высота
- _name - имя объекта (произвольное - несколько объектов могут иметь одинаковые имена)
- _type - Тип объекта (0 - место, куда можно перенести его. 1 - статический объект. 2 - перемещаемый объект)
- _vObject - визуальный объект
- Имеет следующие свойства:
+ РЎРѕР·РґР°РµС‚ РѕР±СЉРµРєС‚ РєР»Р°СЃСЃР° Place, РѕРїРёСЃС‹РІР°СЋС‰РёР№ СЌРєСЂР°РЅРЅС‹Р№ РѕР±СЉРµРєС‚ РёР»Рё РјРµСЃС‚Рѕ
+ _x - x РєРѕРѕСЂРґРёРЅР°С‚Р°
+ _y - y РєРѕРѕСЂРґРёРЅР°С‚Р°
+ _width - С€РёСЂРёРЅР°
+ _height - РІС‹СЃРѕС‚Р°
+ _name - РёРјСЏ РѕР±СЉРµРєС‚Р° (РїСЂРѕРёР·РІРѕР»СЊРЅРѕРµ - РЅРµСЃРєРѕР»СЊРєРѕ РѕР±СЉРµРєС‚РѕРІ РјРѕРіСѓС‚ РёРјРµС‚СЊ РѕРґРёРЅР°РєРѕРІС‹Рµ РёРјРµРЅР°)
+ _type - РўРёРї РѕР±СЉРµРєС‚Р° (0 - РјРµСЃС‚Рѕ, РєСѓРґР° РјРѕР¶РЅРѕ РїРµСЂРµРЅРµСЃС‚Рё РµРіРѕ. 1 - СЃС‚Р°С‚РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚. 2 - РїРµСЂРµРјРµС‰Р°РµРјС‹Р№ РѕР±СЉРµРєС‚)
+ _vObject - РІРёР·СѓР°Р»СЊРЅС‹Р№ РѕР±СЉРµРєС‚
+ РРјРµРµС‚ СЃР»РµРґСѓСЋС‰РёРµ СЃРІРѕР№СЃС‚РІР°:
  imageId,stroke,strokeWidth
- _beforeRender - функция, вызывающаяся перед рендерингом каждого элемента
+ _beforeRender - С„СѓРЅРєС†РёСЏ, РІС‹Р·С‹РІР°СЋС‰Р°СЏСЃСЏ РїРµСЂРµРґ СЂРµРЅРґРµСЂРёРЅРіРѕРј РєР°Р¶РґРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
  */
 var Place = function (_x, _y, _width, _height, _name, _type, _vObject, _beforeRender) {
     var type = (_type) ? _type : 0;
-    var that =
-    {
+    return {
         x: _x,
         y: _y,
         width: _width,
@@ -28,21 +70,20 @@ var Place = function (_x, _y, _width, _height, _name, _type, _vObject, _beforeRe
         getType: function () {
             return type;
         },
-        beforeRender: (_beforeRender ? _beforeRender : false),
+        beforeRender: (_beforeRender ? _beforeRender : false)
     };
-    return that;
 };
 
 var cntcnt1 = 0;
 var cntcnt2 = 0;
 
 /*
- Создает объект класса App, описывающий всё приложение
- elementId - id элемента холста
- _width - ширина
- _height - высота
- _pictures - массив адресов изображений, которые будут использоваться в приложении
- _places - массив объектов Place
+ РЎРѕР·РґР°РµС‚ РѕР±СЉРµРєС‚ РєР»Р°СЃСЃР° App, РѕРїРёСЃС‹РІР°СЋС‰РёР№ РІСЃС‘ РїСЂРёР»РѕР¶РµРЅРёРµ
+ elementId - id СЌР»РµРјРµРЅС‚Р° С…РѕР»СЃС‚Р°
+ _width - С€РёСЂРёРЅР°
+ _height - РІС‹СЃРѕС‚Р°
+ _pictures - РјР°СЃСЃРёРІ Р°РґСЂРµСЃРѕРІ РёР·РѕР±СЂР°Р¶РµРЅРёР№, РєРѕС‚РѕСЂС‹Рµ Р±СѓРґСѓС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РІ РїСЂРёР»РѕР¶РµРЅРёРё
+ _places - РјР°СЃСЃРёРІ РѕР±СЉРµРєС‚РѕРІ Place
  */
 var App = function (elementID, _width, _height, _pictures, _places) {
     var lastObjectId = 0;
@@ -51,49 +92,67 @@ var App = function (elementID, _width, _height, _pictures, _places) {
         width: _width,
         height: _height
     });
-    var size = new Array(_width, _height);
+
+    var size = [_width, _height];
     var placesLayer = new Kinetic.Layer();
     var greyLayer = new Kinetic.Layer();
+
     var magnetPlaces = [];
     var pictures = _pictures;
     var places = _places;
+
     var disabledCallback = false;
     var initCallback = false;
     var enabled = true;
+
     for (var key in places) {
+        if (!places.hasOwnProperty(key))
+            continue;
         places[key].id = key;
     }
+
     var picturesLoaded = 0;
     var objects = [];
+
     var pictureLoaded = function () {
         picturesLoaded++;
         if (picturesLoaded == Object.keys(pictures).length) {
             drawPlaces();
         }
     };
+
     var loadPictures = function () {
         for (var key in pictures) {
+            if (!pictures.hasOwnProperty(key))
+                continue;
             objects[key] = new Image();
             objects[key].onload = pictureLoaded;
             objects[key].src = pictures[key];
         }
     };
+
     var greyClicked = function () {
         if (disabledCallback) disabledCallback();
     };
+
     var drawPlaces = function () {
         for (var key in places) {
+            if (!places.hasOwnProperty(key))
+                continue;
+
             var place = places[key];
-            if (place.vObject.imageId) {
-                var object = new Kinetic.Image({
+            var object;
+
+            if (place.vObject.imageId)
+                object = new Kinetic.Image({
                     x: place.x,
                     y: place.y,
                     width: place.width,
                     height: place.height,
                     image: objects[place.vObject.imageId]
                 });
-            } else {
-                var object = new Kinetic.Rect({
+            else
+                object = new Kinetic.Rect({
                     x: place.x,
                     y: place.y,
                     width: place.width,
@@ -101,14 +160,17 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                     strokeWidth: place.vObject.strokeWidth,
                     stroke: place.vObject.stroke
                 });
-            }
-            if (place.getType() == 0) {
+
+            //empty place
+            if (place.getType() == 0)
                 magnetPlaces[place.id] = {x: place.x, y: place.y, current: false, id: place.id};
-            }
+
+            //draggable object
             if (place.getType() == 2) {
                 object.setDraggable("true");
                 object.ref = place;
                 object.is_dragging = false;
+
                 object.on('dragstart', function () {
                     object.is_dragging = true;
                     this.setZIndex(1000);
@@ -118,6 +180,7 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                         this.ref.current = false;
                     }
                 });
+
                 object.on('dragend', function () {
                     if (!object.is_dragging) //TODO find out why 'dragend' is called several times
                         return;
@@ -127,6 +190,8 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                     var x = this.getX();
                     var y = this.getY();
                     for (var key2 in magnetPlaces) {
+                        if (!magnetPlaces.hasOwnProperty(key2))
+                            continue;
                         var magnetPlace = magnetPlaces[key2];
                         if (!magnetPlace.current) {
                             var dist = Math.sqrt((x - magnetPlace.x) * (x - magnetPlace.x) + (y - magnetPlace.y) * (y - magnetPlace.y));
@@ -149,6 +214,7 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                     }
                 });
             }
+
             if (place.beforeRender) place.beforeRender(object);
             placesLayer.add(object);
             place.screenObject = object;
@@ -170,9 +236,9 @@ var App = function (elementID, _width, _height, _pictures, _places) {
         if (initCallback)
             initCallback();
     };
-    var that =
-    {
-        //Функция для старта
+
+    return {
+        //Р¤СѓРЅРєС†РёСЏ РґР»СЏ СЃС‚Р°СЂС‚Р°
         start: function () {
             loadPictures();
         },
@@ -195,9 +261,11 @@ var App = function (elementID, _width, _height, _pictures, _places) {
             return size;
         },
         getSolution: function () {
-            var returnObject = new Object();
+            var returnObject = {};
             var busyPlaceFound = false;
             for (var key in magnetPlaces) {
+                if (!magnetPlaces.hasOwnProperty(key))
+                    continue;
                 var place = magnetPlaces[key];
                 returnObject[place.id] = place.current ? place.current : -1;
                 if (place.current) busyPlaceFound = true;
@@ -207,6 +275,8 @@ var App = function (elementID, _width, _height, _pictures, _places) {
         },
         loadSolution: function (solution) {
             for (var key in magnetPlaces) {
+                if (!magnetPlaces.hasOwnProperty(key))
+                    continue;
                 var currentMagnet = magnetPlaces[key];
                 if (currentMagnet.current) {
                     places[currentMagnet.current].current = false;
@@ -217,7 +287,9 @@ var App = function (elementID, _width, _height, _pictures, _places) {
             }
             if (solution.length != 0) {
                 var solutionObject = JSON.parse(solution);
-                for (var key in solutionObject) {
+                for (key in solutionObject) {
+                    if (!solutionObject.hasOwnProperty(key))
+                        continue;
 
                     var objectId = solutionObject[key];
                     if (objectId != -1) {
@@ -237,7 +309,7 @@ var App = function (elementID, _width, _height, _pictures, _places) {
         getAnswer: function () {
 
         },
-        //Функция, возвращающая текущие состояния элементов, в которые осуществляется перенос
+        //Р¤СѓРЅРєС†РёСЏ, РІРѕР·РІСЂР°С‰Р°СЋС‰Р°СЏ С‚РµРєСѓС‰РёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ, РІ РєРѕС‚РѕСЂС‹Рµ РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ РїРµСЂРµРЅРѕСЃ
         /*getOutput:function()
          {
          var output="";
@@ -251,13 +323,12 @@ var App = function (elementID, _width, _height, _pictures, _places) {
         getOutput: function () {
             var returnObject = {};
             for (var key in magnetPlaces) {
+                if (!magnetPlaces.hasOwnProperty(key))
+                    continue;
                 var place = magnetPlaces[key];
                 returnObject[places[place.id].name] = place.current ? places[place.current].name : -1;
             }
             return returnObject;
         }
-
-
     };
-    return that;
 };

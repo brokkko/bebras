@@ -207,7 +207,7 @@ var submit_answer; //function (problem_id, answer)
 
 
         function bebras_lesson() {
-            return document.domain == "localhost" || document.domain == "school.bebras.ru";
+            return document.domain == "school.bebras.ru";
         }
     });
 
