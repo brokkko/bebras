@@ -74,9 +74,6 @@ var Place = function (_x, _y, _width, _height, _name, _type, _vObject, _beforeRe
     };
 };
 
-var cntcnt1 = 0;
-var cntcnt2 = 0;
-
 /*
  Создает объект класса App, описывающий всё приложение
  elementId - id элемента холста
@@ -85,8 +82,7 @@ var cntcnt2 = 0;
  _pictures - массив адресов изображений, которые будут использоваться в приложении
  _places - массив объектов Place
  */
-var App = function (elementID, _width, _height, _pictures, _places) {
-    var lastObjectId = 0;
+var App = function(elementID, _width, _height, _pictures, _places, _auto_start) {
     var stage = new Kinetic.Stage({
         container: elementID,
         width: _width,
@@ -172,7 +168,7 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                 object.is_dragging = false;
 
                 object.on('dragstart', function () {
-                    object.is_dragging = true;
+                    this.is_dragging = true;
                     this.setZIndex(1000);
                     if (this.ref.current) {
                         magnetPlaces[this.ref.current].current = false;
@@ -182,11 +178,12 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                 });
 
                 object.on('dragend', function () {
-                    if (!object.is_dragging) //TODO find out why 'dragend' is called several times
+                    if (!this.is_dragging)
                         return;
-                    object.is_dragging = false;
+                    this.is_dragging = false;
                     var minDist = -1;
-                    var minPlace = false;
+                    var minPlaceKey;
+
                     var x = this.getX();
                     var y = this.getY();
                     for (var key2 in magnetPlaces) {
@@ -208,24 +205,28 @@ var App = function (elementID, _width, _height, _pictures, _places) {
                         this.transitionTo({x: dstX, y: dstY, duration: 0.3});
                         magnetPlaces[minPlaceKey].current = this.ref.id;
                         this.ref.current = minPlaceKey;
-                    }
-                    else {
-                        this.transitionTo({x: this.ref.x, y: this.ref.y, duration: 0.3});
-                    }
+                    } else
+                        this.transitionTo({x: this.ref.x, y: this.ref.y, duration: 0.1});
                 });
             }
 
-            if (place.beforeRender) place.beforeRender(object);
+            if (place.beforeRender)
+                place.beforeRender(object);
             placesLayer.add(object);
             place.screenObject = object;
         }
+
         stage.add(placesLayer);
+
+        //grey layer
+
         var rect = new Kinetic.Rect({
             width: size[0],
             height: size[1],
             fill: '#eeeeee',
             strokeWidth: 0
         });
+
         rect.on('click', greyClicked);
         greyLayer.setOpacity(0.7);
         greyLayer.add(rect);
@@ -237,12 +238,12 @@ var App = function (elementID, _width, _height, _pictures, _places) {
             initCallback();
     };
 
-    return {
+    var task = {
         //Функция для старта
-        start: function () {
+        start: function () { //not needed in all dyn problems
             loadPictures();
         },
-        setDisabledCallback: function (_disabledCallback) {
+        setDisabledCallback: function (_disabledCallback) { //not needed (used?) in all dyn problems
             disabledCallback = _disabledCallback;
         },
         setInitCallback: function (_initCallback) {
@@ -257,7 +258,7 @@ var App = function (elementID, _width, _height, _pictures, _places) {
             greyLayer.setVisible(!state);
             return true;
         },
-        getSize: function () {
+        getSize: function () { // not used in all dyn problems
             return size;
         },
         getSolution: function () {
@@ -307,20 +308,13 @@ var App = function (elementID, _width, _height, _pictures, _places) {
             return true;
         },
         getAnswer: function () {
-
+            var resultString = JSON.stringify(task.getOutput());
+            if (resultString == '{"bottom":"purple","up-right":"blue","up-left":"orange"}')
+                return 1;
+            else
+                return 0;
         },
-        //Функция, возвращающая текущие состояния элементов, в которые осуществляется перенос
-        /*getOutput:function()
-         {
-         var output="";
-         for (var key in magnetPlaces)
-         {
-         var place=magnetPlaces[key];
-         output+=place.id+"="+(place.current ? place.current : "null")+";";
-         }
-         return output;
-         },*/
-        getOutput: function () {
+        getOutput: function () { //not needed in all dyn problems
             var returnObject = {};
             for (var key in magnetPlaces) {
                 if (!magnetPlaces.hasOwnProperty(key))
@@ -331,4 +325,9 @@ var App = function (elementID, _width, _height, _pictures, _places) {
             return returnObject;
         }
     };
+
+    if (_auto_start === true)
+        task.start();
+
+    return task;
 };

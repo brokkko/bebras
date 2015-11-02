@@ -1,5 +1,11 @@
 var add_bebras_dyn_problem = (function(){
 
+    if (!window.console)
+        window.console = {
+            log: function () {
+            }
+        };
+
     var bebrasDynamicProblem = {}; //contains objects .problem, .problemClass, .images, .solution, .initialized
 
     function getInfo(dyn_type) {
@@ -120,6 +126,7 @@ var add_bebras_dyn_problem = (function(){
     function problem_init(dyn_type, dynamicProblemClass, dynamicProblemImages) {
         var $container = $('#container-' + dyn_type);
         $container.css('height', '');
+
         var problem = new dynamicProblemClass('container-' + dyn_type, dynamicProblemImages);
 
         problem.setInitCallback(function() {

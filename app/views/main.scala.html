@@ -16,6 +16,8 @@
             var ga = window.ga || function() {} ;
             @* _gaq.push(['_trackEvent', 'JS Error', msg, navigator.userAgent + ' -> ' + url + " : " + line, 0, true]); *@
             window.onerror = function(msg, url, line) {
+                if (console)
+                    console.log(msg, url, line);
                 ga('set', 'nonInteraction', true);
                 ga('send', 'event', {
                     eventCategory: 'JS Error',

@@ -24,11 +24,11 @@ public class ResourceLink implements Widget {
     }};
 
     public static final ResourceLink JQUERY = new ResourceLink(
+//            "jquery-1.11.3.min",
             "jquery-1.7.2.min",
-//            "jquery-1.10.2.min",
             "js",
-//            "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js",
             "//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"
+//            "//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"
     );
 
     public static final ResourceLink RESET = new ResourceLink(
