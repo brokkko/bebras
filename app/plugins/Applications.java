@@ -470,7 +470,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
                                         "validators", Utils.listify(
                                                 Utils.mapify(
                                                         "type", "int",
-                                                        "compare", "<=100"
+                                                        "compare", "<=500"
                                                 ),
                                                 Utils.mapify(
                                                         "type", "int",
