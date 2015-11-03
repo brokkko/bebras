@@ -45,6 +45,8 @@ public class BebrasDynamicProblem implements Problem {
     private String statement;
     private String explanation;
     private String informatics;
+    private String dependencies;
+    private String correctAnswer;
     private int height;
 
     public BebrasDynamicProblem() {

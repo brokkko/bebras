@@ -39,7 +39,7 @@
             </div>
 
             <div class=info-box>
-                <form id='edit-problem' method="POST""> @*todo make edit problem controller use pid instead of link*@
+                <form id='edit-problem' method="POST" action="@routes.Problems.editProblem(Event.currentId, pid.toHexString)">
                     @editor
 
                     <div class='change-problem'><input type='submit' class='wymupdate' value="Изменить задачу"></div>

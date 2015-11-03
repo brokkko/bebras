@@ -157,7 +157,7 @@ public class Problems extends Controller {
         return redirect(routes.Problems.viewProblem(eventId, link.getLink()));
     }
 
-    public static Result updateProblem(String eventId, String problemLink) {
+    public static Result updateProblem(String eventId, String problemLink) { //TODO is it used, and what is the difference with editProblem?
         ProblemLink link = new ProblemLink(problemLink);
         Problem problem = link.get();
 
@@ -184,6 +184,15 @@ public class Problems extends Controller {
         RawForm form = new RawForm();
         form.bindFromRequest();
 
+        try {
+            ObjectId pid = new ObjectId(problemLink);
+            return editProblemById(eventId, pid, form);
+        } catch (IllegalArgumentException e) {
+            return editProblemByLink(eventId, problemLink, form);
+        }
+    }
+
+    private static Result editProblemByLink(String eventId, String problemLink, RawForm form) {
         ProblemLink link = new ProblemLink(problemLink);
         Problem problem = link.get();
 
@@ -196,6 +205,19 @@ public class Problems extends Controller {
         problemInfo.store();
 
         return redirect(routes.Problems.viewProblem(eventId, problemLink));
+    }
+
+    private static Result editProblemById(String eventId, ObjectId pid, RawForm form) {
+        ProblemInfo info = ProblemInfo.get(pid);
+
+        if (info == null)
+            return notFound(error.render("Не удается найти задачу", new String[0]));
+
+        info.getProblem().updateProblem(form);
+
+        info.store();
+
+        return redirect(routes.Problems.viewRawProblem(eventId, pid.toHexString()));
     }
 
     public static Result printFolder(String eventId, String folder, boolean subfolders, boolean showAnswers) {
