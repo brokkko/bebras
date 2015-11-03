@@ -23,12 +23,32 @@ public interface Problem extends SerializableUpdatable {
 
     void updateProblem(RawForm form); //TODO make it a usual form
 
+    /**
+     * Convert user answer to a string representation for history
+     * @param answer answer
+     * @param randSeed random seed
+     * @return string representation of an answer
+     */
     String answerToString(Info answer, long randSeed); //TODO check result may also be needed
 
+    /**
+     * correct answer
+     * @return string representation of a correct answer,
+     */
     String answerString();
 
+    /**
+     * Converts user answer to a contest results, should be consistent with the used results translator
+     * @param answer user answer
+     * @param randSeed random seed
+     * @return answer converted to a result
+     */
     Info check(Info answer, long randSeed);
 
+    /**
+     * Answer pattern used to store answers in DB
+     * @return
+     */
     InfoPattern getAnswerPattern();
 
     String getType();

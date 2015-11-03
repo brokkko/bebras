@@ -94,7 +94,7 @@ public class BebrasDynamicProblem implements Problem {
     @Override
     public Html formatEditor() {
         return views.html.bebras.bebras_dyn_editor.render(
-                title, country, statement, problemScript, imagesHtml, explanation, informatics, height
+                title, country, statement, problemScript, imagesHtml, explanation, informatics, correctAnswer, dependencies, height
         );
     }
 
@@ -107,6 +107,8 @@ public class BebrasDynamicProblem implements Problem {
         imagesHtml = form.get("images");
         explanation = form.get("explanation");
         informatics = form.get("informatics");
+        correctAnswer = form.get("correct_answer");
+        dependencies = form.get("dependencies");
         try {
             height = Integer.parseInt(form.get("height"));
         } catch (NumberFormatException e) {
@@ -142,6 +144,11 @@ public class BebrasDynamicProblem implements Problem {
         if (res == null || res < 0) {
             result.put("result", 0);
             result.put("answer", ".");
+        } else if (res == 2) {
+            String solution = (String) answer.get("s");
+            boolean correct = solution != null && solution.equals(correctAnswer);
+            result.put("result", correct ? 1 : -1);
+            result.put("answer", correct ? "R" : "w");
         } else {
             result.put("result", res == 0 ? -1 : 1);
             result.put("answer", res == 0 ? "w" : "R");
@@ -165,21 +172,19 @@ public class BebrasDynamicProblem implements Problem {
 
     @Override
     public Widget getWidget(boolean editor) {
+        ListWidget w = new ListWidget(
+                new ResourceLink("bebras.problem.css"),
+                new ResourceLink("bebras-dyn.problem.js")
+        );
+
         if (editor)
-            return new ListWidget(
-                    new ResourceLink("bebras.problem.css"),
-                    new ResourceLink("bebras.edit.problem.js"),
-                    new ResourceLink("kinetic.js"),
-                    new ResourceLink("ddlib.js"),
-                    new ResourceLink("bebras-dyn.problem.js")
-            );
-        else
-            return new ListWidget(
-                    new ResourceLink("bebras.problem.css"),
-                    new ResourceLink("bebras-dyn.problem.js"),
-                    new ResourceLink("kinetic.js"),
-                    new ResourceLink("ddlib.js")
-            );
+            w.push(new ResourceLink("bebras.edit.problem.js"));
+
+        if (!"nothing".equals(dependencies))
+            for (String dependency : dependencies.split(","))
+                w.push(new ResourceLink(dependency.trim() + ".js"));
+
+        return w;
     }
 
     @Override
@@ -192,6 +197,8 @@ public class BebrasDynamicProblem implements Problem {
         serializer.write("explanation", explanation);
         serializer.write("informatics", informatics);
         serializer.write("height", height);
+        serializer.write("correct_answer", correctAnswer);
+        serializer.write("dependencies", dependencies);
     }
 
     @Override
@@ -204,5 +211,7 @@ public class BebrasDynamicProblem implements Problem {
         explanation = deserializer.readString("explanation", "");
         informatics = deserializer.readString("informatics", "");
         height = deserializer.readInt("height", 0);
+        correctAnswer = deserializer.readString("correct_answer", "");
+        dependencies = deserializer.readString("dependencies", "kinetic,ddlib");
     }
 }

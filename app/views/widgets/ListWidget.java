@@ -25,4 +25,8 @@ public class ListWidget implements Widget {
     public List<ResourceLink> links() {
         return links;
     }
+
+    public void push(ResourceLink link) {
+        links.add(link);
+    }
 }
