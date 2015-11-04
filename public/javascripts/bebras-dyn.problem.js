@@ -56,7 +56,12 @@ var add_bebras_dyn_problem = (function(){
                 $status.text(status_dont_know);
                 $button_undo.hide();
             } else {
-                var is_right = info.initial_solution.r > 0;
+                console.log('ini sol', info.initial_solution);
+                var is_right = info.initial_solution.r == 1;
+                if (info.initial_solution.r == 2) {
+                    var correctAnswer = $problem.find('.dyn_correct_answer').text();
+                    is_right = correctAnswer === info.initial_solution.s;
+                }
                 $status.text(is_right ? status_answer_given_right : status_answer_given_wrong);
                 if (is_right)
                     $status.removeClass('answered'); //TODO make extra class: wrong

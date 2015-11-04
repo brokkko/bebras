@@ -82,7 +82,7 @@ var Place = function (_x, _y, _width, _height, _name, _type, _vObject, _beforeRe
  _pictures - массив адресов изображений, которые будут использоваться в приложении
  _places - массив объектов Place
  */
-var App = function(elementID, _width, _height, _pictures, _places, _auto_start) {
+var App = function (elementID, _width, _height, _pictures, _places, _auto_start) {
     var stage = new Kinetic.Stage({
         container: elementID,
         width: _width,
@@ -101,11 +101,8 @@ var App = function(elementID, _width, _height, _pictures, _places, _auto_start) 
     var initCallback = false;
     var enabled = true;
 
-    for (var key in places) {
-        if (!places.hasOwnProperty(key))
-            continue;
+    for (var key = 0; key < places.length; key++)
         places[key].id = key;
-    }
 
     var picturesLoaded = 0;
     var objects = [];
@@ -118,13 +115,12 @@ var App = function(elementID, _width, _height, _pictures, _places, _auto_start) 
     };
 
     var loadPictures = function () {
-        for (var key in pictures) {
-            if (!pictures.hasOwnProperty(key))
-                continue;
-            objects[key] = new Image();
-            objects[key].onload = pictureLoaded;
-            objects[key].src = pictures[key];
-        }
+        for (var key in pictures)
+            if (pictures.hasOwnProperty(key)) {
+                objects[key] = new Image();
+                objects[key].onload = pictureLoaded;
+                objects[key].src = pictures[key];
+            }
     };
 
     var greyClicked = function () {
@@ -132,10 +128,7 @@ var App = function(elementID, _width, _height, _pictures, _places, _auto_start) 
     };
 
     var drawPlaces = function () {
-        for (var key in places) {
-            if (!places.hasOwnProperty(key))
-                continue;
-
+        for (var key = 0; key < places.length; key++) {
             var place = places[key];
             var object;
 
@@ -186,8 +179,8 @@ var App = function(elementID, _width, _height, _pictures, _places, _auto_start) 
 
                     var x = this.getX();
                     var y = this.getY();
-                    for (var key2 in magnetPlaces) {
-                        if (!magnetPlaces.hasOwnProperty(key2))
+                    for (var key2 = 0; key2 < places.length; key2++) {
+                        if (!(key2 in magnetPlaces))
                             continue;
                         var magnetPlace = magnetPlaces[key2];
                         if (!magnetPlace.current) {
@@ -264,8 +257,8 @@ var App = function(elementID, _width, _height, _pictures, _places, _auto_start) 
         getSolution: function () {
             var returnObject = {};
             var busyPlaceFound = false;
-            for (var key in magnetPlaces) {
-                if (!magnetPlaces.hasOwnProperty(key))
+            for (var key = 0; key < places.length; key++) {
+                if (!(key in magnetPlaces))
                     continue;
                 var place = magnetPlaces[key];
                 returnObject[place.id] = place.current ? place.current : -1;
@@ -275,8 +268,8 @@ var App = function(elementID, _width, _height, _pictures, _places, _auto_start) 
             else return JSON.stringify(returnObject);
         },
         loadSolution: function (solution) {
-            for (var key in magnetPlaces) {
-                if (!magnetPlaces.hasOwnProperty(key))
+            for (var key = 0; key < places.length; key++) {
+                if (!(key in magnetPlaces))
                     continue;
                 var currentMagnet = magnetPlaces[key];
                 if (currentMagnet.current) {
@@ -288,10 +281,9 @@ var App = function(elementID, _width, _height, _pictures, _places, _auto_start) 
             }
             if (solution.length != 0) {
                 var solutionObject = JSON.parse(solution);
-                for (key in solutionObject) {
-                    if (!solutionObject.hasOwnProperty(key))
+                for (key = 0; key < places.length; key++) {
+                    if (!(key in solutionObject))
                         continue;
-
                     var objectId = solutionObject[key];
                     if (objectId != -1) {
                         magnetPlaces[key].current = objectId;
@@ -308,16 +300,17 @@ var App = function(elementID, _width, _height, _pictures, _places, _auto_start) 
             return true;
         },
         getAnswer: function () {
-            var resultString = JSON.stringify(task.getOutput());
-            if (resultString == '{"bottom":"purple","up-right":"blue","up-left":"orange"}')
-                return 1;
-            else
-                return 0;
+            return 2;
+            //var resultString = JSON.stringify(task.getOutput());
+            //if (resultString == '{"bottom":"purple","up-right":"blue","up-left":"orange"}')
+            //    return 1;
+            //else
+            //    return 0;
         },
         getOutput: function () { //not needed in all dyn problems
             var returnObject = {};
-            for (var key in magnetPlaces) {
-                if (!magnetPlaces.hasOwnProperty(key))
+            for (var key = 0; key < places.length; key++) {
+                if (!(key in magnetPlaces))
                     continue;
                 var place = magnetPlaces[key];
                 returnObject[places[place.id].name] = place.current ? places[place.current].name : -1;

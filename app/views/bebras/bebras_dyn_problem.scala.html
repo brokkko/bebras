@@ -1,4 +1,4 @@
-@(index:String, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, problemScript:String, images:java.util.Map[String, String], explanation:String, informatics:String, height:Int, uniqueId:String)
+@(index:String, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, problemScript:String, images:java.util.Map[String, String], explanation:String, informatics:String, height:Int, uniqueId:String, correctAnswer:String)
 @import scala.List
 <div class='task-title section-title'>
     <span class='problem-index'>Задача @index.</span>
@@ -27,6 +27,7 @@
             @Html(informatics)
         </div>
     }
+    <div class="hidden dyn_correct_answer">@correctAnswer</div>
 }
 <div class='footer'></div>
 <script type="text/javascript">

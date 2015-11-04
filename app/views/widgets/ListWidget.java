@@ -1,5 +1,6 @@
 package views.widgets;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +27,9 @@ public class ListWidget implements Widget {
         return links;
     }
 
-    public void push(ResourceLink link) {
-        links.add(link);
+    public ListWidget add(ResourceLink link) {
+        List<ResourceLink> newLinks = new ArrayList<>(links);
+        newLinks.add(link);
+        return new ListWidget(newLinks);
     }
 }

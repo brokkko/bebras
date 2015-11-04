@@ -82,7 +82,7 @@ public class BebrasDynamicProblem implements Problem {
         return views.html.bebras.bebras_dyn_problem.render(
                 index, scores, showSolutions,
                 title, country, BebrasProblem.COUNTRY_TO_NAME.get(country),
-                statement, problemScript, imgLinks, explanation, informatics, height, uniqueId
+                statement, problemScript, imgLinks, explanation, informatics, height, uniqueId, correctAnswer
         );
     }
 
@@ -178,11 +178,11 @@ public class BebrasDynamicProblem implements Problem {
         );
 
         if (editor)
-            w.push(new ResourceLink("bebras.edit.problem.js"));
+            w = w.add(new ResourceLink("bebras.edit.problem.js"));
 
         if (!"nothing".equals(dependencies))
             for (String dependency : dependencies.split(","))
-                w.push(new ResourceLink(dependency.trim() + ".js"));
+                w = w.add(new ResourceLink(dependency.trim() + ".js"));
 
         return w;
     }
