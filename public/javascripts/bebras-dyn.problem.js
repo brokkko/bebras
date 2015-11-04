@@ -56,7 +56,6 @@ var add_bebras_dyn_problem = (function(){
                 $status.text(status_dont_know);
                 $button_undo.hide();
             } else {
-                console.log('ini sol', info.initial_solution);
                 var is_right = info.initial_solution.r == 1;
                 if (info.initial_solution.r == 2) {
                     var correctAnswer = $problem.find('.dyn_correct_answer').text();
@@ -134,11 +133,11 @@ var add_bebras_dyn_problem = (function(){
 
         var problem = new dynamicProblemClass('container-' + dyn_type, dynamicProblemImages);
 
+        getInfo(dyn_type).problem = problem;
+
         problem.setInitCallback(function() {
             problem_final_init(dyn_type);
         });
-
-        getInfo(dyn_type).problem = problem;
     }
 
     function add_bebras_dyn_problem(dyn_type, problemInitializer, images) {

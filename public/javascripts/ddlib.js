@@ -301,11 +301,6 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
         },
         getAnswer: function () {
             return 2;
-            //var resultString = JSON.stringify(task.getOutput());
-            //if (resultString == '{"bottom":"purple","up-right":"blue","up-left":"orange"}')
-            //    return 1;
-            //else
-            //    return 0;
         },
         getOutput: function () { //not needed in all dyn problems
             var returnObject = {};
