@@ -48,6 +48,17 @@ public class Problems extends Controller {
         return ok(problem_view.render(pLink));
     }
 
+    //TODO code duplication with viewProblem
+    public static Result viewProblem1(String eventId, String link) {
+        link = link.replaceAll("%20", " ");
+        ProblemLink pLink = new ProblemLink(link);
+
+        if (pLink.get() == null)
+            return notFound(error.render("Не удается найти задачу", new String[0]));
+
+        return ok(problem_view_1.render(pLink));
+    }
+
     public static Result viewRawProblem(String eventId, String pidAsString) {
         ObjectId pid;
         try {

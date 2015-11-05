@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -87,8 +89,13 @@ public class BebrasProblem implements Problem {
 
     @Override
     public Html format(String index, boolean showSolutions, Info settings, long randSeed) {
+        String _statement = fixTables(statement);
+        String _question = fixTables(question);
+        String _explanation = fixTables(explanation);
+        String _informatics = fixTables(informatics);
+
         if ("certificate only".equals(question)) {
-            return views.html.bebras.school_certificate.render(statement);
+            return views.html.bebras.school_certificate.render(_statement);
         }
 
         //render answers
@@ -123,12 +130,12 @@ public class BebrasProblem implements Problem {
         if (!showStatementOnly)
             return views.html.bebras.bebras_problem.render(
                     index, scores, showSolutions, title, country,
-                    COUNTRY_TO_NAME.get(country), statement, question,
+                    COUNTRY_TO_NAME.get(country), _statement, _question,
                     answersHtml, realAnswerToUserAnswer(rightAnswer, randSeed),
-                    explanation, informatics
+                    _explanation, _informatics
             );
         else
-            return views.html.bebras.bebras_problem_statement_only.render(index, title, statement);
+            return views.html.bebras.bebras_problem_statement_only.render(index, title, _statement);
     }
 
     @Override
@@ -162,6 +169,24 @@ public class BebrasProblem implements Problem {
 
         explanation = form.get("explanation");
         informatics = form.get("informatics");
+    }
+
+    public static String fixTables(String text) {
+        int cnt = 0;
+        Pattern tbl = Pattern.compile("<table");
+        Pattern tblEnd = Pattern.compile("</table");
+
+        Matcher m1 = tbl.matcher(text);
+        while (m1.find())
+            cnt++;
+        Matcher m2 = tblEnd.matcher(text);
+        while (m2.find())
+            cnt--;
+
+        for (int i = 0; i < cnt; i++)
+            text += "</table>";
+
+        return text;
     }
 
     @Override

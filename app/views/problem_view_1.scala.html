@@ -1,0 +1,64 @@
+@(link:models.newproblems.ProblemLink)
+@import views.widgets.WymEditorWidget
+@import views.widgets.AdminWidget
+@import views.widgets.ResourceLink
+@import scala.List
+@import models.newproblems.Problem
+@main_with_menu(Event.current.getTitle)(List(WymEditorWidget.get, new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), link.get.getWidget(true), AdminWidget.get)) { } {
+    @* -- header -- *@
+    <div class='info-box'>
+        <div class='folder-actions'>
+            <form action="@routes.Problems.renameProblem(Event.currentId(), link.getLink)" method="POST" class='submit actions-rename-problem'>
+                <input class='extra-value' type='hidden' name='extra-value' value="@link.getName">
+            </form>
+            <form action="@routes.Problems.removeLink(Event.currentId(), link.getLink)" method="POST" class='submit actions-remove-problem'></form>
+            <a class='submit actions-rename-problem' title='Переименовать задачу' href='#'>Переименовать</a>
+            <a class='submit actions-remove-problem' title='Удалить задачу' href='#'>Удалить</a>
+        </div>
+        <h2>Задание <span class='folder-name'>@link</span></h2>
+        <p>
+            @if(link.hasParent) {
+                @problem_link(link.getParentLink, "на уровень выше: " + link.getParent)
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                }
+        Версия для печати:
+            <a target="_blank" href="@routes.Problems.viewPrintProblem(Event.currentId, link.getProblemId.toString, true)">с ответами</a>,
+            <a target="_blank" href="@routes.Problems.viewPrintProblem(Event.currentId, link.getProblemId.toString, false)">без ответов</a>
+        </p>
+    </div>
+
+    @* -- edit problem -- *@
+
+    @defining(link.get.formatEditor) { editor =>
+        @if(editor != null) {
+            <div class=info-box>
+                <h2>Редактирование задания</h2>
+            </div>
+
+            <div class=info-box>
+                <form id='edit-problem' method="POST" action="@routes.Problems.editProblem(Event.currentId, link.getLink)">
+                    @editor
+
+                    @* http://forum.wymeditor.org/forum/viewtopic.php?f=2&t=563 *@
+                    <div class='change-problem'><input type='submit' class='wymupdate' value="Изменить задачу"></div>
+                </form>
+            </div>
+        } else {
+            <div class=info-box>
+                <p>Редактирование недоступно</p>
+            </div>
+        }
+    }
+
+    @* -- problem statement / answer -- *@
+    <div class='problem-statement-answer'>
+        <div class='problem hidden'><span class='hidden pr_type'>@link.get.getType</span>
+            <p>Предварительный просмотр: <a href='#' class='switch-problem'>переключить на ответ</a></p>
+            @link.get.format("1", false, null, 0)
+        </div>
+        <div class='problem'><span class='hidden pr_type'>@link.get.getType</span>
+            <p>Предварительный просмотр: <a href='#' class='switch-problem'>переключить на условие</a></p>
+            @link.get.format("1", true, null, 0)
+        </div>
+    </div>
+}

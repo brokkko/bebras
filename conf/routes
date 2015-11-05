@@ -98,6 +98,7 @@ GET         /:event/*folder/print_folder_ans                           controlle
 GET         /:event/*folder/print_folder_sub                           controllers.Problems.printFolder(event, folder, subfolders:Boolean=true, showAnswers:Boolean=false)
 GET         /:event/*folder/print_folder_sub_ans                       controllers.Problems.printFolder(event, folder, subfolders:Boolean=true, showAnswers:Boolean=true)
 GET         /:event/*problem_link/view_problem                         controllers.Problems.viewProblem(event, problem_link)
+GET         /:event/*problem_link/view_problem1                        controllers.Problems.viewProblem1(event, problem_link)
 GET         /:event/*pid/view_problem_raw                              controllers.Problems.viewRawProblem(event, pid)
 GET         /:event/*pid/ans/view_problem_print                        controllers.Problems.viewPrintProblem(event, pid, answers:Boolean=true)
 GET         /:event/*pid/no_ans/view_problem_print                     controllers.Problems.viewPrintProblem(event, pid, answers:Boolean=false)
