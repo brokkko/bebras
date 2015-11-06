@@ -11,8 +11,6 @@ import models.results.InfoPattern;
 import models.utils.Utils;
 import play.Logger;
 import play.api.templates.Html;
-import scala.collection.mutable.*;
-import scala.collection.mutable.StringBuilder;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
@@ -50,16 +48,19 @@ public class BebrasProblem implements Problem {
             "JP", "Япония",
             "LV", "Латвия",
             "LT", "Литва",
+            "MY", "Малайзия",
             "NL", "Нидерланды",
             "PL", "Польша",
             "RU", "Россия",
             "SE", "Швеция",
             "SI", "Словения",
             "SK", "Словакия",
+            "TR", "Турция",
             "TW", "Тайвань",
             "UA", "Украина",
             "AU", "Австралия",
-            "US", "Америка"
+            "US", "Америка",
+            "ZA", "Южная Африка"
     );
 
     private String title;

@@ -132,15 +132,18 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
             var place = places[key];
             var object;
 
-            if (place.vObject.imageId)
-                object = new Kinetic.Image({
+            if (place.vObject.imageId) {
+                var imgConfig = {
                     x: place.x,
                     y: place.y,
                     width: place.width,
                     height: place.height,
                     image: objects[place.vObject.imageId]
-                });
-            else
+                };
+                if (place.vObject.crop)
+                    imgConfig.crop = place.vObject.crop;
+                object = new Kinetic.Image(imgConfig);
+            } else
                 object = new Kinetic.Rect({
                     x: place.x,
                     y: place.y,

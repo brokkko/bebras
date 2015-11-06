@@ -102,12 +102,18 @@ var add_bebras_dyn_problem = (function(){
             problem.setEnabled(!enabled);
 
             var pid = get_problem_index($problem);
-            if (enabled)
+            if (enabled) {
+                var sol = problem.getSolution();
+
                 submit_answer(get_problem_index($problem), {
                     'r': problem.getAnswer(),
-                    's': problem.getSolution()
+                    's': sol
                 });
-            else
+
+
+                if (console)
+                    console.log('sending solution', sol);
+            } else
                 submit_answer(get_problem_index($problem), {
                     'r': -1,
                     's': problem.getSolution()
