@@ -10,7 +10,7 @@ function InputFieldDynProblem(container, max_length, validator) { //validator re
         };
 
     var $label = $('<span style="font-family: Arial, sans-serif">Введите ответ: </span>');
-    var $in = $('<input autofocus="autofocus" style="background-color: #eee; border: 2px solid #444; color: #a00000; font-size:1em; font-family: Arial, sans-serif; padding: 0 2px" type="text" maxlength="' + max_length + '" size="' + max_length + '">');
+    var $in = $('<input style="background-color: #eee; border: 2px solid #444; color: #a00000; font-size:1em; font-family: Arial, sans-serif; padding: 0 2px" type="text" maxlength="' + max_length + '" size="' + max_length + '">');
     var $in_disabled = $('<span style="font-family: Arial, sans-serif; color: #008000; padding: 3px 4px" class="hidden"></span>');
     var $error = $('<span style="margin-left: 1em;color: red" class="hidden">Ошибка</span>');
 
@@ -54,7 +54,6 @@ function InputFieldDynProblem(container, max_length, validator) { //validator re
         if (state) {
             $in.show();
             $in_disabled.hide();
-            $in.focus();
         } else {
             $in.hide();
             $in_disabled.show();

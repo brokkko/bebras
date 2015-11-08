@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2015 UA-05</title>
+    <script src="jquery-1.7.2.min.js"></script>
+</head>
+<body>
+  <div id="container"></div>
+</body>
+<script>
+    function LightsProblem(container) {
+
+        var size = 80;
+        var h = 120;
+        var ans = 3;
+        var r = 8;
+        var ball_color = '#ff0000';
+        var ball_0_color = '#0000ff';
+        var initial_field = [0, 1, 2, 2, 1, 3, 5, 7];
+        var n = initial_field.length;
+
+        var sum = 0;
+        for (var i = 0; i < n; i++)
+            sum += initial_field[i];
+
+        var $container = $('#' + container);
+        var $canvas = $('<canvas></canvas>');
+        $canvas.attr('width', '' + n * size);
+        $canvas.attr('height', '' + h);
+
+        var $info = $('<p></p>');
+
+        var canvas = $canvas.get(0);
+
+        var field;
+        var clicks;
+
+        var enabled = true;
+
+        $container.append($canvas);
+        $container.append($info);
+        var ctx = canvas.getContext('2d');
+
+        function draw() {
+            ctx.clearRect(0, 0, size * n, h);
+
+            //todo draw
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.moveTo(0, h);
+            ctx.lineTo(n * size, h);
+            ctx.stroke();
+
+            for (var i = 0; i <= n; i++) {
+                ctx.lineWidth = i == 0 || i == n ? 8 : 4;
+                ctx.beginPath();
+                ctx.moveTo(i * size, 0);
+                ctx.lineTo(i * size, h);
+                ctx.stroke();
+            }
+
+            //draw balls
+            for (var ind = 0; ind < n; ind++) {
+                ctx.fillStyle = ind == 0 ? ball_0_color : ball_color;
+                for (var k = 0; k < field[ind]; k++) {
+                    var l = Math.floor(k / 4);
+                    var c = k % 4;
+                    ctx.beginPath();
+                    ctx.arc(
+                            ind * size + r + 4 + (2 * r + 2) * c + (ind == 0 ? 1 : 0),
+                            h - r - 6 - (2 * r + 2) * l,
+                            r, 0, 2 * Math.PI
+                    );
+                    ctx.fill();
+                }
+            }
+
+            for (ind = 1; ind < n; ind++) {
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "#000000";
+                ctx.textAlign = "center";
+
+                ctx.fillText("" + ind, size * (ind + 0.5), 25);
+            }
+
+            if (!enabled) {
+                ctx.fillStyle = 'rgba(225, 225, 225, 0.4)';
+                ctx.fillRect(0, 0, size * n, h);
+            }
+        }
+
+        function isWin() {
+            return field[0] == sum;
+        }
+
+        function canClick(ind) {
+            return ind > 0 && field[ind] == ind;
+        }
+
+        function isLoose() {
+            for (var i = 1; i < n; i++)
+                if (canClick(i))
+                    return false;
+            return true;
+        }
+
+        function doClick(ind) {
+            if (!canClick(ind))
+                return;
+            var a = field[ind];
+            field[ind] = 0;
+            for (var i = 0; i < ind; i++)
+                field[i]++;
+            clicks += ind;
+        }
+
+        function updateInfo() {
+            if (isWin())
+                $info.html("Вы выиграли! Не забудьте сохранить ответ");
+            else if (isLoose())
+                $info.html("Вы проиграли! Сбросьте решение и попробуйте еще раз");
+            else
+                $info.html("Щелкайте по коробкам...");
+        }
+
+        this.reset = function() {
+            field = initial_field.slice();
+            clicks = "";
+
+            updateInfo();
+            draw();
+        };
+
+        this.isEnabled = function() {
+            return enabled;
+        };
+
+        this.setEnabled = function(state) {
+            enabled = state;
+            draw();
+        };
+
+        this.reset();
+
+        canvas.addEventListener('mousedown', handleMouse, false);
+
+        function handleMouse(event) {
+            if (!enabled)
+                return;
+
+            //http://stackoverflow.com/questions/17130395/canvas-html5-real-mouse-position
+            var rect = canvas.getBoundingClientRect();
+            var x = event.clientX - rect.left;
+            var y = event.clientY - rect.top;
+
+            var ind = Math.floor(x / size);
+            if (y <= h && ind > 0 && ind < n && canClick(ind)) {
+                doClick(ind);
+                updateInfo();
+                draw();
+            }
+        }
+
+        var initCallback;
+
+        this.setInitCallback = function (_initCallback) {
+            initCallback = _initCallback;
+
+            //we are initialized just after creation, so any attempt to set up init callback is after we are initialized
+            if (initCallback)
+                initCallback();
+        };
+
+        this.getSolution = function () {
+            return clicks;
+        };
+
+        this.loadSolution = function(solution) {
+            this.reset();
+
+            if (solution == "")
+                return; //not really needed
+
+            for (var i = 0; i < solution.length; i++) {
+                var ii = parseInt(solution.charAt(i));
+                if (canClick(ii))
+                    doClick(ii);
+                else
+                    return;
+            }
+
+            updateInfo();
+            draw();
+        };
+
+        this.getAnswer = function () {
+            return isWin() ? 1 : 0;
+        };
+    }
+
+    var task = new LightsProblem('container');
+</script>
+</html>

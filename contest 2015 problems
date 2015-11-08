@@ -1,0 +1,49 @@
+2015-11-09, 00:01
+2015-11-13, 23:59
+2015-11-23, 00:01
+
+[
+  {
+    "scores" : 1,
+    "penalty" : -1,
+    "no ans" : 0,
+    "no less 0" : true,
+    "separate right and wrong" : true,
+    "type" : "beaver"
+  }
+]
+
+[
+  "participant~grade=7",
+  "participant~grade=8"
+]
+
+1-2
+3: 4 random from RU-A2 RU-A3 RU-A4 TR-03 in /bebras2015-problems-upload/2015
+6: 4 random from HU-02 MY-01 SE-01 SK-05 in /bebras2015-problems-upload/2015
+9: 4 random from CZ-01 CZ-04 AT-03 TR-08 in /bebras2015-problems-upload/2015
+
+3-4
+ 6: 5 random from CH-02 CZ-03 HU-02 MY-01 SE-01 in /bebras2015-problems-upload/2015
+ 9: 5 random from AT-03 SI-02 SK-05 TR-08 UA-04 in /bebras2015-problems-upload/2015
+12: 5 random from CZ-01 CZ-07 LT-04 RU-04 TR-07 in /bebras2015-problems-upload/2015
+
+5-6
+ 6: 5 random from AT-03 CH-02 JP-03 ZA-03 UA-02-0 in /bebras2015-problems-upload/2015
+ 9: 5 random from AT-04 CZ-01 DE-04 ES-01 RU-04 in /bebras2015-problems-upload/2015
+12: 5 random from CA-02 JP-01 PL-07 RU-07 SK-01 in /bebras2015-problems-upload/2015
+
+7-8
+ 6: 5 random from AT-07 BG-02 DE-06 ES-01 JP-02 in /bebras2015-problems-upload/2015
+ 9: 5 random from CH-05 CZ-02 HU-05 RU-02 TW-02 in /bebras2015-problems-upload/2015
+12: 5 random from CA-02 RU-08 SI-06 PL-04 UA-02-1 in /bebras2015-problems-upload/2015
+
+9-10
+ 6: 5 random from CA-03 CZ-06 HU-01 MY-04 RU-01 in /bebras2015-problems-upload/2015
+ 9: 5 random from AT-05 CH-08 IT-01 PL-04 RU-07 in /bebras2015-problems-upload/2015
+12: 5 random from LT-02 RU-03 RU-08 SI-06 TW-04 in /bebras2015-problems-upload/2015
+
+11
+ 6: 5 random from AT-05 NL-05 PL-04 RU-01 RU-07 in /bebras2015-problems-upload/2015
+ 9: 5 random from CH-08 CH-09 DE-01 IT-01 SI-06 in /bebras2015-problems-upload/2015
+12: 5 random from LT-02 RU-03 RU-08 TW-04 UA-05 in /bebras2015-problems-upload/2015

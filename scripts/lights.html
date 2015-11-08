@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2015 UA-05</title>
+    <script src="jquery-1.7.2.min.js"></script>
+</head>
+<body>
+  <div id="container"></div>
+  <div style="color: #ffc800"></div>
+</body>
+<script>
+    function LightsProblem(container) {
+        var m = 2;
+        var n = 4;
+        var size = 50;
+        var ans = 3;
+        var on = '#ffc800';
+        var off = '#666666';
+        var on_dis = '#ffffcc';
+        var off_dis = '#e3e3e3';
+//        var initial_field = [[1, 0, 0, 1], [1, 1, 1, 0], [0, 1, 1, 1], [1, 0, 0, 1]];
+        var initial_field = [[1, 0, 0, 0], [1, 0, 1, 0]];
+
+        var $container = $('#' + container);
+        var $canvas = $('<canvas></canvas>');
+        $canvas.attr('width', '' + (n * size + 10));
+        $canvas.attr('height', '' + m * size);
+        $canvas.css('float', 'left');
+
+        var $clicks = $('<span></span>');
+        var $clicksInfo = $('<p>Щелчков: </p>');
+        $clicksInfo.append($clicks);
+
+        var canvas = $canvas.get(0);
+
+        var field;
+        var clicks;
+        var enabled = true;
+
+        $container.append($canvas);
+        $container.append($clicksInfo);
+        var ctx = canvas.getContext('2d');
+
+        function draw() {
+            for (var i = 0; i < m; i++)
+              for (var j = 0; j < n; j++) {
+                  if (enabled)
+                      ctx.fillStyle = field[i][j] == 1 ?  on : off;
+                  else
+                      ctx.fillStyle = field[i][j] == 1 ? on_dis : off_dis;
+
+                  ctx.fillRect(j * size, i * size, size, size);
+              }
+
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 4;
+            for (i = 0; i <= m; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * size);
+                ctx.lineTo(n * size, i * size);
+                ctx.stroke();
+            }
+            for (j = 0; j <= n; j++) {
+                ctx.beginPath();
+                ctx.moveTo(j * size, 0);
+                ctx.lineTo(j * size, m * size);
+                ctx.stroke();
+            }
+        }
+
+        function updateClicks() {
+            $clicks.html(clicks);
+        }
+
+        this.reset = function() {
+            field = $.extend(true, [], initial_field);
+            clicks = 0;
+
+            updateClicks();
+            draw();
+        };
+
+        this.isEnabled = function() {
+            return enabled;
+        };
+
+        this.setEnabled = function(state) {
+            enabled = state;
+            draw();
+        };
+
+        this.reset();
+
+        canvas.addEventListener('mousedown', handleMouse, false);
+
+        function handleMouse(event) {
+            if (!enabled)
+                return;
+
+            //http://stackoverflow.com/questions/17130395/canvas-html5-real-mouse-position
+            var rect = canvas.getBoundingClientRect();
+            var x = event.clientX - rect.left;
+            var y = event.clientY - rect.top;
+
+            var i = Math.floor(y / size);
+            var j = Math.floor(x / size);
+
+            if (i < 0 || i >= m || j < 0 || j >= n)
+                return;
+
+            for (var ii = 0; ii < m; ii++)
+                field[ii][j] = 1 - field[ii][j];
+            for (var jj = 0; jj < n; jj++)
+                if (jj != j)
+                    field[i][jj] = 1 - field[i][jj];
+
+            clicks++;
+
+            updateClicks();
+            draw();
+        }
+
+        var initCallback;
+
+        this.setInitCallback = function (_initCallback) {
+            initCallback = _initCallback;
+
+            //we are initialized just after creation, so any attempt to set up init callback is after we are initialized
+            if (initCallback)
+                initCallback();
+        };
+
+        this.getSolution = function () {
+            var ans = '';
+            for (var i = 0; i < m; i++)
+                for (var j = 0; j < n; j++)
+                    ans += field[i][j];
+            return clicks + '|' + ans;
+        };
+
+        this.loadSolution = function(solution) {
+            if (solution == "") {
+                this.reset();
+                return;
+            }
+
+            var spl = solution.split('|');
+            clicks = parseInt(spl[0]);
+            solution = spl[1];
+
+            var cnt = 0;
+            for (var i = 0; i < m; i++)
+                for (var j = 0; j < n; j++)
+                    field[i][j] = parseInt(solution.charAt(cnt++));
+
+            updateClicks();
+            draw();
+        };
+
+        this.getAnswer = function () {
+            if (clicks != ans)
+                return 0;
+
+            for (var i = 0; i < m; i++)
+                for (var j = 0; j < n; j++)
+                    if (field[i][j] == 1)
+                        return 0;
+
+            return 1;
+        };
+    }
+
+    var task = new LightsProblem('container');
+</script>
+</html>
