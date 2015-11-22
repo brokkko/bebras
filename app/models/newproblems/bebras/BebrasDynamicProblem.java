@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
  */
 public class BebrasDynamicProblem implements Problem {
 
+    public static final int MAX_ANSWER_LENGTH = 10;
+
     private static final char[] UNIQUE_ID_CHARS;
     private static final Random rnd = new Random();
 
@@ -121,18 +123,34 @@ public class BebrasDynamicProblem implements Problem {
         if (answer == null)
             return "-";
 
-        Integer res = (Integer) answer.get("r");
-        if (res == null || res < 0)
+        Info checked = check(answer, randSeed);
+        int result = (Integer)checked.get("result");
+        if (result == 0)
             return ".";
-        else if (res == 0)
-            return "w";
-        else
-            return "R";
+
+        String text = result < 0 ? "w" : "R";
+
+        if (showFullAnswer()) {
+            String userAnswer = (String)answer.get("s");
+            if (userAnswer == null || userAnswer.isEmpty())
+                return "/";
+            String dispUserAnswer = userAnswer.length() > MAX_ANSWER_LENGTH ? userAnswer.substring(0, MAX_ANSWER_LENGTH) + "~" : userAnswer;
+
+            return "[" + text + dispUserAnswer + ']';
+        }
+
+        return text;
     }
 
     @Override
     public String answerString() {
-        return "R";
+        if (showFullAnswer()) {
+            if (correctAnswer.length() == 1)
+                return correctAnswer;
+            else
+                return '[' + correctAnswer + ']';
+        } else
+            return "R";
     }
 
     @Override
@@ -146,9 +164,15 @@ public class BebrasDynamicProblem implements Problem {
             result.put("answer", ".");
         } else if (res == 2) {
             String solution = (String) answer.get("s");
-            boolean correct = solution != null && solution.equals(correctAnswer);
-            result.put("result", correct ? 1 : -1);
-            result.put("answer", correct ? "R" : "w");
+
+            if (solution == null || solution.isEmpty()) {
+                result.put("result", 0);
+                result.put("answer", ".");
+            } else {
+                boolean correct = solution.equals(correctAnswer);
+                result.put("result", correct ? 1 : -1);
+                result.put("answer", correct ? "R" : "w");
+            }
         } else {
             result.put("result", res == 0 ? -1 : 1);
             result.put("answer", res == 0 ? "w" : "R");
@@ -213,5 +237,9 @@ public class BebrasDynamicProblem implements Problem {
         height = deserializer.readInt("height", 0);
         correctAnswer = deserializer.readString("correct_answer", "");
         dependencies = deserializer.readString("dependencies", "kinetic,ddlib");
+    }
+
+    private boolean showFullAnswer() {
+        return correctAnswer != null && !correctAnswer.isEmpty() && correctAnswer.length() <= MAX_ANSWER_LENGTH;
     }
 }
