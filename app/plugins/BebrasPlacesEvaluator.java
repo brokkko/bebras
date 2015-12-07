@@ -131,7 +131,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                                 String region = uid2region.get(regBy);
                                 if (region == null) {
                                     User teacher = User.getUserById(regBy);
-                                    region = (String) teacher.getInfo().get("region");
+                                    region = teacher == null ? "UNKN" : (String) teacher.getInfo().get("region");
                                     uid2region.put(regBy, region);
                                 }
                             }
