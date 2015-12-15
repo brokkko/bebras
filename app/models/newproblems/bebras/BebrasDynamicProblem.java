@@ -169,7 +169,7 @@ public class BebrasDynamicProblem implements Problem {
                 result.put("result", 0);
                 result.put("answer", ".");
             } else {
-                boolean correct = solution.equals(correctAnswer);
+                boolean correct = testAnswerCorrectnessByServerChecker(solution);
                 result.put("result", correct ? 1 : -1);
                 result.put("answer", correct ? "R" : "w");
             }
@@ -179,6 +179,19 @@ public class BebrasDynamicProblem implements Problem {
         }
 
         return result;
+    }
+
+    private boolean testAnswerCorrectnessByServerChecker(String solution) {
+        solution = solution.trim();
+        if (correctAnswer.contains("{{{OR}}}")) {
+            String[] split = correctAnswer.split("\\{\\{\\{OR\\}\\}\\}");
+            for (String s : split)
+                if (solution.equals(s))
+                    return true;
+            return false;
+        }
+
+        return solution.equals(correctAnswer);
     }
 
     @Override
