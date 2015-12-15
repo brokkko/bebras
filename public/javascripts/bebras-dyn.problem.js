@@ -1,5 +1,11 @@
 var add_bebras_dyn_problem = (function(){
 
+    if (!String.prototype.trim) { //Trim polyfill
+        String.prototype.trim = function () {
+            return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+        };
+    }
+
     if (!window.console)
         window.console = {
             log: function () {
@@ -59,7 +65,7 @@ var add_bebras_dyn_problem = (function(){
                 var is_right = info.initial_solution.r == 1;
                 if (info.initial_solution.r == 2) {
                     var correctAnswer = $problem.find('.dyn_correct_answer').text();
-                    is_right = correctAnswer === info.initial_solution.s;
+                    is_right = testAnswerCorrectness(correctAnswer, info.initial_solution.s);
                 }
                 $status.text(is_right ? status_answer_given_right : status_answer_given_wrong);
                 if (is_right)
@@ -85,6 +91,19 @@ var add_bebras_dyn_problem = (function(){
         }
 
         $button_undo.text(resetAnswer);
+    }
+
+    function testAnswerCorrectness(correctAnswer, userAnswer) {
+        userAnswer = userAnswer.trim();
+        if (correctAnswer.indexOf("{{{OR}}}") >= 0) {
+            var s = correctAnswer.split("{{{OR}}}");
+            for (var i = 0; i < s.length; i++)
+                if (userAnswer === s[i])
+                    return true;
+            return false;
+        }
+
+        return userAnswer === correctAnswer;
     }
 
     function problem_final_init(dyn_type) {
