@@ -528,9 +528,35 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             return null;
     }
 
+    private BebrasGramotaCertificate getBebrasGramotaCertificate15(Event event, User user) {
+        Applications applicationsPlugin = event.getPluginByType(Applications.class);
+        List<Application> applications = applicationsPlugin.getApplications(user);
+        int bCount = 0;
+        int bkCount = 0;
+        for (Application application : applications)
+            switch (application.getType()) {
+                case "b":
+                    bCount += application.getSize();
+                    break;
+                case "bk":
+                    bkCount += application.getSize();
+                    break;
+            }
+
+        if (bCount + bkCount >= 30) {
+
+            List<BebrasCertificateLine> lines = new ArrayList<>();
+            addSchoolAndAddr(lines, user.getInfo(), user);
+
+            return new BebrasGramotaCertificate(user, true, year, lines);
+        } else
+            return null;
+    }
+
     private BebrasGramotaCertificate getBebrasGramotaCertificate(Event event, User user) {
         if (year == 2013) return getBebrasGramotaCertificate13(user);
-        else return getBebrasGramotaCertificate14(event, user);
+        else if (year == 2014) return getBebrasGramotaCertificate14(event, user);
+        else return getBebrasGramotaCertificate15(event, user);
     }
 
     private Result generateAllAddresses() {
