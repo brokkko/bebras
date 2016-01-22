@@ -300,7 +300,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                 PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
 
                 Image bgImage = null;
-                if (needBackground || !needBackground) {
+                if (needBackground) {
                     try {
                         bgImage = Image.getInstance(event.getEventDataFolder().getAbsolutePath() + (schoolOrg ? "/bg-organizers-all.png" : "/bg-participants-all.png"));
                     } catch (Exception e) {
@@ -349,6 +349,8 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                             }
 
                             User organizer = user.getRegisteredByUser();
+                            if (organizer == null)
+                                continue;
                             if (BebrasCertificate.isNovosibirsk(organizer.getRegisteredBy()))
                                 continue;
 
