@@ -35,7 +35,7 @@ public class BebrasDiploma extends Diploma<BebrasDiplomaFactory> {
 
     @Override
     public String bgPath() {
-        return user.getEvent().getEventDataFolder().getAbsolutePath() + "/diploma2014-" + level + ".png";
+        return user.getEvent().getEventDataFolder().getAbsolutePath() + "/diploma2014-" + level + ".png"; //TODO get current year
     }
 
     @Override
