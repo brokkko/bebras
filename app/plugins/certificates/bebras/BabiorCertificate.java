@@ -7,6 +7,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import models.ServerConfiguration;
 import models.User;
 import models.results.Info;
+import plugins.BebrasPlacesEvaluator;
 import plugins.certificates.Diploma;
 import plugins.certificates.kio.KioCertificate;
 
@@ -76,7 +77,12 @@ public class BabiorCertificate extends Diploma<BabiorCertificateFactory> {
 
         schoolLine = schoolLine.replaceAll("  ", " ").replaceAll("[\n\r]+", " ");
 
+        String[] schoolLines = BebrasPlacesEvaluator.splitProbablyLongLine(schoolLine);
+
         canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 12);
-        canvas.showTextAligned(Element.ALIGN_CENTER, schoolLine, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
+        for (String line : schoolLines) {
+            canvas.showTextAligned(Element.ALIGN_CENTER, line, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
+            y0 -= 4;
+        }
     }
 }
