@@ -16,7 +16,10 @@ public class KioProblemsSet2016 extends KioProblemSet {
             case "mower":
                 return "Стая коси-роботов";
             case "mars":
-                return "?";
+                if (level < 2)
+                    return "Солнечная система";
+                else
+                    return "Полет на марс";
         }
         return "???";
     }
