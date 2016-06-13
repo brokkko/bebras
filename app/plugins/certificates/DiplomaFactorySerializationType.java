@@ -5,10 +5,7 @@ import plugins.certificates.bebras.BabiorCertificateFactory;
 import plugins.certificates.bebras.BebrasDiplomaFactory;
 import plugins.certificates.dmti.DmTiCertificateFactory;
 import plugins.certificates.dmti.ThankYouLetterFactory;
-import plugins.certificates.kio.KioCertificateFactory;
-import plugins.certificates.kio.KioDiplomaFactory;
-import plugins.certificates.kio.KioProblemDiplomaFactory;
-import plugins.certificates.kio.KioTeacherGramotaFactory;
+import plugins.certificates.kio.*;
 
 public class DiplomaFactorySerializationType extends SerializableTreeSerializationType<DiplomaFactory> {
 
@@ -17,6 +14,7 @@ public class DiplomaFactorySerializationType extends SerializableTreeSerializati
         registerClass("kio diploma", KioDiplomaFactory.class);
         registerClass("kio problem diploma", KioProblemDiplomaFactory.class);
         registerClass("kio teacher gramota", KioTeacherGramotaFactory.class);
+        registerClass("kio teacher certificate", KioTeacherCertificateFactory.class);
         registerClass("dm ti thank you letter", ThankYouLetterFactory.class);
         registerClass("dm ti certificate", DmTiCertificateFactory.class);
         registerClass("bebras diploma", BebrasDiplomaFactory.class);
