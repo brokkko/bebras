@@ -1,0 +1,38 @@
+@(form: models.forms.RawForm, field: String, placeholder: String, small: Boolean)
+@import models.forms.RawForm
+@import scala.util.Random
+@defining(scala.util.Random.alphanumeric.take(10)) { random_id =>
+    <textarea id="online-editor-textarea-@random_id"
+        @if(!small) {
+            rows="8"
+        } else {
+            rows="4"
+        } name="@field"
+    placeholder="@placeholder"
+    wrap="soft">@form.get(field)</textarea>
+    @*TODO debug Text Area view*@
+    @*TODO pass mode (json) as parameter*@
+    @*TODO move script below to a function in admin.json, and only cal it here*@
+    @*TODO JsonTemplate should also call this*@
+    <div class="online-editor@if(small) { small}" id="online-editor-@random_id">@form.get(field)</div>
+    <script>
+            (function () {
+                if (ace) {
+                    var editor = ace.edit("online-editor-@random_id");
+                    editor.setTheme("ace/theme/github");
+                    editor.getSession().setMode("ace/mode/json");
+                    var $ta = $("#online-editor-textarea-@random_id");
+                    $ta.hide();
+//                editor.renderer.setOption('showLineNumbers', false);
+
+                    editor.getSession().on('change', function () {
+                        console.log('here', editor.getSession().getValue())
+                        $ta.val(editor.getSession().getValue());
+                        console.log('there', $ta.val())
+                    });
+                } else {
+                    $("#online-editor-@random_id").hide();
+                }
+            })();
+    </script>
+}

@@ -3,6 +3,7 @@ package plugins.certificates;
 import models.newserialization.SerializableTreeSerializationType;
 import plugins.certificates.bebras.BabiorCertificateFactory;
 import plugins.certificates.bebras.BebrasDiplomaFactory;
+import plugins.certificates.bebras.BebrasKazanCertificate;
 import plugins.certificates.dmti.DmTiCertificateFactory;
 import plugins.certificates.dmti.ThankYouLetterFactory;
 import plugins.certificates.kio.*;

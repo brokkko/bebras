@@ -18,7 +18,13 @@ public class AdminWidget implements Widget {
 
     @Override
     public List<ResourceLink> links() {
-        return Arrays.asList(new ResourceLink("admin.css"), new ResourceLink("admin.js"));
+        return Arrays.asList(
+//                new ResourceLink("http://cdn.jsdelivr.net/g/ace@1.2.4(min/mode-json.js+min/mode-javascript.js+min/worker-javascript.js+min/worker-json.js+min/theme-monokai.js)"),
+                new ResourceLink("ace/ace.js"),
+                new ResourceLink("ace/theme-github.js"),
+                new ResourceLink("ace/mode-json.js"),
+                new ResourceLink("admin.css"),
+                new ResourceLink("admin.js"));
     }
 
     public static AdminWidget get() {

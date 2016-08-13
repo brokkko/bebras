@@ -1,3 +1,3 @@
 @(form:models.forms.RawForm, field:String, placeholder:String, wrap:Boolean, small:Boolean)
 @import models.forms.RawForm
-<textarea @if(!small){rows="8"} else {rows="4"} class='input-multiline@if(small){ small} else { small}' name="@field" placeholder="@placeholder"@if(!wrap){ wrap="off"}>@form.get(field)</textarea>
+<textarea @if(!small){rowsf="8"} else {rows="4"} class='input-multiline@if(small){ small} else { small}' name="@field" placeholder="@placeholder"@if(!wrap){ wrap="off"}>@form.get(field)</textarea>

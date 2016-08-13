@@ -3,6 +3,7 @@ package models.data;
 import models.User;
 import models.applications.ApplicationWithUser;
 import models.data.features.*;
+import play.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,6 +21,7 @@ public class FeaturesSetRegistry {
 
     @SuppressWarnings("unchecked")
     public <T> FeaturesSet<T> getFeaturesSet(Class<T> clazz) {
+        //TODO optimize. Make FeatureSet immutable and add a class such as a FeatureSetWithLoadedObject
         CompositeFeaturesSet<T> set = new CompositeFeaturesSet<>(".");
 
         if (clazz.equals(User.class)) {
