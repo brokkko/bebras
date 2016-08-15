@@ -105,12 +105,7 @@ public class DiplomaPlugin extends Plugin {
 
         try (
                 User.UsersEnumeration usersEnumeration = User.listUsers(query);
-                AutoCloseable ignored = new AutoCloseable() {
-                    @Override
-                    public void close() throws Exception {
-                        doc.close();
-                    }
-                }
+                AutoCloseable ignored = doc::close
         ) {
             File outputPath = File.createTempFile("pdf-all-certificates-", ".pdf");
 
@@ -120,6 +115,7 @@ public class DiplomaPlugin extends Plugin {
 
             doc.open();
 
+            //TODO each page size should be taken from a diploma
             boolean noPages = true;
             while (usersEnumeration.hasMoreElements()) {
                 User subUser = usersEnumeration.nextElement();

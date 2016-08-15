@@ -13,7 +13,7 @@ import models.newserialization.SerializationType;
 import models.newserialization.Serializer;
 import play.api.templates.Html;
 import play.i18n.Messages;
-import views.html.fields.multiline;
+import views.html.fields.online_editor;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ public class JsonInputTemplate extends InputTemplate<ObjectNode> {
 
     @Override
     public Html render(RawForm form, String field) {
-        return multiline.render(form, field, placeholder, false, small);
+        return online_editor.render(form, field, placeholder, small);
     }
 
     @Override

@@ -4,6 +4,7 @@ import models.newserialization.SerializableTreeSerializationType;
 import plugins.certificates.bebras.BabiorCertificateFactory;
 import plugins.certificates.bebras.BebrasDiplomaFactory;
 import plugins.certificates.bebras.BebrasKazanCertificate;
+import plugins.certificates.daedal.DaedalDiplomaFactory;
 import plugins.certificates.dmti.DmTiCertificateFactory;
 import plugins.certificates.dmti.ThankYouLetterFactory;
 import plugins.certificates.kio.*;
@@ -20,5 +21,6 @@ public class DiplomaFactorySerializationType extends SerializableTreeSerializati
         registerClass("dm ti certificate", DmTiCertificateFactory.class);
         registerClass("bebras diploma", BebrasDiplomaFactory.class);
         registerClass("babior certificate", BabiorCertificateFactory.class);
+        registerClass("daedal", DaedalDiplomaFactory.class);
     }
 }

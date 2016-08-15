@@ -21,7 +21,12 @@ object ApplicationBuild extends Build {
 
   val authSubProject = Project("auth", file("auth"))
 
-  val certificates = Project("certificates", file("certificates"))
+  val certificates = Project("certificates", file("certificates")).settings(
+    libraryDependencies ++= Seq(
+      "com.itextpdf" % "itext-xtra" % "5.4.4",
+      "org.testng" % "testng" % "6.8" % Test
+    )
+  )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
     // Add your own project settings here
