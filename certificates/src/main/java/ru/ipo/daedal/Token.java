@@ -28,6 +28,10 @@ public class Token {
         return new Token(Argument, argument, '\0');
     }
 
+    public static Token eof() {
+        return new Token(EOF, null, '\0');
+    }
+
     private TokenType type;
 
     private String s;

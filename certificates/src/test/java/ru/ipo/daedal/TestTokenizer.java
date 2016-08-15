@@ -2,7 +2,8 @@ package ru.ipo.daedal;
 
 import org.testng.annotations.Test;
 import ru.ipo.daedal.commands.Arguments;
-import ru.ipo.daedal.commands.Command;
+import ru.ipo.daedal.commands.compiler.CompilerCommand;
+import ru.ipo.daedal.commands.compiler.CompilerContext;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,14 +22,15 @@ public class TestTokenizer {
     public void test1() throws IOException {
         String _1 = resourceToString("/ru/ipo/daedal/1.daedal");
 
-        PrependingString ps = new PrependingString();
-        ps.prepend(_1);
-
-        DaedalTokenizer tokenizer = new DaedalTokenizer(ps, createTestCommands(), (s) -> "");
+        DaedalTokenizer tokenizer = new DaedalTokenizer(_1, createTestCommands(), (s) -> "");
 
         StringBuilder result = new StringBuilder();
-        while (tokenizer.hasNext())
-            result.append(tokenizer.next().toString()).append('\n');
+        while (true) {
+            Token next = tokenizer.next();
+            if (next.getType() == TokenType.EOF)
+                break;
+            result.append(next.toString()).append('\n');
+        }
 
         assertEquals(result.toString(), resourceToString("/ru/ipo/daedal/1.tokens"));
     }
@@ -37,50 +39,57 @@ public class TestTokenizer {
     public void test2() throws IOException {
         String _2 = resourceToString("/ru/ipo/daedal/2.daedal");
 
-        PrependingString ps = new PrependingString();
-        ps.prepend(_2);
-
-        DaedalTokenizer tokenizer = new DaedalTokenizer(ps, createTestCommands(), (s) -> "" + s.length());
+        ExpressionEvaluator expressionEvaluator = (s) -> {
+            if (s.equals("make empty"))
+                return "";
+            else
+                return "" + s.length();
+        };
+        DaedalTokenizer tokenizer = new DaedalTokenizer(_2, createTestCommands(), expressionEvaluator);
 
         StringBuilder result = new StringBuilder();
-        while (tokenizer.hasNext())
-            result.append(tokenizer.next().toString()).append('\n');
+        while (true) {
+            Token next = tokenizer.next();
+            if (next.getType() == TokenType.EOF)
+                break;
+            result.append(next.toString()).append('\n');
+        }
 
         assertEquals(result.toString(), resourceToString("/ru/ipo/daedal/2.tokens"));
     }
 
-    private Map<String, Command> createTestCommands() {
-        Map<String, Command> commands = new HashMap<>();
-        commands.put("a", new Command() {
+    private Map<String, CompilerCommand> createTestCommands() {
+        Map<String, CompilerCommand> commands = new HashMap<>();
+        commands.put("a", new CompilerCommand() {
             @Override
             public int getArgumentsCount() {
                 return 0;
             }
 
             @Override
-            public void exec(Context p, Arguments args) {
+            public void exec(CompilerContext context, Arguments args) {
 
             }
         });
-        commands.put("bb", new Command() {
+        commands.put("bb", new CompilerCommand() {
             @Override
             public int getArgumentsCount() {
                 return 1;
             }
 
             @Override
-            public void exec(Context p, Arguments args) {
+            public void exec(CompilerContext p, Arguments args) {
 
             }
         });
-        commands.put("ccc", new Command() {
+        commands.put("ccc", new CompilerCommand() {
             @Override
             public int getArgumentsCount() {
                 return 2;
             }
 
             @Override
-            public void exec(Context p, Arguments args) {
+            public void exec(CompilerContext p, Arguments args) {
 
             }
         });

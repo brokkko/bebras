@@ -1,12 +1,14 @@
 package ru.ipo.daedal;
 
-import ru.ipo.daedal.commands.Command;
+import ru.ipo.daedal.commands.Arguments;
+import ru.ipo.daedal.commands.compiler.CompilerCommand;
+import ru.ipo.daedal.commands.compiler.CompilerContext;
+import ru.ipo.daedal.commands.compiler.CoreCommands;
+import ru.ipo.daedal.commands.interpreter.Instruction;
+import ru.ipo.daedal.commands.interpreter.WriteTextLine;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-
-import static ru.ipo.daedal.ParserState.*;
 
 /**
  * Project: dces2
@@ -14,123 +16,71 @@ import static ru.ipo.daedal.ParserState.*;
  */
 public class DaedalParser {
 
-    private PrependingString in;
-    private ParserState state;
-    private Map<String, Command> commands;
-//    private ParserResult result = null;
-    private StringBuilder text;
-    private int newLines = 0;
+    private Map<String, CompilerCommand> commands;
+    private ExpressionEvaluator evaluator;
 
-    public DaedalParser(String code) {
-        this.in = new PrependingString();
-        this.in.prepend(code);
-
-//        result = new ParserResult();
-
-        state = ReadSpaces;
-
-        initCommands();
+    public DaedalParser(ExpressionEvaluator evaluator) {
+        this.evaluator = evaluator;
+        commands = CoreCommands.instance.getCommands();
     }
 
-    private void initCommands() {
-        commands = new HashMap<>();
-//        addCommand("BG", new BgCommand());
-//        addCommand("Format", new FormatCommand());
-//        addCommand("VSkip", new FormatCommand());
-    }
-
-    public void addCommand(String name, Command command) {
+    public void addCommand(String name, CompilerCommand command) {
         commands.put(name, command);
     }
 
-    public void parse() throws IOException {
-//        if (result != null)
-//            throw new DaedaelParserError("This parser has already parsed");
+    public CompilerContext parse(String code) throws IOException {
+        DaedalTokenizer in = new DaedalTokenizer(code, commands, evaluator);
+        CompilerContext cc = new CompilerContext();
 
-        while (state != Finished) {
-            int out = in.read();
+        StringBuilder text = new StringBuilder();
+        int spacesCount = 0;
+        int newLinesCount = 2; //we pretend to start a new line
 
-            if (out == -1) {
-                addTextLine();
-                state = Finished;
-                break;
-            }
+        tokensLoop:
+        while (true) {
+            Token token = in.next();
+            switch (token.getType()) {
+                case Text:
+                    if (newLinesCount >= 2) {
 
-            char c = (char) out;
-
-            switch (state) {
-                case ReadText:
-                    state = readText(c);
+                    }
+                    spacesCount = 0;
+                    newLinesCount = 0;
                     break;
-                case ReadSpaces:
-                    state = readSpaces(c);
+                case Command:
+                    readCommand(in, token.getS(), cc);
                     break;
-                case EscapeRead:
-                    state = escapeRead(c);
+                case Space:
                     break;
-                case ReadCommand:
-                    state = readCommand(c);
-                    break;
-                case ReadExpression:
-                    state = readExpression(c);
-                    break;
-                case Finished:
-                    break;
+                case Argument:
+                    throw new DaedaelParserError("Unexpected argument " + token.getS());
+                case EOF:
+                    break tokensLoop;
             }
         }
+
+        return cc;
     }
 
-    private ParserState readText(char c) {
-        if (c == '\\')
-            return EscapeRead;
-
-        if (Character.isWhitespace(c)) {
-            if (c == '\n')
-                newLines = 1;
-            return ReadSpaces;
-        }
-
-        text.append(c);
-        return ReadText;
-    }
-
-    private ParserState readSpaces(char c) {
-        if (c == '\\')
-            return EscapeRead;
-
-        if (Character.isWhitespace(c)) {
-            if (c == '\n')
-                newLines++;
-            return ReadSpaces;
-        }
-
-        if (newLines <= 1 && text.length() > 0)
-            text.append(' ');
-        if (newLines >= 2)
-            addTextLine();
-
-        text.append(c);
-        return ReadText;
-    }
-
-    private ParserState escapeRead(char c) {
-//        if (c == '\\')
-        return null;
-    }
-
-    private ParserState readCommand(int out) {
-        return null;
-    }
-
-    private ParserState readExpression(int out) {
-        return null;
-    }
-
-    private void addTextLine() {
-        if (text.length() == 0)
-            return;
-//        result.add(new Instruction(new TextLineCommand(), new String[]{text.toString()}));
+    public void newTextLine(StringBuilder text, CompilerContext cc) {
+        if (text.length() != 0)
+            cc.addInstruction(new Instruction(new WriteTextLine(), new Arguments(text.toString())));
         text.setLength(0);
+    }
+
+    private void readCommand(DaedalTokenizer in, String commandName, CompilerContext cc) throws IOException {
+        CompilerCommand command = commands.get(commandName);
+        if (command == null)
+            throw new DaedaelParserError("Unknown command " + commandName);
+        int argumentsCount = command.getArgumentsCount();
+        String[] args = new String[argumentsCount];
+        for (int i = 0; i < argumentsCount; i++) {
+            Token t = in.next();
+            if (t.getType() != TokenType.Argument)
+                throw new DaedaelParserError("Missing arguments for command " + commandName);
+            args[i] = t.getS();
+        }
+        command.exec(cc, new Arguments(args));
     }
 
 }

@@ -6,6 +6,6 @@ package ru.ipo.daedal;
  */
 public enum TokenType {
 
-    Text, Command, Space, Argument;
+    Text, Command, Space, Argument, EOF
 
 }

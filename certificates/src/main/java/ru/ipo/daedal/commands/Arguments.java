@@ -9,7 +9,11 @@ import ru.ipo.daedal.Length;
  */
 public class Arguments {
 
-    private String[] args;
+    private final String[] args;
+
+    public Arguments(String... args) {
+        this.args = args;
+    }
 
     public String get(int index) {
         return args[index];

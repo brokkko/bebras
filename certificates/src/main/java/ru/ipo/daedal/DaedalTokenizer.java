@@ -1,6 +1,6 @@
 package ru.ipo.daedal;
 
-import ru.ipo.daedal.commands.Command;
+import ru.ipo.daedal.commands.compiler.CompilerCommand;
 
 import java.io.IOException;
 import java.util.Map;
@@ -15,17 +15,14 @@ public class DaedalTokenizer {
 
     private PrependingString in;
     private int argsLeft = 0;
-    private Map<String, Command> commands;
+    private Map<String, CompilerCommand> commands;
     private ExpressionEvaluator evaluator;
 
-    public DaedalTokenizer(PrependingString in, Map<String, Command> commands, ExpressionEvaluator evaluator) throws IOException {
-        this.in = in;
+    public DaedalTokenizer(String code, Map<String, CompilerCommand> commands, ExpressionEvaluator evaluator) throws IOException {
+        this.in = new PrependingString();
+        this.in.prepend(code);
         this.commands = commands;
         this.evaluator = evaluator;
-    }
-
-    public boolean hasNext() {
-        return in.peek() != -1;
     }
 
     public Token next() throws IOException {
@@ -44,6 +41,9 @@ public class DaedalTokenizer {
             }
 
             int next = in.read();
+
+            if (next == -1)
+                return eof();
 
             if (next == '\\') {
 
@@ -76,7 +76,7 @@ public class DaedalTokenizer {
                     throw new DaedaelParserError("Escaped nothing?");
 
                 String command = commandBuilder.toString();
-                Command cmd = commands.get(command);
+                CompilerCommand cmd = commands.get(command);
                 if (cmd == null)
                     throw new DaedaelParserError("Unknown command \\" + command);
                 argsLeft = cmd.getArgumentsCount();
