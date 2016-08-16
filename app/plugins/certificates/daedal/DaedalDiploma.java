@@ -19,6 +19,7 @@ public class DaedalDiploma extends Diploma<DaedalDiplomaFactory> {
 
     public DaedalDiploma(User user, DaedalDiplomaFactory factory) {
         super(user, factory);
+
         ExpressionEvaluator evaluator = e -> {
             String result = "???";
             switch (e) {
