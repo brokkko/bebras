@@ -14,110 +14,97 @@ import static ru.ipo.daedal.Token.*;
 public class DaedalTokenizer {
 
     private PrependingString in;
-    private int argsLeft = 0;
     private Map<String, CompilerCommand> commands;
-    private ExpressionEvaluator evaluator;
+    private int argsLeft = 0;
 
     public DaedalTokenizer(String code, Map<String, CompilerCommand> commands, ExpressionEvaluator evaluator) throws IOException {
-        this.in = new PrependingString();
-        this.in.prepend(code);
+        this.in = expandText(code, evaluator);
         this.commands = commands;
-        this.evaluator = evaluator;
     }
 
     public Token next() throws IOException {
-        while (true) { //loop while evaluating expressions
+        if (argsLeft > 0) {
+            argsLeft--;
+            return readArgument();
+        }
+
+        int next = in.read();
+
+        if (next == -1)
+            return eof();
+
+        if (next == '\\') {
+
+            if (in.peek() == -1)
+                throw new DaedalParserError("Escaped end of file?");
+
+            if (in.peek() == '\\') {
+                in.read();
+                return text('\\');
+            }
+
             if (in.peek() == '{') {
                 in.read();
-                String expr = readExpression();
-                String eval = evaluator.eval(expr);
-                in.prepend(eval);
-                continue;
+                return text('{');
             }
 
-            if (argsLeft > 0) {
-                argsLeft--;
-                return readArgument();
+            //otherwise reading command
+            StringBuilder commandBuilder = new StringBuilder();
+            while (true) {
+                int peek = in.peek();
+                if (peek == -1 || Character.isWhitespace(peek) || peek == '/' || peek == '\\') {
+                    if (peek == '/')
+                        in.read();
+                    break;
+                }
+                commandBuilder.append((char) peek);
+                in.read();
             }
+            if (commandBuilder.length() == 0)
+                throw new DaedalParserError("Escaped nothing?");
 
-            int next = in.read();
+            String command = commandBuilder.toString();
+            CompilerCommand cmd = commands.get(command);
+            if (cmd == null)
+                throw new DaedalParserError("Unknown command \\" + command);
+            argsLeft = cmd.getArgumentsCount();
 
-            if (next == -1)
-                return eof();
+            return command(command);
+        }
 
-            if (next == '\\') {
-
-                if (in.peek() == -1)
-                    throw new DaedaelParserError("Escaped end of file?");
-
-                if (in.peek() == '\\') {
-                    in.read();
-                    return text('\\');
-                }
-
-                if (in.peek() == '{') {
-                    in.read();
-                    return text('{');
-                }
-
-                //otherwise reading command
-                StringBuilder commandBuilder = new StringBuilder();
-                while (true) {
-                    int peek = in.peek();
-                    if (peek == -1 || Character.isWhitespace(peek) || peek == '/' || peek ==     '\\') {
-                        if (peek == '/')
-                            in.read();
-                        break;
-                    }
-                    commandBuilder.append((char) peek);
-                    in.read();
-                }
-                if (commandBuilder.length() == 0)
-                    throw new DaedaelParserError("Escaped nothing?");
-
-                String command = commandBuilder.toString();
-                CompilerCommand cmd = commands.get(command);
-                if (cmd == null)
-                    throw new DaedaelParserError("Unknown command \\" + command);
-                argsLeft = cmd.getArgumentsCount();
-
-                return command(command);
-            }
-
-            //support \r\n as newline
-            if (next == '\r') {
-                if (in.peek() == -1)
-                    return space();
-                if (in.peek() == '\n') {
-                    in.read();
-                    return newLine();
-                }
-
+        //support \r\n as newline
+        if (next == '\r') {
+            if (in.peek() == -1)
                 return space();
-            }
-
-            if (next == '\n') {
+            if (in.peek() == '\n') {
+                in.read();
                 return newLine();
             }
 
-            if (Character.isWhitespace(next)) {
-                return space();
-            }
-
-            return text((char) next);
+            return space();
         }
+
+        if (next == '\n') {
+            return newLine();
+        }
+
+        if (Character.isWhitespace(next)) {
+            return space();
+        }
+
+        return text((char) next);
     }
 
-    private String readExpression() {
+    /*private String readExpression() {
         //read until the next }
         StringBuilder exprBuilder = new StringBuilder();
         while (in.peek() != -1 && in.peek() != '}')
             exprBuilder.append((char) in.read());
         if (in.peek() == -1)
-            throw new DaedaelParserError("Eof reached inside expression");
+            throw new DaedalParserError("Eof reached inside expression");
         in.read(); //read }
         return exprBuilder.toString();
-    }
+    }*/
 
     private Token readArgument() {
         //skip all spaces then
@@ -128,7 +115,7 @@ public class DaedalTokenizer {
             in.read();
 
         if (in.peek() == -1)
-            throw new DaedaelParserError("Eof instead of argument");
+            throw new DaedalParserError("Eof instead of argument");
 
         StringBuilder argBuilder = new StringBuilder();
 
@@ -137,7 +124,7 @@ public class DaedalTokenizer {
             while (in.peek() != -1 && in.peek() != '"')
                 argBuilder.append((char) in.read());
             if (in.peek() == -1)
-                throw new DaedaelParserError("Eof reached inside argument");
+                throw new DaedalParserError("Eof reached inside an argument");
             in.read(); //read "
             return argument(argBuilder.toString());
         } else {
@@ -146,5 +133,41 @@ public class DaedalTokenizer {
         }
 
         return argument(argBuilder.toString());
+    }
+
+    private PrependingString expandText(String text, ExpressionEvaluator evaluator) {
+        PrependingString result = new PrependingString();
+        result.prepend(text);
+
+        while (true) {
+            int peek = result.peek();
+            if (peek == -1)
+                break;
+            if (peek != '{') {
+                result.read();
+                continue;
+            }
+            //now we have {, read until the next }
+            result.read(); //read {
+
+            if (result.peek() == '{') {
+                result.read();
+                result.prepend("", 1);
+                continue;
+            }
+
+            StringBuilder expr = new StringBuilder();
+            while (result.peek() != -1 && result.peek() != '}')
+                expr.append((char) result.read());
+            if (result.peek() == -1)
+                throw new DaedalParserError("Eof reached inside an expression");
+            result.read(); // read }
+
+            String eval = evaluator.eval(expr.toString());
+            result.prepend(eval, expr.length() + 2);
+        }
+
+        result.reset();
+        return result;
     }
 }

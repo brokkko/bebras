@@ -1,13 +1,1 @@
-\Format 210mm 297mm
-\BG Diploma_{type}_0.jpg
-\Font Arial-B.ttf
-\FontSize 12pt
-\Align left
-
-\Move 10mm 10.23mm
-\VSkip 1mm
-
-Сертификат
-
-доказывает, что этот \adj\sout человек молодец
-как квашеный огурец
+\ccc "{asdf} cats" {qwerty}rab{{bits

@@ -23,7 +23,7 @@ public class Length {
 
             return new Length(Float.parseFloat(s), Dimension.mm);
         } catch (NumberFormatException e) {
-            throw new DaedaelParserError("Wrong dimension: " + s);
+            throw new DaedalParserError("Wrong dimension: " + s);
         }
     }
 
@@ -52,6 +52,11 @@ public class Length {
             case in:
                 return Utilities.inchesToPoints(length);
         }
-        throw new DaedaelParserError("Unknown dimension " + dim);
+        throw new DaedalParserError("Unknown dimension " + dim);
+    }
+
+    @Override
+    public String toString() {
+        return "" + length + dim;
     }
 }

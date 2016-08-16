@@ -24,15 +24,7 @@ public class TestTokenizer {
 
         DaedalTokenizer tokenizer = new DaedalTokenizer(_1, createTestCommands(), (s) -> "");
 
-        StringBuilder result = new StringBuilder();
-        while (true) {
-            Token next = tokenizer.next();
-            if (next.getType() == TokenType.EOF)
-                break;
-            result.append(next.toString()).append('\n');
-        }
-
-        assertEquals(result.toString(), resourceToString("/ru/ipo/daedal/1.tokens"));
+        assertEquals(getAllTokens(tokenizer), resourceToString("/ru/ipo/daedal/1.tokens"));
     }
 
     @Test
@@ -47,6 +39,25 @@ public class TestTokenizer {
         };
         DaedalTokenizer tokenizer = new DaedalTokenizer(_2, createTestCommands(), expressionEvaluator);
 
+        assertEquals(getAllTokens(tokenizer), resourceToString("/ru/ipo/daedal/2.tokens"));
+    }
+
+    @Test
+    public void test3() throws IOException {
+        String _3 = resourceToString("/ru/ipo/daedal/3.daedal");
+
+        ExpressionEvaluator expressionEvaluator = (s) -> {
+            if (s.equals("make empty"))
+                return "";
+            else
+                return "" + s.length();
+        };
+        DaedalTokenizer tokenizer = new DaedalTokenizer(_3, createTestCommands(), expressionEvaluator);
+
+        assertEquals(getAllTokens(tokenizer), resourceToString("/ru/ipo/daedal/3.tokens"));
+    }
+
+    private String getAllTokens(DaedalTokenizer tokenizer) throws IOException {
         StringBuilder result = new StringBuilder();
         while (true) {
             Token next = tokenizer.next();
@@ -54,8 +65,7 @@ public class TestTokenizer {
                 break;
             result.append(next.toString()).append('\n');
         }
-
-        assertEquals(result.toString(), resourceToString("/ru/ipo/daedal/2.tokens"));
+        return result.toString();
     }
 
     private Map<String, CompilerCommand> createTestCommands() {

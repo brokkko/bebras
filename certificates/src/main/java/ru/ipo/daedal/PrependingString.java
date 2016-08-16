@@ -16,7 +16,12 @@ public class PrependingString {
     private int nextIndex = 0;
 
     public void prepend(String text) {
-        this.text.insert(nextIndex, text);
+        prepend(text, 0);
+    }
+
+    public void prepend(String text, int remove) {
+        nextIndex -= remove;
+        this.text.replace(nextIndex, nextIndex + remove, text);
     }
 
     public int read() {
@@ -29,6 +34,10 @@ public class PrependingString {
         if (nextIndex >= text.length())
             return -1;
         return text.charAt(nextIndex);
+    }
+
+    public void reset() {
+        nextIndex = 0;
     }
 
 }

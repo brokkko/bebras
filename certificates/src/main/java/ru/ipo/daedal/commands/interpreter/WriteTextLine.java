@@ -10,6 +10,6 @@ import ru.ipo.daedal.commands.Arguments;
 public class WriteTextLine implements InterpreterCommand {
     @Override
     public void exec(Context context, Arguments args) {
-
+        context.getCanvas().showTextAligned(context.getAlign(), args.get(0), context.getTextX(), context.getTextY(), 0);
     }
 }

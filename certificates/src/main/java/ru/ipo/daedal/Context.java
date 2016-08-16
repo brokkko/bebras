@@ -1,13 +1,13 @@
 package ru.ipo.daedal;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Project: dces2
@@ -15,30 +15,64 @@ import java.util.Map;
  *
  * Used when diplomas are executed
  */
-public class Context {
+public class Context implements AutoCloseable {
 
     private DiplomaSettings diplomaSettings;
     private Document document;
     private PdfWriter writer;
-
-    private Map<String, Object> variables = new HashMap<>();
-    private ExpressionEvaluator evaluator;
+    private File baseFolder;
 
     private float textX = 0;
     private float textY = 0;
+    private int align = Element.ALIGN_LEFT;
 
-    public Context(DiplomaSettings diplomaSettings, OutputStream output, ExpressionEvaluator evaluator) throws DocumentException {
+    private boolean isOpen = false;
+
+    public Context(DiplomaSettings diplomaSettings, OutputStream output, File baseFolder) throws DocumentException, IOException {
         this.diplomaSettings = diplomaSettings;
         this.document = diplomaSettings.createDocument();
         this.writer = PdfWriter.getInstance(document, output);
-        this.evaluator = evaluator;
+        this.baseFolder = baseFolder;
+
+        open();
     }
 
-    public Context(DiplomaSettings diplomaSettings, Document document, PdfWriter writer, ExpressionEvaluator evaluator) {
+    public Context(DiplomaSettings diplomaSettings, Document document, PdfWriter writer, File baseFolder) {
         this.diplomaSettings = diplomaSettings;
         this.document = document;
         this.writer = writer;
-        this.evaluator = evaluator;
+        this.baseFolder = baseFolder;
+    }
+
+    private void open() throws IOException, DocumentException {
+        document.open();
+        document.newPage();
+
+        String bgPath = diplomaSettings.getBg();
+        if (bgPath != null) {
+            Image bg = Image.getInstance(baseFolder.getAbsolutePath() + "/" + bgPath);
+            bg.setAbsolutePosition(0, 0);
+            bg.scaleAbsolute(diplomaSettings.getWidth().getInPoints(), diplomaSettings.getHeight().getInPoints());
+            document.add(bg);
+        }
+
+        PdfContentByte canvas = getCanvas();
+        canvas.saveState();
+        canvas.beginText();
+
+        isOpen = true;
+    }
+
+    @Override
+    public void close() {
+        if (!isOpen)
+            return;
+
+        PdfContentByte canvas = getCanvas();
+        canvas.endText();
+        canvas.restoreState();
+
+        document.close();
     }
 
     public DiplomaSettings getDiplomaSettings() {
@@ -57,19 +91,6 @@ public class Context {
         return writer.getDirectContent();
     }
 
-    public String eval(String expression) {
-        return evaluator.eval(expression);
-    }
-
-    public <T> T getVar(String name) {
-        //noinspection unchecked
-        return (T) variables.get(name);
-    }
-
-    public <T> void setVar(String name, T value) {
-        variables.put(name, value);
-    }
-
     public float getTextX() {
         return textX;
     }
@@ -84,6 +105,22 @@ public class Context {
 
     public void setTextY(float textY) {
         this.textY = textY;
+    }
+
+    public File getBaseFolder() {
+        return baseFolder;
+    }
+
+    public void setBaseFolder(File baseFolder) {
+        this.baseFolder = baseFolder;
+    }
+
+    public int getAlign() {
+        return align;
+    }
+
+    public void setAlign(int align) {
+        this.align = align;
     }
 
     /*public void doWithWriter(Consumer<PdfWriter> action) {

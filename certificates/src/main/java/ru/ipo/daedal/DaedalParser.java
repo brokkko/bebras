@@ -33,28 +33,41 @@ public class DaedalParser {
         CompilerContext cc = new CompilerContext();
 
         StringBuilder text = new StringBuilder();
-        int spacesCount = 0;
-        int newLinesCount = 2; //we pretend to start a new line
+
+        boolean inSpace = true;
+        int newLinesCount = 0;
 
         tokensLoop:
         while (true) {
             Token token = in.next();
             switch (token.getType()) {
                 case Text:
-                    if (newLinesCount >= 2) {
-
-                    }
-                    spacesCount = 0;
+                    if (inSpace && text.length() > 0 && newLinesCount < 2)
+                        text.append(' ');
+                    if (newLinesCount >= 2)
+                        newTextLine(text, cc);
+                    inSpace = false;
                     newLinesCount = 0;
+
+                    text.append(token.getC());
                     break;
                 case Command:
+                    if (newLinesCount >= 2)
+                        newTextLine(text, cc);
+                    inSpace = false;
+                    newLinesCount = 0;
+
                     readCommand(in, token.getS(), cc);
                     break;
                 case Space:
+                    inSpace = true;
+                    if (token.getC() == '\n')
+                        newLinesCount++;
                     break;
                 case Argument:
-                    throw new DaedaelParserError("Unexpected argument " + token.getS());
+                    throw new DaedalParserError("Unexpected argument " + token.getS());
                 case EOF:
+                    newTextLine(text, cc);
                     break tokensLoop;
             }
         }
@@ -62,7 +75,7 @@ public class DaedalParser {
         return cc;
     }
 
-    public void newTextLine(StringBuilder text, CompilerContext cc) {
+    private void newTextLine(StringBuilder text, CompilerContext cc) {
         if (text.length() != 0)
             cc.addInstruction(new Instruction(new WriteTextLine(), new Arguments(text.toString())));
         text.setLength(0);
@@ -71,13 +84,13 @@ public class DaedalParser {
     private void readCommand(DaedalTokenizer in, String commandName, CompilerContext cc) throws IOException {
         CompilerCommand command = commands.get(commandName);
         if (command == null)
-            throw new DaedaelParserError("Unknown command " + commandName);
+            throw new DaedalParserError("Unknown command " + commandName);
         int argumentsCount = command.getArgumentsCount();
         String[] args = new String[argumentsCount];
         for (int i = 0; i < argumentsCount; i++) {
             Token t = in.next();
             if (t.getType() != TokenType.Argument)
-                throw new DaedaelParserError("Missing arguments for command " + commandName);
+                throw new DaedalParserError("Missing arguments for command " + commandName);
             args[i] = t.getS();
         }
         command.exec(cc, new Arguments(args));

@@ -1,6 +1,6 @@
 package ru.ipo.daedal.commands;
 
-import ru.ipo.daedal.DaedaelParserError;
+import ru.ipo.daedal.DaedalParserError;
 import ru.ipo.daedal.Length;
 
 /**
@@ -27,7 +27,7 @@ public class Arguments {
         try {
             return Integer.parseInt(args[index]);
         } catch (NumberFormatException e) {
-            throw new DaedaelParserError("Not an int: " + args[index]);
+            throw new DaedalParserError("Not an int: " + args[index]);
         }
     }
 
@@ -35,7 +35,7 @@ public class Arguments {
         try {
             return Float.parseFloat(args[index]);
         } catch (NumberFormatException e) {
-            throw new DaedaelParserError("Not a float: " + args[index]);
+            throw new DaedalParserError("Not a float: " + args[index]);
         }
     }
 
