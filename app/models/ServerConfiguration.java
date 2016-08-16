@@ -143,6 +143,11 @@ public class ServerConfiguration {
         return new File(new File(pluginFolder, pluginName), fileName); //TODO here we expect that plugins will not hack file system
     }
 
+    public File getPluginFolder(String pluginName) {
+        File pluginFolder = Play.application().getFile("data/_plugins");
+        return new File(pluginFolder, pluginName);
+    }
+
     public File getNewResourceFile(String extension) {
         if (extension == null || extension.isEmpty())
             extension = "";

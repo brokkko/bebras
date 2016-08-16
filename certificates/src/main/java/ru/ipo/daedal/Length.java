@@ -55,6 +55,18 @@ public class Length {
         throw new DaedalParserError("Unknown dimension " + dim);
     }
 
+    public float getInMM() {
+        switch (dim) {
+            case mm:
+                return length;
+            case pt:
+                return Utilities.millimetersToPoints(length);
+            case in:
+                return Utilities.millimetersToInches(length);
+        }
+        throw new DaedalParserError("Unknown dimension " + dim);
+    }
+
     @Override
     public String toString() {
         return "" + length + dim;
