@@ -130,13 +130,15 @@ public class Tables extends Controller {
         final FeaturesContext context = new FeaturesContext(currentEvent, FeaturesContestType.INTERFACE, controllers.routes.Tables.showTable(eventId, tableIndex));
         final Table table = tableDescription.getTable(context);
 
+        int maxSize = tableDescription.getMaxViewSize();
+
         F.Promise<MemoryDataWriter> promiseOfVoid = Akka.future(
                 new Callable<MemoryDataWriter>() {
                     public MemoryDataWriter call() throws Exception {
 
                         try (
                                 ObjectsProvider objectsProvider = objectsProviderFactory.get(currentEvent, currentUser, searchFields, searchValues);
-                                MemoryDataWriter dataWriter = new MemoryDataWriter(table, finalFullTextSearch, finalInside)
+                                MemoryDataWriter dataWriter = new MemoryDataWriter(table, finalFullTextSearch, finalInside, maxSize)
                         ) {
                             dataWriter.writeObjects(objectsProvider, context);
 
@@ -183,13 +185,15 @@ public class Tables extends Controller {
         final FeaturesContext context = new FeaturesContext(currentEvent, FeaturesContestType.PRINT, routes.Tables.showTablePrint(eventId, tableIndex));
         final Table table = tableDescription.getTable(context);
 
+        int maxSize = tableDescription.getMaxViewSize();
+
         F.Promise<MemoryDataWriter> promiseOfVoid = Akka.future(
                 new Callable<MemoryDataWriter>() {
                     public MemoryDataWriter call() throws Exception {
 
                         try (
                                     ObjectsProvider objectsProvider = objectsProviderFactory.get(currentEvent, currentUser, null, null);
-                                    MemoryDataWriter dataWriter = new MemoryDataWriter(table, null, false)
+                                    MemoryDataWriter dataWriter = new MemoryDataWriter(table, null, false, maxSize)
                         ) {
                             dataWriter.writeObjects(objectsProvider, context);
 

@@ -25,6 +25,7 @@ public class TableDescription<T> implements SerializableUpdatable {
     private String filename;
     private boolean showAsTable; //false by default
     private boolean showSearch;
+    private int maxViewSize;
 
     public TableDescription() {
     }
@@ -87,6 +88,10 @@ public class TableDescription<T> implements SerializableUpdatable {
         return showSearch;
     }
 
+    public int getMaxViewSize() {
+        return maxViewSize;
+    }
+
     @Override
     public void update(Deserializer deserializer) {
         this.title = deserializer.readString("title");
@@ -125,6 +130,8 @@ public class TableDescription<T> implements SerializableUpdatable {
         this.showAsTable = deserializer.readBoolean("show as table", false);
 
         this.showSearch = deserializer.readBoolean("show search", true);
+
+        this.maxViewSize = deserializer.readInt("max view size", 500);
     }
 
     @Override
@@ -156,5 +163,7 @@ public class TableDescription<T> implements SerializableUpdatable {
 
         if (!showSearch)
             serializer.write("show search", showSearch);
+
+        serializer.write("max view size", maxViewSize);
     }
 }

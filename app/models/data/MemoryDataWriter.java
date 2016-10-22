@@ -11,18 +11,31 @@ import java.util.List;
  */
 public class MemoryDataWriter<T> implements AutoCloseable {
 
-    public static final int MAX_SIZE = 500;
-
     private final Table<T> table;
     private String fullTextSearch;
     private boolean inside;
+    private int maxSize;
 
-    private final List<Object[]> list = new ArrayList<>(MAX_SIZE);
+    private final List<Object[]> list;
 
-    public MemoryDataWriter(Table<T> table, String fullTextSearch, boolean inside) {
+    /**
+     * creates memory data writer
+     * @param table a table to process
+     * @param fullTextSearch a string with a text to search
+     * @param inside inside = true means that text to search should be contained in the actual text, false means
+     *               it should be equal to the actual text
+     * @param maxSize maximal size to have in memory, -1 means that it is not constrained
+     */
+    public MemoryDataWriter(Table<T> table, String fullTextSearch, boolean inside, int maxSize) {
         this.table = table;
         this.fullTextSearch = fullTextSearch == null ? null : fullTextSearch.toLowerCase();
         this.inside = inside;
+        this.maxSize = maxSize;
+
+        if (maxSize > 0)
+            list = new ArrayList<>(maxSize);
+        else
+            list = new ArrayList<>();
     }
 
     private void writeObject(T object, FeaturesContext context) throws Exception {
@@ -57,7 +70,7 @@ public class MemoryDataWriter<T> implements AutoCloseable {
     }
 
     public void writeObjects(ObjectsProvider<T> provider, FeaturesContext context) throws Exception {
-        while (provider.hasNext() && list.size() < MAX_SIZE)
+        while (provider.hasNext() && list.size() < maxSize)
             writeObject(provider.next(), context);
     }
 
