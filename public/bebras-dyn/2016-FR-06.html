@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link media="screen,print" rel="stylesheet" href="../stylesheets/bebras.problem.css">
+    <script src="../javascripts/jquery-1.7.2.min.js"></script>
+    <script src="../javascripts/contest_stub.js"></script>
+    <script src="../javascripts/bebras-dyn.problem.js"></script>
+    <!-- add js dependencies here -->
+    <!--
+    <script src="../javascripts/kinetic.js"></script>
+    <script src="../javascripts/ddlib.js"></script>
+    -->
+    <script>
+        var container_height = 300;
+
+        function TemplateProblemWrapper(container, pictures) {
+            //copy the body of this function to the problem editor
+
+            function TemplateProblem(container) {
+                var cell_size = 16;
+                var big_cell_size = 32;
+                var size = [16, 16]; //rows, cols
+                var big_cell_v_skip = 60;
+                var big_cell_h_skip = 60;
+
+                var canvas_height = size[0] * cell_size + 1;
+                var canvas_width = size[1] * cell_size + big_cell_h_skip + 3 * big_cell_size + 1;
+
+                var field = build_field(size);
+
+                var $container = $('#' + container);
+                var $canvas = $('<canvas></canvas>');
+                var canvas = $canvas.get(0);
+                $canvas.attr('width', canvas_width + 'px');
+                $canvas.attr('height', canvas_height + 'px');
+                $container.append($canvas);
+
+                var ctx = canvas.getContext('2d');
+                $canvas.mousemove(mouse_move_handler);
+                $canvas.click(mouse_click_handler);
+
+                var curIOver = -1;
+                var curJOver = -1;
+
+                var curISelected = -1;
+                var curJSelected = -1;
+
+                redraw_canvas();
+
+                function mouse_move_handler(event) {
+                    //http://stackoverflow.com/questions/17130395/real-mouse-position-in-canvas
+                    var rect = canvas.getBoundingClientRect();
+                    var x = event.clientX - rect.left;
+                    var y = event.clientY - rect.top;
+
+                    var j = Math.floor(x / cell_size);
+                    var i = Math.floor(y / cell_size);
+
+                    if (i < 0 || i >= size[0]) i = -1;
+                    if (j < 0 || j >= size[1]) j = -1;
+
+                    curIOver = i;
+                    curJOver = j;
+
+                    redraw_canvas();
+                }
+
+                function mouse_click_handler(event) {
+                    if (curIOver >= 0 && curJOver >= 0) {
+                        curISelected = curIOver;
+                        curJSelected = curJOver;
+                        redraw_canvas();
+                    }
+                }
+
+                function redraw_canvas() {
+                    ctx.clearRect(0, 0, canvas_width, canvas_height);
+
+                    var red = '#CC0000';
+                    drawCell(curISelected, curJSelected, red);
+
+                    var gray = 'rgb(128, 128, 128)';
+                    drawCell(curISelected, curJSelected - 1, gray);
+                    drawCell(curISelected, curJSelected + 1, gray);
+                    drawCell(curISelected - 1, curJSelected, gray);
+                    drawCell(curISelected + 1, curJSelected, gray);
+
+                    drawCell(curIOver, curJOver, 'rgba(255, 255, 0, 0.8)');
+
+                    //vertical lines
+                    ctx.strokeStyle = 'black';
+                    ctx.strokeWidth = 1;
+
+                    for (var j = 0; j <= size[1]; j++) {
+                        ctx.beginPath();
+                        ctx.moveTo(j * cell_size + 0.5, 0);
+                        ctx.lineTo(j * cell_size + 0.5, size[0] * cell_size);
+                        ctx.stroke();
+                    }
+
+                    //horizontal lines
+                    for (var i = 0; i <= size[0]; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, i * cell_size + 0.5);
+                        ctx.lineTo(size[1] * cell_size, i * cell_size + 0.5);
+                        ctx.stroke();
+                    }
+
+                    function drawCell(i, j, color) {
+                        if (i < 0 || j < 0 || i >= size[0] || j >= size[1])
+                            return;
+                        ctx.fillStyle = color;
+                        ctx.fillRect(j * cell_size, i * cell_size, cell_size, cell_size);
+                    }
+
+                    //draw cells to the right
+                    var x0 = size[1] * cell_size + big_cell_h_skip;
+                    var y0 = big_cell_v_skip;
+
+                    var x1 = x0 + big_cell_size * 1.5;
+                    var y1 = y0 + big_cell_size * 1.5 + 2;
+
+                    ctx.font = "bold " + (big_cell_size / 2) + "px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+
+                    if (curJSelected > 0) {
+                        ctx.fillStyle = gray;
+                        fillAndStrokeRect(ctx, x0, y0 + big_cell_size, big_cell_size, big_cell_size);
+                        ctx.fillStyle = "white";
+                        ctx.fillText(field[curISelected][curJSelected - 1], x1 - big_cell_size, y1);
+                    }
+                    if (curJSelected >= 0 && curJSelected < size[1] - 1) {
+                        ctx.fillStyle = gray;
+                        fillAndStrokeRect(ctx, x0 + 2 * big_cell_size, y0 + big_cell_size, big_cell_size, big_cell_size);
+                        ctx.fillStyle = "white";
+                        ctx.fillText(field[curISelected][curJSelected + 1], x1 + big_cell_size, y1);
+                    }
+                    if (curISelected > 0) {
+                        ctx.fillStyle = gray;
+                        fillAndStrokeRect(ctx, x0 + big_cell_size, y0, big_cell_size, big_cell_size);
+                        ctx.fillStyle = "white";
+                        ctx.fillText(field[curISelected - 1][curJSelected], x1, y1 - big_cell_size);
+                    }
+                    if (curISelected >= 0 && curISelected < size[0] - 1) {
+                        ctx.fillStyle = gray;
+                        fillAndStrokeRect(ctx, x0 + big_cell_size, y0 + 2 * big_cell_size, big_cell_size, big_cell_size);
+                        ctx.fillStyle = "white";
+                        ctx.fillText(field[curISelected + 1][curJSelected], x1, y1 + big_cell_size);
+                    }
+                    if (curISelected >= 0 && curJSelected >= 0) {
+                        ctx.fillStyle = red;
+                        fillAndStrokeRect(ctx, x0 + big_cell_size, y0 + big_cell_size, big_cell_size, big_cell_size);
+                        ctx.fillStyle = "white";
+                        ctx.fillText(field[curISelected][curJSelected], x1, y1);
+                    }
+
+
+                    /*//horizontal lines
+                     ctx.beginPath();
+                     ctx.moveTo(x0 + big_cell_size, y0 + 0.5);
+                     ctx.lineTo(x0 + 2 * big_cell_size, y0 + 0.5);
+                     ctx.stroke();
+                     ctx.beginPath();
+                     ctx.moveTo(x0, y0 + big_cell_size + 0.5);
+                     ctx.lineTo(x0 + 3 * big_cell_size, y0 + big_cell_size + 0.5);
+                     ctx.stroke();
+                     ctx.beginPath();
+                     ctx.moveTo(x0, y0 + 2 * big_cell_size + 0.5);
+                     ctx.lineTo(x0 + 3 * big_cell_size, y0 + 2 * big_cell_size + 0.5);
+                     ctx.stroke();
+                     ctx.beginPath();
+                     ctx.moveTo(x0 + big_cell_size, y0 + 3 * big_cell_size + 0.5);
+                     ctx.lineTo(x0 + 2 * big_cell_size, y0 + 3 * big_cell_size + 0.5);
+                     ctx.stroke();
+
+                     //vertical lines
+                     ctx.beginPath();
+                     ctx.moveTo(x0 + 0.5, y0 + big_cell_size);
+                     ctx.lineTo(x0 + 0.5, y0 + 2 * big_cell_size);
+                     ctx.stroke();
+                     ctx.beginPath();
+                     ctx.moveTo(x0 + big_cell_size + 0.5, y0);
+                     ctx.lineTo(x0 + big_cell_size + 0.5, y0 + 3 * big_cell_size);
+                     ctx.stroke();
+                     ctx.beginPath();
+                     ctx.moveTo(x0 + 2 * big_cell_size + 0.5, y0);
+                     ctx.lineTo(x0 + 2 * big_cell_size + 0.5, y0 + 3 * big_cell_size);
+                     ctx.stroke();
+                     ctx.beginPath();
+                     ctx.moveTo(x0 + 3 * big_cell_size + 0.5, y0 + big_cell_size);
+                     ctx.lineTo(x0 + 3 * big_cell_size + 0.5, y0 + 2 * big_cell_size);
+                     ctx.stroke();*/
+                }
+
+                function fillAndStrokeRect(ctx, x, y, w, h) {
+                    ctx.fillRect(x, y, w, h);
+                    ctx.strokeRect(x + 0.5, y + 0.5, w, h);
+                }
+
+                var enabled = true;
+
+                this.reset = function () {
+                    //TODO implement
+                };
+
+                this.isEnabled = function () {
+                    return enabled;
+                };
+
+                this.setEnabled = function (state) {
+                    enabled = state;
+
+                    if (enabled) {
+                        //TODO implement enable
+                    } else {
+                        //TODO implement disable
+                    }
+                };
+
+                this.reset();
+
+                var initCallback;
+
+                this.setInitCallback = function (_initCallback) {
+                    initCallback = _initCallback;
+
+                    //we are initialized just after creation, so any attempt to set up init callback is after we are initialized
+                    if (initCallback)
+                        initCallback();
+                };
+
+                this.getSolution = function () {
+                    //TODO implement
+
+                    return '';
+                };
+
+                this.loadSolution = function (solution) {
+                    this.reset();
+
+                    if (solution == "")
+                        return;
+
+                    //TODO implement
+                };
+
+                this.getAnswer = function () {
+                    return 2; //TODO implement
+                };
+            }
+
+            function build_field(size) {
+                var field = [];
+                var fieldLinear = [];
+                var indexes = [];
+
+                function fun(x, y) {
+                    var x0 = 5;
+                    var y0 = 4;
+                    return (x - x0) * (x - x0) * 1.11 + (y - y0) * (y - y0) * 3.14 - 2.39 * (x - x0) * (y - y0);
+                }
+
+                var ind = 0;
+                for (var i = 0; i < size[0]; i++) {
+                    for (var j = 0; j < size[1]; j++) {
+                        var f = fun(j, size[1] - i - 1);
+                        fieldLinear.push(f);
+                        indexes.push(ind++);
+                    }
+                }
+
+                //integerize
+                //sort, first
+                for (i = 0; i < indexes.length; i++)
+                    for (j = i + 1; j < indexes.length; j++)
+                        if (fieldLinear[i] > fieldLinear[j]) {
+                            var tmp = indexes[i];
+                            indexes[i] = indexes[j];
+                            indexes[j] = tmp;
+
+                            tmp = fieldLinear[i];
+                            fieldLinear[i] = fieldLinear[j];
+                            fieldLinear[j] = tmp;
+                        }
+
+                var indexesInv = [];
+                for (i = 0; i < indexes.length; i++)
+                    indexesInv[indexes[i]] = i;
+
+                ind = 0;
+                for (i = 0; i < size[0]; i++) {
+                    field.push([]);
+                    for (j = 0; j < size[1]; j++)
+                        field[i][j] = indexesInv[ind++];
+                }
+
+                return field;
+            }
+
+            return new TemplateProblem(container);
+        }
+
+        //initialization
+        $(function () {
+            var var_beb_dyn_images = {
+                //image_id : image_url
+            };
+
+            add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
+
+            $('#container-uniqueId').css('height', container_height + 'px');
+        });
+    </script>
+</head>
+<body>
+<div class='problem' style="margin: 1em; border: 1px solid red"><span class='pr_type'
+                                                                      style="display: none">bebras-dyn</span>
+    <div id="container-uniqueId"></div>
+    <div class="dyn-type" style="display: none">uniqueId</div>
+    <div class='bebras-dyn-status'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-main'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-undo'>Загрузка...</div>
+</div>
+</body>
+</html>

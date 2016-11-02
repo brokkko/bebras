@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link media="screen,print" rel="stylesheet" href="../stylesheets/bebras.problem.css">
+    <script src="../javascripts/jquery-1.7.2.min.js"></script>
+    <script src="../javascripts/contest_stub.js"></script>
+    <script src="../javascripts/bebras-dyn.problem.js"></script>
+    <!-- add js dependencies here -->
+    <!--
+    <script src="../javascripts/kinetic.js"></script>
+    <script src="../javascripts/ddlib.js"></script>
+    -->
+    <script type="text/javascript">
+        $(function () {
+            var var_beb_dyn_images = {
+                //image_id : image_url
+            };
+
+            add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
+        });
+    </script>
+    <script>
+        function TemplateProblemWrapper(container, pictures) {
+            //copy the body of this function to the problem editor
+
+            function TemplateProblem(container) {
+                var $container = $('#' + container);
+                var $content = 'some content'; //TODO implement
+                $container.append($content);
+
+                var enabled = true;
+
+                this.reset = function () {
+                    //TODO implement
+                };
+
+                this.isEnabled = function () {
+                    return enabled;
+                };
+
+                this.setEnabled = function (state) {
+                    enabled = state;
+
+                    if (enabled) {
+                        //TODO implement enable
+                    } else {
+                        //TODO implement disable
+                    }
+                };
+
+                this.reset();
+
+                var initCallback;
+
+                this.setInitCallback = function (_initCallback) {
+                    initCallback = _initCallback;
+
+                    //we are initialized just after creation, so any attempt to set up init callback is after we are initialized
+                    if (initCallback)
+                        initCallback();
+                };
+
+                this.getSolution = function () {
+                    //TODO implement
+
+                    return '';
+                };
+
+                this.loadSolution = function (solution) {
+                    this.reset();
+
+                    if (solution == "")
+                        return;
+
+                    //TODO implement
+                };
+
+                this.getAnswer = function () {
+                    return 2; //TODO implement
+                };
+            }
+
+            return new TemplateProblem(container);
+        }
+    </script>
+</head>
+<body>
+<div class='problem'><span class='pr_type' style="display: none">bebras-dyn</span>
+    <div id="container-uniqueId" style='height:300px'></div>
+    <div class="dyn-type" style="display: none">uniqueId</div>
+    <div class='bebras-dyn-status'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-main'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-undo'>Загрузка...</div>
+</div>
+</body>
+</html>
