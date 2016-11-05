@@ -12,16 +12,9 @@
     <script src="../javascripts/kinetic.js"></script>
     <script src="../javascripts/ddlib.js"></script>
     -->
-    <script type="text/javascript">
-        $(function () {
-            var var_beb_dyn_images = {
-                //image_id : image_url
-            };
-
-            add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
-        });
-    </script>
     <script>
+        var container_height = 300;
+
         function TemplateProblemWrapper(container, pictures) {
             //copy the body of this function to the problem editor
 
@@ -84,11 +77,35 @@
 
             return new TemplateProblem(container);
         }
+
+        //initialization
+        $(function () {
+            var var_beb_dyn_images = {
+                //image_id : image_url
+            };
+
+            var info = add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
+
+            $('#container-uniqueId').css('height', container_height + 'px');
+
+            $('#get-solution').click(function() {
+                $('#solution').val(info.problem.getSolution());
+            });
+            $('#set-solution').click(function() {
+                info.problem.loadSolution($('#solution').val());
+            });
+        });
     </script>
 </head>
 <body>
-<div class='problem'><span class='pr_type' style="display: none">bebras-dyn</span>
-    <div id="container-uniqueId" style='height:300px'></div>
+<div>
+    <button id="get-solution">GET</button>
+    <input type="text" id="solution" value="">
+    <button id="set-solution">SET</button>
+</div>
+<div class='problem' style="margin: 1em; border: 1px solid red"><span class='pr_type'
+                                                                      style="display: none">bebras-dyn</span>
+    <div id="container-uniqueId"></div>
     <div class="dyn-type" style="display: none">uniqueId</div>
     <div class='bebras-dyn-status'>Загрузка...</div>
     <div class='bebras-dyn-button bebras-dyn-button-main'>Загрузка...</div>

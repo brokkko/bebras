@@ -13,14 +13,15 @@
     <script src="../javascripts/ddlib.js"></script>
     -->
     <script>
-        var container_height = 300;
+        var container_height = 280;
 
         function TemplateProblemWrapper(container, pictures) {
             //copy the body of this function to the problem editor
 
             function TemplateProblem(container) {
                 var cell_size = 16;
-                var big_cell_size = 32;
+                var big_cell_size = 48;
+                var big_cell_font_size = 22;
                 var size = [16, 16]; //rows, cols
                 var big_cell_v_skip = 60;
                 var big_cell_h_skip = 60;
@@ -50,6 +51,9 @@
                 redraw_canvas();
 
                 function mouse_move_handler(event) {
+                    if (!enabled)
+                        return;
+
                     //http://stackoverflow.com/questions/17130395/real-mouse-position-in-canvas
                     var rect = canvas.getBoundingClientRect();
                     var x = event.clientX - rect.left;
@@ -68,6 +72,9 @@
                 }
 
                 function mouse_click_handler(event) {
+                    if (!enabled)
+                        return;
+
                     if (curIOver >= 0 && curJOver >= 0) {
                         curISelected = curIOver;
                         curJSelected = curJOver;
@@ -122,7 +129,7 @@
                     var x1 = x0 + big_cell_size * 1.5;
                     var y1 = y0 + big_cell_size * 1.5 + 2;
 
-                    ctx.font = "bold " + (big_cell_size / 2) + "px sans-serif";
+                    ctx.font = "bold " + (big_cell_font_size) + "px sans-serif";
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
 
@@ -157,42 +164,10 @@
                         ctx.fillText(field[curISelected][curJSelected], x1, y1);
                     }
 
-
-                    /*//horizontal lines
-                     ctx.beginPath();
-                     ctx.moveTo(x0 + big_cell_size, y0 + 0.5);
-                     ctx.lineTo(x0 + 2 * big_cell_size, y0 + 0.5);
-                     ctx.stroke();
-                     ctx.beginPath();
-                     ctx.moveTo(x0, y0 + big_cell_size + 0.5);
-                     ctx.lineTo(x0 + 3 * big_cell_size, y0 + big_cell_size + 0.5);
-                     ctx.stroke();
-                     ctx.beginPath();
-                     ctx.moveTo(x0, y0 + 2 * big_cell_size + 0.5);
-                     ctx.lineTo(x0 + 3 * big_cell_size, y0 + 2 * big_cell_size + 0.5);
-                     ctx.stroke();
-                     ctx.beginPath();
-                     ctx.moveTo(x0 + big_cell_size, y0 + 3 * big_cell_size + 0.5);
-                     ctx.lineTo(x0 + 2 * big_cell_size, y0 + 3 * big_cell_size + 0.5);
-                     ctx.stroke();
-
-                     //vertical lines
-                     ctx.beginPath();
-                     ctx.moveTo(x0 + 0.5, y0 + big_cell_size);
-                     ctx.lineTo(x0 + 0.5, y0 + 2 * big_cell_size);
-                     ctx.stroke();
-                     ctx.beginPath();
-                     ctx.moveTo(x0 + big_cell_size + 0.5, y0);
-                     ctx.lineTo(x0 + big_cell_size + 0.5, y0 + 3 * big_cell_size);
-                     ctx.stroke();
-                     ctx.beginPath();
-                     ctx.moveTo(x0 + 2 * big_cell_size + 0.5, y0);
-                     ctx.lineTo(x0 + 2 * big_cell_size + 0.5, y0 + 3 * big_cell_size);
-                     ctx.stroke();
-                     ctx.beginPath();
-                     ctx.moveTo(x0 + 3 * big_cell_size + 0.5, y0 + big_cell_size);
-                     ctx.lineTo(x0 + 3 * big_cell_size + 0.5, y0 + 2 * big_cell_size);
-                     ctx.stroke();*/
+                    if (!enabled) {
+                        ctx.fillStyle = "rgba(200, 200, 200, 0.4)";
+                        ctx.fillRect(0, 0, canvas_width, canvas_height);
+                    }
                 }
 
                 function fillAndStrokeRect(ctx, x, y, w, h) {
@@ -203,7 +178,9 @@
                 var enabled = true;
 
                 this.reset = function () {
-                    //TODO implement
+                    curISelected = -1;
+                    curJSelected = -1;
+                    redraw_canvas();
                 };
 
                 this.isEnabled = function () {
@@ -213,11 +190,12 @@
                 this.setEnabled = function (state) {
                     enabled = state;
 
-                    if (enabled) {
-                        //TODO implement enable
-                    } else {
-                        //TODO implement disable
+                    if (!enabled) {
+                        curIOver = -1;
+                        curJOver = -1;
                     }
+
+                    redraw_canvas();
                 };
 
                 this.reset();
@@ -233,33 +211,50 @@
                 };
 
                 this.getSolution = function () {
-                    //TODO implement
-
-                    return '';
+                    if (curISelected >= 0 && curJSelected >= 0)
+                        return curISelected + "," + curJSelected;
+                    else
+                        return "";
                 };
 
                 this.loadSolution = function (solution) {
                     this.reset();
 
-                    if (solution == "")
-                        return;
+                    solution = "" + solution;
 
-                    //TODO implement
+                    if (solution == "") {
+                        return;
+                    }
+
+                    var comma = solution.indexOf(',');
+                    if (comma < 0)
+                        return;
+                    var ii = +solution.substr(0, comma);
+                    var jj = +solution.substr(comma + 1);
+
+                    if (ii >= 0 && ii < size[0] && jj >= 0 && jj < size[1]) {
+                        curISelected = ii;
+                        curJSelected = jj;
+                    }
+
+                    redraw_canvas();
                 };
 
                 this.getAnswer = function () {
-                    return 2; //TODO implement
+                    return 2;
                 };
             }
 
             function build_field(size) {
+                var field0 = 111;
+
                 var field = [];
                 var fieldLinear = [];
                 var indexes = [];
 
                 function fun(x, y) {
-                    var x0 = 5;
-                    var y0 = 4;
+                    var x0 = 3;
+                    var y0 = 13;
                     return (x - x0) * (x - x0) * 1.11 + (y - y0) * (y - y0) * 3.14 - 2.39 * (x - x0) * (y - y0);
                 }
 
@@ -294,7 +289,7 @@
                 for (i = 0; i < size[0]; i++) {
                     field.push([]);
                     for (j = 0; j < size[1]; j++)
-                        field[i][j] = indexesInv[ind++];
+                        field[i][j] = field0 + indexesInv[ind++];
                 }
 
                 return field;
@@ -309,13 +304,25 @@
                 //image_id : image_url
             };
 
-            add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
+            var info = add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
 
             $('#container-uniqueId').css('height', container_height + 'px');
+
+            $('#get-solution').click(function() {
+                $('#solution').val(info.problem.getSolution());
+            });
+            $('#set-solution').click(function() {
+                info.problem.loadSolution($('#solution').val());
+            });
         });
     </script>
 </head>
 <body>
+<div>
+    <button id="get-solution">GET</button>
+    <input type="text" id="solution" value="">
+    <button id="set-solution">SET</button>
+</div>
 <div class='problem' style="margin: 1em; border: 1px solid red"><span class='pr_type'
                                                                       style="display: none">bebras-dyn</span>
     <div id="container-uniqueId"></div>

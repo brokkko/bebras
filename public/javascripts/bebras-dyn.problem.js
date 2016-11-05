@@ -178,6 +178,8 @@ var add_bebras_dyn_problem = (function(){
         info.initial_solution = "";
 
         problem_init(dyn_type, problemInitializer, images);
+
+        return info;
     }
 
     function load_solution($problem, solution) {
