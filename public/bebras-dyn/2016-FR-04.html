@@ -185,7 +185,7 @@
             };
 
             function TemplateProblem(container) {
-                var program_len = 11;
+                var program_len = 11; //TODO change here
 
                 var $container = $('#' + container);
                 var $canvas = $('<canvas>');
@@ -240,9 +240,9 @@
                 //create draggables
                 var arrowW = 41;
                 var arrowH = 41;
-                var dragX0 = 10;
-                var dragY0 = 10;
                 var dragSkip = 10;
+                var dragX0 = Math.round(container_width / 2 - (3 * dragSkip + 4 * arrowW) / 2);
+                var dragY0 = 150;
                 for (var i = 0; i < 4; i++) {
                     var draggable = new Draggable(
                             dragX0 + i * (arrowW + dragSkip),
@@ -255,8 +255,8 @@
                     draggables.push(draggable);
                 }
                 //create draggable destinations
-                var destX0 = 10;
-                var destY0 = 60;
+                var destX0 = Math.round(container_width / 2 - arrowW * program_len / 2);
+                var destY0 = dragY0 + arrowH + 10;
                 for (i = 0; i < program_len; i++) {
                     var dest = new DragDest(destX0 + i * arrowW, destY0, new Drawer(function () {
                         ctx.save();
@@ -268,10 +268,27 @@
                     dragDestinations.push(dest);
                 }
 
-                var fieldM = 4;
-                var fieldN = 5 * 4;
-
                 //create field
+                function createField1() {
+                    var m = 3;
+                    var n = 4 * 4;
+                    var field = [];
+                    for (var i = 0; i < m; i++) {
+                        field.push(new Array(n));
+                        for (var j = 0; j < n; j++)
+                            field[i][j] = 0;
+                    }
+                    var ones = [
+                        0, 1, 1, 1, 1, 3, 2, 3,
+                        0, 5, 1, 5, 1, 7, 2, 7,
+                        0, 9, 1, 9, 1, 11, 2, 11,
+                        0, 13, 1, 13, 1, 15, 2, 15
+                    ];
+                    for (i = 0; i < ones.length; i += 2)
+                        field[ones[i]][ones[i + 1]] = 1;
+                    return field;
+                }
+
                 function createField2() {
                     var m = 4;
                     var n = 5 * 4;
@@ -288,9 +305,13 @@
                 }
 
                 var field = createField2();
-                var fieldX0 = 10;
-                var fieldY0 = 140;
+
+                var fieldM = field.length;
+                var fieldN = field[0].length;
+
                 var cellSize = 20;
+                var fieldX0 = Math.round(container_width / 2 - cellSize * (fieldN + 2) / 2);
+                var fieldY0 = 10;
 
                 function draw_field() {
                     ctx.save();
@@ -316,8 +337,9 @@
                         ctx.lineTo(fieldX0 + j * cellSize + 0.5, fieldY0 + (fieldM + 2) * cellSize);
                         if ((j - 1) % (fieldN / 4) == 0) {
                             ctx.save();
-                            ctx.strokeStyle = "#AAAAAA";
-                            ctx.lineWidth = 3;
+                            ctx.beginPath();
+                            ctx.moveTo(fieldX0 + j * cellSize + 0.5, fieldY0 - 10);
+                            ctx.lineTo(fieldX0 + j * cellSize + 0.5, fieldY0 + (fieldM + 2) * cellSize + 10);
                             ctx.stroke();
                             ctx.restore();
                         }
@@ -388,11 +410,10 @@
 
                     //TODO draw a cycle with "4 times"
 
-                    draw_field();
-
-                    //TODO draw a robopath, if needed
                     var prog = new Program();
                     prog.draw();
+
+                    draw_field();
 
                     for (var i = 0; i < draggables.length; i++)
                         draggables[i].draw();
@@ -405,6 +426,33 @@
                     for (i = 0; i < draggables.length; i++)
                         draggables[i].drawDraggable();
 
+                    //draw 4x comment
+                    ctx.save();
+                    ctx.lineWidth = 2;
+                    ctx.lineCap = "round";
+                    ctx.strokeStyle = "#000000";
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath();
+                    var outing = 20;
+                    ctx.moveTo(destX0 + program_len * arrowW + 1, destY0 + arrowH / 2);
+                    ctx.lineTo(destX0 + program_len * arrowW + outing, destY0 + arrowH / 2);
+                    ctx.lineTo(destX0 + program_len * arrowW + outing, destY0 + arrowH + outing);
+                    ctx.lineTo(destX0 - outing, destY0 + arrowH + outing);
+                    ctx.lineTo(destX0 - outing, destY0 + arrowH / 2);
+                    ctx.lineTo(destX0 - 1, destY0 + arrowH / 2);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.lineTo(destX0 - 10, destY0 + arrowH / 2 - 5);
+                    ctx.lineTo(destX0 - 10, destY0 + arrowH / 2 + 5);
+                    ctx.lineTo(destX0, destY0 + arrowH / 2);
+                    ctx.fill();
+                    ctx.font = "18px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "top";
+                    ctx.lineWidth = 1;
+                    ctx.fillText("Повторить 4 раза", container_width / 2, destY0 + arrowH + outing + 4);
+                    ctx.restore();
+
                     //draw robot
                     ctx.save();
                     ctx.beginPath();
@@ -415,17 +463,30 @@
                     ctx.stroke();
                     ctx.fill();
                     ctx.restore();
+
+                    if (!enabled) {
+                        ctx.save();
+                        ctx.fillStyle = 'rgba(160, 160, 160, 0.3)';
+                        ctx.fillRect(0, 0, container_width, container_height);
+                        ctx.restore();
+                    }
                 }
 
                 redraw_canvas();
 
                 $canvas.mousedown(function (e) {
+                    if (!enabled)
+                        return;
+
                     for (var i = 0; i < draggables.length; i++)
                         draggables[i].mousedownHandler(e);
 
                     redraw_canvas();
                 });
                 $canvas.mouseup(function (e) {
+                    if (!enabled)
+                        return;
+
                     for (var i = 0; i < draggables.length; i++)
                         draggables[i].mouseupHandler(e);
 
@@ -436,6 +497,9 @@
                     redraw_canvas();
                 });
                 $canvas.mousemove(function (e) {
+                    if (!enabled)
+                        return;
+
                     var rect = canvas.getBoundingClientRect();
                     mouseX = e.clientX - rect.left;
                     mouseY = e.clientY - rect.top;
@@ -447,7 +511,9 @@
                 });
 
                 this.reset = function () {
-                    //TODO implement
+                    for (var i = 0; i < dragDestinations.length; i++)
+                        dragDestinations[i].source = null;
+                    redraw_canvas();
                 };
 
                 this.isEnabled = function () {
@@ -456,12 +522,7 @@
 
                 this.setEnabled = function (state) {
                     enabled = state;
-
-                    if (enabled) {
-                        //TODO implement enable
-                    } else {
-                        //TODO implement disable
-                    }
+                    redraw_canvas();
                 };
 
                 this.reset();
@@ -477,9 +538,22 @@
                 };
 
                 this.getSolution = function () {
-                    //TODO implement
+                    var res = '';
+                    var hasElements = false;
+                    for (var i = 0; i < dragDestinations.length; i++) {
+                        var s = dragDestinations[i].source;
+                        if (s == null)
+                            res += '-';
+                        else {
+                            hasElements = true;
+                            res += s.direction;
+                        }
+                    }
 
-                    return '';
+                    if (!hasElements)
+                        res = '';
+
+                    return res;
                 };
 
                 this.loadSolution = function (solution) {
@@ -488,11 +562,22 @@
                     if (solution == "")
                         return;
 
-                    //TODO implement
+                    if (solution.length != dragDestinations.length)
+                        return;
+
+                    for (var i = 0; i < solution.length; i++) {
+                        var n = +solution[i];
+                        if (isNaN(n) || n < 0 || n >= 4)
+                            dragDestinations[i].source = null;
+                        else
+                            dragDestinations[i].source = draggables[n];
+                    }
+
+                    redraw_canvas();
                 };
 
                 this.getAnswer = function () {
-                    return 2; //TODO implement
+                    return 2;
                 };
             }
 
