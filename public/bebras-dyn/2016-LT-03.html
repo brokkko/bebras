@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link media="screen,print" rel="stylesheet" href="../stylesheets/bebras.problem.css">
+    <script src="../javascripts/jquery-1.7.2.min.js"></script>
+    <script src="../javascripts/contest_stub.js"></script>
+    <script src="../javascripts/bebras-dyn.problem.js"></script>
+    <script src="../javascripts/kinetic.js"></script>
+    <script src="../javascripts/ddlib.js"></script>
+    <script>
+        var container_height = 300;
+
+        function TemplateProblemWrapper(container, pictures) {
+            //copy the body of this function to the problem editor
+
+            var a = 0.54;
+            var places = [
+                new Place(0, 0, 401, 253, 'full', 1, {
+                    imageId: 'full'
+                }),
+                new Place(a * 100, a * 35, 33, 45, 'coffee', 2, {
+                    imageId: 'coffee'
+                }),
+                new Place(a * 200, a * 30, 47, 35, 'post', 2, {
+                    imageId: 'post'
+                }),
+                new Place(a * 160, a * 110, 51, 40, 'shop', 2, {
+                    imageId: 'shop'
+                }),
+                new Place(a * 280, a * 100, 38, 43, 'book', 2, {
+                    imageId: 'book'
+                })
+            ];
+            var x0 = 185 * a;
+            var y0 = 400 * a;
+            var dx = 75;
+            for (var i = 0; i < 4; i++)
+                places.push(new Place(x0 + i * dx, y0, 60, 50, 'dst' + i, 0, {
+                    stroke: "#000000",
+                    strokeWidth: 1
+                }))
+            return new App(container, 401, container_height, pictures, places, true);
+        }
+
+        //initialization
+        $(function () {
+            var var_beb_dyn_images = {
+                'book': '2016-LT-03/book.png',
+                'coffee': '2016-LT-03/coffee.png',
+                'full': '2016-LT-03/full.png',
+                'post': '2016-LT-03/post.png',
+                'shop': '2016-LT-03/shop.png'
+            };
+
+            var info = add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
+
+            $('#container-uniqueId').css('height', container_height + 'px');
+
+            $('#get-solution').click(function () {
+                $('#solution').val(info.problem.getSolution());
+            });
+            $('#set-solution').click(function () {
+                info.problem.loadSolution($('#solution').val());
+            });
+        });
+    </script>
+</head>
+<body>
+<div>
+    <button id="get-solution">GET</button>
+    <input type="text" id="solution" value="">
+    <button id="set-solution">SET</button>
+</div>
+<div class='problem' style="margin: 1em; border: 1px solid red"><span class='pr_type'
+                                                                      style="display: none">bebras-dyn</span>
+    <div id="container-uniqueId"></div>
+    <div class="dyn-type" style="display: none">uniqueId</div>
+    <div class='bebras-dyn-status'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-main'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-undo'>Загрузка...</div>
+</div>
+</body>
+</html>

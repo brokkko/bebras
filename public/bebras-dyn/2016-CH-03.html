@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link media="screen,print" rel="stylesheet" href="../stylesheets/bebras.problem.css">
+    <script src="../javascripts/jquery-1.7.2.min.js"></script>
+    <script src="../javascripts/contest_stub.js"></script>
+    <script src="../javascripts/bebras-dyn.problem.js"></script>
+    <!-- add js dependencies here -->
+    <!--
+    <script src="../javascripts/kinetic.js"></script>
+    <script src="../javascripts/ddlib.js"></script>
+    -->
+    <script>
+        var container_height = 300;
+        var container_width = 360;
+        //answers АДЗ{{{OR}}}ДЗК{{{OR}}}ВЖИ{{{OR}}}ВЗИ{{{OR}}}ВИК{{{OR}}}ГЕК
+
+        function TemplateProblemWrapper(container, pictures) {
+            //copy the body of this function to the problem editor
+
+            function TemplateProblem(container) {
+                var $container = $('#' + container);
+                var $canvas = $('<canvas>'); //TODO implement
+                $canvas.attr('width', container_width + "px");
+                $canvas.attr('height', container_height + "px");
+                var canvas = $canvas.get(0);
+                var ctx = canvas.getContext('2d');
+                $container.append($canvas);
+
+                var vertexR = 15;
+
+                var allSelected = function() {
+                    var cnt = 0;
+                    for (var i = 0; i < allSelectables.length; i++)
+                        if (allSelectables[i].selected)
+                            cnt++;
+                    return cnt;
+                };
+                var maxSelected = 3;
+
+                function canSelectMore() {
+                    return maxSelected > allSelected();
+                }
+
+                function Selectable(x0, y0, label) {
+                    this.x0 = x0;
+                    this.y0 = y0;
+                    this.selected = false;
+                    this.highlighted = false;
+                    this.label = label;
+                }
+
+                Selectable.prototype.draw = function() {
+                    ctx.save();
+                    ctx.strokeStyle = this.highlighted ? "#e89e00" : "#000000";
+                    ctx.lineWidth = this.highlighted ? 5 : 2;
+                    ctx.beginPath();
+                    ctx.arc(this.x0, this.y0, vertexR, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.fillStyle = this.selected ? "#f4be49" : "#54c145";
+                    ctx.fill();
+
+                    ctx.font = "20px sans-serif";
+                    ctx.fillStyle = "#000000";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(this.label, this.x0, this.y0);
+                    ctx.restore();
+                };
+
+                Selectable.prototype.mousemoveHandler = function(e) {
+                    var rect = canvas.getBoundingClientRect();
+                    var mx = e.clientX - rect.left;
+                    var my = e.clientY - rect.top;
+
+                    var dx = mx - this.x0;
+                    var dy = my - this.y0;
+                    this.highlighted = dx * dx + dy * dy <= vertexR * vertexR;
+                    if (!canSelectMore() && !this.selected)
+                        this.highlighted = false;
+                };
+
+                Selectable.prototype.mousedownHandler = function(e) {
+                    if (!this.highlighted)
+                        return;
+
+                    if (canSelectMore() && !this.selected)
+                        this.selected = true;
+                    else if (this.selected)
+                        this.selected = false;
+
+                    this.mousemoveHandler(e);
+                };
+
+                function redraw_canvas() {
+                    ctx.clearRect(0, 0, container_width, container_height);
+
+                    //draw edges
+                    ctx.save();
+                    ctx.lineWidth = 16;
+                    ctx.strokeStyle = "#00a3d9";
+                    for (i = 0; i < edges.length; i += 4) {
+                        ctx.beginPath();
+                        ctx.moveTo(edges[i], edges[i + 1]);
+                        ctx.lineTo(edges[i + 2], edges[i + 3]);
+                        ctx.stroke();
+                    }
+                    ctx.restore();
+
+                    //draw vertices
+                    for (var i = 0; i < allSelectables.length; i++)
+                        allSelectables[i].draw();
+
+                    if (!enabled) {
+                        ctx.save();
+                        ctx.fillStyle = 'rgba(160, 160, 160, 0.6)';
+                        ctx.fillRect(0, 0, container_width, container_height);
+                        ctx.restore();
+                    }
+                }
+
+                //create vertices
+                var allSelectables = [];
+                allSelectables.push(
+                        new Selectable(4 + 15, 265 + 4, "А"),
+                        new Selectable(4 + 255, 121 + 4, "Б"),
+                        new Selectable(4 + 122, 157 + 4, "В"),
+                        new Selectable(4 + 193, 228 + 4, "Г"),
+                        new Selectable(4 + 300, 265 + 4, "Д"),
+                        new Selectable(4 + 334, 50 + 4, "Е"),
+                        new Selectable(4 + 50, 15 + 4, "Ж"),
+                        new Selectable(4 + 192, 51 + 4, "З"),
+                        new Selectable(4 + 334, 194 + 4, "И"),
+                        new Selectable(4 + 16, 122 + 4, "К")
+                );
+
+                var edges = [];
+                function addEdge(f, t) {
+                    var ff = allSelectables[f];
+                    var tt = allSelectables[t];
+                    edges.push(ff.x0, ff.y0, tt.x0, tt.y0);
+                }
+                addEdge(0, 9);
+                addEdge(2, 9);
+                addEdge(0, 2);
+                addEdge(9, 6);
+                addEdge(6, 7);
+                addEdge(2, 7);
+                addEdge(2, 3);
+                addEdge(1, 3);
+                addEdge(1, 7);
+                addEdge(5, 7);
+                addEdge(5, 8);
+                addEdge(1, 8);
+                addEdge(8, 4);
+                addEdge(3, 4);
+
+                $canvas.mousemove(function(e) {
+                    if (!enabled)
+                        return;
+
+                    for (var i = 0; i < allSelectables.length; i++)
+                        allSelectables[i].mousemoveHandler(e);
+
+                    redraw_canvas();
+                });
+
+                $canvas.mousedown(function(e) {
+                    if (!enabled)
+                        return;
+
+                    for (var i = 0; i < allSelectables.length; i++)
+                        allSelectables[i].mousedownHandler(e);
+
+                    redraw_canvas();
+                });
+
+                var enabled = true;
+
+                redraw_canvas();
+
+                this.reset = function () {
+                    for (var i = 0; i < allSelectables.length; i++)
+                        allSelectables[i].selected = false;
+
+                    redraw_canvas();
+                };
+
+                this.isEnabled = function () {
+                    return enabled;
+                };
+
+                this.setEnabled = function (state) {
+                    enabled = state;
+
+                    redraw_canvas();
+                };
+
+                this.reset();
+
+                var initCallback;
+
+                this.setInitCallback = function (_initCallback) {
+                    initCallback = _initCallback;
+
+                    //we are initialized just after creation, so any attempt to set up init callback is after we are initialized
+                    if (initCallback)
+                        initCallback();
+                };
+
+                this.getSolution = function () {
+                    var res = '';
+                    for (var i = 0; i < allSelectables.length; i++)
+                        if (allSelectables[i].selected)
+                            res += allSelectables[i].label;
+                    return res;
+                };
+
+                this.loadSolution = function (solution) {
+                    this.reset();
+
+                    if (solution == "")
+                        return;
+
+                    solution = "" + solution;
+                    if (solution.length > maxSelected)
+                        solution = solution.substr(0, 3);
+                    for (var i = 0; i < solution.length; i++) {
+                        for (var j = 0; j < allSelectables.length; j++)
+                            if (solution[i] == allSelectables[j].label)
+                                allSelectables[j].selected = true;
+                    }
+
+                    redraw_canvas();
+                };
+
+                this.getAnswer = function () {
+                    return 2;
+                };
+            }
+
+            return new TemplateProblem(container);
+        }
+
+        //initialization
+        $(function () {
+            var var_beb_dyn_images = {
+                //image_id : image_url
+            };
+
+            var info = add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
+
+            $('#container-uniqueId').css('height', container_height + 'px');
+
+            $('#get-solution').click(function() {
+                $('#solution').val(info.problem.getSolution());
+            });
+            $('#set-solution').click(function() {
+                info.problem.loadSolution($('#solution').val());
+            });
+        });
+    </script>
+</head>
+<body>
+<div>
+    <button id="get-solution">GET</button>
+    <input type="text" id="solution" value="">
+    <button id="set-solution">SET</button>
+</div>
+<div class='problem' style="margin: 1em; border: 1px solid red"><span class='pr_type'
+                                                                      style="display: none">bebras-dyn</span>
+    <div id="container-uniqueId"></div>
+    <div class="dyn-type" style="display: none">uniqueId</div>
+    <div class='bebras-dyn-status'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-main'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-undo'>Загрузка...</div>
+</div>
+</body>
+</html>

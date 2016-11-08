@@ -415,17 +415,6 @@
 
                     draw_field();
 
-                    for (var i = 0; i < draggables.length; i++)
-                        draggables[i].draw();
-
-                    for (i = 0; i < dragDestinations.length; i++)
-                        dragDestinations[i].draw();
-                    for (i = 0; i < dragDestinations.length; i++)
-                        dragDestinations[i].drawHighlight();
-
-                    for (i = 0; i < draggables.length; i++)
-                        draggables[i].drawDraggable();
-
                     //draw 4x comment
                     ctx.save();
                     ctx.lineWidth = 2;
@@ -452,6 +441,17 @@
                     ctx.lineWidth = 1;
                     ctx.fillText("Повторить 4 раза", container_width / 2, destY0 + arrowH + outing + 4);
                     ctx.restore();
+
+                    for (var i = 0; i < draggables.length; i++)
+                        draggables[i].draw();
+
+                    for (i = 0; i < dragDestinations.length; i++)
+                        dragDestinations[i].draw();
+                    for (i = 0; i < dragDestinations.length; i++)
+                        dragDestinations[i].drawHighlight();
+
+                    for (i = 0; i < draggables.length; i++)
+                        draggables[i].drawDraggable();
 
                     //draw robot
                     ctx.save();
