@@ -7,81 +7,58 @@
     <script src="../javascripts/jquery-1.7.2.min.js"></script>
     <script src="../javascripts/contest_stub.js"></script>
     <script src="../javascripts/bebras-dyn.problem.js"></script>
-    <!-- add js dependencies here -->
-    <!--
     <script src="../javascripts/kinetic.js"></script>
     <script src="../javascripts/ddlib.js"></script>
-    -->
     <script>
         var container_height = 300;
 
         function TemplateProblemWrapper(container, pictures) {
-            //copy the body of this function to the problem editor
+            var places = [
+                new Place(0, 0, 400, 150, 'full', 1, {
+                    imageId: 'bg',
+                    crop: {x: 0, y: 0, width: 400, height: 150}
+                }),
+                new Place(400, 0, 100, 50, 'name1', 2, {
+                    imageId: 'bg',
+                    crop: {x: 0, y: 150, width: 100, height:50}
+                }),
+                new Place(400, 50, 100, 50, 'name2', 2, {
+                    imageId: 'bg',
+                    crop: {x: 100, y: 150, width: 100, height:50}
+                }),
+                new Place(400, 100, 100, 50, 'name3', 2, {
+                    imageId: 'bg',
+                    crop: {x: 200, y: 150, width: 100, height:50}
+                }),
+                new Place(400, 150, 100, 50, 'name4', 2, {
+                    imageId: 'bg',
+                    crop: {x: 300, y: 150, width: 100, height:50}
+                }),
+                new Place(1, 150, 100, 50, 'name1pl', 0, {
+                    stroke: "#000000",
+                    strokeWidth: 1
+                }),
+                new Place(101, 150, 100, 50, 'name2pl', 0, {
+                    stroke: "#000000",
+                    strokeWidth: 1
+                }),
+                new Place(201, 150, 100, 50, 'name3pl', 0, {
+                    stroke: "#000000",
+                    strokeWidth: 1
+                }),
+                new Place(301, 150, 100, 50, 'name4pl', 0, {
+                    stroke: "#000000",
+                    strokeWidth: 1
+                })
+            ];
 
-            function TemplateProblem(container) {
-                var $container = $('#' + container);
-                var $content = 'some content'; //TODO implement
-                $container.append($content);
-
-                var enabled = true;
-
-                this.reset = function () {
-                    //TODO implement
-                };
-
-                this.isEnabled = function () {
-                    return enabled;
-                };
-
-                this.setEnabled = function (state) {
-                    enabled = state;
-
-                    if (enabled) {
-                        //TODO implement enable
-                    } else {
-                        //TODO implement disable
-                    }
-                };
-
-                this.reset();
-
-                var initCallback;
-
-                this.setInitCallback = function (_initCallback) {
-                    initCallback = _initCallback;
-
-                    //we are initialized just after creation, so any attempt to set up init callback is after we are initialized
-                    if (initCallback)
-                        initCallback();
-                };
-
-                this.getSolution = function () {
-                    //TODO implement
-
-                    return '';
-                };
-
-                this.loadSolution = function (solution) {
-                    this.reset();
-
-                    if (solution == "")
-                        return;
-
-                    //TODO implement
-                };
-
-                this.getAnswer = function () {
-                    return 2; //TODO implement
-                };
-            }
-
-            return new TemplateProblem(container);
+            return new App(container, 500, 201, pictures, places, true);
         }
 
         //initialization
         $(function () {
             var var_beb_dyn_images = {
-                //image_id : image_url
+                'bg' : '2016-UA-05.png'
             };
 
             var info = add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
@@ -115,7 +92,6 @@
 </html>
 
 <!--
-UA-05
 2016-SK-06 Grandmas trip
 2016-DE-04 (Emotions)
 RU-09
