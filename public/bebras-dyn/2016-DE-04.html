@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link media="screen,print" rel="stylesheet" href="../stylesheets/bebras.problem.css">
+    <script src="../javascripts/jquery-1.7.2.min.js"></script>
+    <script src="../javascripts/contest_stub.js"></script>
+    <script src="../javascripts/bebras-dyn.problem.js"></script>
+    <script src="../javascripts/kinetic.js"></script>
+    <script src="../javascripts/ddlib.js"></script>
+    <script>
+        var container_height = 570;
+
+        function TemplateProblemWrapper(container, pictures) {
+
+            var add = 24;
+            var places = [
+                new Place(0, 0, 400, 570, 'full', 1, {
+                    imageId: 'bg',
+                    crop: {x: 0, y: 0, width: 400, height: 570}
+                }),
+//                new Place(450, 0, 150, 570, 'full2', 1, {
+//                    imageId: 'bg',
+//                    crop: {x: 450, y: 0, width: 150, height: 570}
+//                }),
+
+                new Place(475 - add, 0, 100 + 2 * add, 90 + 40, 'em1', 2, {
+                    imageId: 'bg',
+                    crop: {x: 130 + 345 - add, y: 0, width: 100 + 2 * add, height: 90 + 40}
+                }),
+                new Place(475 - add, 140, 100 + 2 * add, 90 + 40, 'em2', 2, {
+                    imageId: 'bg',
+                    crop: {x: 130 + 345 - add, y: 140, width: 100+ 2 * add, height: 90 + 40}
+                }),
+                new Place(475 - add, 280, 100 + 2 * add, 95 + 40, 'em3', 2, {
+                    imageId: 'bg',
+                    crop: {x: 130 + 345 - add, y: 280, width: 100 + 2 * add, height: 95 + 40}
+                }),
+                new Place(475 - add, 425, 100 + 2 * add, 110 + 40, 'em4', 2, {
+                    imageId: 'bg',
+                    crop: {x: 130 + 345 - add, y: 425, width: 100 + 2 * add, height: 110 + 40}
+                }),
+
+                new Place(300 + 15, 35, 100, 110, 'em1pl', 0, {}),
+                new Place(300 + 15, 155, 100, 110, 'em2pl', 0, {}),
+                new Place(300 + 15, 275, 100, 110, 'em3pl', 0, {}),
+                new Place(300 + 15, 395, 100, 110, 'em4pl', 0, {})
+            ];
+
+            return new App(container, 600, 570, pictures, places, true);
+        }
+
+        //initialization
+        $(function () {
+            var var_beb_dyn_images = {
+                'bg': '2016-DE-04-2.png'
+            };
+
+            var info = add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
+
+            $('#container-uniqueId').css('height', container_height + 'px');
+
+            $('#get-solution').click(function () {
+                $('#solution').val(info.problem.getSolution());
+            });
+            $('#set-solution').click(function () {
+                info.problem.loadSolution($('#solution').val());
+            });
+        });
+    </script>
+</head>
+<body>
+<div>
+    <button id="get-solution">GET</button>
+    <input type="text" id="solution" value="">
+    <button id="set-solution">SET</button>
+</div>
+<div class='problem' style="margin: 1em; border: 1px solid red"><span class='pr_type'
+                                                                      style="display: none">bebras-dyn</span>
+    <div id="container-uniqueId"></div>
+    <div class="dyn-type" style="display: none">uniqueId</div>
+    <div class='bebras-dyn-status'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-main'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-undo'>Загрузка...</div>
+</div>
+</body>
+</html>
+
+<!--
+2016-SK-06 Grandmas trip
+2016-DE-04 (Emotions)
+RU-09
+-->

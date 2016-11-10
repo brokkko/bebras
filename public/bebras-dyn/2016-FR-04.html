@@ -191,7 +191,24 @@
                 var $canvas = $('<canvas>');
                 $canvas.attr("height", container_height + "px");
                 $canvas.attr("width", container_width + "px");
-                $container.append($canvas);
+                $canvas.css('display', 'inline-block');
+                $canvas.css('vertical-align', 'top');
+
+                var $button = $('<button>Запустить</button>');
+                $button.css('display', 'inline-block');
+                $button.css('margin-left', '1em');
+                $button.css('vertical-align', 'top');
+
+                var $div = $('<div>');
+                $div.append($canvas);
+                $div.append($button);
+                $container.append($div);
+
+                var show_path = false;
+                $button.click(function() {
+                    show_path = true;
+                    redraw_canvas();
+                });
 
                 var canvas = $canvas.get(0);
                 ctx = canvas.getContext('2d');
@@ -410,8 +427,10 @@
 
                     //TODO draw a cycle with "4 times"
 
-                    var prog = new Program();
-                    prog.draw();
+                    if (show_path) {
+                        var prog = new Program();
+                        prog.draw();
+                    }
 
                     draw_field();
 
@@ -477,6 +496,8 @@
                 $canvas.mousedown(function (e) {
                     if (!enabled)
                         return;
+
+                    show_path = false;
 
                     for (var i = 0; i < draggables.length; i++)
                         draggables[i].mousedownHandler(e);

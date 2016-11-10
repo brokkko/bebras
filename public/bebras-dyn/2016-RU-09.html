@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link media="screen,print" rel="stylesheet" href="../stylesheets/bebras.problem.css">
+    <script src="../javascripts/jquery-1.7.2.min.js"></script>
+    <script src="../javascripts/contest_stub.js"></script>
+    <script src="../javascripts/bebras-dyn.problem.js"></script>
+    <script src="../javascripts/kinetic.js"></script>
+    <script src="../javascripts/ddlib.js"></script>
+    <script>
+        var container_height = 360;
+
+        function TemplateProblemWrapper(container, pictures) {
+            //copy the body of this function to the problem editor
+
+            var places = [
+                new Place(0, 113, 350, 357 - 113, 'tickets', 1, {
+                    imageId: 'bg',
+                    crop: {x: 0, y: 113, width: 350, height: 357 - 113}
+                }),
+
+                new Place(90, 0, 35, 85, 'sheep', 2, {
+                    imageId: 'bg',
+                    crop: {x: 90, y: 0, width: 35, height: 85}
+                }),
+                new Place(135, 0, 35, 85, 'goat', 2, {
+                    imageId: 'bg',
+                    crop: {x: 135, y: 0, width: 35, height: 85}
+                }),
+                new Place(180, 0, 35, 85, 'bear', 2, {
+                    imageId: 'bg',
+                    crop: {x: 180, y: 0, width: 35, height: 85}
+                }),
+                new Place(225, 0, 35, 85, 'giraffe', 2, {
+                    imageId: 'bg',
+                    crop: {x: 225, y: 0, width: 35, height: 85}
+                })
+            ];
+
+            //244, 122
+            for (var i = 0; i < 2; i++)
+                for (var j = 0; j < 2; j++) {
+                    var x0 = j * 350 / 2;
+                    var y0 = 113 + i * 122;
+                    for (var p = 0; p < 4; p++) {
+                        var place = new Place(x0 + p * 40 + 10, y0 + 30, 35, 85, 'res' + i + j, 0, {
+                            stroke: "#AAAAAA",
+                            strokeWidth: 1
+                        });
+                        places.push(place);
+                    }
+                }
+
+            var app = new App(container, 350, 357, pictures, places, true);
+
+            var superGetAnswer = app.getAnswer.bind(app);
+            app.getAnswer = function() {
+                var superAnswer = superGetAnswer();
+                var solution = app.getSolution();
+                if (solution == "")
+                    return 0;
+
+                var sol = JSON.parse(solution);
+                //1, 2, 3, 4 - animals
+                //tickets:
+                //5, 6, 7, 8
+                //9, 10, 11, 12
+                //13, ...
+
+                var sum = 0;
+                var totaltotal = 0;
+                for (var ticket = 0; ticket < 4; ticket++) {
+                    var total = 0;
+                    var mul = 1;
+                    for (var j = ticket * 4 + 5; j < ticket * 4 + 9; j++)
+                        if (sol[j] != -1) {
+                            total++;
+                            mul *= sol[j];
+                        }
+                    if (total > 0)
+                        sum += (total + 2) * mul;
+                    totaltotal += total;
+                }
+
+                var correct = totaltotal == 4 && sum == 29;
+                return correct ? 1 : 0;
+            };
+
+            return app;
+        }
+
+        //initialization
+        $(function () {
+            var var_beb_dyn_images = {
+                bg: '2016-RU-09.png'
+            };
+
+            var info = add_bebras_dyn_problem('uniqueId', TemplateProblemWrapper, var_beb_dyn_images);
+
+            $('#container-uniqueId').css('height', container_height + 'px');
+
+            $('#get-solution').click(function () {
+                $('#solution').val(info.problem.getSolution());
+            });
+            $('#set-solution').click(function () {
+                info.problem.loadSolution($('#solution').val());
+            });
+        });
+    </script>
+</head>
+<body>
+<div>
+    <button id="get-solution">GET</button>
+    <input type="text" id="solution" value="">
+    <button id="set-solution">SET</button>
+</div>
+<div class='problem' style="margin: 1em; border: 1px solid red"><span class='pr_type'
+                                                                      style="display: none">bebras-dyn</span>
+    <div id="container-uniqueId"></div>
+    <div class="dyn-type" style="display: none">uniqueId</div>
+    <div class='bebras-dyn-status'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-main'>Загрузка...</div>
+    <div class='bebras-dyn-button bebras-dyn-button-undo'>Загрузка...</div>
+</div>
+</body>
+</html>
+
+<!--
+2016:
+problems AT-05 AT-06 AU-03 AU-04 AU-07 BE-01 BE-02 CA-08b CA-09 CH-03 CZ-02b CZ-04 DE-04 FR-04-1 FR-04-2 FR-06 IE-03 IE-04 IE-05 IT-02b JP-01 JP-02 JP-03 LT-02 LT-03 MY-01 MY-02 PK-01 PK-03a PL-04b RU-02 RU-03 RU-04 RU-07 RU-08 RU-08a RU-09 SI-02 SK-01 SK-04 SK-06 SK-07 SK-10 TW-07a TW-07b UA-01 UA-05 US-01 in /bebras2015-problems-upload/2016
+-->
