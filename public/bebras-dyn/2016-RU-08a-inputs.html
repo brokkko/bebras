@@ -25,107 +25,89 @@
                 $content.css('position', 'relative');
                 $content.css('text-align', 'center');
 
-                var squirrels = [16, 0, 0, 0, 0];
-
-                var left_skip = 60;
-
                 var $img = $('<img>');
                 $img.attr('src', pictures.main);
                 $img.css('position', 'absolute');
-                $img.css('left', left_skip + 'px');
+                $img.css('left', '0');
                 $img.css('top', '0');
                 $img.css('padding', '0');
                 $img.css('margin', '0');
                 $img.css('border', '0');
-                $content.css('width', 172 + left_skip + 'px');
+                $content.css('width', '350px');
                 $content.css('height', '300px');
                 $content.append($img);
 
-                var spans = [];
+                var inputs = [];
                 for (var i = 0; i < 5; i++) {
-                    var $span = $('<span>');
-                    spans.push($span);
-                    $span.css('position', 'absolute');
-                    $span.css('left', 0);
-                    $span.css('padding-left', left_skip + 'px');
-                    $span.css('right', '96px');
-                    $span.css('font', '38px sans-serif');
-                    $span.css('top', 27 + i * 52.5);
-//                    $span.css('width', '100%');
-                    $span.css('text-align', 'center');
-                    $span.text('16');
-                    $content.append($span);
-                }
-
-                var button_size = 30;
-                var buttons = [];
-                for (i = 0; i < 4; i++) {
-                    for (var dir = "up"; dir != "neither"; dir = (dir == "up" ? "down" : "neither")) {
-                        var up = dir == "up";
-                        var $button = up ? $('<button>&#x25B2;</button>') : $('<button>&#x25BC;</button>');
-
-                        $button.css('background-color', 'white');
-                        $button.css('position', 'absolute');
-                        $button.css('width', button_size + 'px');
-                        $button.css('height', button_size + 'px');
-                        $button.css('font', '16px sans-serif');
-                        $button.css('left', (up ? 0 : button_size) + 'px');
-                        $button.css('padding', '0');
-                        $button.css('top', 74 - button_size / 2 + i * 52 + "px");
-                        $content.append($button);
-
-                        addButtonListener($button, i, i + 1, up ? 1 : -1);
-                        buttons.push($button);
-                    }
-                }
-
-                function addButtonListener($button, from, to, amount) {
-                    $button.click(function () {
-                        if (!enabled)
-                            return;
-
-                        squirrels[from] += amount;
-                        squirrels[to] -= amount;
-
-                        if (squirrels[from] > 16 || squirrels[to] > 16 || squirrels[from] < 0 || squirrels[to] < 0) {
-                            squirrels[from] -= amount;
-                            squirrels[to] += amount;
-                        }
-
-                        update_squirrels();
+                    var $inp = $('<input type="text" maxlength="2" placeholder="?">');
+                    inputs.push($inp);
+                    $inp.css('position', 'absolute');
+                    $inp.css('left', '18px');
+//                    $inp.css('right', '40px');
+                    $inp.css('font', '38px sans-serif');
+                    $inp.css('top', 25 + i * 52.5);
+                    $inp.css('text-align', 'center');
+                    $inp.css('width', '40px');
+                    $inp.css('border', 'none');
+                    $inp.css('background', 'none');
+                    $inp.change(function() {
+                        update_error();
                     });
+                    $content.append($inp);
                 }
+
+                var $error = $('<span>Ошибка</span>');
+                $error.css('color', 'red');
+                $error.css('display', 'none');
+                $error.css('position', 'absolute');
+                $error.css('left', '170px');
+                $error.css('font', '16px sans-serif');
+                $error.css('font-weight', 'bold');
+                $error.css('top', '90px');
+                $content.append($error);
 
                 $container.append($content);
 
-                update_squirrels();
+                update_enabled();
 
-                function update_squirrels() {
-                    for (var i = 0; i < squirrels.length; i++)
-                        spans[i].text(squirrels[i]);
-
-                    for (i = 0; i < buttons.length / 2; i ++) {
-                        var e = +spans[i + 1].text() > 0 && enabled;
-                        if (e)
-                            buttons[2 * i].removeAttr('disabled');
+                function update_enabled() {
+                    for (var i = 0; i < 5; i++) {
+                        if (enabled)
+                            inputs[i].removeAttr('disabled');
                         else
-                            buttons[2 * i].attr('disabled', 'disabled');
+                            inputs[i].attr('disabled', 'disabled');
                     }
+                }
 
-                    for (i = 0; i < buttons.length / 2; i ++) {
-                        e = +spans[i].text() > 0 && enabled;
-                        if (e)
-                            buttons[2 * i + 1].removeAttr('disabled');
-                        else
-                            buttons[2 * i + 1].attr('disabled', 'disabled');
+                function update_error() {
+                    var vm = validation_message();
+                    if (vm == '')
+                        $error.hide();
+                    else
+                        $error.text(vm).show();
+                }
+
+                function validation_message() {
+                    var sum = 0;
+                    for (var i = 0; i < 5; i++) {
+                        var v = inputs[i].val();
+                        var n = +v;
+                        if (v === '' || !isFinite(n) || n > 16 || n < 0)
+                            return 'В каждом дупле введите целое число от 0 до 16';
+                        sum += n;
                     }
+                    if (sum != 16)
+                        return 'Сумма чисел должна быть 16';
+                    return '';
                 }
 
                 var enabled = true;
 
                 this.reset = function () {
-                    squirrels = [16, 0, 0, 0, 0];
-                    update_squirrels();
+                    for (var i = 0; i < 5; i++)
+                        inputs[i].val('');
+                    update_enabled();
+                    update_error();
                 };
 
                 this.isEnabled = function () {
@@ -135,10 +117,8 @@
                 this.setEnabled = function (state) {
                     enabled = state;
 
-                    update_squirrels();
-
-                    for (i = 0; i < spans.length; i++)
-                        spans[i].css('color', enabled ? 'black' : 'gray');
+                    update_enabled();
+                    update_error();
                 };
 
                 this.reset();
@@ -154,7 +134,7 @@
                 };
 
                 this.getSolution = function () {
-                    return squirrels.join('+');
+                    return as_array().join('+');
                 };
 
                 this.loadSolution = function (solution) {
@@ -164,10 +144,11 @@
                         return;
 
                     var nums = ('' + solution).split('+');
-                    if (nums.length != squirrels.length)
+                    if (nums.length != 5)
                         return;
+                    /*
                     var sum = 0;
-                    for (var i = 0; i < squirrels.length; i++) {
+                    for (var i = 0; i < 5; i++) {
                         var n = +nums[i];
                         if (isNaN(n) || n < 0 || n > 16)
                             return;
@@ -175,19 +156,32 @@
                     }
                     if (sum != 16)
                         return;
+                    */
+                    for (i = 0; i < 5; i++)
+                        inputs[i].val(nums[i]);
 
-                    for (i = 0; i < squirrels.length; i++)
-                        squirrels[i] = +nums[i];
-
-                    update_squirrels();
+                    update_error();
+                    update_enabled();
                 };
 
                 this.getAnswer = function () {
                     return check();
                 };
 
+                function as_array() {
+                    var sq = new Array(5);
+                    for (i = 0; i < 5; i++) {
+                        sq[i] = +inputs[i].val();
+                        if (isNaN(sq[i]))
+                            sq[i]='';
+                    }
+                    return sq;
+                }
+
                 function check() {
-                    var sq = squirrels.slice();
+                    if (validation_message() != '')
+                        return 0;
+                    var sq = as_array();
                     var l = sq.length;
 
                     for (var step = 0; step < 100; step++) {
@@ -224,6 +218,8 @@
 
             return new TemplateProblem(container);
         }
+
+        //1 2 3 4 6, 1 2 3 10 0, 1 2 3 0 10, 1 2 0 13 0, 1 0 15 0 0,
 
         //initialization
         $(function () {
