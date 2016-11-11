@@ -13,7 +13,7 @@
     <script src="../javascripts/ddlib.js"></script>
     -->
     <script>
-        var container_height = 300;
+        var container_height = 204;
 
         function TemplateProblemWrapper(container, pictures) {
             //copy the body of this function to the problem editor
@@ -34,7 +34,7 @@
                 $img.css('margin', '0');
                 $img.css('border', '0');
                 $content.css('width', '350px');
-                $content.css('height', '300px');
+                $content.css('height', '204px');
                 $content.append($img);
 
                 var inputs = [];
@@ -42,10 +42,10 @@
                     var $inp = $('<input type="text" maxlength="2" placeholder="?">');
                     inputs.push($inp);
                     $inp.css('position', 'absolute');
-                    $inp.css('left', '18px');
+                    $inp.css('left', '6px');
 //                    $inp.css('right', '40px');
-                    $inp.css('font', '38px sans-serif');
-                    $inp.css('top', 25 + i * 52.5);
+                    $inp.css('font', '20px sans-serif');
+                    $inp.css('top', 20 + i * 36.5);
                     $inp.css('text-align', 'center');
                     $inp.css('width', '40px');
                     $inp.css('border', 'none');
