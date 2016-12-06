@@ -53,6 +53,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -593,7 +595,10 @@ public class EventAdministration extends Controller {
                 String userField = title[i];
                 String fieldValue = line[i];
 
-                user.getInfo().put(userField, fieldValue);
+                boolean specialProcessingPerformed = tryProcessUserField(event, user, userField, fieldValue);
+
+                if (!specialProcessingPerformed)
+                    user.getInfo().put(userField, fieldValue);
 
                 /* TODO implement something like this
                 //set value for the field
@@ -615,6 +620,82 @@ public class EventAdministration extends Controller {
 
         user.invalidateAllResults();
         user.store();
+    }
+
+    private static boolean tryProcessUserField(Event event, User user, String userField, String fieldValue) {
+        // contest/1-2/RU-05
+        switch (userField) {
+            case "~submission":
+                Pattern fieldValuePattern = Pattern.compile("(?<cid>[\\w-]+)/(?<pname>[\\w-]+)/(?<localtime>-?-?\\d+)/(?<answer>.+)");
+                Matcher m = fieldValuePattern.matcher(fieldValue);
+                if (!m.matches()) {
+                    Logger.info("failed to parse submission information " + fieldValue);
+                    return true;
+                }
+
+                //get contest name
+                String contestId = m.group("cid");
+
+                Contest contest = event.getContestById(contestId);
+                List<Contest> contestsAvailableForUser = event.getContestsAvailableForUser(user);
+                if (!contestsAvailableForUser.contains(contest)) {
+                    Logger.info("failed to find contest " + contestId + " for user " + user.getLogin());
+                    return true;
+                }
+
+                //get problem name
+                String problemName = m.group("pname");
+
+                List<ConfiguredProblem> userProblems = contest.getUserProblems(user);
+                ObjectId pid = null;
+                for (ConfiguredProblem userProblem : userProblems)
+                    if (problemName.equals(userProblem.getName())) {
+                        pid = userProblem.getProblemId();
+                        break;
+                    }
+                if (pid == null) {
+                    Logger.info("failed to find problem " + problemName);
+                    return true;
+                }
+
+                //local time: -xyz (xyz from back), --1 (1 sec after),
+                String localTimeString = m.group("localtime");
+                boolean fromEnd = localTimeString.startsWith("-");
+                long localTime = fromEnd ? contest.getDurationInMs() : 0;
+                try {
+                    if (fromEnd)
+                        localTimeString = localTimeString.substring(1);
+                    localTime += Long.parseLong(localTimeString);
+                } catch (NumberFormatException e) {
+                    Logger.info("failed to parse localtime " + localTimeString);
+                    return true;
+                }
+
+                //parse answer
+                String answerString = m.group("answer");
+                String[] answerElements = answerString.split("@@@");
+                if (answerElements.length % 2 != 0) {
+                    Logger.info("odd number of answer elements in answer string " + answerString + " separate with @@@");
+                    return true;
+                }
+
+                Info answer = new Info();
+                for (int i = 0; i < answerElements.length; i += 2) {
+                    Object answerValue = answerElements[i + 1];
+                    Pattern intRegex = Pattern.compile("integer\\((?<num>-?\\d+)\\)"); //integer(42)
+                    Matcher intMatcher = intRegex.matcher((String)answerValue);
+                    if (intMatcher.matches())
+                        answerValue = Integer.parseInt(intMatcher.group("num")); //TODO \d+ may not parse to an integer
+                    answer.put(answerElements[i], answerValue);
+                }
+
+                Submission s = new Submission(contest, user.getId(), localTime, new Date(), pid, answer);
+                s.serialize();
+
+                return true;
+        }
+
+        return false;
     }
 
     private static void createUser(Event event, String[] title, String[] line) {

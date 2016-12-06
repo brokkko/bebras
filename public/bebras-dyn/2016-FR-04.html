@@ -177,10 +177,10 @@
             };
 
             DragDest.prototype.drawHighlight = function () {
-                if (this.isActive()) {
+                if (this.isActive() && dragged != null) {
                     ctx.strokeStyle = "#FFD900";
                     ctx.lineWidth = 4;
-                    ctx.strokeRect(this.x0, this.y0, dragged.w, dragged.h);
+                    ctx.strokeRect(this.x0, this.y0, dragged.w, dragged.h); //TODO wtf!! w of null??
                 }
             };
 

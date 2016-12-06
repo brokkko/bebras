@@ -247,6 +247,44 @@ public class Contests extends Controller {
         return ok();
     }
 
+    public static Result submitFinalAnswer(String eventId, String contestId, String userLogin, String problemName, long localTime, String answer) {
+        User user = User.current();
+        if (user == null || !user.hasEventAdminRight())
+            return unauthorized();
+        user.invalidateContestResults(contestId);
+
+        User userWithAnswer = User.getUserByLogin(userLogin);
+
+        if (userWithAnswer == null)
+            return notFound("user not found");
+
+        Contest contest = Contest.current();
+
+        List<ConfiguredProblem> configuredProblems = contest.getUserProblems(userWithAnswer);
+        ConfiguredProblem cp = null;
+        for (ConfiguredProblem configuredProblem : configuredProblems)
+            if (configuredProblem.getName().equals(problemName)) {
+                cp = configuredProblem;
+                break;
+            }
+
+        if (cp == null)
+            return notFound("problem not found");
+
+        Info answerInfo = new Info();
+        String[] answerElements = answer.split("/");
+        if (answerElements.length % 2 != 0)
+            return badRequest("length of answer is not 2");
+        for (int i = 0; i < answerElements.length; i += 2)
+            answerInfo.put(answerElements[i], answerElements[i + 1]);
+
+        Submission submission = new Submission(contest, userWithAnswer.getId(), localTime, new Date(), cp.getProblemId(), answerInfo);
+
+        submission.serialize();
+
+        return ok();
+    }
+
     private static void processSystemSubmission(Submission submission) {
 //        if ("page".equals(submission.getSystemField())) {
 //            Logger.info("user moved to page " + submission.getSystemValue());
