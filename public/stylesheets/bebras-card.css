@@ -1,0 +1,13 @@
+.card-view {
+    display: block;
+    margin: 0 auto;
+}
+
+body {
+    background-color: #F6F6F6;
+}
+
+.loading-progress {
+    margin-top: 1em;
+    text-align: center;
+}

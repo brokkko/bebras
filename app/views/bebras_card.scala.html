@@ -1,0 +1,18 @@
+@(title: String, width: Int, height: Int, imageSize: Int, bc: plugins.bebrascard.BebrasCard)
+@import plugins.bebrascard._
+@import scala.List
+@import views.widgets.ResourceLink
+@main(title)(List(new ResourceLink("preloadjs-0.6.2.min.js"), new ResourceLink("bebras-card.js"), new ResourceLink("bebras-card.css")))(no_scroll = false) {
+    <script>
+            var BEBRAS_CARD_INFO = {
+                "bc": @Html(bc.asJavaScriptObject()),
+                "width": width,
+                "height": height,
+                "img_size": imageSize
+            }
+    </script>
+    <div class="loading-progress"></div>
+    <canvas class="card-view" width="@width" height="@height">
+        Без поддержки Canvas открытки не работают
+    </canvas>
+}

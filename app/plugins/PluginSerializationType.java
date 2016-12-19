@@ -1,6 +1,7 @@
 package plugins;
 
 import models.newserialization.SerializableTreeSerializationType;
+import plugins.bebrascard.BebrasCardsPlugin;
 import plugins.bebraspdf.BebrasPDFs;
 import plugins.certificates.DiplomaPlugin;
 import plugins.kio.KioProblemPlugin;
@@ -25,6 +26,7 @@ public class PluginSerializationType extends SerializableTreeSerializationType<P
         registerClass("bebras places", BebrasPlacesEvaluator.class);
         registerClass("kio problem", KioProblemPlugin.class);
         registerClass("diploma", DiplomaPlugin.class);
+        registerClass("bebras cards", BebrasCardsPlugin.class);
     }
 
 }

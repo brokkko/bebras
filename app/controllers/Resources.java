@@ -6,6 +6,7 @@ import controllers.actions.LoadEvent;
 import models.Event;
 import models.ServerConfiguration;
 import play.Logger;
+import play.Play;
 import play.cache.Cache;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -71,6 +72,21 @@ public class Resources extends Controller {
         file = URLDecoder.decode(file, "UTF-8");
 
         File content = new File(Event.current().getEventDataFolder().getAbsolutePath() + "/" + file);
+
+        if (!content.exists())
+            return notFound();
+
+        return ok(content);
+    }
+
+    @DcesController(allowCache = true)
+    public static Result returnPluginFile(String pluginName, String file) throws UnsupportedEncodingException {
+        file = URLDecoder.decode(file, "UTF-8");
+        if (!file.matches("[a-zA-Z0-9._/-]+"))
+            return forbidden();
+
+        File pluginFolder = ServerConfiguration.getInstance().getPluginFolder(pluginName);
+        File content = new File(pluginFolder.getAbsolutePath() + '/' + file);
 
         if (!content.exists())
             return notFound();

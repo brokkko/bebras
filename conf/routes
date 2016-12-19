@@ -148,6 +148,7 @@ GET         /bebras_training/*file                                     controlle
 GET         /assets/*file                                              controllers.Assets.at(path="/public", file)
 GET         /~res/*file                                                controllers.Resources.returnFile(file)
 GET         /:event/~dat/*file                                         controllers.Resources.returnDataFile(event, file)
+GET         /~plugin/:pluginName/*file                                 controllers.Resources.returnPluginFile(pluginName, file)
 
 GET         /convert_bebras_problems_HJKsdCVsdflQsWjhfJKweahfih        controllers.BebrasProblemsConverter.convertProblems()
 POST        /:event/show_bebras_school_certificate                     controllers.DomainContests.showBebrasSchoolCertificate(event)
