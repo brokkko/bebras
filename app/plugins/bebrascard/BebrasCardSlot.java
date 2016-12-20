@@ -1,12 +1,12 @@
 package plugins.bebrascard;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import play.libs.Json;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class BebrasCardSlot {
 
@@ -16,8 +16,8 @@ public class BebrasCardSlot {
         countries.add(cd);
     }
 
-    public void shuffle() {
-        Collections.shuffle(countries);
+    public void shuffle(Random rnd) {
+        Collections.shuffle(countries, rnd);
     }
 
     public List<CountryData> getCountries() {
@@ -28,8 +28,15 @@ public class BebrasCardSlot {
         return countries.size();
     }
 
-    public void asJavaScriptArray(ArrayNode array) {
-        for (CountryData country : countries)
-            array.add(country.asJavaScriptObject());
+    public void asJavaScriptArray(int slotInd, ArrayNode array) {
+        for (CountryData country : countries) {
+            String folder = country.getFolderName();
+//            String name = country.getName();
+            CountryImage img = country.getImages().get(slotInd);
+
+            ObjectNode o = array.addObject();
+            o.put("f", folder);
+            o.put("img", img.asJavaScriptObject());
+        }
     }
 }

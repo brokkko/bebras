@@ -1,4 +1,4 @@
-@(title: String, width: Int, height: Int, imageSize: Int, bc: plugins.bebrascard.BebrasCard)
+@(title: String, width: Int, height: Int, imageSize: Int, bc: plugins.bebrascard.BebrasCard, winCall: play.mvc.Call)
 @import plugins.bebrascard._
 @import scala.List
 @import views.widgets.ResourceLink
@@ -6,13 +6,15 @@
     <script>
             var BEBRAS_CARD_INFO = {
                 "bc": @Html(bc.asJavaScriptObject()),
-                "width": width,
-                "height": height,
-                "img_size": imageSize
-            }
+                "width": @width,
+                "height": @height,
+                "img_size": @imageSize,
+                "win_url": "@winCall"
+            };
     </script>
     <div class="loading-progress"></div>
     <canvas class="card-view" width="@width" height="@height">
         Без поддержки Canvas открытки не работают
     </canvas>
+    <div class="pic-description"><span class="country"></span>: <span class="info"></span></div>
 }

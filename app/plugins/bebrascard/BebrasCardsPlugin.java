@@ -6,15 +6,18 @@ import models.User;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
+import play.mvc.Call;
 import play.mvc.Result;
 import play.mvc.Results;
 import plugins.Plugin;
 import views.Menu;
 import views.html.bebras_card;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-import static play.mvc.Results.notFound;
+import static play.mvc.Results.*;
 
 /*
 {
@@ -32,11 +35,14 @@ import static play.mvc.Results.notFound;
 2480x1755, 728
 800x560, 235 размер картинки
 vk
-537x376, 158 размер картинки
+537x376, 158 размер картинки, 30 сверху снизу и сбоку
 
 find . -name "*_?.jpg" -print0 | xargs -0 -I {file} convert {file} -resize 235x235 {file}_resize.jpg
 
 preview img: 537 x 376
+
+db.users.findOne({event_id:"bebras16", login:"iposov"})['bebras-card-solved']
+db.users.update({event_id:"bebras16", login:"iposov"}, {$set: {"bebras-card-solved": false}})
  */
 
 public class BebrasCardsPlugin extends Plugin {
@@ -69,10 +75,10 @@ public class BebrasCardsPlugin extends Plugin {
         switch (action) {
             case "go":
                 return editCard();
-            case "view":
-                return viewCard();
-            case "preview":
-                return previewCard();
+//            case "view":
+//                return viewCard();
+//            case "preview":
+//                return previewCard();
             default:
                 return notFound();
         }
@@ -80,7 +86,12 @@ public class BebrasCardsPlugin extends Plugin {
 
     @Override
     public Result doPost(String action, String params) {
-        return null;
+        switch (action) {
+            case "win":
+                return doWin(params);
+            default:
+                return notFound();
+        }
     }
 
     @Override
@@ -110,11 +121,52 @@ public class BebrasCardsPlugin extends Plugin {
     private Result editCard() {
         User user = User.current();
 
+        if (user == null)
+            return forbidden();
+
+        if (!user.hasRight(right))
+            return forbidden();
+
         Random rnd = getRandom(user);
 
         BebrasCard bc = new BebrasCard(CountriesData.get(), rnd);
 
-        return Results.ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, bc));
+        Call winCall = getCall("win", false, "");
+
+        return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, bc, winCall));
+    }
+
+    private Result doWin(String info) {
+        User user = User.current();
+
+        if (user == null)
+            return forbidden();
+
+        if (!user.hasRight(right))
+            return forbidden();
+
+        Random rnd = getRandom(user);
+
+        BebrasCard bc = new BebrasCard(CountriesData.get(), rnd);
+
+        if (!info.matches("[0-4]{6}"))
+            return badRequest();
+
+        CountryData cd = null;
+        for (int i = 0; i < 6; i++) {
+            int ind = info.charAt(i) - '0';
+            BebrasCardSlot slot = bc.getSlot(i);
+            CountryData countryData = slot.getCountries().get(ind);
+            if (cd == null)
+                cd = countryData;
+            else if (cd != countryData)
+                return badRequest();
+        }
+
+        user.getInfo().put(CARD_SOLVED_FIELD, true);
+        user.store();
+
+        return ok();
     }
 
     private boolean solvedCard(User user) {
@@ -133,6 +185,7 @@ public class BebrasCardsPlugin extends Plugin {
         return id;
     }
 
+    /*
     private Result previewCard() {
         return null;
     }
@@ -140,4 +193,5 @@ public class BebrasCardsPlugin extends Plugin {
     private Result viewCard() {
         return null;
     }
+    */
 }

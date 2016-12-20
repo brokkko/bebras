@@ -1,6 +1,15 @@
+@font-face {
+    font-family: 'CUOMOTYP';
+    src: url(/~plugin/BebrasCards/CUOMOTYP.ttf) format('truetype');
+}
+
 .card-view {
     display: block;
     margin: 0 auto;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 body {
@@ -10,4 +19,14 @@ body {
 .loading-progress {
     margin-top: 1em;
     text-align: center;
+}
+
+.pic-description {
+    display: none;
+    margin: 1em auto;
+    font: 1em black Arial, sans-serif;
+}
+
+.pic-description .country {
+    font-weight: bold;
 }
