@@ -39,6 +39,23 @@ $(function () {
         rotate();
     });
 
+    function selectAndCopyViewLink() {
+        var copyTextarea = $('.copy-view-to-url').get(0);
+        copyTextarea.select();
+
+        try {
+            var successful = document.execCommand('copy');
+            if (successful) {
+                $('.link-copied').show().hide(2000);
+            }
+        } catch (err) {
+            console.error('Oops, unable to copy the link');
+        }
+    }
+
+    $('.copy-view-to-url').click(selectAndCopyViewLink);
+    $('.copy-view-to-url-click').click(selectAndCopyViewLink);
+
     if (!win_immediately())
         $('.todo-info').show();
 

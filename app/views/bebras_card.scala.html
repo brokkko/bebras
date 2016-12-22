@@ -1,4 +1,4 @@
-@(title: String, width: Int, height: Int, imageSize: Int, year: Int, bc: plugins.bebrascard.BebrasCard, name: String, winCall: play.mvc.Call)
+@(title: String, width: Int, height: Int, imageSize: Int, year: Int, bc: plugins.bebrascard.BebrasCard, name: String, winCall: play.mvc.Call, viewCall: play.mvc.Call)
 @import plugins.bebrascard._
 @import scala.List
 @import views.widgets.ResourceLink
@@ -12,9 +12,10 @@
                 "win_url": @if(winCall != null) {
                         "@winCall"
                 } else {
-                    false
+                false
                 },
-                "year": @year
+                "year": @year,
+                "view_url": "@viewCall"
             };
     </script>
 
@@ -26,9 +27,14 @@
     </div>
 
     <div class="card-info winner-info">
-        <p>Открытка собрана! У вас получилась <span class="country"></span>.</p>
-        <p>Вы можете <a class="rotate" href="#">перевернуть</a> открытку.</p>
-        @*<p>Или поделиться ей с друзьями: </p>*@
+        <p class="b">Открытка собрана! У вас получилась <span class="country"></span>.</p>
+        <p class="b">Вы можете <a class="rotate" href="#">перевернуть</a> открытку.</p>
+        @defining(viewCall.absoluteURL(play.mvc.Controller.request())) { link =>
+            <p>Ссылка на открытку для друзей и знакомых: <input type="text" class="copy-view-to-url" readonly value="@link" size="@link.length">
+                @*<a class="copy-view-to-url-click" href="#">Скопировать в буфер</a>
+                <span class="link-copied">Ссылка скопирована!</span>.*@
+                При нажатии копируется в буфер.</p>
+        }
     </div>
 
     <div class="canvas-container">

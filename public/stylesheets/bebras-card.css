@@ -37,7 +37,6 @@ body {
     /*font-size: 40px; !*the same as on a card*!*/
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-    font-weight: bold;
 }
 
 .start-container {
@@ -88,7 +87,7 @@ body {
     font-weight: bold;
 }
 
-.winner-info .rotate {
+.winner-info a {
     text-decoration: none;
     color: #9b6f0b;
 }
@@ -99,4 +98,13 @@ body {
 
 .b {
     font-weight: bold;
+}
+
+.copy-view-to-url {
+    color: #9b6f0b;
+    border: none;
+    background: none;
+    font-size: 1em;
+    padding: 0;
+    text-align: center;
 }

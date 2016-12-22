@@ -135,10 +135,11 @@ public class BebrasCardsPlugin extends Plugin {
         BebrasCard bc = new BebrasCard(CountriesData.get(), rnd);
 
         Call winCall = getCall("win", false, "");
+        Call viewCall = getCall("view", true, cardId(user));
 
         String name = user.getFullName();
 
-        return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, year, bc, name, winCall));
+        return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, year, bc, name, winCall, viewCall));
     }
 
     private Result doWin(String info) {
@@ -208,8 +209,10 @@ public class BebrasCardsPlugin extends Plugin {
         BebrasCard bc = new BebrasCard(CountriesData.get(), rnd);
         bc.solve();
 
+        Call viewCall = getCall("view", true, cardId);
+
         String name = user.getFullName();
 
-        return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, year, bc, name, null));
+        return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, year, bc, name, null, viewCall));
     }
 }
