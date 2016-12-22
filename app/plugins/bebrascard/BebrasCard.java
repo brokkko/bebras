@@ -12,6 +12,7 @@ public class BebrasCard {
     private static int[] cSizes = {6, 5, 4, 3, 3, 2, 2, 1, 1, 1, 1, 1};
 
     private List<BebrasCardSlot> slots = new ArrayList<>(6);
+    private CountryData correctAnswer;
 
     public BebrasCard(CountriesData data, Random rnd) {
         //6 * 5 = 6 + 5 + 4 + 3 + 3 + 3 + 2 + 1 + 1 + 1 + 1
@@ -25,6 +26,8 @@ public class BebrasCard {
                 throw new AssertionError("More than 20 loops while generating a card");
             List<CountryData> cds = new ArrayList<>(data.getCountries());
             Collections.shuffle(cds, rnd);
+
+            correctAnswer = cds.get(0);
 
             for (int i = 0; i < 6; i++)
                 slots.add(new BebrasCardSlot());
@@ -94,5 +97,17 @@ public class BebrasCard {
         }
 
         return Json.stringify(o);
+    }
+
+    public CountryData getCorrectAnswer() {
+        return correctAnswer;
+    }
+
+    public void solve() {
+        for (int i = 0; i < 6; i++) {
+            BebrasCardSlot slot = slots.get(i);
+            while (slot.getCountries().get(0) != correctAnswer)
+                slot.rotate();
+        }
     }
 }

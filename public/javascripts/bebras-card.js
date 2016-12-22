@@ -27,15 +27,28 @@ $(function () {
 
     fillManifestWithImages(manifest);
 
+    var bgImg;
     var bgPattern;
 
     var $description = $('.pic-description');
     var $description_country = $('.pic-description .country');
     var $description_info = $('.pic-description .info');
-    $description.width(BEBRAS_CARD_INFO.width);
+
+    $('.card-info').width(BEBRAS_CARD_INFO.width);
+    $('.winner-info .rotate').click(function() {
+        rotate();
+    });
+
+    if (!win_immediately())
+        $('.todo-info').show();
+
     function setDescription(country, info) {
         $description_country.text(country);
         $description_info.text(info);
+    }
+
+    function win_immediately() {
+        return !BEBRAS_CARD_INFO.win_url;
     }
 
     queue.loadManifest(manifest);
@@ -43,6 +56,8 @@ $(function () {
         if (!error) {
             $loadingProgress.hide();
             initCard();
+            if (win_immediately())
+                win();
         }
     }
 
@@ -92,22 +107,35 @@ $(function () {
         console.error('message', e.message);
     }
 
-    function initCard() {
-        $description.css('display', 'block');
-
-        var bgImg = queue.getResult("bg");
-        bgPattern = ctx.createPattern(bgImg, 'repeat');
+    function draw_bg() {
         var w = canvas.width;
         var h = canvas.height;
 
         ctx.fillStyle = bgPattern;
         ctx.fillRect(0, 0, w, h);
+    }
+
+    function initCard() {
+        bgImg = queue.getResult("bg");
+        bgPattern = ctx.createPattern(bgImg, 'repeat');
+
+        $('.todo-info').hide();
+
+        draw_bg();
 
         for (var ind = 0; ind < 6; ind++)
             updateCell(ind);
+        updateCell(-1);
 
         canvas.addEventListener('mousemove', handleMouseMove);
         canvas.addEventListener('click', handleMouseClick);
+
+        //draw bottom info
+        ctx.fillStyle = '#444';
+        ctx.font = "20px 'Arial', sans-serif";
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Соберите на открытке фотографии из одной страны...', BEBRAS_CARD_INFO.width / 2, BEBRAS_CARD_INFO.height - 45 / 2);
     }
 
     function pointInCell(p, ind) {
@@ -142,23 +170,32 @@ $(function () {
     var rightCountryName = '';
 
     function draw_header() {
-        console.log('draw header');
         ctx.font = "40px 'Arial', sans-serif";
         ctx.textAlign = 'center';
-        ctx.textBaseline = 'top';
-        ctx.fillStyle = '#000000';
-        ctx.fillText(rightCountryName, BEBRAS_CARD_INFO.width / 2, 0);
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#666';
+        ctx.fillText(rightCountryName, BEBRAS_CARD_INFO.width / 2, 45 / 2);
+
+        ctx.fillStyle = '#444';
+        ctx.font = "20px 'Arial', sans-serif";
+        ctx.fillText('Страна международного конкурса по Информатике «Бобёр ' + BEBRAS_CARD_INFO.year + '»', BEBRAS_CARD_INFO.width / 2, BEBRAS_CARD_INFO.height - 45 / 2);
     }
 
     function win() {
-        var win_url = BEBRAS_CARD_INFO.win_url;
-        win_url = win_url.substr(0, win_url.length - 'post_p'.length) + currentIndices.join('') + '/post_p';
-        won = true;
-        $.post(win_url);
+        if (!win_immediately()) {
+            var win_url = BEBRAS_CARD_INFO.win_url;
+            win_url = win_url.substr(0, win_url.length - 'post_p'.length) + currentIndices.join('') + '/post_p';
+            won = true;
+            $.post(win_url);
+        }
 
         rightCountryName = getSlot(0, currentIndices[0]).n;
 
-        draw_header();
+        drawMainSide();
+
+        $('.winner-info').show();
+        $('.winner-info .country').text(rightCountryName);
+        $('.todo-info').hide();
     }
 
     function increaseCell(ind) {
@@ -166,7 +203,6 @@ $(function () {
         currentIndices[ind]++;
         if (currentIndices[ind] >= SLOT_ELEMENTS)
             currentIndices[ind] = 0;
-        // updateCell(ind);
 
         if (allCountriesAreSame())
             win();
@@ -191,8 +227,10 @@ $(function () {
         if (animationT < 1) {
             requestAnimationFrame(animate);
             updateCellAnimated(animatingInd);
-        } else
+        } else {
             updateCell(animatingInd);
+            animatingInd = -1;
+        }
     }
 
     function getImg(ind, jnd) {
@@ -208,26 +246,55 @@ $(function () {
         ctx.restore();
     }
 
+    function updateDescription(ind) {
+        var slot = getSlot(ind, currentIndices[ind]);
+        setDescription(slot.n, slot.d);
+    }
+
     function updateCell(ind) {
+        if (ind < 0) {
+            $description.hide();
+            return;
+        } else
+            $description.show();
+
         var slotCords = getSlotCords(ind);
         var img = getImg(ind, currentIndices[ind]);
         ctx.drawImage(img, slotCords.x, slotCords.y);
 
         overelay(ind, slotCords);
 
-        var slot = getSlot(ind, currentIndices[ind]);
-        setDescription(slot.n, slot.d);
+        updateDescription(ind);
     }
 
     function updateCellAnimated(ind) {
         var slotCords = getSlotCords(ind);
         var is = BEBRAS_CARD_INFO.img_size;
-        // var t = animationT;//Math.sqrt(1 - (1 - animationT) * (1 - animationT));
+
+        /* //"square rotate"
+         var w = Math.round(is * animationT);
+        ctx.drawImage(fromImg, slotCords.x, slotCords.y, is - w, is);
+        ctx.drawImage(toImg, slotCords.x + is - w, slotCords.y, w, is);
+        */
+        /* // roll over
         var w = Math.round(is * animationT);
-        // ctx.drawImage(fromImg, slotCords.x, slotCords.y, is - w, is);
-        // ctx.drawImage(toImg, slotCords.x + is - w, slotCords.y, w, is);
         ctx.drawImage(fromImg, 0, 0, is - w, is, slotCords.x, slotCords.y, is - w, is);
         ctx.drawImage(toImg, is - w, 0, w, is, slotCords.x + is - w, slotCords.y, w, is);
+        */
+
+        /* //rotate 180
+        var w = Math.cos(animationT * Math.PI);
+        ctx.drawImage(bgImg, slotCords.x, slotCords.y, is, is);
+        var img = w > 0 ? fromImg : toImg;
+        w = Math.abs(w);
+        ctx.drawImage(img, slotCords.x + is / 2 * (1 - w), slotCords.y, w * is, is); //1 -> is / 2, 0 -> 0
+        */
+
+        var w = Math.sin(animationT * Math.PI / 2);
+        w = Math.abs(w);
+        ctx.drawImage(fromImg, slotCords.x, slotCords.y, is, is);
+        ctx.drawImage(toImg, slotCords.x + is / 2 * (1 - w), slotCords.y, w * is, is); //1 -> is / 2, 0 -> 0
+
         overelay(ind, slotCords);
     }
 
@@ -248,8 +315,11 @@ $(function () {
     function handleMouseClick(evt) {
         var pos = getMousePos(evt);
         var ind = pos2cell(pos);
-        if (ind >= 0)
+        if (ind >= 0) {
             increaseCell(ind);
+            updateDescription(ind);
+        }
+        // $('.todo-info').fadeOut(1000);
     }
 
     function getMousePos(evt) {
@@ -258,5 +328,42 @@ $(function () {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
         };
+    }
+
+    //opposite side
+
+    var opposite = false;
+
+    function rotate() {
+        opposite = !opposite;
+        if (opposite)
+            drawBackSide();
+        else
+            drawMainSide();
+    }
+
+    function drawMainSide() {
+        draw_bg();
+
+        for (var ind = 0; ind < 6; ind++)
+            updateCell(ind);
+        updateCell(-1);
+
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('click', handleMouseClick);
+        $('.winner-container').hide();
+
+        draw_header();
+    }
+
+    function drawBackSide() {
+        draw_bg();
+
+        canvas.removeEventListener('mousemove', handleMouseMove);
+        canvas.removeEventListener('click', handleMouseClick);
+
+        $('.winner-container').fadeIn(500);
+
+        updateCell(-1);
     }
 });

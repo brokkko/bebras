@@ -39,4 +39,9 @@ public class BebrasCardSlot {
             o.put("img", img.asJavaScriptObject());
         }
     }
+
+    public void rotate() {
+        CountryData first = countries.remove(0);
+        countries.add(first);
+    }
 }

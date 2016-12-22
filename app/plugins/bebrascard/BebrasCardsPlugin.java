@@ -57,6 +57,7 @@ public class BebrasCardsPlugin extends Plugin {
     private String right; //право на просмотр
     private String title; //текст на кнопке меню
     private boolean showInMenu; //показывать ли в меню
+    private int year;
 
     @Override
     public void initPage() {
@@ -75,8 +76,8 @@ public class BebrasCardsPlugin extends Plugin {
         switch (action) {
             case "go":
                 return editCard();
-//            case "view":
-//                return viewCard();
+            case "view":
+                return viewCard(params);
 //            case "preview":
 //                return previewCard();
             default:
@@ -102,6 +103,7 @@ public class BebrasCardsPlugin extends Plugin {
         serializer.write("title", title);
         if (!showInMenu)
             serializer.write("menu", false);
+        serializer.write("year", year);
     }
 
     @Override
@@ -111,6 +113,7 @@ public class BebrasCardsPlugin extends Plugin {
         right = deserializer.readString("right");
         title = deserializer.readString("title");
         showInMenu = deserializer.readBoolean("menu", true);
+        year = deserializer.readInt("year", 2016);
     }
 
     private Random getRandom(User user) {
@@ -133,7 +136,9 @@ public class BebrasCardsPlugin extends Plugin {
 
         Call winCall = getCall("win", false, "");
 
-        return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, bc, winCall));
+        String name = user.getFullName();
+
+        return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, year, bc, name, winCall));
     }
 
     private Result doWin(String info) {
@@ -185,13 +190,26 @@ public class BebrasCardsPlugin extends Plugin {
         return id;
     }
 
-    /*
-    private Result previewCard() {
-        return null;
-    }
+//    private Result previewCard() {
+//        return null;
+//    }
 
-    private Result viewCard() {
-        return null;
+    private Result viewCard(String cardId) {
+        User user = User.getInstance(CARD_ID_FIELD, cardId);
+
+        if (user == null)
+            return notFound();
+
+        if (!solvedCard(user))
+            return forbidden();
+
+        Random rnd = getRandom(user);
+
+        BebrasCard bc = new BebrasCard(CountriesData.get(), rnd);
+        bc.solve();
+
+        String name = user.getFullName();
+
+        return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, year, bc, name, null));
     }
-    */
 }

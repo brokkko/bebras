@@ -1,4 +1,4 @@
-@(title: String, width: Int, height: Int, imageSize: Int, bc: plugins.bebrascard.BebrasCard, winCall: play.mvc.Call)
+@(title: String, width: Int, height: Int, imageSize: Int, year: Int, bc: plugins.bebrascard.BebrasCard, name: String, winCall: play.mvc.Call)
 @import plugins.bebrascard._
 @import scala.List
 @import views.widgets.ResourceLink
@@ -9,12 +9,66 @@
                 "width": @width,
                 "height": @height,
                 "img_size": @imageSize,
-                "win_url": "@winCall"
+                "win_url": @if(winCall != null) {
+                        "@winCall"
+                } else {
+                    false
+                },
+                "year": @year
             };
     </script>
-    <div class="loading-progress"></div>
-    <canvas class="card-view" width="@width" height="@height">
-        Без поддержки Canvas открытки не работают
-    </canvas>
-    <div class="pic-description"><span class="country"></span>: <span class="info"></span></div>
+
+    <div class="start-container">
+        <div class="todo-info">
+            <div class="todo-info-text">Соберите на открытке фотографии из одной страны. Какая страна получится у вас?</div>
+        </div>
+        <div class="loading-progress"></div>
+    </div>
+
+    <div class="card-info winner-info">
+        <p>Открытка собрана! У вас получилась <span class="country"></span>.</p>
+        <p>Вы можете <a class="rotate" href="#">перевернуть</a> открытку.</p>
+        @*<p>Или поделиться ей с друзьями: </p>*@
+    </div>
+
+    <div class="canvas-container">
+        <div class="winner-container">
+            <p class="b">ПРИГЛАШЕНИЕ</p>
+            <p>&nbsp;</p>
+            <p>Участник конкурса «Бобёр-@year»</p>
+            <p>@name</p>
+            <p>приглашается к участию в проектах</p>
+            <p class="b">Факультета компьютерных технологий и информатики</p>
+            <p class="b">Санкт-Петербургского государственного электротехнического университета «ЛЭТИ»:</p>
+            <p>&nbsp;</p>
+            <p class="b">1. Интернет-школа информатики и дискретной математики</p>
+            <p><a href="http://kioschool.eltech.ru" target="_blank">http://kioschool.eltech.ru</a></p>
+            <p>(набор ведётся постоянно, для участников конкурса «Бобёр» предусмотрены льготы - пошлите эту открытку на адрес Школы)</p>
+            <p>&nbsp;</p>
+            <p class="b">2. Международный Конкурс по применению ИКТ в естественных науках, технологиях и математике</p>
+            <p class="b">«Конструируй, Исследуй, Оптимизируй» (КИО)</p>
+            <p><a href="http://kio.spb.ru/kio" target="_blank">http://kio.spb.ru/kio</a></p>
+            <p>(27 февраля — 6 марта 2017 г., регистрация с начала 2017 года)</p>
+            <p>На этом же сайте читайте ежемесячный КАЛЕНДАРЬ КИО с новостями из мира информационных технологий</p>
+            <p>&nbsp;</p>
+            <p>Участников 9-11 классов приглашаем принять участие в</p>
+            <p class="b">3. Олимпиаде по дискретной математике и теоретической информатике ДМиТИ-2017</p>
+            <p><a href="http://dmti.ipo.spb.ru/" target="_blank">http://dmti.ipo.spb.ru/</a></p>
+            <p>тренировка: с 28 ноября до 17 декабря 2016 года,</p>
+            <p>отборочный тур с 12 декабря по 17 декабря 2016 года,</p>
+            <p>заключительный тур 25 марта 2017 года</p>
+            <p>&nbsp;</p>
+            <p class="b">4. О льготах для победителей и участников конкурсов и олимпиад</p>
+            <p class="b">для поступающих в СПбГЭТУ ЛЭТИ можно узнать на сайте</p>
+            <p><a href="http://www.eltech.ru/ru/abiturientam" target="_blank">http://www.eltech.ru/ru/abiturientam</a></p>
+            <p>в разделе</p>
+            <p><a href="http://eltech.ru/ru/abiturientam/olimpiady-shkolnikov/lgoty-i-privilegii" target="_blank">
+                http://eltech.ru/ru/abiturientam/olimpiady-shkolnikov/lgoty-i-privilegii</a></p>
+        </div>
+        <canvas class="card-view" width="@width" height="@height">
+            Без поддержки Canvas открытки не работают
+        </canvas>
+    </div>
+
+    <div class="card-info pic-description"><span class="country"></span>: <span class="info"></span></div>
 }
