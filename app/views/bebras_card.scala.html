@@ -27,10 +27,10 @@
     </div>
 
     <div class="card-info winner-info">
-        <p class="b">Открытка собрана! У вас получилась <span class="country"></span>.</p>
+        <p class="b">Открытка собрана! У вас получилась страна: <span class="country"></span>.</p>
         <p class="b">Вы можете <a class="rotate" href="#">перевернуть</a> открытку.</p>
         @defining(viewCall.absoluteURL(play.mvc.Controller.request())) { link =>
-            <p>Ссылка на открытку для друзей и знакомых: <input type="text" class="copy-view-to-url" readonly value="@link" size="@link.length">
+            <p>Ссылка на открытку для друзей и знакомых:<input type="text" class="copy-view-to-url" readonly value="@link" size="@link.length">
                 @*<a class="copy-view-to-url-click" href="#">Скопировать в буфер</a>
                 <span class="link-copied">Ссылка скопирована!</span>.*@
                 При нажатии копируется в буфер.</p>

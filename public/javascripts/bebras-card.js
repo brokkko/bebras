@@ -15,7 +15,7 @@ $(function () {
     var base = bc.base_path;
     var basePic = base + 'Pictures/';
 
-    var manifest = [{id: "bg", src: base + "bg.png"}];
+    var manifest = [{id: "bg", src: base + "bg.png"}, {id: "stamps", src: base + "stamps.png"}];
 
     var currentIndices = [0, 0, 0, 0, 0, 0];
     var overIndex = -1;
@@ -382,5 +382,7 @@ $(function () {
         $('.winner-container').fadeIn(500);
 
         updateCell(-1);
+
+        ctx.drawImage(queue.getResult("stamps"), 0, 0);
     }
 });

@@ -38,7 +38,7 @@ public class BebrasCard {
             for (BebrasCardSlot slot : slots)
                 slot.shuffle(rnd);
 
-            if (badTask(cds.get(0)))
+            if (badTask(correctAnswer))
                 slots.clear();
             else
                 break;
@@ -51,8 +51,11 @@ public class BebrasCard {
 
     private boolean badTask(CountryData correctCountry) {
         int cnt = 0;
+        int rightAnswersOnFirstPage = 0;
         for (BebrasCardSlot slot : slots) {
             List<CountryData> countries = slot.getCountries();
+            if (countries.get(0) == correctAnswer)
+                rightAnswersOnFirstPage++;
             for (int i = 0; i < countries.size(); i++)
                 if (countries.get(i) == correctCountry) {
                     cnt += i;
@@ -60,7 +63,7 @@ public class BebrasCard {
                 }
         }
 
-        return cnt > 10;
+        return cnt > 10 && rightAnswersOnFirstPage <= 1;
     }
 
     private void fillSlots(CountryData cd, int count, Random rnd) {
