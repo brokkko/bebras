@@ -39,6 +39,35 @@ $(function () {
         rotate();
     });
 
+    var hint_level = 0;
+    var $hints = $('.hints span');
+    $hints.click(function() {
+        var $hint = $(this);
+        $hints.removeClass('selected');
+        $hint.addClass('selected');
+        if ($hint.hasClass('hint-none'))
+            hint_level = 0;
+        else if ($hint.hasClass('hint-description'))
+            hint_level = 1;
+        else
+            hint_level = 2;
+
+        //update hints view
+        if (hint_level == 0) {
+            $description_country.hide();
+            $('.pic-description .colon').hide();
+            $description_info.hide();
+        } else if (hint_level == 1) {
+            $description_country.hide();
+            $('.pic-description .colon').hide();
+            $description_info.show();
+        } else {
+            $description_country.show();
+            $('.pic-description .colon').show();
+            $description_info.show();
+        }
+    });
+
     function selectAndCopyViewLink() {
         var copyTextarea = $('.copy-view-to-url').get(0);
         copyTextarea.select();
@@ -72,6 +101,7 @@ $(function () {
     function loadingComplete() {
         if (!error) {
             $loadingProgress.hide();
+            $('.hints').show();
             initCard();
             if (win_immediately())
                 win();
@@ -307,10 +337,35 @@ $(function () {
         ctx.drawImage(img, slotCords.x + is / 2 * (1 - w), slotCords.y, w * is, is); //1 -> is / 2, 0 -> 0
         */
 
+        /*
         var w = Math.sin(animationT * Math.PI / 2);
         w = Math.abs(w);
         ctx.drawImage(fromImg, slotCords.x, slotCords.y, is, is);
         ctx.drawImage(toImg, slotCords.x + is / 2 * (1 - w), slotCords.y, w * is, is); //1 -> is / 2, 0 -> 0
+        */
+
+        var n = 5;
+        var aMid = 2 * Math.PI / n;
+        var a0 = Math.PI / 2 + aMid / 2 + animationT * aMid;
+        var a1 = Math.PI / 2 - aMid / 2 + animationT * aMid;
+        var a2 = Math.PI / 2 - 3 * aMid / 2 + animationT * aMid;
+        // sin aMid/2 = is/2 / r
+        var r = is / 2 / Math.sin(aMid / 2);
+        var x0 = r * Math.cos(a0) + is / 2;
+        var x1 = r * Math.cos(a1) + is / 2;
+        var x2 = r * Math.cos(a2) + is / 2;
+
+        var rx1 = Math.round(x1);
+        var w1 = Math.round(is * x1 / (x1 - x0));
+        var w2 = Math.round(is * (is - x1) / (x2 - x1));
+        ctx.drawImage(fromImg,
+            is - w1, 0, w1, is,
+            slotCords.x, slotCords.y, rx1, is
+        );
+        ctx.drawImage(toImg,
+            0, 0, w2, is,
+            slotCords.x + rx1, slotCords.y, is - rx1, is
+        );
 
         overelay(ind, slotCords);
     }

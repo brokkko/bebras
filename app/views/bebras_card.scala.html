@@ -29,12 +29,12 @@
     <div class="card-info winner-info">
         <p class="b">Открытка собрана! У вас получилась страна: <span class="country"></span>.</p>
         <p class="b">Вы можете <a class="rotate" href="#">перевернуть</a> открытку.</p>
+        @*
         @defining(viewCall.absoluteURL(play.mvc.Controller.request())) { link =>
-            <p>Ссылка на открытку для друзей и знакомых:<input type="text" class="copy-view-to-url" readonly value="@link" size="@link.length">
-                @*<a class="copy-view-to-url-click" href="#">Скопировать в буфер</a>
-                <span class="link-copied">Ссылка скопирована!</span>.*@
-                При нажатии копируется в буфер.</p>
+        <p>Ссылка на открытку для друзей и знакомых:<input type="text" class="copy-view-to-url" readonly value="@link" size="@link.length">
+        При нажатии копируется в буфер.</p>
         }
+        *@
     </div>
 
     <div class="canvas-container">
@@ -42,7 +42,7 @@
             <p class="b">ПРИГЛАШЕНИЕ</p>
             <p>&nbsp;</p>
             <p>Участник конкурса «Бобёр-@year»</p>
-            <p>@name</p>
+            <p class="b">@name</p>
             <p>приглашается к участию в проектах</p>
             <p class="b">Факультета компьютерных технологий и информатики</p>
             <p class="b">Санкт-Петербургского государственного электротехнического университета «ЛЭТИ»:</p>
@@ -76,5 +76,10 @@
         </canvas>
     </div>
 
-    <div class="card-info pic-description"><span class="country"></span>: <span class="info"></span></div>
+    <div class="card-info hints"><!--
+    --><span class="selected hint-none">Без подсказки</span><!--
+    --><span class="hint-description">Подсказывать описание</span><!--
+    --><span class="hint-country-description">Подсказывать страну и описание</span><!--
+    --></div>
+    <div class="card-info pic-description"><span class="country"></span><span class="colon">: </span><span class="info"></span></div>
 }

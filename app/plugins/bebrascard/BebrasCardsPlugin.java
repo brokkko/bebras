@@ -76,8 +76,8 @@ public class BebrasCardsPlugin extends Plugin {
         switch (action) {
             case "go":
                 return editCard();
-            case "view":
-                return viewCard(params);
+//            case "view": //TODO think about viewing, make google not index these links, etc...
+//                return viewCard(params);
 //            case "preview":
 //                return previewCard();
             default:
@@ -138,6 +138,11 @@ public class BebrasCardsPlugin extends Plugin {
         Call viewCall = getCall("view", true, cardId(user));
 
         String name = user.getFullName();
+
+        if (solvedCard(user)) { //renderer considers card solved if win url is null
+            winCall = null;
+            bc.solve();
+        }
 
         return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, year, bc, name, winCall, viewCall));
     }

@@ -87,6 +87,10 @@ body {
     font-weight: bold;
 }
 
+.pic-description span {
+    display: none;
+}
+
 .winner-info a {
     text-decoration: none;
     color: #9b6f0b;
@@ -107,4 +111,26 @@ body {
     font-size: 1em;
     padding: 0;
     text-align: center;
+}
+
+.hints {
+    display: none;
+    margin-top: 0.4em;
+}
+
+.hints span {
+    margin-right: 0.8em;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    color: #9b6f0b;
+}
+
+.hints span.selected {
+    cursor: default;
+}
+
+.hints span.selected, .hints span:hover {
+    text-decoration: underline;
 }

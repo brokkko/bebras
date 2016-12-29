@@ -38,7 +38,7 @@ public class BebrasCard {
             for (BebrasCardSlot slot : slots)
                 slot.shuffle(rnd);
 
-            if (badTask(correctAnswer))
+            if (!goodTask(correctAnswer))
                 slots.clear();
             else
                 break;
@@ -49,7 +49,7 @@ public class BebrasCard {
         return slots.get(ind);
     }
 
-    private boolean badTask(CountryData correctCountry) {
+    private boolean goodTask(CountryData correctCountry) {
         int cnt = 0;
         int rightAnswersOnFirstPage = 0;
         for (BebrasCardSlot slot : slots) {
