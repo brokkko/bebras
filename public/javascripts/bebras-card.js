@@ -18,6 +18,7 @@ $(function () {
     var manifest = [{id: "bg", src: base + "bg.png"}, {id: "stamps", src: base + "stamps.png"}];
 
     var currentIndices = [0, 0, 0, 0, 0, 0];
+    var correctIndices = [0, 0, 0, 0, 0, 0];
     var overIndex = -1;
 
     var animatingInd = -1;
@@ -35,13 +36,48 @@ $(function () {
     var $description_info = $('.pic-description .info');
 
     $('.card-info').width(BEBRAS_CARD_INFO.width);
-    $('.winner-info .rotate').click(function() {
+    $('.winner-info .rotate').click(function () {
         rotate();
+    });
+    $('.winner-info .shuffle').click(function () {
+        //do shuffle
+        function rnd(a, b, x) {
+            do {
+                var r = Math.floor(Math.random() * (b - a + 1)) + a;
+            } while (r == x);
+            return r;
+        }
+
+        currentIndices = [
+            rnd(0, 4, correctIndices[0]),
+            rnd(0, 4, correctIndices[1]),
+            rnd(0, 4, correctIndices[2]),
+            rnd(0, 4, correctIndices[3]),
+            rnd(0, 4, correctIndices[4]),
+            rnd(0, 4, correctIndices[5])
+        ];
+        if (rnd(0, 1) == 1) {
+            var r = rnd(0, 5);
+            currentIndices[r] = correctIndices[r];
+        }
+
+        if (opposite)
+            rotate();
+        else
+            drawMainSide();
+    });
+    $('.winner-info .view-solution').click(function () {
+        currentIndices = correctIndices.slice();
+        allSame = true;
+        if (opposite)
+            rotate();
+        else
+            drawMainSide();
     });
 
     var hint_level = 0;
     var $hints = $('.hints span');
-    $hints.click(function() {
+    $hints.click(function () {
         var $hint = $(this);
         $hints.removeClass('selected');
         $hint.addClass('selected');
@@ -177,12 +213,7 @@ $(function () {
         canvas.addEventListener('mousemove', handleMouseMove);
         canvas.addEventListener('click', handleMouseClick);
 
-        //draw bottom info
-        ctx.fillStyle = '#444';
-        ctx.font = "20px 'Arial', sans-serif";
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('Соберите на открытке фотографии из одной страны...', BEBRAS_CARD_INFO.width / 2, BEBRAS_CARD_INFO.height - 45 / 2);
+        draw_header();
     }
 
     function pointInCell(p, ind) {
@@ -213,19 +244,31 @@ $(function () {
         return true;
     }
 
+    var allSame = false;
     var won = false;
     var rightCountryName = '';
 
     function draw_header() {
-        ctx.font = "40px 'Arial', sans-serif";
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#666';
-        ctx.fillText(rightCountryName, BEBRAS_CARD_INFO.width / 2, 45 / 2);
+        if (allCountriesAreSame()) {
+            ctx.font = "40px 'Arial', sans-serif";
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#666';
+            ctx.fillText(rightCountryName, BEBRAS_CARD_INFO.width / 2, 45 / 2);
 
-        ctx.fillStyle = '#444';
-        ctx.font = "20px 'Arial', sans-serif";
-        ctx.fillText('Страна международного конкурса по Информатике «Бобёр ' + BEBRAS_CARD_INFO.year + '»', BEBRAS_CARD_INFO.width / 2, BEBRAS_CARD_INFO.height - 45 / 2);
+            ctx.fillStyle = '#444';
+            ctx.font = "20px 'Arial', sans-serif";
+            ctx.fillText('Страна международного конкурса по Информатике «Бобёр ' + BEBRAS_CARD_INFO.year + '»', BEBRAS_CARD_INFO.width / 2, BEBRAS_CARD_INFO.height - 45 / 2);
+            $('.view-solution-container').hide();
+        } else {
+            //draw bottom info
+            ctx.fillStyle = '#444';
+            ctx.font = "20px 'Arial', sans-serif";
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Соберите на открытке фотографии из одной страны...', BEBRAS_CARD_INFO.width / 2, BEBRAS_CARD_INFO.height - 45 / 2);
+            $('.view-solution-container').show();
+        }
     }
 
     function win() {
@@ -235,13 +278,15 @@ $(function () {
             won = true;
             $.post(win_url);
         }
+        allSame = true;
+        correctIndices = currentIndices.slice();
 
         rightCountryName = getSlot(0, currentIndices[0]).n;
 
         drawMainSide();
 
         $('.winner-info').show();
-        $('.winner-info .country').text(rightCountryName);
+        // $('.winner-info .country').text(rightCountryName);
         $('.todo-info').hide();
     }
 
@@ -251,7 +296,8 @@ $(function () {
         if (currentIndices[ind] >= SLOT_ELEMENTS)
             currentIndices[ind] = 0;
 
-        if (allCountriesAreSame())
+        var allSameNow = allCountriesAreSame();
+        if (allSameNow)
             win();
 
         if (animatingInd != -1)
@@ -261,6 +307,10 @@ $(function () {
         animationT = 0;
         fromImg = getImg(ind, old_ind);
         toImg = getImg(ind, currentIndices[ind]);
+
+        if (allSameNow != allSame)
+            drawMainSide();
+        allSame = allSameNow;
 
         requestAnimationFrame(animate);
     }
@@ -320,31 +370,31 @@ $(function () {
 
         /* //"square rotate"
          var w = Math.round(is * animationT);
-        ctx.drawImage(fromImg, slotCords.x, slotCords.y, is - w, is);
-        ctx.drawImage(toImg, slotCords.x + is - w, slotCords.y, w, is);
-        */
+         ctx.drawImage(fromImg, slotCords.x, slotCords.y, is - w, is);
+         ctx.drawImage(toImg, slotCords.x + is - w, slotCords.y, w, is);
+         */
         /* // roll over
-        var w = Math.round(is * animationT);
-        ctx.drawImage(fromImg, 0, 0, is - w, is, slotCords.x, slotCords.y, is - w, is);
-        ctx.drawImage(toImg, is - w, 0, w, is, slotCords.x + is - w, slotCords.y, w, is);
-        */
+         var w = Math.round(is * animationT);
+         ctx.drawImage(fromImg, 0, 0, is - w, is, slotCords.x, slotCords.y, is - w, is);
+         ctx.drawImage(toImg, is - w, 0, w, is, slotCords.x + is - w, slotCords.y, w, is);
+         */
 
         /* //rotate 180
-        var w = Math.cos(animationT * Math.PI);
-        ctx.drawImage(bgImg, slotCords.x, slotCords.y, is, is);
-        var img = w > 0 ? fromImg : toImg;
-        w = Math.abs(w);
-        ctx.drawImage(img, slotCords.x + is / 2 * (1 - w), slotCords.y, w * is, is); //1 -> is / 2, 0 -> 0
-        */
+         var w = Math.cos(animationT * Math.PI);
+         ctx.drawImage(bgImg, slotCords.x, slotCords.y, is, is);
+         var img = w > 0 ? fromImg : toImg;
+         w = Math.abs(w);
+         ctx.drawImage(img, slotCords.x + is / 2 * (1 - w), slotCords.y, w * is, is); //1 -> is / 2, 0 -> 0
+         */
 
         /*
-        var w = Math.sin(animationT * Math.PI / 2);
-        w = Math.abs(w);
-        ctx.drawImage(fromImg, slotCords.x, slotCords.y, is, is);
-        ctx.drawImage(toImg, slotCords.x + is / 2 * (1 - w), slotCords.y, w * is, is); //1 -> is / 2, 0 -> 0
-        */
+         var w = Math.sin(animationT * Math.PI / 2);
+         w = Math.abs(w);
+         ctx.drawImage(fromImg, slotCords.x, slotCords.y, is, is);
+         ctx.drawImage(toImg, slotCords.x + is / 2 * (1 - w), slotCords.y, w * is, is); //1 -> is / 2, 0 -> 0
+         */
 
-        var n = 5;
+        var n = 4;
         var aMid = 2 * Math.PI / n;
         var a0 = Math.PI / 2 + aMid / 2 + animationT * aMid;
         var a1 = Math.PI / 2 - aMid / 2 + animationT * aMid;
@@ -414,6 +464,8 @@ $(function () {
             drawMainSide();
     }
 
+    var eventListenersAdded = false;
+
     function drawMainSide() {
         draw_bg();
 
@@ -421,8 +473,11 @@ $(function () {
             updateCell(ind);
         updateCell(-1);
 
-        canvas.addEventListener('mousemove', handleMouseMove);
-        canvas.addEventListener('click', handleMouseClick);
+        if (!eventListenersAdded) {
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('click', handleMouseClick);
+            eventListenersAdded = true;
+        }
         $('.winner-container').hide();
 
         draw_header();
@@ -433,6 +488,7 @@ $(function () {
 
         canvas.removeEventListener('mousemove', handleMouseMove);
         canvas.removeEventListener('click', handleMouseClick);
+        eventListenersAdded = false;
 
         $('.winner-container').fadeIn(500);
 

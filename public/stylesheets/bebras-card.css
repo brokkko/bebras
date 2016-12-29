@@ -96,7 +96,7 @@ body {
     color: #9b6f0b;
 }
 
-.winner-info .rotate:hover {
+.winner-info a:hover {
     text-decoration: underline;
 }
 

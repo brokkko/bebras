@@ -27,8 +27,11 @@
     </div>
 
     <div class="card-info winner-info">
-        <p class="b">Открытка собрана! У вас получилась страна: <span class="country"></span>.</p>
-        <p class="b">Вы можете <a class="rotate" href="#">перевернуть</a> открытку.</p>
+        <p class="b">Открытка собрана!</p>
+        <p class="b">Теперь вы можете:
+            <a class="rotate" href="#">перевернуть</a> открытку,
+            <a class="shuffle" href="#">перемешать</a><span class="view-solution-container">,
+                <a class="view-solution" href="#">посмотреть решение</a></span>.</p>
         @*
         @defining(viewCall.absoluteURL(play.mvc.Controller.request())) { link =>
         <p>Ссылка на открытку для друзей и знакомых:<input type="text" class="copy-view-to-url" readonly value="@link" size="@link.length">
@@ -81,5 +84,6 @@
     --><span class="hint-description">Подсказывать описание</span><!--
     --><span class="hint-country-description">Подсказывать страну и описание</span><!--
     --></div>
-    <div class="card-info pic-description"><span class="country"></span><span class="colon">: </span><span class="info"></span></div>
+    <div class="card-info pic-description"><span class="country"></span><span class="colon">
+        : </span><span class="info"></span></div>
 }
