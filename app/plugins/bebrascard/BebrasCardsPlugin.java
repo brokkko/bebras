@@ -5,16 +5,16 @@ import models.ServerConfiguration;
 import models.User;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
+import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
 import play.mvc.Call;
 import play.mvc.Result;
-import play.mvc.Results;
 import plugins.Plugin;
 import views.Menu;
 import views.html.bebras_card;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 
 import static play.mvc.Results.*;
@@ -58,11 +58,12 @@ public class BebrasCardsPlugin extends Plugin {
     private String title; //текст на кнопке меню
     private boolean showInMenu; //показывать ли в меню
     private int year;
+    private LinkedHashMap<String, String> extraCards; //maps link to name
 
     @Override
     public void initPage() {
         if (showInMenu)
-            Menu.addMenuItem(title, getCall(), right);
+            Menu.addMenuItem(title, getCall(), right, "_blank");
     }
 
     @Override
@@ -76,6 +77,8 @@ public class BebrasCardsPlugin extends Plugin {
         switch (action) {
             case "go":
                 return editCard();
+            case "extra":
+                return extraCard(params);
 //            case "view": //TODO think about viewing, make google not index these links, etc...
 //                return viewCard(params);
 //            case "preview":
@@ -104,6 +107,8 @@ public class BebrasCardsPlugin extends Plugin {
         if (!showInMenu)
             serializer.write("menu", false);
         serializer.write("year", year);
+
+        SerializationTypesRegistry.map(String.class).write(serializer, "extra cards", extraCards);
     }
 
     @Override
@@ -114,6 +119,8 @@ public class BebrasCardsPlugin extends Plugin {
         title = deserializer.readString("title");
         showInMenu = deserializer.readBoolean("menu", true);
         year = deserializer.readInt("year", 2016);
+
+        extraCards = SerializationTypesRegistry.map(String.class).read(deserializer, "extra cards");
     }
 
     private Random getRandom(User user) {
@@ -145,6 +152,20 @@ public class BebrasCardsPlugin extends Plugin {
         }
 
         return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, year, bc, name, winCall, viewCall));
+    }
+
+    private Result extraCard(String params) {
+        String name = extraCards.get(params);
+        if (name == null)
+            return notFound();
+
+        Random rnd = new Random(params.hashCode());
+
+        BebrasCard bc = new BebrasCard(CountriesData.get(), rnd);
+
+        Call winCall = getCall("win", false, "");
+
+        return ok(bebras_card.render("Bebras cards", BIG_WIDTH, BIG_HEIGHT, BIG_IMG_SIZE, year, bc, name, winCall, null));
     }
 
     private Result doWin(String info) {

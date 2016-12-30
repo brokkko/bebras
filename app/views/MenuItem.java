@@ -13,10 +13,17 @@ public class MenuItem {
 
     private String title;
     private Call link;
+    private String target = null;
 
     public MenuItem(String title, Call link) {
         this.title = title;
         this.link = link;
+    }
+
+    public MenuItem(String title, Call link, String target) {
+        this.title = title;
+        this.link = link;
+        this.target = target;
     }
 
     public String getTitle() {
@@ -25,6 +32,10 @@ public class MenuItem {
 
     public Call getLink() {
         return link;
+    }
+
+    public String getTarget() {
+        return target;
     }
 
     public boolean isCurrent() {

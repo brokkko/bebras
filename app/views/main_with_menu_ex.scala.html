@@ -20,7 +20,7 @@
                         @if(menu_item.isCurrent) {
                             <span class='menu-item'>@menu_item.getTitle</span>
                         } else {
-                            <a class='menu-item' href="@menu_item.getLink">@menu_item.getTitle</a>
+                            <a class='menu-item' href="@menu_item.getLink" @if(menu_item.getTarget != null){target="@menu_item.getTarget"}>@menu_item.getTitle</a>
                         }
                     }
                 }

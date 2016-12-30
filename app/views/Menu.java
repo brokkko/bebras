@@ -40,6 +40,13 @@ public class Menu {
         extraItems.add(new RestrictedAccessMenuItem(new MenuItem(title, call), right));
     }
 
+    // if right is null, than allow for everybody even for anonymous
+    public static void addMenuItem(String title, Call call, String right, String target) {
+        List<RestrictedAccessMenuItem> extraItems = getExtraItems();
+
+        extraItems.add(new RestrictedAccessMenuItem(new MenuItem(title, call, target), right));
+    }
+
     public List<MenuItem> items() {
         return items;
     }
