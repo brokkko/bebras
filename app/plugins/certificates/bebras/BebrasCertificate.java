@@ -29,9 +29,13 @@ public class BebrasCertificate extends Diploma<DiplomaFactory> {
     private static final ObjectId NOVOSIBIRSK_ID_13 = User.getUserByLogin("bebras13", "shkola-plus").getId();
     private static final ObjectId NOVOSIBIRSK_ID_14 = User.getUserByLogin("bebras14", "school_plus").getId();
     private static final ObjectId NOVOSIBIRSK_ID_15 = User.getUserByLogin("bebras15", "school_plus").getId();
+    private static final ObjectId NOVOSIBIRSK_ID_16 = User.getUserByLogin("bebras16", "school_plus").getId();
 
     public static boolean isNovosibirsk(ObjectId objectId) {
-        return NOVOSIBIRSK_ID_13.equals(objectId) || NOVOSIBIRSK_ID_14.equals(objectId) || NOVOSIBIRSK_ID_15.equals(objectId);
+        return NOVOSIBIRSK_ID_13.equals(objectId) ||
+                NOVOSIBIRSK_ID_14.equals(objectId) ||
+                NOVOSIBIRSK_ID_15.equals(objectId) ||
+                NOVOSIBIRSK_ID_16.equals(objectId);
     }
 
     public BebrasCertificate(User user, boolean org, List<BebrasCertificateLine> lines, int year) {
@@ -89,7 +93,7 @@ public class BebrasCertificate extends Diploma<DiplomaFactory> {
     public static String getUserCode(User user, boolean org, int year) {
         String userCode = org ? (
                 year == 2013 ? Application.getCodeForUserHex(user) : Application.getCodeForUser(user)
-        ): user.getLogin();
+        ) : user.getLogin();
 
         //write login for novosibirsk teachers
         if (org && isNovosibirsk(user.getRegisteredBy()))

@@ -354,13 +354,14 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                             if (BebrasCertificate.isNovosibirsk(organizer.getRegisteredBy()))
                                 continue;
 
-                            boolean needOnlyGreatAndGoodResults = false;
-                            lines = getCertificateLinesForParticipant(event, user, needOnlyGreatAndGoodResults, startedCache, betterCache);
+                            lines = getCertificateLinesForParticipant(event, user, false, startedCache, betterCache);
 
                             if (lines == null)
                                 continue;
                             isOrg = false;
                         }
+
+                        //TODO do we really need isOrg, or schoolOrg is the same
 
                         //some extra skips
 
@@ -375,22 +376,45 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                     // sort certificates
                     worker.logInfo("sorting");
-                    Collections.sort(allCertificates, new Comparator<BebrasCertificate>() {
-                        @Override
-                        public int compare(BebrasCertificate o1, BebrasCertificate o2) {
-                            User u1 = o1.getUser();
-                            User u2 = o2.getUser();
+                    allCertificates.sort((cert1, cert2) -> {
+                        User u1 = cert1.getUser();
+                        User u2 = cert2.getUser();
 
-                            if (!schoolOrg) {
-                                u1 = u1.getRegisteredByUser();
-                                u2 = u2.getRegisteredByUser();
-                            }
+                        User o1 = u1;
+                        User o2 = u2;
 
-                            String i1 = Application.getCodeForUser(u1);
-                            String i2 = Application.getCodeForUser(u2);
-
-                            return i1.compareTo(i2);
+                        if (!schoolOrg) {
+                            o1 = o1.getRegisteredByUser();
+                            o2 = o2.getRegisteredByUser();
                         }
+
+//                        String i1 = Application.getCodeForUser(u1);
+//                        String i2 = Application.getCodeForUser(u2);
+                        //1st compare by regions
+                        String reg1 = (String) o1.getInfo().get("region");
+                        String reg2 = (String) o2.getInfo().get("region");
+
+                        int res = reg1.compareTo(reg2);
+                        if (res != 0)
+                            return res;
+
+                        //2nd compare by org name
+                        String orgName1 = o1.getFullName();
+                        String orgName2 = o2.getFullName();
+                        res = orgName1.compareTo(orgName2);
+                        if (res != 0)
+                            return res;
+
+                        //3rd compare by userName
+                        if (!schoolOrg) {
+                            String userName1 = u1.getFullName();
+                            String userName2 = u2.getFullName();
+                            res = userName1.compareTo(userName2);
+                            if (res != 0)
+                                return res;
+                        }
+
+                        return 0;
                     });
 
 
