@@ -69,10 +69,15 @@ public class BebrasAddressCertificate extends Diploma<DiplomaFactory> {
                 false, x0 + WHOM_WIDTH, y0, position
         );
 
-        String[] schoolLines = BebrasPlacesEvaluator.splitProbablyLongLine((String) user.getInfo().get("school_name"));
-        for (String schoolLine : schoolLines) {
-            y0 -= ls;
-            printAddrText(writer, shortenText(schoolLine), false, x0, y0, position);
+        Object sendToSelfObj = user.getInfo().get("send_to_self");
+        boolean sendToSelf = sendToSelfObj == null ? false : (Boolean) sendToSelfObj;
+
+        if (!sendToSelf) {
+            String[] schoolLines = BebrasPlacesEvaluator.splitProbablyLongLine((String) user.getInfo().get("school_name"));
+            for (String schoolLine : schoolLines) {
+                y0 -= ls;
+                printAddrText(writer, shortenText(schoolLine), false, x0, y0, position);
+            }
         }
 
         y0 -= ls;
