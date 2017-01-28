@@ -79,6 +79,13 @@ public class Contests extends Controller {
         else
             answersForContest = user.getAnswersForContest(contest);
 
+        //problems data
+        Map<String, String> problemsData;
+        if (printing)
+            problemsData = new HashMap<>();
+        else
+            problemsData = user.getProblemsDataForContest(contest);
+
         //fill json info with user answers
         JSONSerializer contestInfoSerializer = new JSONSerializer();
         ListSerializer problemsInfoSerializer = contestInfoSerializer.getListSerializer("problems");
@@ -96,6 +103,16 @@ public class Contests extends Controller {
                 else
                     problem.getAnswerPattern().write(problemInfoSerializer, "ans", answer);
                 problemInfoSerializer.write("type", problem.getType());
+
+                //now add problem data
+                Serializer problemInfoDataSerializer = problemInfoSerializer.getSerializer("data");
+                String pdataPrefix = "pdata" + index + "-";
+                problemsData.forEach((field, value) -> {
+                    if (field.startsWith(pdataPrefix)) {
+                        field = field.substring(pdataPrefix.length());
+                        problemInfoDataSerializer.write(field, value);
+                    }
+                });
 
                 problem2index.put(configuredProblem, index);
 

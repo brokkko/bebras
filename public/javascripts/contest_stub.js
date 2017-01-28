@@ -13,6 +13,10 @@ function submit_answer(problem_id, answer) {
     problem_id_2_answer[problem_id] = answer;
 }
 
+function contest_local_storage_key(problem_id) {
+    return 'contest-stub-problem-info-' + problem_id;
+}
+
 $(function() {
 
     function load_answer_for_problem($problem_div, ans) {

@@ -759,6 +759,27 @@ public class User implements SerializableUpdatable {
         return pid2ans;
     }
 
+    public Map<String, String> getProblemsDataForContest(Contest contest) {
+        List<Submission> allSubmissions = getAllSubmissions(contest);
+
+        Map<String, String> result = new HashMap<>();
+
+        ListIterator<Submission> li = allSubmissions.listIterator(allSubmissions.size());
+
+        while (li.hasPrevious()) {
+            Submission s = li.previous();
+
+            if (s.isSystem()) {
+                String field = s.getSystemField();
+                if (field.startsWith("pdata"))
+                    if (!result.containsKey(field))
+                        result.put(field, s.getSystemValue());
+            }
+        }
+
+        return result;
+    }
+
     public List<Submission> getAllSubmissions(Contest contest) {
         List<Submission> allSubmissions = cachedAllSubmissions.get(contest);
 

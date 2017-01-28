@@ -8,6 +8,11 @@ function get_problem_index($problem_div) {
     return +$problem_div.find('.pid').text();
 }
 
+var contest_local_storage_key; //function(problem_id) returns key to store self data
+
+var save_problem_data; //function(problem_id, data_key, value)
+var get_problem_data; //function(problem_id, data_key)
+
 var submit_answer; //function (problem_id, answer)
 
 (function () {
@@ -100,6 +105,29 @@ var submit_answer; //function (problem_id, answer)
         return $('.contest-is-scrolling').size() > 0;
     }
 
+    //problem data
+
+    function system_message_problem_data(problem_id, data_key) {
+        return "pdata" + problem_id + '-' + data_key;
+    }
+
+    save_problem_data = function(problem_id, data_key, value) {
+        var problem = contest_info.problems[problem_id];
+        if (!problem.data)
+            problem.data = {};
+
+        problem.data[data_key] = value;
+
+        submit_system_message(system_message_problem_data(problem_id, data_key), value);
+
+        if (sending_timeout_id == null)
+            send_answers_now();
+    };
+
+    get_problem_data = function(problem_id, data_key) {
+        return contest_info.problems[problem_id].data[data_key];
+    };
+
     //loading user answers to problems
 
     function load_answer(pid, answer) {
@@ -108,12 +136,13 @@ var submit_answer; //function (problem_id, answer)
     }
 
     function load_all_user_answers() {
+        console.log('al', answers_list);
         for (var i = 0; i < get_problems_count(); i++) {
             var answer = contest_info.problems[i].ans;
 
             for (var li = 0; li < answers_list.length; li++) {
                 var submission = answers_list[li];
-                if (submission.pid == i)
+                if (submission.pn == i)
                     answer = submission.a;
             }
 
@@ -158,6 +187,9 @@ var submit_answer; //function (problem_id, answer)
         $('#stop-confirmation').find('.page-button').click(stop_confirmation_click);
 
         contest_info = $.parseJSON($('.contest-info').text());
+        contest_local_storage_key = function(pid) {
+            return 'problem' + pid + '-' + contest_info.storage_id;
+        };
 
         answer_sending_info_show('ok');
 
