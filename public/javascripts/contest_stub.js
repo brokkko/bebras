@@ -8,21 +8,28 @@ var dces2contest = {
     },
 
     problem_id_2_answer: [],
+    problem_id_2_data: [],
 
     submit_answer: function (problem_id, answer) {
         dces2contest.problem_id_2_answer[problem_id] = answer;
     },
 
     contest_local_storage_key: function (problem_id) { // returns key to store self data
-        return 'contest-stub-problem-info-' + problem_id;
+        var key = $('#problem-local-storage-key').text();
+        return key ? key : 'contest-stub-problem-info-' + problem_id;
     },
 
     save_problem_data: function (problem_id, data_key, value) {
-        //will be reassigned
+        if (!(problem_id in dces2contest.problem_id_2_data))
+            dces2contest.problem_id_2_data[problem_id] = {};
+        dces2contest.problem_id_2_data[problem_id][data_key] = value;
     },
 
     get_problem_data: function (problem_id, data_key) {
-        //will be reassigned
+        if (problem_id in dces2contest.problem_id_2_data)
+            return dces2contest.problem_id_2_data[problem_id][data_key];
+        else
+            return null;
     }
 };
 
