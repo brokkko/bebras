@@ -1,27 +1,36 @@
-var solutions_loaders_registry = {};
-var problem_id_2_answer = [];
+var dces2contest = {
+    solutions_loaders_registry: {},
+    register_solution_loader: function (problem_type, loader) {
+        dces2contest.solutions_loaders_registry[problem_type] = loader;
+    },
+    get_problem_index: function ($problem_div) {
+        return 0;
+    },
 
-function register_solution_loader(problem_type, loader) {
-    solutions_loaders_registry[problem_type] = loader;
-}
+    problem_id_2_answer: [],
 
-function get_problem_index($problem_div) {
-    return 0; //all problems have pid=0, because we anyway are not interested in their solutions
-}
+    submit_answer: function (problem_id, answer) {
+        dces2contest.problem_id_2_answer[problem_id] = answer;
+    },
 
-function submit_answer(problem_id, answer) {
-    problem_id_2_answer[problem_id] = answer;
-}
+    contest_local_storage_key: function (problem_id) { // returns key to store self data
+        return 'contest-stub-problem-info-' + problem_id;
+    },
 
-function contest_local_storage_key(problem_id) {
-    return 'contest-stub-problem-info-' + problem_id;
-}
+    save_problem_data: function (problem_id, data_key, value) {
+        //will be reassigned
+    },
+
+    get_problem_data: function (problem_id, data_key) {
+        //will be reassigned
+    }
+};
 
 $(function() {
 
     function load_answer_for_problem($problem_div, ans) {
         var type = $problem_div.find('.pr_type').text();
-        solutions_loaders_registry[type]($problem_div, ans);
+        dces2contest.solutions_loaders_registry[type]($problem_div, ans);
     }
 
     //load solutions for all problems
@@ -41,7 +50,7 @@ $(function() {
                 $problem.addClass('hidden');
         });
 
-        var enteredAns = problem_id_2_answer[0];
+        var enteredAns = dces2contest.problem_id_2_answer[0];
         var $problem_div = $($('.problem').get(1));
         load_answer_for_problem($problem_div, enteredAns);
 

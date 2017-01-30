@@ -60,11 +60,11 @@
         var answer_id = +$task_selector.find('.aid').text();
 
         var $problem_div = $task_selector.parents('.problem');
-        var problem_id = get_problem_index($problem_div);
+        var problem_id = dces2contest.get_problem_index($problem_div);
         choose_answer($problem_div, answer_id);
 
-        submit_answer(problem_id, {"a": answer_id});
+        dces2contest.submit_answer(problem_id, {"a": answer_id});
     }
 
-    register_solution_loader('bbtc', load_solution);
+    dces2contest.register_solution_loader('bbtc', load_solution);
 })();

@@ -120,11 +120,11 @@ var add_bebras_dyn_problem = (function(){
             var enabled = problem.isEnabled();
             problem.setEnabled(!enabled);
 
-            var pid = get_problem_index($problem);
+            var pid = dces2contest.get_problem_index($problem);
             if (enabled) {
                 var sol = problem.getSolution();
 
-                submit_answer(get_problem_index($problem), {
+                dces2contest.submit_answer(dces2contest.get_problem_index($problem), {
                     'r': problem.getAnswer(),
                     's': sol
                 });
@@ -133,7 +133,7 @@ var add_bebras_dyn_problem = (function(){
                 if (console)
                     console.log('sending solution', sol);
             } else
-                submit_answer(get_problem_index($problem), {
+                dces2contest.submit_answer(dces2contest.get_problem_index($problem), {
                     'r': -1,
                     's': problem.getSolution()
                 });
@@ -206,7 +206,7 @@ var add_bebras_dyn_problem = (function(){
         }
     }
 
-    register_solution_loader('bebras-dyn', load_solution);
+    dces2contest.register_solution_loader('bebras-dyn', load_solution);
 
     return add_bebras_dyn_problem;
 })();

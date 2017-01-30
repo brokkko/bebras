@@ -1,1 +1,1 @@
-register_solution_loader('kio', function(){});
+dces2contest.register_solution_loader('kio', function(){});

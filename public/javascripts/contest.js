@@ -1,19 +1,27 @@
-var solutions_loaders_registry = {};
+var dces2contest = {
+    solutions_loaders_registry: {},
+    register_solution_loader: function (problem_type, loader) {
+        dces2contest.solutions_loaders_registry[problem_type] = loader;
+    },
+    get_problem_index: function ($problem_div) {
+        return +$problem_div.find('.pid').text();
+    },
 
-function register_solution_loader(problem_type, loader) {
-    solutions_loaders_registry[problem_type] = loader;
-}
+    submit_answer: function (problem_id, answer) {
+    },
 
-function get_problem_index($problem_div) {
-    return +$problem_div.find('.pid').text();
-}
+    contest_local_storage_key: function (problem_id) { // returns key to store self data
+        //will be reassigned
+    },
 
-var contest_local_storage_key; //function(problem_id) returns key to store self data
+    save_problem_data: function (problem_id, data_key, value) {
+        //will be reassigned
+    },
 
-var save_problem_data; //function(problem_id, data_key, value)
-var get_problem_data; //function(problem_id, data_key)
-
-var submit_answer; //function (problem_id, answer)
+    get_problem_data: function (problem_id, data_key) {
+        //will be reassigned
+    }
+};
 
 (function () {
 
@@ -59,7 +67,7 @@ var submit_answer; //function (problem_id, answer)
     }
 
     function find_page_selector_and_click(page) {
-        $(".page-selectors .-info").each(function() {
+        $(".page-selectors .-info").each(function () {
             var $this = $(this);
             if ($this.text() == page)
                 $this.parent().click();
@@ -72,7 +80,7 @@ var submit_answer; //function (problem_id, answer)
 
         var $selectors = $('.page-selectors');
         $selectors.children().removeClass('active');
-        $selectors.each(function(){
+        $selectors.each(function () {
             var $selector = $(this);
             var domPageSelector = $selector.children('.page-selector').get(page);
             $(domPageSelector).addClass('active');
@@ -83,7 +91,7 @@ var submit_answer; //function (problem_id, answer)
             var allPages = $('.page');
             var $current_page = $(allPages.get(current_page));
             var $new_page = $(allPages.get(page));
-            animate_substitute($current_page, $new_page, function() {
+            animate_substitute($current_page, $new_page, function () {
                 window.scrollTo(0, $selectors.offset().top - 10);
             });
         }
@@ -111,7 +119,15 @@ var submit_answer; //function (problem_id, answer)
         return "pdata" + problem_id + '-' + data_key;
     }
 
-    save_problem_data = function(problem_id, data_key, value) {
+    function system_message_get_data_key(message_field) {
+        var m = message_field.match(/^pdata(\d+)-(.*)$/);
+        if (m)
+            return {pid: +m[1], data_key: m[2]};
+        else
+            return null;
+    }
+
+    dces2contest.save_problem_data = function (problem_id, data_key, value) {
         var problem = contest_info.problems[problem_id];
         if (!problem.data)
             problem.data = {};
@@ -121,10 +137,10 @@ var submit_answer; //function (problem_id, answer)
         submit_system_message(system_message_problem_data(problem_id, data_key), value);
 
         if (sending_timeout_id == null)
-            send_answers_now();
+            send_answers_now(); //TODO if results are already shown, this forces refresh
     };
 
-    get_problem_data = function(problem_id, data_key) {
+    dces2contest.get_problem_data = function (problem_id, data_key) {
         return contest_info.problems[problem_id].data[data_key];
     };
 
@@ -132,11 +148,10 @@ var submit_answer; //function (problem_id, answer)
 
     function load_answer(pid, answer) {
         var type = contest_info.problems[pid].type;
-        solutions_loaders_registry[type](get_problem_div(pid), answer);
+        dces2contest.solutions_loaders_registry[type](get_problem_div(pid), answer);
     }
 
     function load_all_user_answers() {
-        console.log('al', answers_list);
         for (var i = 0; i < get_problems_count(); i++) {
             var answer = contest_info.problems[i].ans;
 
@@ -147,6 +162,22 @@ var submit_answer; //function (problem_id, answer)
             }
 
             load_answer(i, answer);
+        }
+    }
+
+    function load_all_problems_data() {
+        for (var li = 0; li < answers_list.length; li++) {
+            var submission = answers_list[li];
+            if (submission.pn == null) {
+                var m = system_message_get_data_key(submission.a.f);
+                if (m !== null) {
+                    var problem = contest_info.problems[m.pid];
+                    if (!problem.data)
+                        problem.data = {};
+
+                    problem.data[m.data_key] = submission.a.v;
+                }
+            }
         }
     }
 
@@ -163,21 +194,21 @@ var submit_answer; //function (problem_id, answer)
 
     //page loaded
 
-    $(window).load(function() {
+    $(window).load(function () {
         ensure_timer_is_going();
     });
 
-    $(function() {
+    $(function () {
         pages_count = $('.page').length;
 
         $('.page-selector').click(page_selector_click);
-        $('.page-back').click(function(){
+        $('.page-back').click(function () {
             if (scrolling_problem_change_regime())
                 find_page_selector_and_click(current_page - 1);
             else
                 select_page_and_submit_message(current_page - 1);
         });
-        $('.page-forward').click(function(){
+        $('.page-forward').click(function () {
             if (scrolling_problem_change_regime())
                 find_page_selector_and_click(current_page + 1);
             else
@@ -187,7 +218,7 @@ var submit_answer; //function (problem_id, answer)
         $('#stop-confirmation').find('.page-button').click(stop_confirmation_click);
 
         contest_info = $.parseJSON($('.contest-info').text());
-        contest_local_storage_key = function(pid) {
+        dces2contest.contest_local_storage_key = function (pid) {
             return 'problem' + pid + '-' + contest_info.storage_id;
         };
 
@@ -196,6 +227,7 @@ var submit_answer; //function (problem_id, answer)
         switch (contest_info.status) {
             case "going":
                 load_list();
+                load_all_problems_data();
                 load_all_user_answers();
 
                 if (contest_info.passed == 0) //if contest just started,
@@ -218,6 +250,7 @@ var submit_answer; //function (problem_id, answer)
             case "results":
                 $('#contest-time').hide(); //hide all extra time information
 
+                load_all_problems_data();
                 load_all_user_answers();
 
                 //test if there were unsent answers
@@ -252,7 +285,10 @@ var submit_answer; //function (problem_id, answer)
         $('#stop-contest').hide();
         if (stop_timeout_handler != null)
             clearTimeout(stop_timeout_handler);
-        stop_timeout_handler = setTimeout(function(){$('#stop-confirmation').hide(); $('#stop-contest').show();}, 10000); //10 seconds
+        stop_timeout_handler = setTimeout(function () {
+            $('#stop-confirmation').hide();
+            $('#stop-contest').show();
+        }, 10000); //10 seconds
     }
 
     function stop_confirmation_click() {
@@ -311,13 +347,13 @@ var submit_answer; //function (problem_id, answer)
     }
 
     function load_list() {
-        if (! hasLocalStorage()) {
+        if (!hasLocalStorage()) {
             answers_list = [];
             return;
         }
 
         var list = localStorage.getItem(local_storage_key());
-        if (! list)
+        if (!list)
             answers_list = [];
         else
             answers_list = eval(list);
@@ -357,7 +393,7 @@ var submit_answer; //function (problem_id, answer)
     }
 
     function answers_error() {
-        send_fails_count ++;
+        send_fails_count++;
         undo_timeout();
         var delay = send_delay(send_fails_count);
         sending_timeout_id = setTimeout(send_answers_now, delay);
@@ -407,17 +443,19 @@ var submit_answer; //function (problem_id, answer)
             send_answers_now();
     }
 
-    submit_answer = give_answer;
+    dces2contest.submit_answer = give_answer;
 
     function submit_system_message(field, value) {
         ensure_timer_is_going();
 
         var time = new Date().getTime() - start_time;
 
-        var ans = {"lt": time, "pn": null, "a": {
-            "f": field,
-            "v": value
-        }};
+        var ans = {
+            "lt": time, "pn": null, "a": {
+                "f": field,
+                "v": value
+            }
+        };
 
         push_answer_to_list(ans);
     }
