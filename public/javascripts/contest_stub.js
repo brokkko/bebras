@@ -14,6 +14,7 @@ var dces2contest = {
         dces2contest.problem_id_2_answer[problem_id] = answer;
     },
 
+    //TODO is not really needed
     contest_local_storage_key: function (problem_id) { // returns key to store self data
         var key = $('#problem-local-storage-key').text();
         return key ? key : 'contest-stub-problem-info-' + problem_id;

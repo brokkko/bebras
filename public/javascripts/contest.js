@@ -7,13 +7,16 @@ var dces2contest = {
         return +$problem_div.find('.pid').text();
     },
 
+    //answer is an object
     submit_answer: function (problem_id, answer) {
     },
 
+    //TODO is not really needed
     contest_local_storage_key: function (problem_id) { // returns key to store self data
         //will be reassigned
     },
 
+    //value is String
     save_problem_data: function (problem_id, data_key, value) {
         //will be reassigned
     },
