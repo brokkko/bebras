@@ -376,47 +376,14 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                     // sort certificates
                     worker.logInfo("sorting");
+
+                    Comparator<User> usersComparator = getUsersComparator(schoolOrg);
                     allCertificates.sort((cert1, cert2) -> {
                         User u1 = cert1.getUser();
                         User u2 = cert2.getUser();
 
-                        User o1 = u1;
-                        User o2 = u2;
-
-                        if (!schoolOrg) {
-                            o1 = o1.getRegisteredByUser();
-                            o2 = o2.getRegisteredByUser();
-                        }
-
-//                        String i1 = Application.getCodeForUser(u1);
-//                        String i2 = Application.getCodeForUser(u2);
-                        //1st compare by regions
-                        String reg1 = (String) o1.getInfo().get("region");
-                        String reg2 = (String) o2.getInfo().get("region");
-
-                        int res = reg1.compareTo(reg2);
-                        if (res != 0)
-                            return res;
-
-                        //2nd compare by org name
-                        String orgName1 = o1.getFullName();
-                        String orgName2 = o2.getFullName();
-                        res = orgName1.compareTo(orgName2);
-                        if (res != 0)
-                            return res;
-
-                        //3rd compare by userName
-                        if (!schoolOrg) {
-                            String userName1 = u1.getFullName();
-                            String userName2 = u2.getFullName();
-                            res = userName1.compareTo(userName2);
-                            if (res != 0)
-                                return res;
-                        }
-
-                        return 0;
+                        return usersComparator.compare(u1, u2);
                     });
-
 
                     // now draw all certificates
                     processedUsers = 0;
@@ -445,6 +412,46 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         });
 
         return Results.redirect(controllers.routes.EventAdministration.workersList(event.getId()));
+    }
+
+    private Comparator<User> getUsersComparator(boolean schoolOrg) {
+        return (u1, u2) -> {
+            User o1 = u1;
+            User o2 = u2;
+
+            if (!schoolOrg) {
+                o1 = o1.getRegisteredByUser();
+                o2 = o2.getRegisteredByUser();
+            }
+
+//                        String i1 = Application.getCodeForUser(u1);
+//                        String i2 = Application.getCodeForUser(u2);
+            //1st compare by regions
+            String reg1 = (String) o1.getInfo().get("region");
+            String reg2 = (String) o2.getInfo().get("region");
+
+            int res = reg1.compareTo(reg2);
+            if (res != 0)
+                return res;
+
+            //2nd compare by org name
+            String orgName1 = o1.getFullName();
+            String orgName2 = o2.getFullName();
+            res = orgName1.compareTo(orgName2);
+            if (res != 0)
+                return res;
+
+            //3rd compare by userName
+            if (!schoolOrg) {
+                String userName1 = u1.getFullName();
+                String userName2 = u2.getFullName();
+                res = userName1.compareTo(userName2);
+                if (res != 0)
+                    return res;
+            }
+
+            return 0;
+        };
     }
 
     private Result generateAllGramotas() {
@@ -602,14 +609,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                 User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery);
                 List<User> allUsers = usersEnumeration.readToMemory();
-                Collections.sort(allUsers, new Comparator<User>() {
-                    @Override
-                    public int compare(User u1, User u2) {
-                        String s1 = BebrasCertificate.getUserCode(u1, true, year);
-                        String s2 = BebrasCertificate.getUserCode(u2, true, year);
-                        return s1.compareTo(s2);
-                    }
-                });
+                allUsers.sort(getUsersComparator(true));
 
                 File outputPath = new File(event.getEventDataFolder(), "all-addresses-" + roleName + ".pdf");
 
