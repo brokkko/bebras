@@ -1,5 +1,5 @@
 $(function() {
-    $('form#edit-problem textarea.bebras-editor').wymeditor({
+    $('form#edit-problem textarea.bebras-editor, form#edit-problem textarea.kio-editor').wymeditor({
         dialogImageUploadUrl:   '/wymupload',
 
         classesItems: [

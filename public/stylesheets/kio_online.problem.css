@@ -1,0 +1,87 @@
+.problem {
+    background-color: white;
+}
+
+.statement {
+    margin-bottom: 1em;
+}
+
+.problem-index {
+    font-weight: bold;
+}
+
+.problem-title {
+    margin-right: 0.5em;
+}
+
+.section-title {
+    font-weight: bold;
+}
+
+/* editor styles */
+
+.problem img {
+    margin: 1em 0;
+}
+
+.problem img.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.problem .float-left {
+    float:left;
+    margin-right: 2em;
+}
+
+.problem .float-right {
+    float:right;
+    margin-left: 2em;
+}
+
+.problem .clear {
+    clear: both;
+}
+
+/*editor*/
+.kio-editor-title {
+    margin-top: 0.5em;
+    margin-right: 1em;
+    font-size: 1.2em;
+}
+
+form#edit-problem .kio-editor {
+    padding: 4px;
+    border: #3366FF 2px solid;
+    margin: 2px 8px 2px 0;
+    vertical-align: middle;
+}
+
+form#edit-problem textarea {
+    width: 100%;
+}
+
+.kio-editor {
+    width: 50%;
+}
+
+/*fix view*/
+.problem p {
+    margin: 0;
+    padding: 0;
+}
+
+/* editor, should probably be moved to editor css */
+
+.wym_left_block, .wym_right_block {
+    margin: 0;
+    padding: 0;
+    width: 50%;
+    display:inline-block;
+    overflow: hidden;
+}
+
+.task-statement.dynamic {
+    font-size: 1.4em;
+}

@@ -1,0 +1,21 @@
+@(showSolutions: Boolean, uniqueId: String, title: String, statement: String, help: String, className: String, settings: String, dependencies: String)
+<div class='task-title section-title'>
+        <span class='problem-title'>@Html(title)</span>
+</div>
+
+<div id="@uniqueId"></div>
+
+<div class='task-statement'>
+    <p class="section-title">Условие</p>
+    @Html(statement)
+</div>
+<div class='task-help'>
+    <p class="section-title">Помощь</p>
+    @Html(help)
+</div>
+@*showSolutions may mean that nothing should go to server*@
+<script>
+        $(function() {
+            kio_api.initializeKioProblem(@className, document.getElementById('@uniqueId'), @settings, '/~plugin/KioOnline/');
+        });
+</script>

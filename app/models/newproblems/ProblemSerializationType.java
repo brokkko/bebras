@@ -3,6 +3,7 @@ package models.newproblems;
 import models.newproblems.bbtc.BBTCProblem;
 import models.newproblems.bebras.BebrasDynamicProblem;
 import models.newproblems.bebras.BebrasProblem;
+import models.newproblems.kio.KioOnlineProblem;
 import models.newproblems.kio.KioProblem;
 import models.newserialization.SerializableTreeSerializationType;
 
@@ -19,5 +20,6 @@ public class ProblemSerializationType extends SerializableTreeSerializationType<
         registerClass("bebras", BebrasProblem.class);
         registerClass("bebras-dyn", BebrasDynamicProblem.class);
         registerClass("kio", KioProblem.class);
+        registerClass("kio-online", KioOnlineProblem.class);
     }
 }

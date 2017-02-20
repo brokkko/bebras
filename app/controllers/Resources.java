@@ -20,10 +20,6 @@ public class Resources extends Controller {
 
     @DcesController(allowCache = true)
     public static Result returnFile(String file) throws IOException {
-//        String s = "abc";
-//        for (int i = 0; i < 30000000; i++)
-//            s = s.substring(1) + "a";
-
         String cacheKey = "resource-file-" + file;
 
         final String decodedFile = URLDecoder.decode(file, "UTF-8");
