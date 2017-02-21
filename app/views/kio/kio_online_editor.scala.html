@@ -1,4 +1,4 @@
-@(title: String, statement: String, help: String, className: String, dependencies: String)
+@(title: String, statement: String, help: String, className: String, settings: String, dependencies: String)
 <p><span class='kio-editor-title'>Название:</span> <input class='kio-editor' value="@{title}" name="title"></p>
 <p class='kio-editor-title'>Условие</p>
 <textarea rows=10 class='kio-editor' name="statement">@statement</textarea>
@@ -10,6 +10,6 @@
     <input class='kio-editor' value="@className" name="class_name"></p>
 
 <p><span class='kio-editor-title'>Настройки:</span>
-    <input class='kio-editor' value="@className" name="settings"></p>
+    <input class='kio-editor' value="@settings" name="settings"></p>
 
 <p><span class='kio-editor-title'>Зависимости:</span> <input class='kio-editor' value="@dependencies" name="dependencies"></p>

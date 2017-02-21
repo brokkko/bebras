@@ -71,7 +71,7 @@ public class KioOnlineProblem implements Problem {
     @Override
     public Html formatEditor() {
         return views.html.kio.kio_online_editor.render(
-                title, statement, help, className, dependencies
+                title, statement, help, className, settings, dependencies
         );
     }
 

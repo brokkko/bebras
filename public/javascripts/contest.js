@@ -4,7 +4,7 @@ var dces2contest = {
         dces2contest.solutions_loaders_registry[problem_type] = loader;
     },
     get_problem_index: function ($problem_div) {
-        return +$problem_div.find('.pid').text();
+        return +$problem_div.closest('.problem').find('.pid').text();
     },
 
     //answer is an object
