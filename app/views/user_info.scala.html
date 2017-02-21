@@ -120,7 +120,7 @@
                                     </td>
                                     *@
                                     <td>
-                                        @if(user.userParticipatedAndFinished(contest)) {
+                                        @if(user.mayClearContestParticipation(contest)) {
                                             <form
                                             class="submit actions-reset-finish-@contest.getId"
                                             action="@routes.Contests.restartForUser(Event.currentId, contest.getId, user.getId.toString)"

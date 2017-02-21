@@ -339,7 +339,7 @@ public class Contests extends Controller {
             return forbidden();
         if (!user.hasEventAdminRight() && !user.isUpper(restartingUser))
             return forbidden();
-        if (!restartingUser.userParticipatedAndFinished(contest))
+        if (!restartingUser.mayClearContestParticipation(contest))
             return forbidden();
 
         doRestartUser(restartingUser, contest);

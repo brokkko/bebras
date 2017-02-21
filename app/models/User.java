@@ -674,6 +674,11 @@ public class User implements SerializableUpdatable {
         return AuthenticatedAction.getRequestTime().getTime() - start.getTime() >= contest.getDurationInMs();
     }
 
+    public boolean mayClearContestParticipation(Contest contest) {
+        boolean allowRestartNonFinished = Event.current().getExtraField("allow-restart-nonfinished", Boolean.FALSE) == Boolean.TRUE;
+        return userParticipatedAndFinished(contest) || allowRestartNonFinished;
+    }
+
     //contest timing
 
     public boolean contestStarted(Contest contest) {
