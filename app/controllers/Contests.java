@@ -162,6 +162,9 @@ public class Contests extends Controller {
 
         contestInfoSerializer.write("status", textStatus);
 
+        //TODO !!! here is again a "kio" or "bebras" mention
+        boolean hideStopButtonInInfiniteTime = contest.isUnlimitedTime() && event.getId().startsWith("kio");
+
         if (printing) {
             Map<ConfiguredProblem, String> problem2title = new HashMap<>();
             for (Map.Entry<ConfiguredProblem, Integer> problemIndexEntry : problem2index.entrySet())
@@ -188,7 +191,8 @@ public class Contests extends Controller {
                                                        event.getExtraField("contests_no_menu", false) == Boolean.FALSE,
                                                        event.getExtraField("contests_no_top_pages", false) == Boolean.FALSE,
                                                        event.getExtraField("contests_no_bottom_pages", false) == Boolean.FALSE,
-                                                       event.getExtraField("contests_no_next_buttons", false) == Boolean.FALSE
+                                                       event.getExtraField("contests_no_next_buttons", false) == Boolean.FALSE,
+                                                        hideStopButtonInInfiniteTime
             ));
     }
 

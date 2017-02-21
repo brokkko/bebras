@@ -1,4 +1,4 @@
-@(status:String, pagedUserProblems:java.util.List[java.util.List[models.newproblems.ConfiguredProblem]], problem2index:java.util.Map[models.newproblems.ConfiguredProblem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)(show_header:Boolean, show_footer:Boolean, scrolling:Boolean, menu_to_left:Boolean, show_menu:Boolean, top_pages:Boolean, bottom_pages:Boolean, next_buttons:Boolean)
+@(status:String, pagedUserProblems:java.util.List[java.util.List[models.newproblems.ConfiguredProblem]], problem2index:java.util.Map[models.newproblems.ConfiguredProblem, Integer], jsonContestInfo:String, problemsWidgets:views.widgets.Widget)(show_header:Boolean, show_footer:Boolean, scrolling:Boolean, menu_to_left:Boolean, show_menu:Boolean, top_pages:Boolean, bottom_pages:Boolean, next_buttons:Boolean, hide_stop_button_in_infinite_time:Boolean)
 @import plugins.questionnaire.QuestionnairePlugin
 @import models.utils.Utils
 @import views.widgets.CssJsWidget
@@ -29,8 +29,10 @@
 }{
     <div id='contest-time'>
         @if(Contest.current.isUnlimitedTime) {
-            <div id='time-status-info'>Время не ограничено</div>
-            <div id='stop-contest'><span class='page-button'>Завершить</span></div>
+            @if(!hide_stop_button_in_infinite_time) {
+                <div id='time-status-info'>Время не ограничено</div>
+                <div id='stop-contest'><span class='page-button'>Завершить</span></div>
+            }
         } else {
             <div id='time-status-info'>Осталось</div>
             <div id='time-info'>? минут</div>
