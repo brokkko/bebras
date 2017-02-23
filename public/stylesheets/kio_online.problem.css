@@ -1,21 +1,20 @@
 .problem {
-    background-color: white;
+    font-family: Verdana, 'sans-serif';
 }
 
-.statement {
-    margin-bottom: 1em;
-}
-
-.problem-index {
-    font-weight: bold;
+.problem p {
+    padding: 0;
 }
 
 .problem-title {
-    margin-right: 0.5em;
+    font-weight: bold;
+    font-size: 1.4em;
+    margin-bottom: 1em;
 }
 
 .section-title {
     font-weight: bold;
+    margin: 1em 0;
 }
 
 /* editor styles */
@@ -64,12 +63,6 @@ form#edit-problem textarea {
 
 .kio-editor {
     width: 50%;
-}
-
-/*fix view*/
-.problem p {
-    margin: 0;
-    padding: 0;
 }
 
 /* editor, should probably be moved to editor css */
