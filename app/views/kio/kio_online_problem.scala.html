@@ -16,6 +16,6 @@
 @*showSolutions may mean that nothing should go to server*@
 <script>
         $(function() {
-            kio_api.initializeKioProblem(@className, document.getElementById('@uniqueId'), @settings, '/~plugin/KioOnline/');
+            kio_api.initializeKioProblem(@Html(className), document.getElementById('@uniqueId'), @Html(settings), '/~plugin/KioOnline/');
         });
 </script>
