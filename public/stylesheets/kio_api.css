@@ -82,3 +82,5 @@
   .kio-base-controls-container .kio-base-solutions-container .kio-base-stored-solution td.first {
     font-weight: bold;
     padding-right: 1em; }
+  .kio-base-controls-container .kio-base-solutions-container .kio-base-stored-solution td.second {
+    padding-right: 1em; }
