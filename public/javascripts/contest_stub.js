@@ -31,6 +31,19 @@ var dces2contest = {
             return dces2contest.problem_id_2_data[problem_id][data_key];
         else
             return null;
+    },
+
+    get_all_problem_data_keys: function (problem_id) {
+        var res = [];
+
+        if (problem_id in dces2contest.problem_id_2_data) {
+            var data = dces2contest.problem_id_2_data[problem_id];
+            for (var key in data)
+                if (data.hasOwnProperty(key))
+                    res.push(key);
+        }
+
+        return res;
     }
 };
 

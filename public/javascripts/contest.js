@@ -23,6 +23,10 @@ var dces2contest = {
 
     get_problem_data: function (problem_id, data_key) {
         //will be reassigned
+    },
+
+    get_all_problem_data_keys: function (problem_id) {
+        //will be reassigned
     }
 };
 
@@ -145,6 +149,15 @@ var dces2contest = {
 
     dces2contest.get_problem_data = function (problem_id, data_key) {
         return contest_info.problems[problem_id].data[data_key];
+    };
+
+    dces2contest.get_all_problem_data_keys = function (problem_id) {
+        var data = contest_info.problems[problem_id].data;
+        var res = [];
+        for (var key in data)
+            if (data.hasOwnProperty(key))
+                res.push(key);
+        return res;
     };
 
     //loading user answers to problems
