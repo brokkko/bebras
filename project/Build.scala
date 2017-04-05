@@ -28,9 +28,15 @@ object ApplicationBuild extends Build {
     )
   )
 
+  val kioJsProblems = Project("kio-js-problems", file("kio-js-problems")).settings(
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "3.0.1" % Test
+    )
+  )
+
   val main = play.Project(appName, appVersion, appDependencies).settings(
     // Add your own project settings here
     //      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
-  ).dependsOn(authSubProject).dependsOn(certificates)
+  ).dependsOn(authSubProject).dependsOn(certificates).dependsOn(kioJsProblems)
 
 }
