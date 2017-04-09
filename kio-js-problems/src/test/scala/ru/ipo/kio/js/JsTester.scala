@@ -1,34 +1,35 @@
 package ru.ipo.kio.js
 
-import java.nio.file.{Files, Paths}
-
+import jdk.nashorn.api.scripting.{AbstractJSObject, ScriptObjectMirror}
 import org.scalatest.{FlatSpec, Matchers}
+import ru.ipo.Resource
 
 /**
   * Created by ilya on 28.03.17.
   */
 class JsTester extends FlatSpec with Matchers {
 
-  private def resourceToString(name: String): String = {
-    val resource = classOf[JsTester].getResource(name)
-    new String(Files.readAllBytes(
-      Paths.get(resource.toURI)
-    ))
-  }
-
   private def getExampleProblem = new JsKioProblem(
-    resourceToString("/ru/ipo/kio/js/task_example.js"),
+    Resource("/ru/ipo/kio/js/task_example.js").asString(),
     "task_example.TaskExample",
     "{level: 2}"
   )
 
-  "Tanechka" should "not fail reading js kio problem" in {
+  "Problem reader" should "not fail reading js kio problem" in {
     val p = getExampleProblem
   }
 
   it should "get problem parameters" in {
     val p = getExampleProblem
-    p.compare()
-  }
 
+    val x1 = new Result(Map("steps" -> 42, "max" -> 100, "info1" -> 0.2))
+    val x2 = new Result(Map("steps" -> 239, "max" -> 100, "info1" -> 0.3))
+    val x3 = new Result(Map("steps" -> 42, "max" -> 200, "info1" -> 0.4))
+    val x4 = new Result(Map("steps" -> 239, "max" -> 200, "info1" -> 0.5))
+    val results = List(x1, x2, x3, x4)
+
+    val sortedResults = results.sorted(p)
+
+    sortedResults should equal (List(x3, x1, x4, x2))
+  }
 }

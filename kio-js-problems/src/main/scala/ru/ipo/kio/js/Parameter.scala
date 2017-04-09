@@ -14,7 +14,7 @@ class Parameter(
                  ordering: ResultsOrdering,
                  view: Any => String,
                  normalize: Any => Double
-                    ) extends Ordering[Result] {
+               ) extends Ordering[Result] {
   val x: Map[String, String] = Map()
 
   override def compare(x: Result, y: Result): Int = {
@@ -35,23 +35,31 @@ class Parameter(
 }
 
 object Parameter {
-   def apply(name: String, title: String, ordering: String, view: ScriptObjectMirror, normalize: ScriptObjectMirror): Parameter = {
-     val newView: Any => String = if (ScriptObjectMirror.isUndefined(view))
-       x => x.toString
-     else if (view.isFunction)
-       x => view.call(null, x).toString
-     else
-       x => x.toString + view.toString
 
-     val newNormalize: Any => Double = if (normalize.isFunction)
-       x => normalize.call(x).asInstanceOf[Number].doubleValue()
-     else
-       x => x.asInstanceOf[Number].doubleValue()
+  private def mapUndefinedTo(x: Any, value: Any): Any = if (ScriptObjectMirror.isUndefined(x)) value else x
 
-     new Parameter(name, title, if (ordering == "maximize") Maximize else Minimize, newView, newNormalize)
-   }
+  def apply(name: Any, title: Any, ordering: Any, view: Any, normalize: Any): Parameter = {
+    val newName = mapUndefinedTo(name, "").toString
+    val newTitle = mapUndefinedTo(title, "").toString
+
+    val newView: Any => String = mapUndefinedTo(view, "") match {
+      case v: ScriptObjectMirror if v.isFunction => x => v.call(null, x.asInstanceOf[AnyRef]).toString
+      case s: String => x => x + s
+    }
+
+    val newNormalize: Any => Double = mapUndefinedTo(normalize, "") match {
+      case "" => x => x.asInstanceOf[Number].doubleValue()
+      case v: ScriptObjectMirror => x => v.call(null, x.asInstanceOf[AnyRef]).asInstanceOf[Number].doubleValue()
+    }
+
+    val newOrdering = if (mapUndefinedTo(ordering, "maximize") == "maximize") Maximize else Minimize
+
+    new Parameter(newName, newTitle, newOrdering, newView, newNormalize)
+  }
 }
 
 class Result(map: Map[String, Any]) {
   def apply(name: String): Any = map(name)
+
+  override def toString: String = map.toString
 }

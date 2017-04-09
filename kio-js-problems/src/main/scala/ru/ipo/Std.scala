@@ -46,7 +46,7 @@ class Resource(name: String) {
 
 object Resource {
 
-  private val cl = Resource.getClass.getClassLoader
+  private val cl = classOf[Resource]
 
   def apply(name: String) = new Resource(name)
 
