@@ -12,7 +12,7 @@ class Parameter(
                  name: String,
                  title: String,
                  ordering: ResultsOrdering,
-                 view: Any => String,
+                 val view: Any => String,
                  normalize: Any => Double
                ) extends Ordering[Result] {
   val x: Map[String, String] = Map()

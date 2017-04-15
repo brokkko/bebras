@@ -25,6 +25,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -238,9 +239,7 @@ public class User implements SerializableUpdatable {
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
             byte[] hash = f.generateSecret(spec).getEncoded(); //TODO I didn't know this was so slow (~100ms)
             return new BigInteger(1, hash).toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             return null;
         }
     }
@@ -617,13 +616,8 @@ public class User implements SerializableUpdatable {
     }
 
     public ContestInfoForUser getContestInfoCreateIfNeeded(String contestId) {
-        ContestInfoForUser contestInfo = contest2info.get(contestId);
-        if (contestInfo == null) {
-            contestInfo = new ContestInfoForUser(getEvent().getContestById(contestId));
-            contest2info.put(contestId, contestInfo);
-        }
-
-        return contestInfo;
+        return contest2info
+                        .computeIfAbsent(contestId, i -> new ContestInfoForUser(getEvent().getContestById(i)));
     }
 
     public void setContestStartTime(String contestId, Date requestTime) {
@@ -739,29 +733,28 @@ public class User implements SerializableUpdatable {
      * @return a list with user answers
      */
     public List<Submission> getSubmissionsForContest(Contest contest) {
-        List<Submission> allSubmissions = getAllSubmissions(contest);
+        return getSubmissionsListsForProblems(contest)
+                .stream()
+                .map(list -> list == null || list.isEmpty() ? null : list.get(list.size() - 1))
+                .collect(Collectors.toList());
+    }
 
-        Map<ObjectId, Submission> problem2lastSubmission = new HashMap<>();
-
-        //iterate all submissions backwards because we need last submissions for all problems //TODO implement also best submissions instead of last
-        ListIterator<Submission> li = allSubmissions.listIterator(allSubmissions.size());
-
-        while (li.hasPrevious()) {
-            Submission s = li.previous();
-
-            ObjectId pid = s.getProblemId();
-            if (pid != null && !problem2lastSubmission.containsKey(pid))
-                problem2lastSubmission.put(pid, s);
-        }
-
-        //put submissions into a list
-
-        List<ConfiguredProblem> configuredUserProblems = contest.getUserProblems(this);
-        List<Submission> pid2ans = new ArrayList<>();
-        for (ConfiguredProblem problem : configuredUserProblems)
-            pid2ans.add(problem2lastSubmission.get(problem.getProblemId()));
-
-        return pid2ans;
+    /**
+     * returns a list of lists with all submissions of problems.
+     * System submissions are filtered out, submissions are sorted in the ascending order of local time.
+     * If there are no submission, an empty list is returned.
+     * @param contest the contest to get submissions
+     * @return list of submissions lists
+     */
+    private List<List<Submission>> getSubmissionsListsForProblems(Contest contest) {
+        Map<ObjectId, List<Submission>> problem2allSubmissions = getAllSubmissions(contest)
+                .stream()
+                .filter(submission -> submission.getProblemId() != null)
+                .collect(Collectors.groupingBy(Submission::getProblemId));
+        return contest.getUserProblems(this)
+                .stream()
+                .map(configuredProblem -> problem2allSubmissions.get(configuredProblem.getProblemId()))
+                .collect(Collectors.toList());
     }
 
     public Map<String, String> getProblemsDataForContest(Contest contest) {
@@ -786,14 +779,7 @@ public class User implements SerializableUpdatable {
     }
 
     public List<Submission> getAllSubmissions(Contest contest) {
-        List<Submission> allSubmissions = cachedAllSubmissions.get(contest);
-
-        if (allSubmissions == null) {
-            allSubmissions = evaluateAllSubmissions(contest);
-            cachedAllSubmissions.put(contest, allSubmissions);
-        }
-
-        return allSubmissions;
+        return cachedAllSubmissions.computeIfAbsent(contest, this::evaluateAllSubmissions);
     }
 
     private List<Submission> evaluateAllSubmissions(Contest contest) {

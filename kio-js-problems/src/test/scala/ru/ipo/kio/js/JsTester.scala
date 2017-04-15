@@ -19,7 +19,7 @@ class JsTester extends FlatSpec with Matchers {
     val p = getExampleProblem
   }
 
-  it should "get problem parameters" in {
+  it should "sort results correctly" in {
     val p = getExampleProblem
 
     val x1 = new Result(Map("steps" -> 42, "max" -> 100, "info1" -> 0.2))
@@ -31,5 +31,11 @@ class JsTester extends FlatSpec with Matchers {
     val sortedResults = results.sorted(p)
 
     sortedResults should equal (List(x3, x1, x4, x2))
+  }
+
+  it should "display results correctly" in {
+    val p = getExampleProblem
+    val r = new Result(Map("steps" -> 42, "max" -> 100, "info1" -> 0.2))
+    p.parameters.map(param => param.)
   }
 }
