@@ -18,5 +18,5 @@ target/
 
 ^RUNNING_PID$
 
-^.idea/
+(^|/).idea/
 ^.idea_modules/
