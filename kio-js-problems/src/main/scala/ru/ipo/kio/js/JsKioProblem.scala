@@ -25,7 +25,7 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String) exte
 
   private def extractParameters(): Seq[Parameter] = {
     val rawParameters = problem.callMember("parameters").asInstanceOf[ScriptObjectMirror]
-    val paramsCount: Int = rawParameters.getMember("length").asInstanceOf[Int]
+    val paramsCount: Int = rawParameters.getMember("length").asInstanceOf[Number].intValue()
 
     (0 until paramsCount).map { i =>
       val param = rawParameters.getSlot(i).asInstanceOf[ScriptObjectMirror]

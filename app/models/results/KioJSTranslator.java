@@ -10,10 +10,6 @@ import models.newserialization.*;
 import play.Logger;
 import ru.ipo.kio.js.JsKioProblem;
 import ru.ipo.kio.js.Parameter;
-import ru.ipo.kio.js.Result;
-import scala.collection.JavaConverters$;
-import scala.collection.Seq;
-import scala.collection.convert.Decorators;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +18,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class KioJSTranslator implements Translator {
 
     private JsKioProblem problem = null;
+    private List<Parameter> visibleParameters;
 
     @Override
     public Info translate(List<Info> from, List<Info> settings, User user) {
@@ -34,7 +33,14 @@ public class KioJSTranslator implements Translator {
             return new Info();
         }
 
-        return from.get(0);
+        Info source = from.get(0);
+        Info result = new Info();
+        visibleParameters.forEach(p -> result.put(
+                p.name(),
+                p.v(source.get(p.name()))
+        ));
+
+        return result;
     }
 
     @Override
@@ -42,25 +48,32 @@ public class KioJSTranslator implements Translator {
         if (problem == null)
             return new InfoPattern();
 
-        List<Parameter> parameters = problem.getParameters();
-        Map<String, String> field2title = parameters
-                .stream()
-                .collect(Collectors.toMap(
-                        Parameter::name,
-                        Parameter::title,
-                        (u, v) -> {throw new IllegalStateException("two same keys in list");},
-                        LinkedHashMap::new
-                ));
-        Map<String, SerializationType<?>> field2type = parameters
-                .stream()
-                .collect(Collectors.toMap(
-                        Parameter::name,
-                        parameter -> new BasicSerializationType<>(String.class),
-                        (u, v) -> {throw new IllegalStateException("two same keys in list");},
-                        LinkedHashMap::new
-                ));
+        Map<String, String> field2title = new LinkedHashMap<>();
+        Map<String, SerializationType<?>> field2type = new LinkedHashMap<>();
 
-        //TODO add field about sorting
+        //problem rank-sorter parameters
+        String sortingParamName = "rank-sorter";
+        field2title.put(sortingParamName, "");
+        field2type.put(sortingParamName, SerializationTypesRegistry.list(new BasicSerializationType<>(Integer.class)));
+
+        //problem rank parameter
+        String rankParamName = "rank";
+        field2title.put(rankParamName,"Ранг");
+        field2type.put(rankParamName, new BasicSerializationType<>(Integer.class));
+
+        //problem scores parameter
+        String scoresParamName = "scores";
+        field2title.put(scoresParamName, "Баллов");
+        field2type.put(scoresParamName, new BasicSerializationType<>(Integer.class));
+
+        //normal parameters
+        int n = visibleParameters.size();
+        for (int i = 0; i < n; i++) {
+            String paramName = "p" + i;
+            Parameter param = visibleParameters.get(i);
+            field2title.put(paramName, param.title());
+            field2type.put(paramName, new BasicSerializationType<>(String.class));
+        }
 
         return new InfoPattern(field2type, field2title);
     }
@@ -110,5 +123,10 @@ public class KioJSTranslator implements Translator {
         }
 
         problem = new JsKioProblem(jsCode, className, settings);
+
+        visibleParameters = problem.getParameters() //TODO invisible parameters are defined in KioAPI
+                .stream()
+                .filter(p -> p.title() != null && !p.title().isEmpty())
+                .collect(Collectors.toList());
     }
 }
