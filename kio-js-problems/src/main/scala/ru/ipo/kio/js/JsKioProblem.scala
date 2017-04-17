@@ -1,9 +1,9 @@
 package ru.ipo.kio.js
 
-import javax.script.{Bindings, ScriptContext, ScriptEngineFactory, ScriptEngineManager}
+import javax.script.ScriptEngineManager
+import scala.collection.JavaConverters._
 
-import jdk.nashorn.api.scripting.{JSObject, ScriptObjectMirror}
-import ru.ipo.Resource
+import jdk.nashorn.api.scripting.ScriptObjectMirror
 
 /**
   * Created by ilya on 28.03.17.
@@ -41,8 +41,12 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String) exte
 
   override def compare(x: Result, y: Result): Int =
     parametersView.map(p => p.compare(x, y)).find(_ != 0).getOrElse(0)
+
+  def getParameters: java.util.List[Parameter] = parameters.asJava
 }
 
 object JsKioProblem {
-  private val factory: ScriptEngineManager = new ScriptEngineManager()
+  private val classLoader: ClassLoader = ClassLoader.getSystemClassLoader.getParent
+
+  private val factory: ScriptEngineManager = new ScriptEngineManager(classLoader)
 }

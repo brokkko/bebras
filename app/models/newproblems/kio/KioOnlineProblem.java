@@ -1,5 +1,9 @@
 package models.newproblems.kio;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import models.forms.RawForm;
 import models.newproblems.Problem;
 import models.newserialization.BasicSerializationType;
@@ -12,6 +16,7 @@ import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
 
+import java.io.IOException;
 import java.util.Random;
 
 /**
@@ -41,6 +46,8 @@ public class KioOnlineProblem implements Problem {
     private String settings;
     private String dependencies;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     public KioOnlineProblem() {
     }
 
@@ -51,6 +58,18 @@ public class KioOnlineProblem implements Problem {
             result[i] = UNIQUE_ID_CHARS[rnd.nextInt(UNIQUE_ID_CHARS.length)];
 
         return new String(result);
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public String getSettings() {
+        return settings;
+    }
+
+    public String getDependencies() {
+        return dependencies;
     }
 
     @Override
@@ -100,12 +119,22 @@ public class KioOnlineProblem implements Problem {
 
     @Override
     public Info check(Info answer, long randSeed) {
-        Info result = new Info(); //TODO what to do?
+        Info checkResult = new Info(); //TODO what to do?
 
-        result.put("result", 1);
-        result.put("answer", ".");
+        String resultJson = (String) answer.get("res");
+        JsonNode result;
+        try {
+            result = objectMapper.readTree(resultJson);
+        } catch (IOException e) {
+            //TODO do we need to log here?
+            return checkResult;
+        }
 
-        return result;
+        result.fields().forEachRemaining(e -> {
+            checkResult.put(e.getKey(), e.getValue());
+        });
+
+        return checkResult;
     }
 
     @Override

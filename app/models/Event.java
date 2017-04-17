@@ -14,11 +14,13 @@ import play.Play;
 import play.cache.Cache;
 import play.mvc.Http;
 import plugins.Plugin;
+import ru.ipo.kio.js.JsKioProblem;
 import views.htmlblocks.HtmlBlock;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,7 +58,26 @@ public class Event {
 
     private boolean ssoEnabled;
 
+    private void logClassLoader(ClassLoader cl) {
+        List<ClassLoader> cls = new ArrayList<>();
+        int cnt = 0;
+        while (true) {
+            cnt ++;
+            cls.add(cl);
+            cl = cl.getParent();
+            if (cl == null || cnt > 20)
+                break;
+        }
+
+        String collect = cls.stream().map(Object::toString).collect(Collectors.joining("[|||]"));
+        Logger.debug(collect);
+    }
+
     private Event(Deserializer deserializer) {
+        logClassLoader(ClassLoader.getSystemClassLoader());
+        logClassLoader(JsKioProblem.class.getClassLoader());
+        logClassLoader(this.getClass().getClassLoader());
+
         this.id = deserializer.readString("_id");
         this.title = deserializer.readString("title");
 

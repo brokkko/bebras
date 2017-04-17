@@ -94,6 +94,8 @@ public class Contest {
         if (blocksDeserializer != null)
             while (blocksDeserializer.hasMore())
                 problemBlocks.add(ProblemBlockFactory.getBlock(this, blocksDeserializer.getDeserializer()));
+
+        resultTranslator.setup(this);
     }
 
     public static Contest deserialize(Event event, Deserializer deserializer) {
@@ -239,7 +241,7 @@ public class Contest {
 
     //TODO move to user
     public boolean resultsNotAvailableAtAll() {
-        return getResults().getTime() - finish.getTime() > 1000l * 60 * 60 * 24 * 265 * 50; // 50 years
+        return getResults().getTime() - finish.getTime() > 1000L * 60 * 60 * 24 * 265 * 50; // 50 years
     }
 
     public static Contest current() {
@@ -320,7 +322,7 @@ public class Contest {
     }
 
     public long getDurationInMs() {
-        return getDuration() * 60l * 1000l;
+        return getDuration() * 60L * 1000L;
     }
 
     public Translator getResultTranslator() {
@@ -371,6 +373,7 @@ public class Contest {
 
         List<Translator> resultTranslators = SerializationTypesRegistry.list(SerializationTypesRegistry.TRANSLATOR).read(deserializer, "results translators");
         setTranslators(resultTranslators);
+        resultTranslator.setup(this);
     }
 
     public RawForm saveToForm(InputForm form) {
@@ -387,7 +390,7 @@ public class Contest {
     // statistics
 
     public long getNumStarted(String roleName) {
-        return getNumStarted(roleName, Collections.EMPTY_MAP);
+        return getNumStarted(roleName, Collections.emptyMap());
     }
 
     public long getNumStarted(String roleName, Map<Object, Object> extraFields) {

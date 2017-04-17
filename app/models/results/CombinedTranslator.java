@@ -1,5 +1,6 @@
 package models.results;
 
+import models.Contest;
 import models.User;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
@@ -95,5 +96,11 @@ public class CombinedTranslator implements Translator {
             return new ArrayList<>();
 
         return tr;
+    }
+
+    @Override
+    public void setup(Contest contest) {
+        for (Translator translator : translators)
+            translator.setup(contest);
     }
 }

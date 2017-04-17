@@ -7,6 +7,8 @@ object ApplicationBuild extends Build {
   val appName = "dces2"
   val appVersion = "0.3.0"
 
+//  unmanagedJars += file("/usr/lib/jvm/java-1.8.0-openjdk/nashorn.jar")
+
   val appDependencies = Seq(
     javaCore,
     cache,
@@ -39,4 +41,5 @@ object ApplicationBuild extends Build {
     //      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
   ).dependsOn(authSubProject).dependsOn(certificates).dependsOn(kioJsProblems)
 
+  Keys.fork in run := true
 }

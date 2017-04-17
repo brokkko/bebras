@@ -14,5 +14,6 @@ public class TranslatorSerializationType extends SerializableTreeSerializationTy
         registerClass("transfer", TransferTranslator.class);
         registerClass("kio14", Kio14Translator.class);
         registerClass("kio", KioTranslator.class);
+        registerClass("kiojs", KioJSTranslator.class);
     }
 }

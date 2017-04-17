@@ -6,5 +6,4 @@ version := "1.0"
 
 playScalaSettings
 
-libraryDependencies ++= Seq(
-)
+libraryDependencies ++= Seq()

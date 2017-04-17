@@ -1,5 +1,6 @@
 package models.results;
 
+import models.Contest;
 import models.User;
 import models.newserialization.SerializableUpdatable;
 
@@ -14,4 +15,5 @@ public interface Translator extends SerializableUpdatable {
     InfoPattern getInfoPattern();
     InfoPattern getConfigInfoPattern();
 
+    default void setup(Contest contest) {}
 }

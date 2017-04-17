@@ -3,10 +3,17 @@
 @*TODO think how to make title depend on elements in info, such as scores*@
 <table border="0" class="information@if(classes != null){ @classes}">
     @for(field <- resultPattern.getFields) {
-    <tr>
-        <td>@resultPattern.getTitle(field)</td><td>@defining(result.get(field)) { value =>
-        @if(value == null || value == "") {-} else {@value}
-        }</td>
-    </tr>
+        @defining(resultPattern.getTitle(field)) { title =>
+            @if(title != null && title != "") {
+                <tr>
+                    <td>@title</td>
+                    <td>@defining(result.get(field)) { value =>
+                        @if(value == null || value == "") {-} else {
+                            @value
+                        }
+                    }</td>
+                </tr>
+            }
+        }
     }
 </table> @*Результаты соревнования: вы набрали @Utils.scoresWord(result.get("scores").asInstanceOf[Integer])*@

@@ -1,6 +1,7 @@
 package ru.ipo.kio.js
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror
+import scala.collection.JavaConverters._
 
 abstract sealed class ResultsOrdering
 
@@ -9,14 +10,12 @@ case object Maximize extends ResultsOrdering
 case object Minimize extends ResultsOrdering
 
 class Parameter(
-                 name: String,
-                 title: String,
+                 val name: String,
+                 val title: String,
                  ordering: ResultsOrdering,
                  val view: Any => String,
-                 normalize: Any => Double
+                 val normalize: Any => Double
                ) extends Ordering[Result] {
-  val x: Map[String, String] = Map()
-
   override def compare(x: Result, y: Result): Int = {
     val xVal: Double = normalize(x(name))
     val yVal: Double = normalize(y(name))
@@ -31,6 +30,14 @@ class Parameter(
       case Maximize => double2sign(xVal - yVal)
       case Minimize => double2sign(yVal - xVal)
     }
+  }
+
+  def v(a: Any): String = view(a)
+  def n(a: Any): Double = normalize(a)
+
+  def normalizeWithOrdering(a: Any): Double = ordering match {
+    case Minimize => -normalize(a)
+    case Maximize => normalize(a)
   }
 }
 
@@ -60,6 +67,10 @@ object Parameter {
 
 class Result(map: Map[String, Any]) {
   def apply(name: String): Any = map(name)
+
+  def this(javaMap: java.util.Map[String, AnyVal]) {
+     this(javaMap.asScala.toMap)
+  }
 
   override def toString: String = map.toString
 }
