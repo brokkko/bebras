@@ -4,6 +4,7 @@ import models.Event;
 import models.newserialization.Deserializer;
 import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
+import play.libs.F;
 import play.mvc.Result;
 
 import java.util.List;
@@ -35,16 +36,6 @@ public class EventFlagsPlugin extends Plugin {
             else
                 event.setExtraField(flag.substring(0, eqPos), flag.substring(eqPos + 1));
         }
-    }
-
-    @Override
-    public Result doGet(String action, String params) {
-        return null;
-    }
-
-    @Override
-    public Result doPost(String action, String params) {
-        return null;
     }
 
     @Override

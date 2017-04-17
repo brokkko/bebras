@@ -14,7 +14,6 @@ import play.Play;
 import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
-import ru.ipo.sso.SSO;
 import scala.Option;
 
 import java.util.List;
@@ -183,8 +182,10 @@ public class Registration extends Controller {
 
         //now register on SSO
 
+        /*
         if (event.isSsoEnabled())
             SSO.register(login, password, email, user.isConfirmed());
+        */
 
         return needEmailConfirmation ?
                 redirect(routes.Registration.waitForEmail(event.getId(), registrationUUID, false)) :
@@ -253,8 +254,10 @@ public class Registration extends Controller {
 
         user.store();
 
+        /*
         if (Event.current().isSsoEnabled())
             SSO.modify(Option.apply((String) null), Option.apply((String) null), user.getEmail(), Option.apply((Object) true));
+        */
 
         return ok(views.html.login.render(new RawForm(), passwordRecovery ? "page.registration.password_recovered" : "page.registration.confirmed"));
     }

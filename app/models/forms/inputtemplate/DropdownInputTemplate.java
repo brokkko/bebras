@@ -2,7 +2,7 @@ package models.forms.inputtemplate;
 
 import models.forms.RawForm;
 import models.newserialization.*;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 
 import java.util.ArrayList;
 import java.util.Arrays;

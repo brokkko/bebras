@@ -16,7 +16,6 @@ import models.data.*;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.forms.validators.FileListValidator;
-import models.migration.DBObjectTranslator;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.ProblemInfo;
 import models.newproblems.ProblemLink;
@@ -52,7 +51,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -236,33 +234,27 @@ public class EventAdministration extends Controller {
         return redirect(routes.Registration.login(newEventId));
     }
 
-    public static Result doCopy(final String eventId) {
+    public static F.Promise<Result> doCopy(final String eventId) {
         FormDeserializer deserializer = new FormDeserializer(Forms.getCopyEventForm());
         RawForm form = deserializer.getRawForm();
         if (form.hasErrors())
-            return ok(views.html.event_admin.render(new RawForm(), new RawForm(), form));
+            return F.Promise.pure(
+                    ok(views.html.event_admin.render(new RawForm(), new RawForm(), form))
+            );
 
         final String newEventId = form.get("new_event_id");
         final Event event = Event.current();
 
-        F.Promise<Boolean> promiseOfVoid = Akka.future(
-                new Callable<Boolean>() {
-                    public Boolean call() throws Exception {
-                        //do copy event object
-                        copyEvent(event, newEventId);
-                        return true;
-                    }
+        F.Promise<Boolean> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    //do copy event object
+                    copyEvent(event, newEventId);
+                    return true;
                 }
         );
 
-        return async(
-                promiseOfVoid.map(
-                        new F.Function<Boolean, Result>() {
-                            public Result apply(Boolean result) {
-                                return redirect(controllers.routes.Registration.login(newEventId));
-                            }
-                        }
-                )
+        return promiseOfVoid.map(
+                result -> redirect(controllers.routes.Registration.login(newEventId))
         );
     }
 
@@ -422,47 +414,35 @@ public class EventAdministration extends Controller {
         return ok(views.html.message.render("Событие удалено", "Событие успешно удалено", new String[]{}));
     }
 
-    public static Result doInvalidateEventResults(final String eventId) {
-        F.Promise<Boolean> promiseOfVoid = Akka.future(
-                new Callable<Boolean>() {
-                    public Boolean call() throws Exception {
-                        User.invalidateAllEventResults(Event.getInstance(eventId));
-                        return true;
-                    }
+    public static F.Promise<Result> doInvalidateEventResults(final String eventId) {
+        F.Promise<Boolean> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    User.invalidateAllEventResults(Event.getInstance(eventId));
+                    return true;
                 }
         );
 
-        return async(
-                promiseOfVoid.map(
-                        new F.Function<Boolean, Result>() {
-                            public Result apply(Boolean result) {
-                                flash("message", "Event results successfully invalidated");
-                                return redirect(routes.EventAdministration.admin(eventId));
-                            }
-                        }
-                )
+        return promiseOfVoid.map(
+                result -> {
+                    flash("message", "Event results successfully invalidated");
+                    return redirect(routes.EventAdministration.admin(eventId));
+                }
         );
     }
 
-    public static Result doInvalidateContestsAndEventResults(final String eventId) {
-        F.Promise<Boolean> promiseOfVoid = Akka.future(
-                new Callable<Boolean>() {
-                    public Boolean call() throws Exception {
-                        User.invalidateAllResults(Event.getInstance(eventId));
-                        return true;
-                    }
+    public static F.Promise<Result> doInvalidateContestsAndEventResults(final String eventId) {
+        F.Promise<Boolean> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    User.invalidateAllResults(Event.getInstance(eventId));
+                    return true;
                 }
         );
 
-        return async(
-                promiseOfVoid.map(
-                        new F.Function<Boolean, Result>() {
-                            public Result apply(Boolean result) {
-                                flash("message", "All results successfully invalidated");
-                                return redirect(routes.EventAdministration.admin(eventId));
-                            }
-                        }
-                )
+        return promiseOfVoid.map(
+                result -> {
+                    flash("message", "All results successfully invalidated");
+                    return redirect(routes.EventAdministration.admin(eventId));
+                }
         );
     }
 
@@ -683,7 +663,7 @@ public class EventAdministration extends Controller {
                 for (int i = 0; i < answerElements.length; i += 2) {
                     Object answerValue = answerElements[i + 1];
                     Pattern intRegex = Pattern.compile("integer\\((?<num>-?\\d+)\\)"); //integer(42)
-                    Matcher intMatcher = intRegex.matcher((String)answerValue);
+                    Matcher intMatcher = intRegex.matcher((String) answerValue);
                     if (intMatcher.matches())
                         answerValue = Integer.parseInt(intMatcher.group("num")); //TODO \d+ may not parse to an integer
                     answer.put(answerElements[i], answerValue);
@@ -877,13 +857,13 @@ public class EventAdministration extends Controller {
                         break;
                     default:
                         region = "UNKN";
-                        Logger.warn("Upload fields: Unknown region "+ regionName);
+                        Logger.warn("Upload fields: Unknown region " + regionName);
                 }
 
                 String login = line[charToIndex('J')];
                 String email = login + "@autoregistered";
 
-                return new String[] {
+                return new String[]{
                         login,
                         line[charToIndex('K')],
                         email,
@@ -911,7 +891,7 @@ public class EventAdministration extends Controller {
                     name = nameSurname.substring(spPos + 1).trim();
                 }
 
-                return new String[] {
+                return new String[]{
                         line[charToIndex('I')],
                         line[charToIndex('J')],
                         surname,

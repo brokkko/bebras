@@ -17,7 +17,7 @@ import models.results.Info;
 import models.results.InfoPattern;
 import org.bson.types.ObjectId;
 import play.Logger;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 import play.mvc.Http;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;

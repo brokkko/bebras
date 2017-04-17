@@ -22,11 +22,11 @@ import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
 import org.bson.types.ObjectId;
+import play.libs.F;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 import plugins.Plugin;
-import plugins.certificates.bebras.BebrasAddressCertificate;
 import plugins.certificates.kio.KioAddressCertificate;
 
 import java.io.*;
@@ -119,15 +119,15 @@ public class KioProblemPlugin extends Plugin {
     }
 
     @Override
-    public Result doGet(String action, String params) {
+    public F.Promise<Result> doGet(String action, String params) {
         if ("all_addresses".equals(action))
-            return generateAllAddresses(params); //role
+            return F.Promise.pure(generateAllAddresses(params)); //role
         else
             return null;
     }
 
     @Override
-    public Result doPost(String action, String params) {
+    public F.Promise<Result> doPost(String action, String params) {
         User user = User.current();
         Event event = Event.current();
 
@@ -153,11 +153,11 @@ public class KioProblemPlugin extends Plugin {
                                 flash.put(KioProblem.MESSAGE_KEY, "ok");
                         }
 
-                        return Results.redirect(controllers.routes.UserInfo.contestsList(event.getId()));
+                        return F.Promise.pure(Results.redirect(controllers.routes.UserInfo.contestsList(event.getId())));
                     }
                 }
 
-        return Results.notFound();
+        return F.Promise.pure(Results.notFound());
     }
 
     private void processProblem(KioProblem problem) {

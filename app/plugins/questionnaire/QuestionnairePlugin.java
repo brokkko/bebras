@@ -10,6 +10,7 @@ import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
+import play.libs.F;
 import play.mvc.Result;
 import play.mvc.Results;
 import plugins.Plugin;
@@ -89,9 +90,9 @@ public class QuestionnairePlugin extends Plugin {
     }
 
     @Override
-    public Result doGet(String action, String params) {
+    public F.Promise<Result> doGet(String action, String params) {
         if (!User.currentRole().hasRight(right))
-            return Results.forbidden();
+            return F.Promise.pure(Results.forbidden());
 
         User user = User.current();
         Info info = (Info) user.getInfo().get(userField);
@@ -107,13 +108,13 @@ public class QuestionnairePlugin extends Plugin {
         if (answers == null)
             answers = new Info();
 
-        return Results.ok(views.html.questionnaire.questions.render(titleBefore, titleAfter, blocks, filled, answers, getCall("go", false, "")));
+        return F.Promise.pure(Results.ok(views.html.questionnaire.questions.render(titleBefore, titleAfter, blocks, filled, answers, getCall("go", false, ""))));
     }
 
     @Override
-    public Result doPost(String action, String params) {
+    public F.Promise<Result> doPost(String action, String params) {
         if (!User.currentRole().hasRight(right))
-            return Results.forbidden();
+            return F.Promise.pure(Results.forbidden());
 
         RawForm form = new RawForm();
         form.bindFromRequest();
@@ -134,7 +135,7 @@ public class QuestionnairePlugin extends Plugin {
         user.getInfo().put(userField, userValue);
         user.store();
 
-        return Results.redirect(getCall());
+        return F.Promise.pure(Results.redirect(getCall()));
     }
 
     @Override

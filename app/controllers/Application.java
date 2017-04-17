@@ -11,7 +11,6 @@ import models.User;
 import models.utils.Utils;
 import org.bson.types.ObjectId;
 import play.Logger;
-import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -24,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 @DcesController
 public class Application extends Controller {
@@ -39,48 +37,30 @@ public class Application extends Controller {
         imagesExtensions.add("bmp");
     }
 
-    public static Result migrate() {
-        F.Promise<Boolean> promiseOfVoid = Akka.future(
-                new Callable<Boolean>() {
-                    public Boolean call() throws Exception {
-                        MongoConnection.migrate();
+    public static F.Promise<Result> migrate() {
+        F.Promise<Boolean> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    MongoConnection.migrate();
 
-                        return true;
-                    }
+                    return true;
                 }
         );
 
-        return async(
-                promiseOfVoid.map(
-                        new F.Function<Boolean, Result>() {
-                            public Result apply(Boolean ignored) {
-                                return ok("migration finished");
-                            }
-                        }
-                )
-        );
+        return promiseOfVoid.map(ignored -> ok("migration finished"));
 
     }
 
-    public static Result migrateByIndex(final Integer index) {
-        F.Promise<Boolean> promiseOfVoid = Akka.future(
-                new Callable<Boolean>() {
-                    public Boolean call() throws Exception {
-                        MongoConnection.migrate(index);
+    public static F.Promise<Result> migrateByIndex(final Integer index) {
+        F.Promise<Boolean> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    MongoConnection.migrate(index);
 
-                        return true;
-                    }
+                    return true;
                 }
         );
 
-        return async(
-                promiseOfVoid.map(
-                        new F.Function<Boolean, Result>() {
-                            public Result apply(Boolean ignored) {
-                                return ok("migration finished");
-                            }
-                        }
-                )
+        return promiseOfVoid.map(
+                ignored -> ok("migration finished")
         );
 
     }

@@ -5,7 +5,7 @@ import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
 import models.newserialization.SerializationType;
 import models.newserialization.Serializer;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 
 /**
  * Created with IntelliJ IDEA.

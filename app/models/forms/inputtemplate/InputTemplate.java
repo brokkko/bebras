@@ -3,7 +3,7 @@ package models.forms.inputtemplate;
 import models.forms.RawForm;
 import models.newforms.blocks.InputBlock;
 import models.newserialization.*;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 
 /**
  * Created with IntelliJ IDEA.

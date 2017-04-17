@@ -15,7 +15,7 @@ import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Results;
-import play.mvc.SimpleResult;
+import play.mvc.Result;
 
 import java.util.Date;
 import java.util.UUID;
@@ -28,7 +28,7 @@ import java.util.UUID;
  */
 public class AuthenticatedAction extends Action<Authenticated> {
     @Override
-    public F.Promise<SimpleResult> call(Http.Context ctx) throws Throwable {
+    public F.Promise<Result> call(Http.Context ctx) throws Throwable {
         Http.Context.current.set(ctx);
 
         Event event = Event.current();
@@ -36,7 +36,7 @@ public class AuthenticatedAction extends Action<Authenticated> {
         String userName = ctx.session().get(User.getUsernameSessionKey());
 
         //TODO include return back url
-        F.Promise<SimpleResult> loginRedirect = F.Promise.pure(Results.redirect(routes.Registration.login(event.getId())));
+        F.Promise<Result> loginRedirect = F.Promise.pure(Results.redirect(routes.Registration.login(event.getId())));
 
         if (userName == null) {
             if (configuration.autoRegister()) {

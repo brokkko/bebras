@@ -1,7 +1,7 @@
 package models.newforms.blocks;
 
 import models.forms.RawForm;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 
 /**
  * Created by ilya

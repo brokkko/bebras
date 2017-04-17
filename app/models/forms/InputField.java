@@ -6,7 +6,7 @@ import models.newserialization.Deserializer;
 import models.newserialization.SerializableUpdatable;
 import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 
 import java.util.ArrayList;
 import java.util.List;

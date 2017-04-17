@@ -1,6 +1,7 @@
 package plugins;
 
 import models.Event;
+import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -10,7 +11,7 @@ import play.mvc.Result;
  * Date: 25.08.13
  * Time: 15:55
  */
-public class FieldsUploader extends Plugin { //TODO remove accurately,
+public class FieldsUploader extends Plugin { //TODO remove accurately, some contests link here?
 
     @Override
     public void initPage() {
@@ -21,16 +22,5 @@ public class FieldsUploader extends Plugin { //TODO remove accurately,
     public void initEvent(Event event) {
         //do nothing
     }
-
-    @Override
-    public Result doGet(String action, String params) {
-        return Controller.TODO;
-    }
-
-    @Override
-    public Result doPost(String action, String params) {
-        return Controller.TODO;
-    }
-
 
 }

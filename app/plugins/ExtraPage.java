@@ -3,6 +3,7 @@ package plugins;
 import models.Event;
 import models.User;
 import models.newserialization.*;
+import play.libs.F;
 import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -42,9 +43,9 @@ public class ExtraPage extends Plugin {
     }
 
     @Override
-    public Result doGet(String action, String pageId) {
+    public F.Promise<Result> doGet(String action, String pageId) {
         if (right != null && !User.currentRole().hasRight(right) && !right.equals("anon")) //TODO remove anon role
-            return Controller.forbidden();
+            return F.Promise.pure(Controller.forbidden());
 
         SubPage pageToShow = subpages.get(0);
         for (SubPage subpage : subpages)
@@ -53,12 +54,7 @@ public class ExtraPage extends Plugin {
                 break;
             }
 
-        return Controller.ok(extra_page.render(pageToShow.isGlobal() ? "~global" : Event.currentId(), pageToShow, subpages));
-    }
-
-    @Override
-    public Result doPost(String action, String params) {
-        return Controller.notFound();
+        return F.Promise.pure(Controller.ok(extra_page.render(pageToShow.isGlobal() ? "~global" : Event.currentId(), pageToShow, subpages)));
     }
 
     @Override

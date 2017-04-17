@@ -7,7 +7,7 @@ import controllers.MongoConnection;
 import models.User;
 import models.newserialization.*;
 import org.bson.types.ObjectId;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 
 /**
  * Created with IntelliJ IDEA.

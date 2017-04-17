@@ -7,7 +7,7 @@ import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;

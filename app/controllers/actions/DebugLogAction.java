@@ -5,7 +5,7 @@ import play.Logger;
 import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
-import play.mvc.SimpleResult;
+import play.mvc.Result;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +15,7 @@ import play.mvc.SimpleResult;
  */
 public class DebugLogAction extends Action<DebugLog> {
     @Override
-    public F.Promise<SimpleResult> call(Http.Context context) throws Throwable {
+    public F.Promise<Result> call(Http.Context context) throws Throwable {
         Http.Context.current.set(context);
 
         Event event = Event.current();

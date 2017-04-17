@@ -5,6 +5,7 @@ import controllers.actions.DcesController;
 import controllers.actions.LoadEvent;
 import models.Event;
 import models.User;
+import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
@@ -21,25 +22,25 @@ import plugins.Plugin;
 public class Plugins extends Controller {
 
     @Authenticated(redirectToLogin = false)
-    public static Result doGet(String eventId, String plugin, String action, String params) {
+    public static F.Promise<Result> doGet(String eventId, String plugin, String action, String params) {
         Plugin p = Event.current().getPlugin(plugin);
         if (p == null)
-            return notFound();
+            return F.Promise.pure(notFound());
 
         if (p.needsAuthorization() && !User.isAuthorized())
-            return Results.redirect(routes.Registration.login(eventId));
+            return F.Promise.pure(Results.redirect(routes.Registration.login(eventId)));
 
         return p.doGet(action, normalize(params));
     }
 
     @Authenticated(redirectToLogin = false)
-    public static Result doPost(String eventId, String plugin, String action, String params) {
+    public static F.Promise<Result> doPost(String eventId, String plugin, String action, String params) {
         Plugin p = Event.current().getPlugin(plugin);
         if (p == null)
-            return notFound();
+            return F.Promise.pure(notFound());
 
         if (p.needsAuthorization() && !User.isAuthorized())
-            return Results.redirect(routes.Registration.login(eventId));
+            return F.Promise.pure(Results.redirect(routes.Registration.login(eventId)));
 
         return p.doPost(action, normalize(params));
     }

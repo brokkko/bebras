@@ -91,34 +91,34 @@ public class BebrasPDFs extends Plugin {
     }
 
     @Override
-    public Result doGet(String action, String params) {
+    public F.Promise<Result> doGet(String action, String params) {
         if (!User.currentRole().hasRight(applicantRight))
-            return Results.forbidden();
+            return F.Promise.pure(Results.forbidden());
 
         if (new Date().before(time) && !User.current().hasEventAdminRight())
-            return Results.forbidden();
+            return F.Promise.pure(Results.forbidden());
 
         if ("go".equals(action))
-            return Results.ok(views.html.bebraspdf.pdf_list.render(this));
+            return F.Promise.pure(Results.ok(views.html.bebraspdf.pdf_list.render(this)));
 
         if (action.startsWith("get-pdf-")) {
             return getPdf(action.substring("get-pdf-".length()));
         }
 
-        return Results.notFound();
+        return F.Promise.pure(Results.notFound());
     }
 
     @Override
-    public Result doPost(String action, String params) {
+    public F.Promise<Result> doPost(String action, String params) {
         if (!User.currentRole().hasRight(applicantRight))
-            return Results.forbidden();
+            return F.Promise.pure(Results.forbidden());
 
         switch (action) {
             case "upload_answers":
-                return uploadAnswers();
+                return F.Promise.pure(uploadAnswers());
         }
 
-        return Results.notFound();
+        return F.Promise.pure(Results.notFound());
     }
 
     private Result uploadAnswers() {
@@ -199,48 +199,42 @@ public class BebrasPDFs extends Plugin {
         );
     }
 
-    private Result getPdf(final String fname) {
+    private F.Promise<Result> getPdf(final String fname) {
         final File pdf = new File(Event.current().getEventDataFolder(), fname + ".pdf");
         final int participants = getParticipants();
 
-        F.Promise<byte[]> promiseOfVoid = Akka.future(
-                new Callable<byte[]>() {
-                    public byte[] call() {
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        F.Promise<byte[]> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-                            byte[] contents = Cache.getOrElse("bebras-pdf-" + fname, new Callable<byte[]>() {
-                                @Override
-                                public byte[] call() throws Exception {
-                                    return Utils.readFileAsBytes(pdf);
-                                }
-                            }, 60 * 60);
-
-                            for (int i = 1; i <= participants; i++) {
-                                zos.putNextEntry(new ZipEntry(i + " " + fname + ".pdf"));
-                                zos.write(contents);
+                    try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+                        byte[] contents = Cache.getOrElse("bebras-pdf-" + fname, new Callable<byte[]>() {
+                            @Override
+                            public byte[] call() throws Exception {
+                                return Utils.readFileAsBytes(pdf);
                             }
+                        }, 60 * 60);
 
-                        } catch (Exception e) {
-                            return null;
+                        for (int i = 1; i <= participants; i++) {
+                            zos.putNextEntry(new ZipEntry(i + " " + fname + ".pdf"));
+                            zos.write(contents);
                         }
 
-                        return baos.toByteArray();
+                    } catch (Exception e) {
+                        return null;
                     }
+
+                    return baos.toByteArray();
                 }
         );
 
-        return Results.async(
-                promiseOfVoid.map(
-                        new F.Function<byte[], Result>() {
-                            public Result apply(byte[] file) {
-                                if (file == null)
-                                    return Results.ok("Не удалось загрузить файл, попробуйте еще раз");
-                                Controller.response().setHeader("Content-Disposition", "attachment; filename=" + fname + ".zip");
-                                return Results.ok(file).as("application/zip");
-                            }
-                        }
-                )
+        return promiseOfVoid.map(
+                file -> {
+                    if (file == null)
+                        return Results.ok("Не удалось загрузить файл, попробуйте еще раз");
+                    Controller.response().setHeader("Content-Disposition", "attachment; filename=" + fname + ".zip");
+                    return Results.ok(file).as("application/zip");
+                }
         );
     }
 

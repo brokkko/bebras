@@ -4,7 +4,7 @@ import models.forms.RawForm;
 import models.newserialization.SerializableUpdatable;
 import models.results.Info;
 import models.results.InfoPattern;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 import views.widgets.Widget;
 
 /**
