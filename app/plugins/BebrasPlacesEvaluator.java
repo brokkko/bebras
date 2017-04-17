@@ -172,7 +172,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                         //set places for regions
 
-                        Collections.sort(users, new UserComparator(true, uid2region));
+                        users.sort(new UserComparator(true, uid2region));
 
                         wasGrade = 0;
                         wasScores = 0;

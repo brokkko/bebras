@@ -3,7 +3,6 @@ package controllers.actions;
 import controllers.Email;
 import controllers.routes;
 import models.Event;
-import models.ServerConfiguration;
 import models.User;
 import models.newserialization.MemoryDeserializer;
 import org.apache.commons.mail.EmailException;

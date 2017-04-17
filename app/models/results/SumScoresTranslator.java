@@ -17,7 +17,7 @@ public class SumScoresTranslator implements Translator {
     private static final InfoPattern infoPattern = new InfoPattern(
             "scores",
             new BasicSerializationType<>(int.class),
-            Messages.get(Lang.defaultLang(), "results_translator.sum_scores.title.scores")
+            Messages.get(new Lang(Lang.defaultLang()),"results_translator.sum_scores.title.scores")
     );
 
     @Override

@@ -23,7 +23,7 @@ class PasswordGenerator
      */
     public String generate(int length)
     {
-        StringBuffer password = new StringBuffer(length);
+        StringBuilder password = new StringBuilder(length);
 
         double pik = random.nextDouble(); // random number [0,1]
         long ranno = (long) (pik * sigma); // weight by sum of frequencies

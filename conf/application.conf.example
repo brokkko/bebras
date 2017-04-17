@@ -5,11 +5,11 @@
 # ~~~~~
 # The secret key is used to secure cryptographics functions.
 # If you deploy your application to several instances be sure to use the same key!
-application.secret="asdlkfjahsdflkahsdflkjhasdlkfhalskdfhalksdfhalkshfowqeuihrfdk"
+application.crypto.secret="asdlkfjahsdflkahsdflkjhasdlkfhalskdfhalksdfhalkshfowqeuihrfdk"
 
 # The application languages
 # ~~~~~
-application.langs="en"
+play.i18n.langs=["en"]
 
 # Global storedObject class
 # ~~~~~
@@ -80,7 +80,7 @@ mail.from_name=Ilya Posov
 
 salt=12c1b734df23fabc371cd5a8331ef49a #exactly 16 bytes in HEX needed
 
-parsers.text.maxLength=512K
+play.http.parser.maxMemoryBuffer=512K
 
 po.st.api_key="key from https://re.po.st/partner/globalstats"
 

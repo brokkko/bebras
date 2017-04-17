@@ -49,12 +49,7 @@ public class DomainContests extends Controller {
                 0, 0, 0, 0
         );
 
-        try (AutoCloseable ignored = new AutoCloseable() {
-            @Override
-            public void close() throws Exception {
-                doc.close();
-            }
-        }) {
+        try (AutoCloseable ignored = doc::close) {
             File temporaryCertificate = File.createTempFile("bebras-school-certificate-", ".pdf");
 
             PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(temporaryCertificate)); //TODO do we need to close the writer?

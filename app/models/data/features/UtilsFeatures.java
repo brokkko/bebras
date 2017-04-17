@@ -30,7 +30,7 @@ public class UtilsFeatures<T> extends FunctionFeaturesSet<T> {
                 return new WrappedFeatureValue(feature, "=\"" + feature + "\"");
             case "id_to_date":
                 try {
-                    Date created = new Date(new ObjectId(feature.toString()).getTime());
+                    Date created = new ObjectId(feature.toString()).getDate();
                     return Utils.formatObjectCreationTime(created);
                 } catch (Exception ignored) { //illegal argument exception, null pointer exception
                     return "";

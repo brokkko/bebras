@@ -48,3 +48,7 @@ lazy val dces2 = project.in(file(".")).enablePlugins(PlayJava).settings(
 ).aggregate(authSubProject).aggregate(certificates).aggregate(kioJsProblems)
  .dependsOn(authSubProject).dependsOn(certificates).dependsOn(kioJsProblems)
 //Keys.fork := true
+
+//TODO aggreate and dependsOn together?
+//TODO auth sub project not visible
+//TODO where to define scala version?

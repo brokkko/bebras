@@ -65,7 +65,7 @@ public class Worker implements SerializableUpdatable {
     }
 
     public long getCreationTime() {
-        return id.getTime();
+        return id.getDate().getTime();
     }
 
     public boolean isFinished() {

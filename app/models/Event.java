@@ -429,11 +429,7 @@ public class Event {
     // plugins api
 
     public void registerExtraUserField(String right, String field, SerializationType type, String title) {
-        InfoPattern infoPattern = right2extraFields.get(right);
-        if (infoPattern == null) {
-            infoPattern = new InfoPattern();
-            right2extraFields.put(right, infoPattern);
-        }
+        InfoPattern infoPattern = right2extraFields.computeIfAbsent(right, InfoPattern::new);
 
         infoPattern.register(field, type, title);
     }

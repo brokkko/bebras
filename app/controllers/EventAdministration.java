@@ -168,9 +168,7 @@ public class EventAdministration extends Controller {
 
         //parse json: (code duplication: TODO move to utils)
         ObjectMapper mapper = new ObjectMapper();
-        JsonFactory f = mapper.getJsonFactory();
-        JsonParser parser = f.createJsonParser(contestJson);
-        JsonNode tree = mapper.readTree(parser);
+        JsonNode tree = mapper.readTree(contestJson);
 
         event.addContest(new Contest(event, new JSONDeserializer((ObjectNode) tree)));
 
