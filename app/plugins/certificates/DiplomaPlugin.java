@@ -11,6 +11,7 @@ import models.newserialization.Deserializer;
 import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
 import play.Logger;
+import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
@@ -53,19 +54,14 @@ public class DiplomaPlugin extends Plugin {
     }
 
     @Override
-    public Result doGet(String action, String params) {
+    public F.Promise<Result> doGet(String action, String params) {
         switch (action) {
             case "go":
-                return showCertificate();
+                return F.Promise.pure(showCertificate());
             case "all":
-                return showAllCertificates();
+                return F.Promise.pure(showAllCertificates());
         }
-        return Results.notFound();
-    }
-
-    @Override
-    public Result doPost(String action, String params) {
-        return Results.notFound();
+        return F.Promise.pure(Results.notFound());
     }
 
     private Result showCertificate() {

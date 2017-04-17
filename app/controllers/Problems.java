@@ -245,7 +245,7 @@ public class Problems extends Controller {
             for (ConfiguredProblem problem : problemsInPage)
                 problem2title.put(problem, problem.getName().substring(link.getLink().length() + 1)); //1 for slash /
 
-        return ok(contest_print.render(showAnswers, pagedProblems, problem2title, Contests.getProblemsWidgets(pagedProblems), 0l));
+        return ok(contest_print.render(showAnswers, pagedProblems, problem2title, Contests.getProblemsWidgets(pagedProblems), 0L));
     }
 
     private static void listProblems(ProblemLink link, boolean recursively, List<List<ConfiguredProblem>> pagedProblems) {

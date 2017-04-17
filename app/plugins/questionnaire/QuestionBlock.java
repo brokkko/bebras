@@ -1,7 +1,7 @@
 package plugins.questionnaire;
 
 import models.newserialization.SerializableUpdatable;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 
 /**
  * Created with IntelliJ IDEA.

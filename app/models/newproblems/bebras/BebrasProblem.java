@@ -10,7 +10,7 @@ import models.results.Info;
 import models.results.InfoPattern;
 import models.utils.Utils;
 import play.Logger;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;

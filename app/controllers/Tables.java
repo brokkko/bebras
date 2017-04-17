@@ -37,7 +37,7 @@ import java.util.zip.ZipOutputStream;
 @DcesController
 public class Tables extends Controller {
 
-    public static <T> Result evalCsvTable(final String defaultFileName, final TableDescription<T> tableDescription, final Call currentCall) {
+    public static <T> F.Promise<Result> evalCsvTable(final String defaultFileName, final TableDescription<T> tableDescription, final Call currentCall) {
         final Event currentEvent = Event.current();
         final User currentUser = User.current();
 
@@ -49,43 +49,39 @@ public class Tables extends Controller {
         final List<String> el = Collections.emptyList();
         final FeaturesContext context = new FeaturesContext(currentEvent, FeaturesContestType.CSV, currentCall);
 
-        F.Promise<byte[]> promiseOfVoid = Akka.future(
-                new Callable<byte[]>() {
-                    public byte[] call() throws Exception {
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        F.Promise<byte[]> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                        try (
-                                ObjectsProvider<T> objectsProvider = tableDescription.getObjectsProviderFactory().get(currentEvent, currentUser, el, el);
-                                ZipOutputStream zos = new ZipOutputStream(baos);
-                                CsvDataWriter<T> dataWriter = new CsvDataWriter<>(tableDescription.getTable(context), zos, "windows-1251", ';', '"')
-                        ) {
-                            zos.putNextEntry(new ZipEntry(finalFileName + ".csv"));
-                            dataWriter.writeObjects(objectsProvider);
-                        }
-
-                        return baos.toByteArray();
+                    try (
+                            ObjectsProvider<T> objectsProvider = tableDescription.getObjectsProviderFactory().get(currentEvent, currentUser, el, el);
+                            ZipOutputStream zos = new ZipOutputStream(baos);
+                            CsvDataWriter<T> dataWriter = new CsvDataWriter<>(tableDescription.getTable(context), zos, "windows-1251", ';', '"')
+                    ) {
+                        zos.putNextEntry(new ZipEntry(finalFileName + ".csv"));
+                        dataWriter.writeObjects(objectsProvider);
                     }
+
+                    return baos.toByteArray();
                 }
         );
 
-        return async(
-                promiseOfVoid.map(
-                        new F.Function<byte[], Result>() {
-                            public Result apply(byte[] file) {
-                                //TODO file name should be encode somehow http://stackoverflow.com/questions/93551/how-to-encode-the-filename-parameter-of-content-disposition-header-in-http
-                                response().setHeader("Content-Disposition", "attachment; filename=" + finalFileName + ".zip");
-                                return ok(file).as("application/zip");
-                            }
-                        }
-                )
+        return promiseOfVoid.map(
+                new F.Function<byte[], Result>() {
+                    public Result apply(byte[] file) {
+                        //TODO file name should be encode somehow http://stackoverflow.com/questions/93551/how-to-encode-the-filename-parameter-of-content-disposition-header-in-http
+                        response().setHeader("Content-Disposition", "attachment; filename=" + finalFileName + ".zip");
+                        return ok(file).as("application/zip");
+                    }
+                }
         );
     }
 
     @SuppressWarnings("unchecked")
-    public static Result showTable(final String eventId, final Integer tableIndex) {
+    public static F.Promise<Result> showTable(final String eventId, final Integer tableIndex) {
         List<TableDescription<?>> tables = User.current().getTables();
         if (tableIndex < 0 || tableIndex >= tables.size())
-            return notFound();
+            return F.Promise.pure(notFound());
 
         final TableDescription tableDescription = tables.get(tableIndex);
 
@@ -132,48 +128,43 @@ public class Tables extends Controller {
 
         int maxSize = tableDescription.getMaxViewSize();
 
-        F.Promise<MemoryDataWriter> promiseOfVoid = Akka.future(
-                new Callable<MemoryDataWriter>() {
-                    public MemoryDataWriter call() throws Exception {
+        F.Promise<MemoryDataWriter> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    try (
+                            ObjectsProvider objectsProvider = objectsProviderFactory.get(currentEvent, currentUser, searchFields, searchValues);
+                            MemoryDataWriter dataWriter = new MemoryDataWriter(table, finalFullTextSearch, finalInside, maxSize)
+                    ) {
+                        dataWriter.writeObjects(objectsProvider, context);
 
-                        try (
-                                ObjectsProvider objectsProvider = objectsProviderFactory.get(currentEvent, currentUser, searchFields, searchValues);
-                                MemoryDataWriter dataWriter = new MemoryDataWriter(table, finalFullTextSearch, finalInside, maxSize)
-                        ) {
-                            dataWriter.writeObjects(objectsProvider, context);
-
-                            return dataWriter;
-                        }
+                        return dataWriter;
                     }
                 }
         );
 
-        return async(
-                promiseOfVoid.map(
-                        new F.Function<MemoryDataWriter, Result>() {
-                            public Result apply(MemoryDataWriter dataWriter) {
-                                return ok(view_table.render(
-                                        tableDescription.getTitle(),
-                                        tableDescription.isShowSearch() || currentUser.hasEventAdminRight(),
-                                        tableDescription.getComment(),
-                                        table.getTitles(), dataWriter.getList(), tableIndex, tableDescription.isShowAsTable(),
-                                        objectsProviderFactory.getTitles(),
-                                        objectsProviderFactory.getFields(),
-                                        allSearchValues,
-                                        finalFullTextSearch == null ? "" : finalFullTextSearch,
-                                        finalInside
-                                ));
-                            }
-                        }
-                )
+        return promiseOfVoid.map(
+                new F.Function<MemoryDataWriter, Result>() {
+                    public Result apply(MemoryDataWriter dataWriter) {
+                        return ok(view_table.render(
+                                tableDescription.getTitle(),
+                                tableDescription.isShowSearch() || currentUser.hasEventAdminRight(),
+                                tableDescription.getComment(),
+                                table.getTitles(), dataWriter.getList(), tableIndex, tableDescription.isShowAsTable(),
+                                objectsProviderFactory.getTitles(),
+                                objectsProviderFactory.getFields(),
+                                allSearchValues,
+                                finalFullTextSearch == null ? "" : finalFullTextSearch,
+                                finalInside
+                        ));
+                    }
+                }
         );
     }
 
     @SuppressWarnings("unchecked")
-    public static Result showTablePrint(final String eventId, final Integer tableIndex) {
+    public static F.Promise<Result> showTablePrint(final String eventId, final Integer tableIndex) {
         List<TableDescription<?>> tables = User.current().getTables();
         if (tableIndex < 0 || tableIndex >= tables.size())
-            return notFound();
+            return F.Promise.pure(notFound());
 
         final TableDescription tableDescription = tables.get(tableIndex);
 
@@ -187,62 +178,54 @@ public class Tables extends Controller {
 
         int maxSize = tableDescription.getMaxViewSize();
 
-        F.Promise<MemoryDataWriter> promiseOfVoid = Akka.future(
-                new Callable<MemoryDataWriter>() {
-                    public MemoryDataWriter call() throws Exception {
+        F.Promise<MemoryDataWriter> promiseOfVoid = F.Promise.promise(
+                () -> {
 
-                        try (
-                                    ObjectsProvider objectsProvider = objectsProviderFactory.get(currentEvent, currentUser, null, null);
-                                    MemoryDataWriter dataWriter = new MemoryDataWriter(table, null, false, maxSize)
-                        ) {
-                            dataWriter.writeObjects(objectsProvider, context);
+                    try (
+                            ObjectsProvider objectsProvider = objectsProviderFactory.get(currentEvent, currentUser, null, null);
+                            MemoryDataWriter dataWriter = new MemoryDataWriter(table, null, false, maxSize)
+                    ) {
+                        dataWriter.writeObjects(objectsProvider, context);
 
-                            return dataWriter;
-                        }
+                        return dataWriter;
                     }
                 }
         );
 
-        return async(
-                    promiseOfVoid.map(
-                             new F.Function<MemoryDataWriter, Result>() {
-                                 public Result apply(MemoryDataWriter dataWriter) {
-                                     return ok(view_table_print.render(
-                                                  tableDescription.getTitle(),
-                                                  table.getTitles(),
-                                                  dataWriter.getList(),
-                                                  tableDescription.isShowAsTable()
-                                     ));
-                                 }
-                             }
-                    )
+        return promiseOfVoid.map(
+                dataWriter -> ok(view_table_print.render(
+                        tableDescription.getTitle(),
+                        table.getTitles(),
+                        dataWriter.getList(),
+                        tableDescription.isShowAsTable()
+                ))
         );
     }
 
-    public static Result showTableSearch(String eventId, Integer tableIndex) {
+    public static F.Promise<Result> showTableSearch(String eventId, Integer tableIndex) {
         return showTable(eventId, tableIndex);
     }
 
     @SuppressWarnings("UnusedParameters")
-    public static Result csvTable(final String eventId, final Integer tableIndex) throws Exception {
+    public static F.Promise<Result> csvTable(final String eventId, final Integer tableIndex) throws Exception {
         TableDescription tableDescription = User.current().getTables().get(tableIndex);
 
         if (tableDescription == null)
-            return notFound("table not found");
+            return F.Promise.pure(notFound("table not found"));
 
         if (!User.currentRole().hasRight(tableDescription.getRight()))
-            return forbidden();
+            return F.Promise.pure(forbidden());
 
         return evalCsvTable("table" + tableIndex + "-" + eventId, tableDescription, routes.Tables.csvTable(eventId, tableIndex));
     }
 
     @SuppressWarnings("UnusedParameters")
     @LoadContest
-    public static Result csvTableForContest(final String eventId, final String contestId, final Integer tableIndex) throws Exception {
+    public static F.Promise<Result> csvTableForContest(final String eventId, final String contestId, final Integer tableIndex) throws Exception {
         TableDescription tableDescription = Contest.current().getTable(tableIndex);
 
         if (tableDescription == null)
-            return notFound("table not found");
+            return F.Promise.pure(notFound("table not found"));
 
         return evalCsvTable(
                 "table" + tableIndex + "-" + eventId + "-" + contestId,

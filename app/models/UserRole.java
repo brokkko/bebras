@@ -84,7 +84,7 @@ public class UserRole implements SerializableUpdatable {
 
     public Set<? extends String> getRights() {
 //        return rights == null ? (Set<String>) Collections.emptySet() : rights; //TODO report: remove redundant leads to error, and no error reported
-        return rights == null ? new HashSet<String>() : rights;
+        return rights == null ? new HashSet<>() : rights;
     }
 
     public String getName() {

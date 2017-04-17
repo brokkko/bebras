@@ -9,7 +9,7 @@ import CryptUtils._
 
 class AuthenticatedRequest[A, U](val user: Option[U], request: Request[A]) extends WrappedRequest[A](request)
 
-class UserAction[U](userConstraint: Option[U] => Option[SimpleResult])(implicit authSettings: AuthenticationSettings[U])
+class UserAction[U](userConstraint: Option[U] => Option[Result])(implicit authSettings: AuthenticationSettings[U])
   extends ActionBuilder[({type λ[A] = AuthenticatedRequest[A, U]})#λ] {
 
   sealed abstract class SessionMatchResult
@@ -61,7 +61,7 @@ class UserAction[U](userConstraint: Option[U] => Option[SimpleResult])(implicit 
     }
   }
 
-  def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A, U]) => Future[SimpleResult]) = {
+  def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A, U]) => Future[Result]) = {
 
     def noUser = userConstraint(None) map {
       Future.successful
@@ -96,7 +96,7 @@ object UserAction {
 
   class UserActionBuilder[U](implicit authSettings: AuthenticationSettings[U]) {
 
-    def constrain(constraint: Option[U] => Option[SimpleResult]): UserAction[U] = new UserAction(constraint)
+    def constrain(constraint: Option[U] => Option[Result]): UserAction[U] = new UserAction(constraint)
 
     def apply(): UserAction[U] = new UserAction((_: Option[U]) => None)
 

@@ -4,7 +4,7 @@ import models.Address;
 import models.forms.RawForm;
 import models.newserialization.SerializableSerializationType;
 import models.newserialization.SerializationType;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 import play.i18n.Messages;
 
 /**

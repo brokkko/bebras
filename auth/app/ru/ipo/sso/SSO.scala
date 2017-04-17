@@ -2,7 +2,7 @@ package ru.ipo.sso
 
 import play.api.Logger
 import play.api.libs.ws.WS
-import play.api.mvc.{Results, Call, SimpleResult}
+import play.api.mvc.{Results, Call, Result}
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
@@ -57,7 +57,7 @@ object SSO {
 
   def autoLoginLink(token: String): String = SSOConfiguration.get.host + "/auto_login/" + token
 
-  def autoLogin(token: String): SimpleResult =
+  def autoLogin(token: String): Result =
     Results.Redirect(Call("GET", autoLoginLink(token)))
 
   // Register --------------------------------------------------------------------------------------------

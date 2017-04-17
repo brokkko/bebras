@@ -3,7 +3,7 @@ package models.forms.inputtemplate;
 import models.forms.RawForm;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.SerializationType;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 import play.i18n.Messages;
 
 import java.util.Date;

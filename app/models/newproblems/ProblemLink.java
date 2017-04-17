@@ -130,12 +130,12 @@ public class ProblemLink {
         };
 
         if (listProblemsNotFolders) {
-            Collections.sort(problemsLinks, linksComparator);
+            problemsLinks.sort(linksComparator);
             return problemsLinks;
         }
 
         List<ProblemLink> foldersLinks = new ArrayList<>(foldersLinksSet);
-        Collections.sort(foldersLinks, linksComparator);
+        foldersLinks.sort(linksComparator);
 
         return foldersLinks;
     }

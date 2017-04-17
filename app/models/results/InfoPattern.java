@@ -5,7 +5,7 @@ import models.forms.InputForm;
 import models.forms.inputtemplate.InputTemplate;
 import models.forms.validators.Validator;
 import models.newserialization.*;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 
 import java.util.*;
 

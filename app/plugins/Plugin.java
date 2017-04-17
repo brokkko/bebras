@@ -5,8 +5,10 @@ import models.Event;
 import models.newserialization.Deserializer;
 import models.newserialization.SerializableUpdatable;
 import models.newserialization.Serializer;
+import play.libs.F;
 import play.mvc.Call;
 import play.mvc.Result;
+import play.mvc.Results;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,9 +34,13 @@ public abstract class Plugin implements SerializableUpdatable {
      */
     public abstract void initEvent(Event event);
 
-    public abstract Result doGet(String action, String params);
+    public F.Promise<Result> doGet(String action, String params) {
+        return F.Promise.pure(Results.notFound());
+    }
 
-    public abstract Result doPost(String action, String params);
+    public F.Promise<Result> doPost(String action, String params) {
+        return F.Promise.pure(Results.notFound());
+    }
 
     public Call getCall() {
         return getCall("go");

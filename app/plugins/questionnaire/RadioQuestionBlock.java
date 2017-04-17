@@ -3,7 +3,7 @@ package plugins.questionnaire;
 import models.newserialization.Deserializer;
 import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 
 import java.util.List;
 

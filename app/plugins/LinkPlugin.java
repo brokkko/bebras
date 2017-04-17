@@ -4,6 +4,7 @@ import models.Event;
 import models.User;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
+import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.Menu;
@@ -31,16 +32,11 @@ public class LinkPlugin extends Plugin {
     }
 
     @Override
-    public Result doGet(String action, String params) {
+    public F.Promise<Result> doGet(String action, String params) {
         if (right != null && !User.currentRole().hasRight(right) && !right.equals("anon")) //TODO remove anon role
-            return Controller.forbidden();
+            return F.Promise.pure(Controller.forbidden());
 
-        return Controller.redirect(link);
-    }
-
-    @Override
-    public Result doPost(String action, String params) {
-        return Controller.notFound();
+        return F.Promise.pure(Controller.redirect(link));
     }
 
     @Override

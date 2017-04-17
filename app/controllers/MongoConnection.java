@@ -127,7 +127,7 @@ public class MongoConnection {
 
     private static DB getDb() {
         String dbname = Play.application().configuration().getString("mongodb.db");
-        return getMongo().getDB(dbname);
+        return getMongo().getDB(dbname); //TODO get rid of getDB
     }
 
     public static Object eval(String code, Object... args) {

@@ -1,6 +1,6 @@
 package ru.ipo.sso
 
-import play.api.mvc.{SimpleResult, RequestHeader, Call}
+import play.api.mvc.{Result, RequestHeader, Call}
 
 import scala.concurrent.Future
 
@@ -21,14 +21,14 @@ trait AuthenticationSettings[U] {
    * @param result a result to which cookies should be added
    * @return new result with cookies
    */
-  def doLogin(user: U)(result: SimpleResult): SimpleResult
+  def doLogin(user: U)(result: Result): Result
 
   /**
    * Modify result to set cookies that indicate a logged in user
    * @param result a result to which cookies should be added
    * @return new result with cookies
    */
-  def doLogout(result: SimpleResult): SimpleResult
+  def doLogout(result: Result): Result
 
   /**
    * Find user by email

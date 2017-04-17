@@ -7,7 +7,7 @@ import models.data.FeaturesContext;
 import models.data.FeaturesSet;
 import models.data.WrappedFeatureValue;
 import models.utils.Utils;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 
 import java.util.Date;
 

@@ -6,7 +6,7 @@ import models.ServerConfiguration;
 import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
-import play.mvc.SimpleResult;
+import play.mvc.Result;
 import plugins.Plugin;
 import views.html.error;
 
@@ -33,7 +33,7 @@ public class DcesControllerAction extends Action<DcesController> {
     }
 
     @Override
-    public F.Promise<SimpleResult> call(Http.Context ctx) throws Throwable {
+    public F.Promise<Result> call(Http.Context ctx) throws Throwable {
         Http.Context.current.set(ctx);
 
         ServerConfiguration config = ServerConfiguration.getInstance();
@@ -55,7 +55,7 @@ public class DcesControllerAction extends Action<DcesController> {
                     plugin.initPage();
         }
 
-        F.Promise<SimpleResult> call = delegate.call(ctx);
+        F.Promise<Result> call = delegate.call(ctx);
 
         finalizeRequest(ctx);
 
@@ -70,7 +70,7 @@ public class DcesControllerAction extends Action<DcesController> {
         return call;
     }
 
-    private SimpleResult getMaintenanceMessage() {
+    private Result getMaintenanceMessage() {
         return ok(error.render("В данный момент сервер находится в режиме обслуживания, зайдите позже", new String[0]));
     }
 

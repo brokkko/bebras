@@ -7,6 +7,7 @@ import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
 import models.newserialization.SerializationTypesRegistry;
 import models.newserialization.Serializer;
+import play.libs.F;
 import play.mvc.Call;
 import play.mvc.Result;
 import plugins.Plugin;
@@ -14,7 +15,6 @@ import views.Menu;
 import views.html.bebras_card;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Random;
 
 import static play.mvc.Results.*;
@@ -73,28 +73,28 @@ public class BebrasCardsPlugin extends Plugin {
     }
 
     @Override
-    public Result doGet(String action, String params) {
+    public F.Promise<Result> doGet(String action, String params) {
         switch (action) {
             case "go":
-                return editCard();
+                return F.Promise.pure(editCard());
             case "extra":
-                return extraCard(params);
+                return F.Promise.pure(extraCard(params));
 //            case "view": //TODO think about viewing, make google not index these links, etc...
 //                return viewCard(params);
 //            case "preview":
 //                return previewCard();
             default:
-                return notFound();
+                return F.Promise.pure(notFound());
         }
     }
 
     @Override
-    public Result doPost(String action, String params) {
+    public F.Promise<Result> doPost(String action, String params) {
         switch (action) {
             case "win":
-                return doWin(params);
+                return F.Promise.pure(doWin(params));
             default:
-                return notFound();
+                return F.Promise.pure(notFound());
         }
     }
 

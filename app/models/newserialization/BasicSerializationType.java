@@ -9,6 +9,8 @@ import java.util.Date;
  */
 public class BasicSerializationType<T> extends SerializationType<T> {
 
+    //TODO make static constants for types
+
     private final String className;
 
     public BasicSerializationType(Class<T> clazz) {

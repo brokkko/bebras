@@ -1,7 +1,5 @@
 package models.newproblems.kio;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.forms.RawForm;
@@ -11,7 +9,7 @@ import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
-import play.api.templates.Html;
+import play.twirl.api.Html;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
@@ -130,9 +128,7 @@ public class KioOnlineProblem implements Problem {
             return checkResult;
         }
 
-        result.fields().forEachRemaining(e -> {
-            checkResult.put(e.getKey(), e.getValue());
-        });
+        result.fields().forEachRemaining(e -> checkResult.put(e.getKey(), e.getValue()));
 
         return checkResult;
     }

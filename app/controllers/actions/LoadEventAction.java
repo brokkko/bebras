@@ -4,7 +4,7 @@ import models.Event;
 import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
-import play.mvc.SimpleResult;
+import play.mvc.Result;
 import views.html.error;
 
 /**
@@ -15,13 +15,13 @@ import views.html.error;
  */
 public class LoadEventAction extends Action<LoadEvent> {
     @Override
-    public F.Promise<SimpleResult> call(Http.Context ctx) throws Throwable {
+    public F.Promise<Result> call(Http.Context ctx) throws Throwable {
         Http.Context.current.set(ctx);
 
         Event current = Event.current();
 
         if (current == Event.ERROR_EVENT) {
-            SimpleResult ok = ok(error.render("actions.unknown_event", null));
+            Result ok = ok(error.render("actions.unknown_event", null));
             return F.Promise.pure(ok);
         }
 

@@ -98,12 +98,7 @@ public abstract class Diploma<Factory extends DiplomaFactory> {
         );
 
         //TODO report "never used"
-        try (AutoCloseable ignored = new AutoCloseable() {
-            @Override
-            public void close() throws Exception {
-                doc.close();
-            }
-        }) {
+        try (AutoCloseable ignored = doc::close) {
             File outputPath = File.createTempFile("pdf-certificate-", ".pdf");
 
             PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath)); //TODO do we need to close the writer?

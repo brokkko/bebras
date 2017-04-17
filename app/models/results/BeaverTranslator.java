@@ -22,7 +22,7 @@ public class BeaverTranslator implements Translator {
     private static final String MSG_SCORES_WRONG = mGet("results_translator.beaver.title.scores_wrong");
 
     private static String mGet(String field) {
-        return Messages.get(Lang.defaultLang(), field);
+        return Messages.get(new Lang(Lang.defaultLang()), field); //TODO wtf default lang
     }
 
     private int scores;

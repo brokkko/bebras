@@ -179,26 +179,20 @@ public class ContestAdministration extends Controller {
         return redirect;
     }
 
-    public static Result doInvalidateContestsAndEventResults(final String eventId, final String contestId) {
-        F.Promise<Boolean> promiseOfVoid = Akka.future(
-                new Callable<Boolean>() {
-                    public Boolean call() throws Exception {
-                        Event event = Event.getInstance(eventId);
-                        User.invalidateAllContestResults(event, event.getContestById(contestId));
-                        return true;
-                    }
+    public static F.Promise<Result> doInvalidateContestsAndEventResults(final String eventId, final String contestId) {
+        F.Promise<Boolean> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    Event event = Event.getInstance(eventId);
+                    User.invalidateAllContestResults(event, event.getContestById(contestId));
+                    return true;
                 }
         );
 
-        return async(
-                promiseOfVoid.map(
-                        new F.Function<Boolean, Result>() {
-                            public Result apply(Boolean result) {
-                                flash("message", "All results successfully invalidated");
-                                return redirect(routes.ContestAdministration.contestAdmin(eventId, contestId));
-                            }
-                        }
-                )
+        return promiseOfVoid.map(
+                result -> {
+                    flash("message", "All results successfully invalidated");
+                    return redirect(routes.ContestAdministration.contestAdmin(eventId, contestId));
+                }
         );
     }
 

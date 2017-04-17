@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
-import play.libs.WS;
+import play.libs.ws.WS;
+import play.libs.ws.WSResponse;
 
 import java.util.concurrent.Callable;
 
@@ -22,7 +23,7 @@ public class PoStShortener {
                     if (apiKey == null || apiKey.isEmpty())
                         return filteredUrl;
 
-                    WS.Response response = WS.url("http://po.st/api/shorten")
+                    WSResponse response = WS.url("http://po.st/api/shorten")
                             .setQueryParameter("apiKey", apiKey)
                             .setQueryParameter("longUrl", filteredUrl)
                             .get().get(2000);

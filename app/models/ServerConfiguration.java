@@ -29,12 +29,7 @@ public class ServerConfiguration {
 
     public static ServerConfiguration getInstance() {
         try {
-            return Cache.getOrElse(CACHE_KEY, new Callable<ServerConfiguration>() {
-                @Override
-                public ServerConfiguration call() throws Exception {
-                    return loadServerConfiguration();
-                }
-            }, 0);
+            return Cache.getOrElse(CACHE_KEY, ServerConfiguration::loadServerConfiguration, 0);
         } catch (Exception e) {
             Logger.error("Failed to create configuration", e);
             return new ServerConfiguration();

@@ -21,7 +21,6 @@ import models.newserialization.Serializer;
 import models.results.Info;
 import models.utils.Utils;
 import org.bson.types.ObjectId;
-import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -36,7 +35,6 @@ import views.html.message;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.*;
-import java.util.concurrent.Callable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,7 +44,7 @@ import java.util.concurrent.Callable;
  */
 public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class, all places evaluations should be done in results translators
 
-    public static final String PLUGIN_NAME="BebrasPlacesEvaluator";
+    public static final String PLUGIN_NAME = "BebrasPlacesEvaluator";
 
     private String regionField; //field name to store result in region
     private String russiaField; //field name to store result in russia
@@ -69,41 +67,41 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
     }
 
     @Override
-    public Result doGet(String action, String params) {
+    public F.Promise<Result> doGet(String action, String params) {
 
         if (showCertificates) {
 
             if (action.equals("show_pdf"))
                 try {
-                    return showPdf(Event.current(), params);
+                    return F.Promise.pure(showPdf(Event.current(), params));
                 } catch (Exception e) {
-                    return Results.forbidden("Этот сертификат вам недоступен");
+                    return F.Promise.pure(Results.forbidden("Этот сертификат вам недоступен"));
                 }
 
             if (action.equals("all_teachers_gramotas"))
-                return generateAllGramotas();
+                return F.Promise.pure(generateAllGramotas());
 
             if (action.equals("all_pdfs"))
-                return generateAllCertificates(params);
+                return F.Promise.pure(generateAllCertificates(params));
 
             if (action.equals("all_addrs"))
-                return generateAllAddresses();
+                return F.Promise.pure(generateAllAddresses());
 
             // localhost:9000/bebras13/eval_places/all_teachers_gramotas_addrs/p
             if (action.equals("all_teachers_gramotas_addrs"))
-                return generateAllAddressesForCertificates();
+                return F.Promise.pure(generateAllAddressesForCertificates());
 
         }
 
         if (!action.equals("go"))
-            return Results.notFound("unknown action");
+            return F.Promise.pure(Results.notFound("unknown action"));
 
         final Event event = Event.current();
         final String eventId = event.getId();
 
-        F.Promise<Boolean> promiseOfVoid = Akka.future(
-                new Callable<Boolean>() {
-                    public Boolean call() throws Exception {
+        F.Promise<Boolean> promiseOfVoid = F.Promise.promise(
+                new F.Function0<Boolean>() {
+                    public Boolean apply() throws Exception {
                         //select all logins from database
                         DBObject query = new BasicDBObject(User.FIELD_EVENT, eventId);
                         query.put(User.FIELD_USER_ROLE, roleName);
@@ -139,7 +137,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                         //set places for russia
 
-                        Collections.sort(users, new UserComparator(false, uid2region));
+                        users.sort(new UserComparator(false, uid2region));
 
                         int wasGrade = 0;
                         int wasScores = 0;
@@ -174,7 +172,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                         //set places for regions
 
-                        Collections.sort(users, new UserComparator(true, uid2region));
+                        users.sort(new UserComparator(true, uid2region));
 
                         wasGrade = 0;
                         wasScores = 0;
@@ -259,14 +257,8 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                 }
         );
 
-        return Results.async(
-                promiseOfVoid.map(
-                        new F.Function<Boolean, Result>() {
-                            public Result apply(Boolean result) {
-                                return Results.ok("finished " + new Date());
-                            }
-                        }
-                )
+        return promiseOfVoid.map(
+                result -> Results.ok("finished " + new Date())
         );
     }
 
@@ -738,11 +730,6 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             sum += scores == null ? 0 : scores;
         }
         return sum;
-    }
-
-    @Override
-    public Result doPost(String action, String params) {
-        return null;
     }
 
     @Override

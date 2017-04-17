@@ -17,8 +17,7 @@ import models.newserialization.*;
 import models.utils.Utils;
 import org.bson.types.ObjectId;
 import play.Logger;
-import play.api.templates.Html;
-import play.libs.Akka;
+import play.twirl.api.Html;
 import play.libs.F;
 import play.mvc.Call;
 import play.mvc.Controller;
@@ -30,7 +29,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -63,63 +61,63 @@ public class Applications extends Plugin { //TODO test for right in all calls
     }
 
     @Override
-    public Result doGet(String action, String params) {
+    public F.Promise<Result> doGet(String action, String params) {
         //simple action without authorization
         if ("pdfkvit".equals(action) && "example".equals(params))
             return showPdfKvit(params);
         if ("kvit_example".equals(action))
-            return showKvit();
+            return F.Promise.pure(showKvit());
 
         boolean level1 = User.currentRole().hasRight(right);
         boolean level2 = User.currentRole().hasRight(adminRight);
         if (!level1 && !level2)
-            return Results.forbidden();
+            return F.Promise.pure(Results.forbidden());
 
         updateSelfApplications();
 
         switch (action) {
             case "apps":
-                return organizerApplications();
+                return F.Promise.pure(organizerApplications());
 
             case "kvit":
                 if (!level1)
-                    return Results.forbidden();
-                return showKvit(params);
+                    return F.Promise.pure(Results.forbidden());
+                return F.Promise.pure(showKvit(params));
 
             case "pdfkvit":
                 if (!level1)
-                    return Results.forbidden();
+                    return F.Promise.pure(Results.forbidden());
                 return showPdfKvit(params);
         }
 
-        return Results.notFound();
+        return F.Promise.pure(Results.notFound());
     }
 
     @Override
-    public Result doPost(String action, String params) {
+    public F.Promise<Result> doPost(String action, String params) {
         boolean level1 = User.currentRole().hasRight(right);
         boolean level2 = User.currentRole().hasRight(adminRight);
         if (!level1 && !level2)
-            return Results.forbidden();
+            return F.Promise.pure(Results.forbidden());
 
         switch (action) {
             case "remove_app":
-                return removeApplication(params);
+                return F.Promise.pure(removeApplication(params));
             case "add_app":
-                return addApplication();
+                return F.Promise.pure(addApplication());
             case "do_payment":
-                return doPayment(params);
+                return F.Promise.pure(doPayment(params));
             case "confirm_app":
                 if (!level2)
-                    return Results.forbidden();
-                return confirmApplication(params);
+                    return F.Promise.pure(Results.forbidden());
+                return F.Promise.pure(confirmApplication(params));
             case "transfer":
                 if (!level2)
-                    return Results.forbidden();
-                return transferApplications();
+                    return F.Promise.pure(Results.forbidden());
+                return F.Promise.pure(transferApplications());
         }
 
-        return Controller.notFound();
+        return F.Promise.pure(Controller.notFound());
     }
 
     @Override
@@ -165,7 +163,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return Controller.ok(views.html.applications.kvit.render(application, this, kvit));
     }
 
-    private Result showPdfKvit(String name) {
+    private F.Promise<Result> showPdfKvit(String name) {
         //https://code.google.com/p/wkhtmltopdf
         //may need to install ubuntu fontconfig package
 
@@ -175,25 +173,17 @@ public class Applications extends Plugin { //TODO test for right in all calls
         final Kvit kvit = Kvit.getKvitForUser(User.current());
 
         if (application == null)
-            return Controller.notFound();
+            return F.Promise.pure(Controller.notFound());
 
-        F.Promise<File> promiseOfVoid = Akka.future(
-                new Callable<File>() {
-                    public File call() throws Exception {
-                        return kvit.generatePdfKvit(Applications.this, application);
-                    }
-                }
+        F.Promise<File> promiseOfVoid = F.Promise.promise(
+                () -> kvit.generatePdfKvit(Applications.this, application)
         );
 
-        return Controller.async(
-                promiseOfVoid.map(
-                        new F.Function<File, Result>() {
-                            public Result apply(File file) {
-                                Controller.response().setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
-                                return Controller.ok(file).as("application/pdf");
-                            }
-                        }
-                )
+        return promiseOfVoid.map(
+                file -> {
+                    Controller.response().setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
+                    return Controller.ok(file).as("application/pdf");
+                }
         );
     }
 
@@ -671,7 +661,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
                         if (!user.getRole().hasRight(right))
                             continue;
 
-                        userIndex ++;
+                        userIndex++;
                         if (userIndex % 100 == 0)
                             worker.logInfo("processing user " + userIndex + " total transferred " + transferredUsersCount);
 
