@@ -16,13 +16,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class KioJSTranslator implements Translator {
 
+    public static final ListSerializationType<Double> RANK_SORTER_TYPE = SerializationTypesRegistry.list(new BasicSerializationType<>(Double.class));
     private JsKioProblem problem = null;
     private List<Parameter> visibleParameters;
 
@@ -35,10 +33,23 @@ public class KioJSTranslator implements Translator {
 
         Info source = from.get(0);
         Info result = new Info();
-        visibleParameters.forEach(p -> result.put(
-                p.name(),
-                p.v(source.get(p.name()))
-        ));
+
+        int n = visibleParameters.size();
+        for (int i = 0; i < n; i++) {
+            Parameter param = visibleParameters.get(i);
+            String paramName = "p" + i;
+            Object paramValue = source.get(param.name());
+            result.put(paramName, param.v(paramValue));
+        }
+
+        List<Parameter> params = problem.getParameters();
+        List<Double> rankSorterValue = params.stream().map(p -> {
+            Object paramValue = source.get(p.name());
+            return p.n(paramValue);
+        }).collect(Collectors.toList());
+        result.put("rank-sorter", rankSorterValue);
+        result.put("rank", 0);
+        result.put("scores", 0);
 
         return result;
     }
@@ -48,13 +59,13 @@ public class KioJSTranslator implements Translator {
         if (problem == null)
             return new InfoPattern();
 
-        Map<String, String> field2title = new LinkedHashMap<>();
-        Map<String, SerializationType<?>> field2type = new LinkedHashMap<>();
+        LinkedHashMap<String, String> field2title = new LinkedHashMap<>();
+        LinkedHashMap<String, SerializationType<?>> field2type = new LinkedHashMap<>();
 
         //problem rank-sorter parameters
         String sortingParamName = "rank-sorter";
         field2title.put(sortingParamName, "");
-        field2type.put(sortingParamName, SerializationTypesRegistry.list(new BasicSerializationType<>(Integer.class)));
+        field2type.put(sortingParamName, RANK_SORTER_TYPE);
 
         //problem rank parameter
         String rankParamName = "rank";
@@ -128,5 +139,11 @@ public class KioJSTranslator implements Translator {
                 .stream()
                 .filter(p -> p.title() != null && !p.title().isEmpty())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void setScoresAndRank(Info results, int scores, int rank) {
+        results.put("scores", scores);
+        results.put("rank", rank);
     }
 }

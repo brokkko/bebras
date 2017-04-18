@@ -15,5 +15,8 @@ public interface Translator extends SerializableUpdatable {
     InfoPattern getInfoPattern();
     InfoPattern getConfigInfoPattern();
 
-    default void setup(Contest contest) {}
+    default void setup(Contest contest) {} //TODO this is about setting up a contest, but it can not be only contest
+
+    default void setScoresAndRank(Info results, int scores, int rank) {
+    }
 }

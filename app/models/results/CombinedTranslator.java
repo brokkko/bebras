@@ -103,4 +103,11 @@ public class CombinedTranslator implements Translator {
         for (Translator translator : translators)
             translator.setup(contest);
     }
+
+    @Override
+    public void setScoresAndRank(Info results, int scores, int rank) {
+        for (Translator translator : translators) {
+            translator.setScoresAndRank(results, scores, rank);
+        }
+    }
 }

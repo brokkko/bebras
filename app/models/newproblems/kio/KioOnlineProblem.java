@@ -128,9 +128,19 @@ public class KioOnlineProblem implements Problem {
             return checkResult;
         }
 
-        result.fields().forEachRemaining(e -> checkResult.put(e.getKey(), e.getValue()));
+        result.fields().forEachRemaining(e -> checkResult.put(e.getKey(), decode(e.getValue())));
 
         return checkResult;
+    }
+
+    private Object decode(JsonNode value) {
+        if (value.isLong())
+            return value.asLong();
+        if (value.isInt())
+            return value.asInt();
+        if (value.isNumber())
+            return value.asDouble();
+        return value.asText(); //TODO ???
     }
 
     @Override
