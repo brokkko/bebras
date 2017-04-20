@@ -46,7 +46,7 @@ public class BeaverTranslator implements Translator {
             Info problemResult = from.get(i);
             Info problemSettings = settings.get(i);
 
-            int result = problemResult == null ? 0 : (Integer) problemResult.get("result");
+            int result = problemResult == null ? 0 : (Integer) problemResult.getOrDefault("result", 0);
 
             int localScores = problemSettings == null ? 1 : problemSettings.get("r") == null ? 1 : (Integer) problemSettings.get("r");
             int localPenalty = problemSettings == null ? -1 : problemSettings.get("w") == null ? -1 : (Integer) problemSettings.get("w");

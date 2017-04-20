@@ -39,7 +39,7 @@ lazy val dces2 = project.in(file(".")).enablePlugins(PlayJava).settings(
     cache,
     javaWs,
     // Add your project dependencies here,
-    "org.mongodb" % "mongo-java-driver" % "3.1.0", //mongo db driver, was 2.9.2
+    "org.mongodb" % "mongo-java-driver" % "3.4.2",
     "org.apache.commons" % "commons-email" % "1.2", //simple email wrapper
     "javax.mail" % "mail" % "1.4.5", //not sure this needed, it may already be in dependencies
     "net.sf.opencsv" % "opencsv" % "2.3", // CSV reader and writer http://opencsv.sourceforge.net

@@ -66,6 +66,7 @@ GET         /:event/workers_list                                       controlle
 POST        /:event/add_contest                                        controllers.EventAdministration.addContest(event)
 POST        /:event/invalidate_event_results                           controllers.EventAdministration.doInvalidateEventResults(event)
 POST        /:event/:role/remove_registered                            controllers.EventAdministration.doRemoveAllRegisteredByRole(event, role)
+POST        /:event/globalize_event_results                            controllers.EventAdministration.doGlobalizeEventResults(event)
 POST        /:event/invalidate_contests_and_event_results              controllers.EventAdministration.doInvalidateContestsAndEventResults(event)
 POST        /:event/load_user_fields                                   controllers.EventAdministration.doLoadUserFields(event)
 POST        /:event/:user/remove_user                                  controllers.UserInfo.removeUser(event, user)
@@ -82,6 +83,7 @@ POST        /:event/:block/set_html_block                              controlle
 #admin contest
 GET         /:event/:contest/contest_admin                             controllers.ContestAdministration.contestAdmin(event, contest)
 POST        /:event/:contest/invalidate_contest_results                controllers.ContestAdministration.doInvalidateContestsAndEventResults(event, contest)
+POST        /:event/:contest/globalize_contest_results                 controllers.ContestAdministration.doGlobalizeContestResults(event, contest)
 POST        /:event/:contest/contest_up                                controllers.ContestAdministration.moveContestUp(event, contest)
 POST        /:event/:contest/contest_down                              controllers.ContestAdministration.moveContestDown(event, contest)
 POST        /:event/:contest/contest_remove                            controllers.ContestAdministration.removeContest(event, contest)

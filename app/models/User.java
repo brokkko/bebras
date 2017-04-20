@@ -982,6 +982,12 @@ public class User implements SerializableUpdatable {
         return finalResults;
     }
 
+    public void updateContestResults(Contest contest, Info results) {
+        ContestInfoForUser contestInfo = getContestInfoCreateIfNeeded(contest.getId());
+        contestInfo.setFinalResults(results);
+        store();
+    }
+
     public void evaluateAllContestsResults() {
         for (Contest contest : getEvent().getContests())
             getContestResults(contest);
@@ -1013,6 +1019,12 @@ public class User implements SerializableUpdatable {
         store();
 
         return eventResults;
+    }
+
+    public void updateEventResults(Info results) {
+        Event event = getEvent();
+        eventResults = results;
+        store();
     }
 
     //rights

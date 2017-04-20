@@ -404,4 +404,19 @@ public class Contest {
 
         return MongoConnection.getUsersCollection().count(query);
     }
+
+    public void globalizeResults() {
+        Translator translator = getResultTranslator();
+        if (translator != null)
+            getEvent().globalizeResults(
+                    translator,
+                    user -> {
+                        if (!isAvailableForUser(user))
+                            return null;
+                        return translator.getUserType(user);
+                    },
+                    user -> user.getContestResults(this),
+                    (user, results) -> user.updateContestResults(this, results)
+            );
+    }
 }

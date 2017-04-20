@@ -6,6 +6,7 @@ import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -105,9 +106,30 @@ public class CombinedTranslator implements Translator {
     }
 
     @Override
-    public void setScoresAndRank(Info results, int scores, int rank) {
+    public <T> void updateFromPreorder(Info results, Preorder<T> preorder, int level) {
         for (Translator translator : translators) {
-            translator.setScoresAndRank(results, scores, rank);
+            translator.updateFromPreorder(results, preorder, level);
         }
+    }
+
+    @Override
+    //returns the first comparator out of several
+    public Comparator<Info> comparator() {
+        for (Translator translator : translators) {
+            Comparator<Info> comparator = translator.comparator();
+            if (comparator != null)
+                return comparator;
+        }
+        return null;
+    }
+
+    @Override
+    public Object getUserType(User user) {
+        for (Translator translator : translators) {
+            Object type = translator.getUserType(user);
+            if (type != null)
+                return type;
+        }
+        return null;
     }
 }

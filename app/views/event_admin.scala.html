@@ -58,6 +58,10 @@
         </div>
     </div>
 
+    @*TODO make special template for actions*@
+    <p><a href="#" class='submit actions-globalize-event-results' title="Глобализировать результаты события">Глобалилизровать результаты события</a></p>
+    <form action="@routes.EventAdministration.doGlobalizeEventResults(Event.currentId())" method="POST" class='actions-globalize-event-results'></form>
+
     <h2>Удаление события</h2>
 
     <form action="@routes.EventAdministration.doRemoveEvent(Event.currentId)" method="POST" class='actions-remove-event'></form>

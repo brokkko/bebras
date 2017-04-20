@@ -4,6 +4,7 @@ import models.Contest;
 import models.User;
 import models.newserialization.SerializableUpdatable;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -15,8 +16,18 @@ public interface Translator extends SerializableUpdatable {
     InfoPattern getInfoPattern();
     InfoPattern getConfigInfoPattern();
 
+    //TODO all next methods should be somewhere else
+
     default void setup(Contest contest) {} //TODO this is about setting up a contest, but it can not be only contest
 
-    default void setScoresAndRank(Info results, int scores, int rank) {
+    default <T> void updateFromPreorder(Info results, Preorder<T> preorder, int level) {
+    }
+
+    default Comparator<Info> comparator() {
+        return null;
+    }
+
+    default Object getUserType(User user) {
+        return null;
     }
 }

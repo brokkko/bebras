@@ -1,4 +1,4 @@
-package models.results;
+package models.results.kio;
 
 import models.Contest;
 import models.ServerConfiguration;
@@ -7,6 +7,10 @@ import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
 import models.newproblems.kio.KioOnlineProblem;
 import models.newserialization.*;
+import models.results.Info;
+import models.results.InfoPattern;
+import models.results.Preorder;
+import models.results.Translator;
 import play.Logger;
 import ru.ipo.kio.js.JsKioProblem;
 import ru.ipo.kio.js.Parameter;
@@ -14,6 +18,7 @@ import ru.ipo.kio.js.Parameter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,20 +37,21 @@ public class KioJSTranslator implements Translator {
         }
 
         Info source = from.get(0);
+
         Info result = new Info();
 
         int n = visibleParameters.size();
         for (int i = 0; i < n; i++) {
             Parameter param = visibleParameters.get(i);
             String paramName = "p" + i;
-            Object paramValue = source.get(param.name());
-            result.put(paramName, param.v(paramValue));
+            Object paramValue = source == null ? null : source.get(param.name());
+            result.put(paramName, paramValue == null ? "-" : param.v(paramValue)); //TODO process null on view level
         }
 
         List<Parameter> params = problem.getParameters();
         List<Double> rankSorterValue = params.stream().map(p -> {
-            Object paramValue = source.get(p.name());
-            return p.n(paramValue);
+            Object paramValue = source == null ? null : source.get(p.name());
+            return paramValue == null ? -Double.MAX_VALUE : p.normalizeWithOrdering(paramValue);
         }).collect(Collectors.toList());
         result.put("rank-sorter", rankSorterValue);
         result.put("rank", 0);
@@ -69,7 +75,7 @@ public class KioJSTranslator implements Translator {
 
         //problem rank parameter
         String rankParamName = "rank";
-        field2title.put(rankParamName,"Ранг");
+        field2title.put(rankParamName,"Место");
         field2type.put(rankParamName, new BasicSerializationType<>(Integer.class));
 
         //problem scores parameter
@@ -142,8 +148,44 @@ public class KioJSTranslator implements Translator {
     }
 
     @Override
-    public void setScoresAndRank(Info results, int scores, int rank) {
-        results.put("scores", scores);
-        results.put("rank", rank);
+    public <T> void updateFromPreorder(Info results, Preorder<T> preorder, int level) {
+        results.put("scores", level == 0 ? 0 : preorder.getAccumulatedLevelSize(level - 1));
+        results.put("rank", preorder.getLevelsCount() - level);
+    }
+
+    @Override
+    public Comparator<Info> comparator() {
+        return (info1, info2) -> {
+            List<Double> r1 = (List<Double>) info1.get("rank-sorter");
+            List<Double> r2 = (List<Double>) info2.get("rank-sorter");
+
+            if (r1 == null && r2 == null)
+                return 0;
+            if (r1 == null)
+                return -1;
+            if (r2 == null)
+                return 1;
+
+            int n = r1.size();
+            for (int i = 0; i < n; i++) {
+                double diff = r1.get(i) - r2.get(i);
+                if (Math.abs(diff) < 1e-8)
+                    continue;
+                if (diff < 0)
+                    return -1;
+                return 1;
+            }
+
+            return 0;
+        };
+    }
+
+    @Override
+    public Object getUserType(User user) {
+        int level = KioLevelTranslator.grade2level(user);
+        if (level < 0)
+            return null;
+        else
+            return level;
     }
 }

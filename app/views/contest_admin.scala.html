@@ -70,4 +70,8 @@
     <p><a href="#" class='submit actions-invalidate-contest-results' title="Пересчитать результаты соревнования">Пересчитать результаты соревнования</a></p>
     <form action="@routes.ContestAdministration.doInvalidateContestsAndEventResults(Event.currentId(), contest.getId)" method="POST" class='actions-invalidate-contest-results'></form>
 
+    @*TODO make special template for actions*@
+    <p><a href="#" class='submit actions-globalize-contest-results' title="Глобализировать результаты соревнования">Глобалилизровать результаты соревнования</a></p>
+    <form action="@routes.ContestAdministration.doGlobalizeContestResults(Event.currentId(), contest.getId)" method="POST" class='actions-globalize-contest-results'></form>
+
 }

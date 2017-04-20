@@ -1,9 +1,12 @@
-package models.results;
+package models.results.kio;
 
 import models.User;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
+import models.results.Info;
+import models.results.InfoPattern;
+import models.results.Translator;
 
 import java.util.List;
 

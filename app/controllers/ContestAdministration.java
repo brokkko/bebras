@@ -11,6 +11,7 @@ import models.newproblems.newproblemblock.ProblemBlock;
 import models.newproblems.newproblemblock.ProblemBlockFactory;
 import models.newserialization.FormDeserializer;
 import models.results.Info;
+import models.results.Translator;
 import play.libs.Akka;
 import play.libs.F;
 import play.mvc.Controller;
@@ -191,6 +192,23 @@ public class ContestAdministration extends Controller {
         return promiseOfVoid.map(
                 result -> {
                     flash("message", "All results successfully invalidated");
+                    return redirect(routes.ContestAdministration.contestAdmin(eventId, contestId));
+                }
+        );
+    }
+
+    public static F.Promise<Result> doGlobalizeContestResults(final String eventId, final String contestId) {
+        F.Promise<Boolean> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    Contest c = Contest.current();
+                    c.globalizeResults();
+                    return true;
+                }
+        );
+
+        return promiseOfVoid.map(
+                result -> {
+                    flash("message", "All results successfully globalized");
                     return redirect(routes.ContestAdministration.contestAdmin(eventId, contestId));
                 }
         );

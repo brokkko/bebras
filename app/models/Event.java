@@ -20,6 +20,10 @@ import views.htmlblocks.HtmlBlock;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -504,5 +508,65 @@ public class Event {
                 return (T)plugin;
 
         return null;
+    }
+
+    public void globalizeResults(Translator translator, Function<User, Object> user2type, Function<User, Info> user2result, BiConsumer<User, Info> updateUserResult) {
+        Comparator<Info> comparator = translator.comparator();
+        if (comparator == null)
+            return;
+
+        BasicDBObject query = new BasicDBObject();
+        query.put(User.FIELD_EVENT, Event.currentId());
+
+        class UserAndResult {
+            User user;
+            Info result;
+            Object type;
+
+            public UserAndResult(User user, Info result) {
+                this.user = user;
+                this.result = result;
+                this.type = user2type.apply(user);
+            }
+        }
+
+        List<UserAndResult> allUsersAndResults = new ArrayList<>();
+
+        Set<Object> types = new HashSet<>();
+        try (User.UsersEnumeration allEventUsers = User.listUsers(query)) {
+            while (allEventUsers.hasMoreElements()) {
+                User u = allEventUsers.nextElement();
+
+                Object type = user2type.apply(u);
+                if (type == null)
+                    continue;
+                types.add(type);
+
+                Info eventResults = user2result.apply(u);//u.getEventResults();
+                UserAndResult ur = new UserAndResult(u, eventResults);
+                allUsersAndResults.add(ur);
+            }
+        } catch (Exception e) {
+            Logger.error("Error while globalizing event results", e);
+        }
+
+        //evaluate for each type
+        for (Object type : types) {
+            List<UserAndResult> typedResults = allUsersAndResults
+                    .stream()
+                    .filter(u -> u.type.equals(type))
+                    .collect(Collectors.toList());
+
+            Preorder<UserAndResult> preorder = Preorder.construct(typedResults, (ur1, ur2) ->
+                    comparator.compare(ur1.result, ur2.result)
+            );
+
+            for (UserAndResult ur : typedResults) {
+                int level = preorder.getLevel(ur);
+                translator.updateFromPreorder(ur.result, preorder, level);
+                //ur.user.updateEventResults(ur.result);
+                updateUserResult.accept(ur.user, ur.result);
+            }
+        }
     }
 }

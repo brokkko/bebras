@@ -26,6 +26,8 @@ import models.newserialization.FormSerializer;
 import models.newserialization.JSONDeserializer;
 import models.newserialization.MongoSerializer;
 import models.results.Info;
+import models.results.Translator;
+import models.results.kio.KioLevelTranslator;
 import models.utils.Utils;
 import org.bson.types.ObjectId;
 import play.Logger;
@@ -439,6 +441,40 @@ public class EventAdministration extends Controller {
         return promiseOfVoid.map(
                 result -> {
                     flash("message", "All results successfully invalidated");
+                    return redirect(routes.EventAdministration.admin(eventId));
+                }
+        );
+    }
+
+    public static F.Promise<Result> doGlobalizeEventResults(final String eventId) {
+        F.Promise<Boolean> promiseOfVoid = F.Promise.promise(
+                () -> {
+                    Event e = Event.current();
+
+                    //globalize each contest
+                    for (Contest c : e.getContests())
+                        c.globalizeResults();
+
+                    e.globalizeResults(
+                            e.getResultTranslator(),
+                            user -> {
+                                //TODO move logic out, to translator, for example
+                                //type depends on role: 1) for roles with PARTICIPANT inside 2) other
+                                if (!user.getRole().getName().contains("PARTICIPANT"))
+                                    return -1;
+                                else
+                                    return KioLevelTranslator.grade2level(user);
+                            },
+                            User::getEventResults,
+                            User::updateEventResults
+                    );
+                    return true;
+                }
+        );
+
+        return promiseOfVoid.map(
+                result -> {
+                    flash("message", "All results successfully globalized");
                     return redirect(routes.EventAdministration.admin(eventId));
                 }
         );
