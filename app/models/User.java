@@ -809,7 +809,7 @@ public class User implements SerializableUpdatable {
         return allSubmissions;
     }
 
-    //TODO the following methods are only for BBTC contest
+    //TODO the following methods are only for BBTC contest, they were used from contests_list.scala.html
     public int totalScores(Event event) {
         int scores = 0;
         for (Contest contest : event.getContests()) {
