@@ -149,6 +149,7 @@ GET         /:event/domain_contests                                    controlle
 GET         /bebras_training/*file                                     controllers.Resources.returnResource(file, base="/public/bebras-training")
 GET         /assets/*file                                              controllers.Assets.at(path="/public", file)
 GET         /~res/*file                                                controllers.Resources.returnFile(file)
+GET         /:event/~dat/inline/*file                                  controllers.Resources.returnDataFileInline(event, file)
 GET         /:event/~dat/*file                                         controllers.Resources.returnDataFile(event, file)
 GET         /~plugin/:pluginName/*file                                 controllers.Resources.returnPluginFile(pluginName, file)
 

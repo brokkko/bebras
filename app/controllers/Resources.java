@@ -6,7 +6,6 @@ import controllers.actions.LoadEvent;
 import models.Event;
 import models.ServerConfiguration;
 import play.Logger;
-import play.Play;
 import play.cache.Cache;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -65,14 +64,30 @@ public class Resources extends Controller {
     @LoadEvent
     @DcesController(allowCache = false)
     public static Result returnDataFile(String eventId, String file) throws UnsupportedEncodingException {
-        file = URLDecoder.decode(file, "UTF-8");
-
-        File content = new File(Event.current().getEventDataFolder().getAbsolutePath() + "/" + file);
+        File content = convertUrlToFilePath(file);
 
         if (!content.exists())
             return notFound();
 
         return ok(content);
+    }
+
+    @Authenticated(admin = true)
+    @LoadEvent
+    @DcesController(allowCache = false)
+    public static Result returnDataFileInline(String eventId, String file) throws UnsupportedEncodingException {
+        File content = convertUrlToFilePath(file);
+
+        if (!content.exists())
+            return notFound();
+
+        return ok(content, true);
+    }
+
+    private static File convertUrlToFilePath(String file) throws UnsupportedEncodingException {
+        file = URLDecoder.decode(file, "UTF-8");
+
+        return new File(Event.current().getEventDataFolder().getAbsolutePath() + "/" + file);
     }
 
     @DcesController(allowCache = true)

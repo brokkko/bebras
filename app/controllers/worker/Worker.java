@@ -193,7 +193,8 @@ public class Worker implements SerializableUpdatable {
         logStream.flush();
     }
 
-    public static interface Task {
+    @FunctionalInterface
+    public interface Task {
         void run() throws Exception;
     }
 }

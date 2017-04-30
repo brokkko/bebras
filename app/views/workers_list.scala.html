@@ -34,7 +34,7 @@
                 <td>@Utils.millis2minAndSec(AuthenticatedAction.getRequestTime.getTime - worker.getCreationTime)</td>
             }
             <td>@worker.getDescription</td>
-            <td><a target="_blank" href="@routes.Resources.returnDataFile(Event.currentId, "_workers/" + worker.getLog.getName)">просмотр</a></td>
+            <td><a target="_blank" href="@routes.Resources.returnDataFileInline(Event.currentId, "_workers/" + worker.getLog.getName)">просмотр</a></td>
         </tr>
     }
     </tbody>
