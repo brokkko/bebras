@@ -2,6 +2,7 @@ package models.newproblems.kio;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import models.ServerConfiguration;
 import models.forms.RawForm;
 import models.newproblems.Problem;
 import models.newserialization.BasicSerializationType;
@@ -9,12 +10,16 @@ import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
+import play.Logger;
 import play.twirl.api.Html;
+import ru.ipo.kio.js.JsKioProblem;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Random;
 
 /**
@@ -175,6 +180,30 @@ public class KioOnlineProblem implements Problem {
                 w = w.add(new ResourceLink(urlPrefix + dependency.trim()));
 
         return w;
+    }
+
+    public JsKioProblem asJsKioProblem() {
+        String className = getClassName();
+        String settings = getSettings();
+        String dependencies = getDependencies();
+
+        //TODO we assume, file with task is the first in the list of dependencies
+        String[] jsCodes = dependencies.split("\\s*,\\s*");
+        if (jsCodes.length == 0)
+            return null;
+        String jsCodeFilename = jsCodes[0];
+        File kioOnlineFolder = ServerConfiguration.getInstance().getPluginFolder("KioOnline");
+        File jsCodeFile = new File(kioOnlineFolder, jsCodeFilename);
+        String jsCode;
+        try {
+            byte[] bytes = Files.readAllBytes(jsCodeFile.toPath());
+            jsCode = new String(bytes, "UTF-8");
+        } catch (IOException e) {
+            Logger.error("Failed to read file " + jsCodeFile, e);
+            return null;
+        }
+
+        return new JsKioProblem(jsCode, className, settings);
     }
 
     @Override

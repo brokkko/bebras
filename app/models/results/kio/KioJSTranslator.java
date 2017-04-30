@@ -1,7 +1,6 @@
 package models.results.kio;
 
 import models.Contest;
-import models.ServerConfiguration;
 import models.User;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
@@ -15,9 +14,6 @@ import play.Logger;
 import ru.ipo.kio.js.JsKioProblem;
 import ru.ipo.kio.js.Parameter;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -119,27 +115,8 @@ public class KioJSTranslator implements Translator {
             return;
 
         KioOnlineProblem kop = (KioOnlineProblem) mainProblem;
-        String className = kop.getClassName();
-        String settings = kop.getSettings();
-        String dependencies = kop.getDependencies();
-
-        //TODO we assume, file with task is the first in the list of dependencies
-        String[] jsCodes = dependencies.split("\\s*,\\s*");
-        if (jsCodes.length == 0)
-            return;
-        String jsCodeFilename = jsCodes[0];
-        File kioOnlineFolder = ServerConfiguration.getInstance().getPluginFolder("KioOnline");
-        File jsCodeFile = new File(kioOnlineFolder, jsCodeFilename);
-        String jsCode;
-        try {
-            byte[] bytes = Files.readAllBytes(jsCodeFile.toPath());
-            jsCode = new String(bytes, "UTF-8");
-        } catch (IOException e) {
-            Logger.error("Failed to read file " + jsCodeFile, e);
-            return;
-        }
-
-        problem = new JsKioProblem(jsCode, className, settings);
+        problem = kop.asJsKioProblem();
+        if (problem == null) return;
 
         visibleParameters = problem.getParameters() //TODO invisible parameters are defined in KioAPI
                 .stream()

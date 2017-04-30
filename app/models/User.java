@@ -746,7 +746,7 @@ public class User implements SerializableUpdatable {
      * @param contest the contest to get submissions
      * @return list of submissions lists
      */
-    private List<List<Submission>> getSubmissionsListsForProblems(Contest contest) {
+    public List<List<Submission>> getSubmissionsListsForProblems(Contest contest) {
         Map<ObjectId, List<Submission>> problem2allSubmissions = getAllSubmissions(contest)
                 .stream()
                 .filter(submission -> submission.getProblemId() != null)
