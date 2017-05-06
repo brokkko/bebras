@@ -135,21 +135,19 @@ public class Worker implements SerializableUpdatable {
     public void execute(final Task task) {
         Akka.system().scheduler().scheduleOnce(
                 Duration.Zero(),
-                new Runnable() {
-                    public void run() {
-                        try (PrintStream logStream = new PrintStream(log, "UTF-8")) {
-                            Worker.this.logStream = logStream;
-                            store();
-                            try {
-                                task.run();
-                            } catch (Exception e) {
-                                logError("error in task execution", e);
-                            }
-                            Worker.this.finish = new Date();
-                            store();
+                () -> {
+                    try (PrintStream logStream = new PrintStream(log, "UTF-8")) {
+                        Worker.this.logStream = logStream;
+                        store();
+                        try {
+                            task.run();
                         } catch (Exception e) {
-                            Logger.error("Worker failed", e);
+                            logError("error in task execution", e);
                         }
+                        Worker.this.finish = new Date();
+                        store();
+                    } catch (Exception e) {
+                        Logger.error("Worker failed", e);
                     }
                 },
                 Akka.system().dispatcher()

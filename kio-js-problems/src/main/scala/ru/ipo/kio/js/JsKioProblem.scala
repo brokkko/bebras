@@ -43,6 +43,8 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String) exte
     parametersView.map(p => p.compare(x, y)).find(_ != 0).getOrElse(0)
 
   def getParameters: java.util.List[Parameter] = parameters.asJava
+
+  def check
 }
 
 object JsKioProblem {

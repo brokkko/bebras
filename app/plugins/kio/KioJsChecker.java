@@ -9,6 +9,7 @@ import models.User;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
 import models.newproblems.kio.KioOnlineProblem;
+import models.results.Info;
 import play.libs.F;
 import play.mvc.Result;
 import play.mvc.Results;
@@ -70,6 +71,12 @@ public class KioJsChecker extends Plugin {
     private void checkProblem(Worker w, Event event, Contest contest, User user, KioOnlineProblem problem, List<Submission> submissions) {
         JsKioProblem jsKioProblem = problem.asJsKioProblem();
         if (jsKioProblem == null)
-            return;
+            throw new RuntimeException("Failed to get kio problem. Dependencies: " + problem.getDependencies());
+
+        Info answer = submissions.get(0).getAnswer();
+        String solutionJSON = (String) answer.get("sol");
+        String resultJSON = (String) answer.get("res");
+
+
     }
 }
