@@ -72,7 +72,19 @@ public abstract class Diploma<Factory extends DiplomaFactory> {
     }
 
     protected String getResult(String field) {
-        return (String) getResults().get(field);
+        Object res = getResults().get(field);
+        return res == null ? null : String.valueOf(res);
+    }
+
+    protected Info getResults(String contestId) {
+        if (contestId == null || contestId.isEmpty())
+            return  getResults();
+        return user.getContestResults(user.getEvent().getContestById(contestId));
+    }
+
+    protected String getResult(String field, String contestId) {
+        Object res = getResults(contestId).get(field);
+        return res == null ? null : String.valueOf(res);
     }
 
     public abstract int getWidthsInMM();

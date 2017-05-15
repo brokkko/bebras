@@ -1,0 +1,205 @@
+scheme0   370 + 15
+scheme1   537 + 12
+scheme2   481 + 18
+
+fmt0      334 + 13
+fmt1      477 + 12
+fmt2      430 + 17
+
+batman    143 + 7
+batman12  306 + 11
+
+level0 457
+level1 712
+level2 657
+
+
+[
+  {
+    "ref" : "certificate",
+    "view right" : "certificate",
+    "diploma" : {
+      "problems by levels" : [
+        [
+          0,
+          3,
+          6
+        ],
+        [
+          1,
+          4,
+          7
+        ],
+        [
+          2,
+          5,
+          7
+        ]
+      ],
+      "participants by levels" : [
+        457,
+        712,
+        657
+      ],
+      "problems" : [
+        {
+          "name" : "Схемы",
+          "pattern" : "верно: %s,\nэлементов: %s",
+          "scores" : "rank",
+          "problem contest id": "scheme0",
+          "fields" : [
+            "p0",
+            "p1"
+          ]
+        },
+        {
+          "name" : "Схемы",
+          "pattern" : "верно: %s,\nэлементов: %s",
+          "scores" : "rank",
+          "problem contest id": "scheme1",
+          "fields" : [
+            "p0",
+            "p1"
+          ]
+        },
+        {
+          "name" : "Схемы",
+          "pattern" : "верно: %s,\nэлементов: %s",
+          "scores" : "rank",
+          "problem contest id": "scheme2",
+          "fields" : [
+            "p0",
+            "p1"
+          ]
+        },
+
+        {
+          "name" : "Автоматы",
+          "pattern" : "верно: %s,\nэлементов: %s",
+          "scores" : "rank",
+          "problem contest id": "fmt0",
+          "fields" : [
+            "p3",
+            "p4"
+          ]
+        },
+        {
+          "name" : "Автоматы",
+          "pattern" : "верно: %s,\nэлементов: %s",
+          "scores" : "rank",
+          "problem contest id": "fmt1",
+          "fields" : [
+            "p0",
+            "p1"
+          ]
+        },
+        {
+          "name" : "Автоматы",
+          "pattern" : "верно: %s,\nэлементов: %s",
+          "scores" : "rank",
+          "problem contest id": "fmt2",
+          "fields" : [
+            "p0",
+            "p1"
+          ]
+        },
+        {
+          "name" : "Бэтмен",
+          "pattern" : "за мин.: %s, мягк. пос.: %s\nфигур: %s, время: %s",
+          "scores" : "rank",
+          "problem contest id": "batman",
+          "fields" : [
+            "p0",
+            "p1",
+            "p2",
+            "p3"
+          ]
+        },
+        {
+          "name" : "Бэтмен",
+          "pattern" : "за мин.: %s, мягк. пос.: %s\nфигур: %s, окон: %s, время: %s",
+          "scores" : "rank",
+          "problem contest id": "batman12",
+          "fields" : [
+            "p0",
+            "p1",
+            "p2",
+            "p3",
+            "p4"
+          ]
+        }
+      ],
+      "year" : 2017,
+      "type" : "kio certificate"
+    },
+    "view title" : "Мой сертификат",
+    "type" : "diploma"
+  },
+
+
+  {
+    "ref" : "diploma",
+    "view right" : "certificate",
+    "diploma" : {
+      "year" : 2017,
+      "type" : "kio diploma"
+    },
+    "view title" : "Мой диплом",
+    "type" : "diploma"
+  },
+  {
+    "ref" : "diploma1",
+    "view right" : "certificate",
+    "diploma" : {
+      "diploma field" : "diploma_problem_1",
+      "rank field" : "rank",
+      "year" : 2017,
+      "name" : "Схемы",
+      "type" : "kio problem diploma"
+    },
+    "view title" : "Мой диплом по задаче «Схемы»",
+    "type" : "diploma"
+  },
+  {
+    "ref" : "diploma2",
+    "view right" : "certificate",
+    "diploma" : {
+      "diploma field" : "diploma_problem_2",
+      "rank field" : "rank",
+      "year" : 2017,
+      "name" : "Автоматы",
+      "type" : "kio problem diploma"
+    },
+    "view title" : "Мой диплом по задаче «Автоматы»",
+    "type" : "diploma"
+  },
+  {
+    "ref" : "diploma3",
+    "view right" : "certificate",
+    "diploma" : {
+      "diploma field" : "diploma_problem_3",
+      "rank field" : "rank",
+      "year" : 2017,
+      "name" : "Бэтмен",
+      "type" : "kio problem diploma"
+    },
+    "view title" : "Мой диплом по задаче «Бэтмен»",
+    "type" : "diploma"
+  },
+  {
+    "ref" : "teacher_gramota",
+    "view right" : "teacher gramota",
+    "diploma" : {
+      "year" : 2017,
+      "type" : "kio teacher gramota"
+    },
+    "view title" : "Моя грамота",
+    "type" : "diploma"
+  }
+]
+
+//also add teacher_gramota
+
+http://localhost:9000/kio17/kio_problem_for_addr/all_addresses/SCHOOL_ORG/p
+http://localhost:9000/kio17/kio_problem_for_addr/all_addresses/PARTICIPANT/p
+http://localhost:9000/kio17/kio_problem_for_addr/all_addresses/SELF_PARTICIPANT/p

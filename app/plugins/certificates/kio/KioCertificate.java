@@ -66,7 +66,10 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
 
     private int getLevel() {
         try {
-            return Integer.parseInt(getResult("level"));
+            String level = getResult("level");
+            if (level == null || level.isEmpty())
+                level = getResult("kiolevel");
+            return Integer.parseInt(level);
         } catch (NumberFormatException e) {
             return 0;
         }
@@ -143,7 +146,7 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
 
     private String getScoresForProblem(KioProblemDescription problemDescription) {
         String scoresField = problemDescription.getScoresField();
-        return getResult(scoresField);
+        return getResult(scoresField, problemDescription.getProblemContestId());
     }
 
     private boolean hasAtLeastOneSolution() {
@@ -175,7 +178,7 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
             canvas.showTextAligned(Element.ALIGN_LEFT, levelInfo, Utilities.millimetersToPoints(60), Utilities.millimetersToPoints(124), 0);
 
             int level = getLevel();
-            String placeInfo = String.format("%s место из %s", getResult("rank"), factory.getParticipantsByLevels().get(level));
+            String placeInfo = String.format("%s место из %s", getResult("rank", null), factory.getParticipantsByLevels().get(level));
             canvas.showTextAligned(Element.ALIGN_CENTER, placeInfo, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(117), 0);
 
             outputProblemsResult(canvas);
@@ -201,11 +204,11 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
             String[] fieldsValues = new String[fields.size()];
             for (int i = 0; i < fields.size(); i++) {
                 String field = fields.get(i);
-                fieldsValues[i] = getResult(field);
+                fieldsValues[i] = getResult(field, problemDescription.getProblemContestId());
             }
 
             String rankField = problemDescription.getRankField();
-            String rank = getResult(rankField);
+            String rank = getResult(rankField, problemDescription.getProblemContestId());
             String scores = getScoresForProblem(problemDescription);
 
             String resultsFormat = problemDescription.getPattern();

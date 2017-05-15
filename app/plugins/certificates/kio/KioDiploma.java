@@ -61,8 +61,15 @@ public class KioDiploma extends Diploma<KioDiplomaFactory> {
     @Override
     public String bgPath() {
         return ServerConfiguration.getInstance().getPluginFile(KioCertificate.PLUGIN_NAME,
-                String.format("Diploma_%s_%s.jpg", diploma2file(), getResult("level"))
+                String.format("Diploma_%s_%s.jpg", diploma2file(), getLevel())
         ).getAbsolutePath();
+    }
+
+    private String getLevel() {
+        String level = getResult("level");
+        if (level == null)
+            level = getResult("kiolevel");
+        return level;
     }
 
     @Override

@@ -48,6 +48,7 @@ public class KioOnlineProblem implements Problem {
     private String className;
     private String settings;
     private String dependencies;
+    private String checker;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -75,6 +76,10 @@ public class KioOnlineProblem implements Problem {
         return dependencies;
     }
 
+    public String getChecker() {
+        return checker;
+    }
+
     @Override
     public Html format(String index, boolean showSolutions, Info settings, long randSeed) {
         String uniqueId = randomString(20);
@@ -93,7 +98,7 @@ public class KioOnlineProblem implements Problem {
     @Override
     public Html formatEditor() {
         return views.html.kio.kio_online_editor.render(
-                title, statement, help, className, settings, dependencies
+                title, statement, help, className, settings, dependencies, checker
         );
     }
 
@@ -105,6 +110,7 @@ public class KioOnlineProblem implements Problem {
         className = form.get("class_name");
         settings = form.get("settings");
         dependencies = form.get("dependencies");
+        checker = form.get("checker");
     }
 
     @Override
@@ -203,7 +209,7 @@ public class KioOnlineProblem implements Problem {
             return null;
         }
 
-        return new JsKioProblem(jsCode, className, settings);
+        return new JsKioProblem(jsCode, className, settings, null); //TODO add external checker
     }
 
     @Override
@@ -214,6 +220,7 @@ public class KioOnlineProblem implements Problem {
         serializer.write("className", className);
         serializer.write("settings", settings);
         serializer.write("dependencies", dependencies);
+        serializer.write("checker", checker);
     }
 
     @Override
@@ -224,5 +231,6 @@ public class KioOnlineProblem implements Problem {
         className = deserializer.readString("className", "");
         settings = deserializer.readString("settings", "");
         dependencies = deserializer.readString("dependencies", "");
+        checker = deserializer.readString("checker", "");
     }
 }

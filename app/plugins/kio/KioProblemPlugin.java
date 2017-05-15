@@ -47,6 +47,9 @@ public class KioProblemPlugin extends Plugin {
 
     @Override
     public void initEvent(Event event) {
+        if (problemSet == null)
+            return;
+
         if (year == 2014) {
             registerUserFields2014(event);
             return;
@@ -391,49 +394,46 @@ public class KioProblemPlugin extends Plugin {
             return Results.badRequest("Unknown role");
 
         final Worker worker = new Worker("Generate all addresses", "Event=" + event.getId() + " role=" + roleName);
-        worker.execute(new Worker.Task() {
-            @Override
-            public void run() throws Exception {
-                DBObject usersQuery = new BasicDBObject(User.FIELD_EVENT, event.getId());
-                usersQuery.put(User.FIELD_USER_ROLE, roleName);
+        worker.execute(() -> {
+            DBObject usersQuery = new BasicDBObject(User.FIELD_EVENT, event.getId());
+            usersQuery.put(User.FIELD_USER_ROLE, roleName);
 
-                User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery);
-                List<User> allUsers = usersEnumeration.readToMemory();
+            User.UsersEnumeration usersEnumeration = User.listUsers(usersQuery);
+            List<User> allUsers = usersEnumeration.readToMemory();
 
-                File outputPath = new File(event.getEventDataFolder(), "all-addresses-" + roleName + ".pdf");
+            File outputPath = new File(event.getEventDataFolder(), "all-addresses-" + roleName + ".pdf");
 
-                Document doc = new Document(
-                        new Rectangle(
-                                Utilities.millimetersToPoints(210), Utilities.millimetersToPoints(297)
-                        ),
-                        0, 0, 0, 0
-                );
+            Document doc = new Document(
+                    new Rectangle(
+                            Utilities.millimetersToPoints(210), Utilities.millimetersToPoints(297)
+                    ),
+                    0, 0, 0, 0
+            );
 
-                PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
+            PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(outputPath));
 
-                doc.open();
+            doc.open();
 
-                int processedUsers = 0;
-                for (User user : allUsers) {
-                    if (!isHonouredDiploma(user))
-                        continue;
+            int processedUsers = 0;
+            for (User user : allUsers) {
+                if (!isHonouredDiploma(user))
+                    continue;
 
-                    KioAddressCertificate certificate = new KioAddressCertificate(user, year);
+                KioAddressCertificate certificate = new KioAddressCertificate(user, year);
 
-                    int position = processedUsers % 11;
-                    if (position == 0)
-                        doc.newPage();
-                    certificate.draw(writer, position);
+                int position = processedUsers % 11;
+                if (position == 0)
+                    doc.newPage();
+                certificate.draw(writer, position);
 
-                    processedUsers++;
-                    if (processedUsers == 1 || processedUsers % 100 == 0)
-                        worker.logInfo("processed " + processedUsers + " users");
-                }
-
-                doc.close();
-
-                worker.logInfo("Finished: " + controllers.routes.Resources.returnDataFile(event.getId(), outputPath.getName()));
+                processedUsers++;
+                if (processedUsers == 1 || processedUsers % 100 == 0)
+                    worker.logInfo("processed " + processedUsers + " users");
             }
+
+            doc.close();
+
+            worker.logInfo("Finished: " + controllers.routes.Resources.returnDataFile(event.getId(), outputPath.getName()));
         });
 
         return Results.redirect(controllers.routes.EventAdministration.workersList(event.getId()));

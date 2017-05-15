@@ -398,7 +398,7 @@ public class Contest {
         query.put(User.FIELD_USER_ROLE, roleName);
 
         String sd = "_contests." + id + ".sd";
-        query.put(sd, new BasicDBObject("$exists", true));
+        query.put(sd, new BasicDBObject("$exists", true)); //TODO wtf, put then put again
         query.put(sd, new BasicDBObject("$ne", null));
         query.putAll(extraFields);
 

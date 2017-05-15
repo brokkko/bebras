@@ -12,6 +12,7 @@ public class KioProblemDescription implements SerializableUpdatable {
     private String name;
     private String pattern;
     private String rankField;
+    private String problemContestId;
     private List<String> fields;
 
     public String getName() {
@@ -30,6 +31,10 @@ public class KioProblemDescription implements SerializableUpdatable {
         return rankField.replace("rank_", "scores_");
     }
 
+    public String getProblemContestId() {
+        return problemContestId;
+    }
+
     public List<String> getFields() {
         return fields;
     }
@@ -38,6 +43,7 @@ public class KioProblemDescription implements SerializableUpdatable {
     public void serialize(Serializer serializer) {
         serializer.write("name", name);
         serializer.write("pattern", pattern);
+        serializer.write("problem contest id", problemContestId);
         serializer.write("scores", rankField); //TODO rename scores to rank
         SerializationTypesRegistry.list(String.class).write(serializer, "fields", fields);
     }
@@ -47,6 +53,7 @@ public class KioProblemDescription implements SerializableUpdatable {
         name = deserializer.readString("name");
         pattern = deserializer.readString("pattern");
         rankField = deserializer.readString("scores");
+        problemContestId = deserializer.readString("problem contest id");
         fields = SerializationTypesRegistry.list(String.class).read(deserializer, "fields");
     }
 }

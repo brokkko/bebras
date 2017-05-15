@@ -26,7 +26,7 @@ public class KioProblemDiploma extends Diploma<KioProblemDiplomaFactory> {
 
     @Override
     public String bgPath() {
-        String fileName = "Problem_Diploma_" + getResult("level") + ".png";
+        String fileName = "Problem_Diploma_" + getLevel() + ".png";
         return ServerConfiguration.getInstance().getPluginFile(KioCertificate.PLUGIN_NAME, fileName).getAbsolutePath();
     }
 
@@ -61,6 +61,8 @@ public class KioProblemDiploma extends Diploma<KioProblemDiplomaFactory> {
 
     private int getLevel() {
         String level = getResult("level");
+        if (level == null)
+            level = getResult("kiolevel");
         if (level == null)
             throw new IllegalStateException("null level in Kio Problem Diploma");
         switch (level) {

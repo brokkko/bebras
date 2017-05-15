@@ -1,14 +1,18 @@
 package ru.ipo.kio.js
 
+import java.io.File
+import java.net.{URL, URLClassLoader}
 import javax.script.ScriptEngineManager
-import scala.collection.JavaConverters._
 
+import scala.collection.JavaConverters._
 import jdk.nashorn.api.scripting.ScriptObjectMirror
+
+case class ExternalChecker(jar: File, className: String)
 
 /**
   * Created by ilya on 28.03.17.
   */
-class JsKioProblem(jsCode: String, className: String, settingsJson: String) extends Ordering[Result] {
+class JsKioProblem(jsCode: String, className: String, settingsJson: String, externalChecker: ExternalChecker) extends Ordering[Result] {
 
   import JsKioProblem._
 
@@ -44,7 +48,28 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String) exte
 
   def getParameters: java.util.List[Parameter] = parameters.asJava
 
-  def check
+  lazy val checkerFunction: String => String = {
+    val checkerFun = problem.getMember("check")
+    if (ScriptObjectMirror.isUndefined(checkerFun))
+      checkerFunFromExternalChecker
+    else
+      x => checkerFun.asInstanceOf[ScriptObjectMirror].call(null, x).asInstanceOf[String]
+  }
+
+  def checkerFunFromExternalChecker: String => String = {
+    if (externalChecker == null)
+      throw new IllegalStateException("external checker is not defined")
+
+    val ucl: URLClassLoader = new URLClassLoader(Array(externalChecker.jar.toURI.toURL))
+    val checkerClass = ucl.loadClass(externalChecker.className)
+
+    val checkerObject = checkerClass.newInstance()
+    val check = checkerClass.getMethod("check", classOf[String])
+
+    x => check.invoke(checkerObject, x).asInstanceOf[String]
+  }
+
+  def check(solutionJson: String): String = checkerFunction(solutionJson)
 }
 
 object JsKioProblem {
