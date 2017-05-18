@@ -200,6 +200,6 @@ level2 657
 
 //also add teacher_gramota
 
-http://localhost:9000/kio17/kio_problem_for_addr/all_addresses/SCHOOL_ORG/p
-http://localhost:9000/kio17/kio_problem_for_addr/all_addresses/PARTICIPANT/p
-http://localhost:9000/kio17/kio_problem_for_addr/all_addresses/SELF_PARTICIPANT/p
+http://go.kio.spb.ru/kio17/kio_problem_for_addr/all_addresses/SCHOOL_ORG/p
+http://go.kio.spb.ru/kio17/kio_problem_for_addr/all_addresses/PARTICIPANT/p
+http://go.kio.spb.ru/kio17/kio_problem_for_addr/all_addresses/SELF_PARTICIPANT/p

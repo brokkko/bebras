@@ -16,7 +16,12 @@ lazy val certificates = project.in(file("certificates")).settings(
   libraryDependencies ++= Seq(
     "com.itextpdf" % "itext-xtra" % "5.4.4",
     "org.testng" % "testng" % "6.8" % Test
-  )
+  ),
+
+  //From SO. Disable JavaDoc (non utf8 symbols in path)
+  publishArtifact in (Compile, packageDoc) := false,
+  publishArtifact in packageDoc := false,
+  sources in (Compile,doc) := Seq.empty
 )
 
 lazy val kioJsProblems = Project("kio-js-problems", file("kio-js-problems")).settings(
