@@ -36,7 +36,7 @@ lazy val kioJsProblems = Project("kio-js-problems", file("kio-js-problems")).set
 )
 
 lazy val dces2 = project.in(file("."))
-  .enablePlugins(JavaServerAppPackaging, DebianPlugin, RpmPlugin, SystemdPlugin, UpstartPlugin, PlayJava)
+  .enablePlugins(JavaServerAppPackaging, PlayJava)
   .settings(
     name := "dces2",
     version := "0.4.0",
@@ -45,6 +45,8 @@ lazy val dces2 = project.in(file("."))
     //      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
 
     sources in doc in Compile := Seq(), //do not compile documentation
+
+    serverLoading := Some(ServerLoader.Upstart),
 
     //RPM
     rpmVendor := "kio",
