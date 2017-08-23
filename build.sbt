@@ -46,11 +46,17 @@ lazy val dces2 = project.in(file("."))
 
     sources in doc in Compile := Seq(), //do not compile documentation
 
+    //RPM
     rpmVendor := "kio",
     rpmUrl := Some("http://ipo.spb.ru"),
     rpmLicense := Some("MIT"),
     rpmRelease := "13",
     rpmRequirements += "wkhtmltopdf",
+
+    //DEB
+    maintainer := "Ilya Posov <iposov@gmail.com>",
+    packageSummary := "Dces2 Debian Package",
+    packageDescription := """Dces2 system""",
 
     mappings in Universal :=
       (mappings in Universal).value filter {
