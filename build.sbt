@@ -36,7 +36,7 @@ lazy val kioJsProblems = Project("kio-js-problems", file("kio-js-problems")).set
 )
 
 lazy val dces2 = project.in(file("."))
-  .enablePlugins(JavaServerAppPackaging, RpmPlugin, SystemdPlugin, PlayJava)
+  .enablePlugins(JavaServerAppPackaging, DebianPlugin, RpmPlugin, SystemdPlugin, UpstartPlugin, PlayJava)
   .settings(
     name := "dces2",
     version := "0.4.0",
