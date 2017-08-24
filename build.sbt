@@ -84,7 +84,9 @@ lazy val ubuntu14_package = dces2.copy(id="ubuntu14_package").in(file("build/ubu
 
     maintainer := "Ilya Posov <iposov@gmail.com>",
     packageSummary := "Dces2 Debian Package",
-    packageDescription := """Dces2 system"""
+    packageDescription := """Dces2 system""",
+
+    debianPackageDependencies += "wkhtmltopdf"
   )
 
 lazy val fedora_package = dces2.copy(id="fedora_package").in(file("build/fedora"))
