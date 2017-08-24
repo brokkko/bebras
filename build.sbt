@@ -51,8 +51,23 @@ lazy val packagingSettings = Seq(
   linuxPackageSymlinks += LinuxSymlink(s"/usr/share/${packageName.value}/data", s"/var/lib/${packageName.value}")
 )
 
+lazy val debianPackaging = Seq(
+  maintainer := "Ilya Posov <iposov@gmail.com>",
+  packageSummary := "Dces2 Debian Package",
+  packageDescription := """Dces2 system""",
+  debianPackageDependencies += "wkhtmltopdf"
+)
+
+lazy val fedoraPackaging = Seq(
+  rpmVendor := "kio",
+  rpmUrl := Some("http://ipo.spb.ru"),
+  rpmLicense := Some("MIT"),
+  rpmRelease := "13",
+  rpmRequirements += "wkhtmltopdf"
+)
+
 lazy val dces2 = project.in(file("."))
-  .enablePlugins(JavaServerAppPackaging, PlayJava)
+  .enablePlugins(PlayJava, SystemloaderPlugin)
   .settings(
     name := "dces2",
     version := "0.4.0",
@@ -61,8 +76,6 @@ lazy val dces2 = project.in(file("."))
     //      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
 
     sources in doc in Compile := Seq(), //do not compile documentation
-
-    packagingSettings,
 
     libraryDependencies ++= Seq(
       cache,
@@ -73,33 +86,22 @@ lazy val dces2 = project.in(file("."))
       "javax.mail" % "mail" % "1.4.5", //not sure this needed, it may already be in dependencies
       "net.sf.opencsv" % "opencsv" % "2.3", // CSV reader and writer http://opencsv.sourceforge.net
       "com.itextpdf" % "itext-xtra" % "5.4.4"
-    )
+    ),
+
+    //packaging
+    packagingSettings,
+
+    if (sys.props.get("pckg") == Some("ubuntu14")) {
+      println("generating ubuntu 14 package")
+      UpstartPlugin.projectSettings ++ debianPackaging
+    } else {
+      println("generating fedora package")
+      SystemdPlugin.projectSettings ++ fedoraPackaging
+    }
+
+    //for rpm
   ).aggregate(authSubProject).aggregate(certificates).aggregate(kioJsProblems)
   .dependsOn(authSubProject).dependsOn(certificates).dependsOn(kioJsProblems)
-
-lazy val ubuntu14_package = dces2.copy(id="ubuntu14_package").in(file("build/ubuntu14"))
-  .enablePlugins(JavaServerAppPackaging, UpstartPlugin)
-  .settings(
-    serverLoading := Some(ServerLoader.Upstart),
-
-    maintainer := "Ilya Posov <iposov@gmail.com>",
-    packageSummary := "Dces2 Debian Package",
-    packageDescription := """Dces2 system""",
-
-    debianPackageDependencies += "wkhtmltopdf"
-  )
-
-lazy val fedora_package = dces2.copy(id="fedora_package").in(file("build/fedora"))
-  .enablePlugins(JavaServerAppPackaging, SystemdPlugin)
-  .settings(
-    serverLoading := Some(ServerLoader.Systemd),
-
-    rpmVendor := "kio",
-    rpmUrl := Some("http://ipo.spb.ru"),
-    rpmLicense := Some("MIT"),
-    rpmRelease := "13",
-    rpmRequirements += "wkhtmltopdf"
-  )
 
 //Keys.fork := true
 
