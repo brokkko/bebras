@@ -35,6 +35,22 @@ lazy val kioJsProblems = Project("kio-js-problems", file("kio-js-problems")).set
   )
 )
 
+lazy val packagingSettings = Seq(
+  packageName in Linux := "dces2",
+
+  mappings in Universal :=
+    (mappings in Universal).value filter {
+      //remove everything from /conf folder except specific files
+      case (file, _) =>
+        file.getParentFile.getName != "conf" || file.getName.endsWith("example")
+    },
+  mappings in Universal ++= directory("scripts"),
+  mappings in Universal ++= directory("public"),
+
+  linuxPackageMappings += packageTemplateMapping(s"/var/lib/${packageName.value}")(),
+  linuxPackageSymlinks += LinuxSymlink(s"/usr/share/${packageName.value}/data", s"/var/lib/${packageName.value}")
+)
+
 lazy val dces2 = project.in(file("."))
   .enablePlugins(JavaServerAppPackaging, PlayJava)
   .settings(
@@ -46,31 +62,7 @@ lazy val dces2 = project.in(file("."))
 
     sources in doc in Compile := Seq(), //do not compile documentation
 
-    serverLoading := Some(ServerLoader.Upstart),
-
-    //RPM
-    rpmVendor := "kio",
-    rpmUrl := Some("http://ipo.spb.ru"),
-    rpmLicense := Some("MIT"),
-    rpmRelease := "13",
-    rpmRequirements += "wkhtmltopdf",
-
-    //DEB
-    maintainer := "Ilya Posov <iposov@gmail.com>",
-    packageSummary := "Dces2 Debian Package",
-    packageDescription := """Dces2 system""",
-
-    mappings in Universal :=
-      (mappings in Universal).value filter {
-        //remove everything from /conf folder except specific files
-        case (file, _) =>
-          file.getParentFile.getName != "conf" || file.getName.endsWith("example")
-      },
-    mappings in Universal ++= directory("scripts"),
-    mappings in Universal ++= directory("public"),
-
-    linuxPackageMappings += packageTemplateMapping(s"/var/lib/${normalizedName.value}")(),
-    linuxPackageSymlinks += LinuxSymlink(s"/usr/share/${normalizedName.value}/data", s"/var/lib/${normalizedName.value}"),
+    packagingSettings,
 
     libraryDependencies ++= Seq(
       cache,
@@ -84,6 +76,29 @@ lazy val dces2 = project.in(file("."))
     )
   ).aggregate(authSubProject).aggregate(certificates).aggregate(kioJsProblems)
   .dependsOn(authSubProject).dependsOn(certificates).dependsOn(kioJsProblems)
+
+lazy val ubuntu14_package = dces2.copy(id="ubuntu14_package").in(file("build/ubuntu14"))
+  .enablePlugins(JavaServerAppPackaging, UpstartPlugin)
+  .settings(
+    serverLoading := Some(ServerLoader.Upstart),
+
+    maintainer := "Ilya Posov <iposov@gmail.com>",
+    packageSummary := "Dces2 Debian Package",
+    packageDescription := """Dces2 system"""
+  )
+
+lazy val fedora_package = dces2.copy(id="fedora_package").in(file("build/fedora"))
+  .enablePlugins(JavaServerAppPackaging, SystemdPlugin)
+  .settings(
+    serverLoading := Some(ServerLoader.Systemd),
+
+    rpmVendor := "kio",
+    rpmUrl := Some("http://ipo.spb.ru"),
+    rpmLicense := Some("MIT"),
+    rpmRelease := "13",
+    rpmRequirements += "wkhtmltopdf"
+  )
+
 //Keys.fork := true
 
 //TODO aggreate and dependsOn together?
