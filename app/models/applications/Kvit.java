@@ -157,7 +157,13 @@ public class Kvit {
         Utils.writeResourceToFile("/public/invoice-2.html", page2, subs);
         Utils.writeResourceToFile("/public/invoice.css", css);
 
-        Utils.runProcess("wkhtmltopdf", page1.getAbsolutePath(), /*page2.getAbsolutePath(), */pdf.getAbsolutePath());
+        Utils.runProcess(
+                "xvfb-run",
+                "--server-args=-screen 0, 1024x768x24",
+                "wkhtmltopdf",
+                page1.getAbsolutePath(), /*page2.getAbsolutePath(), */
+                pdf.getAbsolutePath()
+        );
 
         return pdf;
     }

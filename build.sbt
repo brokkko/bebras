@@ -60,7 +60,7 @@ lazy val debianPackaging = Seq(
   maintainer := "Ilya Posov <iposov@gmail.com>",
   packageSummary := "Dces2 Debian Package",
   packageDescription := """Dces2 system""",
-  debianPackageDependencies += "wkhtmltopdf"
+  debianPackageDependencies ++= Seq("wkhtmltopdf", "xvfb")
 )
 
 lazy val fedoraPackaging = Seq(
@@ -68,7 +68,7 @@ lazy val fedoraPackaging = Seq(
   rpmUrl := Some("http://ipo.spb.ru"),
   rpmLicense := Some("MIT"),
   rpmRelease := sys.props.getOrElse("rpmver", "1"),
-  rpmRequirements += "wkhtmltopdf"
+  rpmRequirements += Seq("wkhtmltopdf", "xorg-x11-server-Xvfb")
 )
 
 lazy val dces2 = project.in(file("."))
