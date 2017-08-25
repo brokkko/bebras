@@ -68,7 +68,7 @@ lazy val fedoraPackaging = Seq(
   rpmUrl := Some("http://ipo.spb.ru"),
   rpmLicense := Some("MIT"),
   rpmRelease := sys.props.getOrElse("rpmver", "1"),
-  rpmRequirements += Seq("wkhtmltopdf", "xorg-x11-server-Xvfb")
+  rpmRequirements ++= Seq("wkhtmltopdf", "xorg-x11-server-Xvfb")
 )
 
 lazy val dces2 = project.in(file("."))
