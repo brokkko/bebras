@@ -3,7 +3,7 @@
 @import plugins.Applications
 @import models.applications.Application
 @main_with_menu(Event.current.getTitle)(scala.List(HtmlBlockWidget.get)) { } {
-<h2>Квитанция для оплаты конкурса КИО-2016</h2>@*TODO get contest name from DB*@
+<h2>Квитанция для оплаты регистрационного взноса @plugin.getTypeByName(app.getType).getDescription</h2> @*TODO get contest name from DB*@
 
 @if(app != null) {
     <a href="@plugin.getAppsCall">&larr; Список заявок</a><br /><br />
@@ -31,7 +31,7 @@
     @if(app != null) {
         <tr>
             <td valign="top" style="padding-right: 1em"><b>Наименование платежа</b></td>
-            <td valign="top">Регистрационный взнос КИО-2016<br />Код заявки @app.getName</td>
+            <td valign="top">Регистрационный взнос @plugin.getTypeByName(app.getType).getDescription<br />Код заявки @app.getName</td>
         </tr>
         <tr>
             <td valign="top" style="padding-right: 1em"><b>Сумма платежа</b></td>
