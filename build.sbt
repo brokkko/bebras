@@ -41,8 +41,13 @@ lazy val packagingSettings = Seq(
   mappings in Universal :=
     (mappings in Universal).value filter {
       //remove everything from /conf folder except specific files
-      case (file, _) =>
-        file.getParentFile.getName != "conf" || file.getName.endsWith("example")
+      case (mappedFile, _) =>
+        def fileHasExample(f: File): Boolean = {
+          val exampleFile = new File(f.getParentFile, f.getName + ".example")
+          exampleFile.exists()
+        }
+
+        mappedFile.getParentFile.getName != "conf" || !fileHasExample(mappedFile)
     },
   mappings in Universal ++= directory("scripts"),
   mappings in Universal ++= directory("public"),
@@ -62,7 +67,7 @@ lazy val fedoraPackaging = Seq(
   rpmVendor := "kio",
   rpmUrl := Some("http://ipo.spb.ru"),
   rpmLicense := Some("MIT"),
-  rpmRelease := "13",
+  rpmRelease := sys.props.getOrElse("rpmver", "1"),
   rpmRequirements += "wkhtmltopdf"
 )
 
@@ -98,8 +103,6 @@ lazy val dces2 = project.in(file("."))
       println("generating fedora package")
       SystemdPlugin.projectSettings ++ fedoraPackaging
     }
-
-    //for rpm
   ).aggregate(authSubProject).aggregate(certificates).aggregate(kioJsProblems)
   .dependsOn(authSubProject).dependsOn(certificates).dependsOn(kioJsProblems)
 

@@ -10,6 +10,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -203,7 +204,7 @@ public class Utils {
         Process process = Runtime.getRuntime().exec(command);
         int res = process.waitFor();
         if (res != 0)
-            throw new IOException("Non zero exit code of " + command[0]);
+            throw new IOException("Non zero exit code of " + Arrays.stream(command).collect(Collectors.joining(" ")));
     }
 
     public static String getExtension(String name) {
