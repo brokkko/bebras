@@ -1,13 +1,14 @@
-@(app:models.applications.Application, plugin:plugins.applications.Applications, kvit:models.applications.Kvit)
 @import views.htmlblocks.HtmlBlockWidget
 @import models.applications.Application
+@import plugins.applications.KvitBankTransferPaymentType
+@(app:Application, plugin:plugins.applications.Applications, pt:KvitBankTransferPaymentType, kvit:models.applications.Kvit)
 @main_with_menu(Event.current.getTitle)(scala.List(HtmlBlockWidget.get)) { } {
 <h2>Квитанция для оплаты регистрационного взноса @plugin.getTypeByName(app.getType).getDescription</h2> @*TODO get contest name from DB*@
 
 @if(app != null) {
     <a href="@plugin.getAppsCall">&larr; Список заявок</a><br /><br />
 
-    Вы можете <a href="@plugin.getPdfKvitCall(app.getName)">скачать и распечатать квитанцию</a> (для просмотра необходимо использовать программу <a href="http://www.foxitsoftware.com/downloads/">Foxit PDF Reader</a> или <a href="http://get.adobe.com/reader/">Adobe Reader</a>), а затем вписать в неё код пакета (см. в таблице ниже), либо предоставить данные из таблицы в Сбербанк.
+    Вы можете <a href="@pt.getPdfKvitCall(plugin, app.getName)">скачать и распечатать квитанцию</a> (для просмотра необходимо использовать программу <a href="http://www.foxitsoftware.com/downloads/">Foxit PDF Reader</a> или <a href="http://get.adobe.com/reader/">Adobe Reader</a>), а затем вписать в неё код пакета (см. в таблице ниже), либо предоставить данные из таблицы в Сбербанк.
 }
 <br /><br />
 <table class='kvit-data' border="0" align="center">

@@ -1,0 +1,12 @@
+@import plugins.applications.KvitBankTransferPaymentType
+@import plugins.applications.Applications
+@import models.applications.Application
+@import models.User
+@(pt: KvitBankTransferPaymentType, apps: Applications, application: Application)
+
+<span>
+    @pt.getKvitHtml(User.current, apps, application)
+</span>
+<span>
+    @views.html.applications.set_comment_button(apps, application)
+</span>

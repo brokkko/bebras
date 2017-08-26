@@ -1,5 +1,6 @@
 package plugins.applications;
 
+import models.User;
 import models.applications.Application;
 import models.newserialization.SerializableUpdatable;
 import play.libs.F;
@@ -18,6 +19,8 @@ public abstract class PaymentType implements SerializableUpdatable {
         return null;
     }
 
-    public abstract Html render(Applications apps, Application application);
+    public abstract Html render(User user, Applications apps, Application application);
+
+    public abstract Html renderPayed(User user, Applications apps, Application application);
 
 }

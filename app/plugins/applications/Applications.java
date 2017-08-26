@@ -151,7 +151,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         FormDeserializer deserializer = new FormDeserializer(getAddApplicationForm());
         RawForm rawForm = deserializer.getRawForm();
         if (rawForm.hasErrors())
-            return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, rawForm, new RawForm(), this, Kvit.getKvitForUser(user)));
+            return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, rawForm, new RawForm(), this));
 
         String type = deserializer.readString("type");
         int size = deserializer.readInt("size");
@@ -330,28 +330,16 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return Results.notFound();
     }
 
-    public Html getKvitHtml(User user, Application app, Kvit kvit) {
-        ApplicationType appType = getTypeByName(app.getType());
-
-        if (appType == null || appType.getPrice() == 0) //no confirmation
-            return Html.apply("&nbsp;");
-
-        if (kvit.isGenerated())
-            return views.html.applications.type_generated.render(app, this, kvit);
-        return views.html.applications.type_file.render(app, kvit);
-    }
-
     private Result organizerApplications() {
         return organizerApplications(new RawForm(), new RawForm());
     }
 
     private Result organizerApplications(RawForm addForm, RawForm transferForm) {
         User user = User.current();
-        Kvit kvit = Kvit.getKvitForUser(user);
 
         List<Application> applications = getApplications(user);
 
-        return Results.ok(views.html.applications.org_apps.render(Event.current(), applications, addForm, transferForm, this, kvit));
+        return Results.ok(views.html.applications.org_apps.render(Event.current(), applications, addForm, transferForm, this));
     }
 
     public List<Application> getApplications(User user) { //TODO report: extract method does not extract //noinspection
@@ -369,14 +357,6 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     public Call getAppsCall() {
         return getCall("apps");
-    }
-
-    public Call getKvitCall(String name) {
-        return getCall("kvit", true, name);
-    }
-
-    public Call getPdfKvitCall(String name) {
-        return getCall("pdfkvit", true, name);
     }
 
     public Call getDoPayCall(String name) {

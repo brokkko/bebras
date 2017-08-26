@@ -6,9 +6,12 @@ import models.applications.Kvit;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import play.libs.F;
+import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
+import play.twirl.api.Html;
+import views.html.applications.set_comment_button;
 
 import java.io.File;
 
@@ -40,6 +43,37 @@ public class KvitBankTransferPaymentType extends PaymentType {
     }
 
     @Override
+    public Html render(User user, Applications apps, Application application) {
+        return views.html.applications.kvit_payment.render(this, apps, application);
+    }
+
+    @Override
+    public Html renderPayed(User user, Applications apps, Application application) {
+        return getKvitHtml(user, apps, application);
+    }
+
+    public Html getKvitHtml(User user, Applications apps, Application application) {
+        Kvit kvit = Kvit.getKvitForUser(user);
+
+        ApplicationType appType = apps.getTypeByName(application.getType());
+
+        if (appType == null || appType.getPrice() == 0) //no confirmation
+            return Html.apply("&nbsp;");
+
+        if (kvit.isGenerated())
+            return views.html.applications.type_generated.render(application, apps, this, kvit);
+        return views.html.applications.type_file.render(application, kvit);
+    }
+
+    public Call getKvitCall(Applications apps, String name) {
+        return apps.getCall("kvit", true, name);
+    }
+
+    public Call getPdfKvitCall(Applications apps, String name) {
+        return apps.getCall("pdfkvit", true, name);
+    }
+
+    @Override
     public void serialize(Serializer serializer) {
 
     }
@@ -54,7 +88,7 @@ public class KvitBankTransferPaymentType extends PaymentType {
         Kvit kvit = Kvit.getKvitForUser(user);
 
         if (kvit.isGenerated())
-            return Results.ok(views.html.applications.kvit.render(null, apps, kvit));
+            return Results.ok(views.html.applications.kvit.render(null, apps, this, kvit));
         else
             return Results.redirect(controllers.routes.Resources.returnFile(kvit.getKvitFileName()));
     }
@@ -66,7 +100,7 @@ public class KvitBankTransferPaymentType extends PaymentType {
         Application application = apps.getApplicationByName(name);
         if (application == null)
             return Controller.notFound();
-        return Controller.ok(views.html.applications.kvit.render(application, apps, kvit));
+        return Controller.ok(views.html.applications.kvit.render(application, apps, this, kvit));
     }
 
     private F.Promise<Result> showPdfKvit(Applications apps, String name) {
