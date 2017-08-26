@@ -1,0 +1,8 @@
+@import plugins.applications.Applications
+@import models.applications.Application
+@(apps: Applications, application: Application)
+
+<form method="POST" action="@apps.getDoPayCall(application.getName)">
+    <input type='submit' class='input-payment form-button small' value='Ввести'>
+    <input type='hidden' class='payment-comment' name='comment'>
+</form>

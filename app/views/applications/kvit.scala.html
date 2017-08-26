@@ -1,6 +1,5 @@
-@(app:models.applications.Application, plugin:plugins.Applications, kvit:models.applications.Kvit)
+@(app:models.applications.Application, plugin:plugins.applications.Applications, kvit:models.applications.Kvit)
 @import views.htmlblocks.HtmlBlockWidget
-@import plugins.Applications
 @import models.applications.Application
 @main_with_menu(Event.current.getTitle)(scala.List(HtmlBlockWidget.get)) { } {
 <h2>Квитанция для оплаты регистрационного взноса @plugin.getTypeByName(app.getType).getDescription</h2> @*TODO get contest name from DB*@

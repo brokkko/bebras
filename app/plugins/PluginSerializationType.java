@@ -1,6 +1,7 @@
 package plugins;
 
 import models.newserialization.SerializableTreeSerializationType;
+import plugins.applications.Applications;
 import plugins.bebrascard.BebrasCardsPlugin;
 import plugins.bebraspdf.BebrasPDFs;
 import plugins.certificates.DiplomaPlugin;

@@ -1,0 +1,11 @@
+@import plugins.applications.Applications
+@import models.applications.Application
+@import models.User
+@(apps: Applications, application: Application)
+
+<span>
+    @apps.getKvitHtml(User.current, application, kvit)
+</span>
+<span>
+    @views.html.applications.kvit_actions(apps, application)
+</span>

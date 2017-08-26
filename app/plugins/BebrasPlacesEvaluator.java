@@ -25,6 +25,7 @@ import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
+import plugins.applications.Applications;
 import plugins.certificates.bebras.BebrasAddressCertificate;
 import plugins.certificates.bebras.BebrasCertificate;
 import plugins.certificates.bebras.BebrasCertificateLine;

@@ -1,4 +1,4 @@
-package plugins;
+package plugins.applications;
 
 import models.newserialization.Deserializer;
 import models.newserialization.SerializableUpdatable;

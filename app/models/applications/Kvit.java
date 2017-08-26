@@ -3,7 +3,7 @@ package models.applications;
 import models.User;
 import models.results.Info;
 import models.utils.Utils;
-import plugins.Applications;
+import plugins.applications.Applications;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,11 +37,11 @@ public class Kvit {
     private String account;
     private List<String> bankNameAndAccount; //at most 3 elements
 
-    public Kvit(String kvitFileName) {
+    private Kvit(String kvitFileName) {
         this.kvitFileName = kvitFileName;
     }
 
-    public Kvit(String organization, String innAndKpp, String account, List<String> bankNameAndAccount) {
+    private Kvit(String organization, String innAndKpp, String account, List<String> bankNameAndAccount) {
         this.organization = organization;
         this.innAndKpp = innAndKpp;
         this.account = account;
@@ -61,7 +61,7 @@ public class Kvit {
         return DEFAULT_KVIT;
     }
 
-    public static Kvit getKvitFromUserDescription(User user) {
+    private static Kvit getKvitFromUserDescription(User user) {
         if (user == null)
             return DEFAULT_KVIT;
 

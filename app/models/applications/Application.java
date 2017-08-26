@@ -18,7 +18,7 @@ import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.i18n.Messages;
 import play.mvc.Http;
-import plugins.ApplicationType;
+import plugins.applications.ApplicationType;
 
 import java.util.ArrayList;
 import java.util.Date;

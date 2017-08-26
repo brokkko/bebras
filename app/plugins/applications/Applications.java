@@ -1,10 +1,9 @@
-package plugins;
+package plugins.applications;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
-import controllers.routes;
 import controllers.worker.Worker;
 import models.Event;
 import models.User;
@@ -23,6 +22,7 @@ import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
+import plugins.Plugin;
 import views.Menu;
 
 import java.io.File;
@@ -44,6 +44,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
     private String menuTitle = "Заявки";
     private boolean showKvits = true;
     private List<ApplicationType> applicationTypes;
+    private List<PaymentType> paymentTypes;
 
     @Override
     public void initPage() {
@@ -62,14 +63,15 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     @Override
     public F.Promise<Result> doGet(String action, String params) {
-        //simple action without authorization
-        if ("pdfkvit".equals(action) && "example".equals(params))
-            return showPdfKvit(params);
-        if ("kvit_example".equals(action))
-            return F.Promise.pure(showKvit());
-
         boolean level1 = User.currentRole().hasRight(right);
         boolean level2 = User.currentRole().hasRight(adminRight);
+
+        for (PaymentType paymentType : paymentTypes) {
+            F.Promise<Result> result = paymentType.processGetRequest(this, action, params, level1, level2);
+            if (result != null)
+                return result;
+        }
+
         if (!level1 && !level2)
             return F.Promise.pure(Results.forbidden());
 
@@ -78,16 +80,6 @@ public class Applications extends Plugin { //TODO test for right in all calls
         switch (action) {
             case "apps":
                 return F.Promise.pure(organizerApplications());
-
-            case "kvit":
-                if (!level1)
-                    return F.Promise.pure(Results.forbidden());
-                return F.Promise.pure(showKvit(params));
-
-            case "pdfkvit":
-                if (!level1)
-                    return F.Promise.pure(Results.forbidden());
-                return showPdfKvit(params);
         }
 
         return F.Promise.pure(Results.notFound());
@@ -97,6 +89,13 @@ public class Applications extends Plugin { //TODO test for right in all calls
     public F.Promise<Result> doPost(String action, String params) {
         boolean level1 = User.currentRole().hasRight(right);
         boolean level2 = User.currentRole().hasRight(adminRight);
+
+        for (PaymentType paymentType : paymentTypes) {
+            F.Promise<Result> result = paymentType.processPostRequest(this, action, params, level1, level2);
+            if (result != null)
+                return result;
+        }
+
         if (!level1 && !level2)
             return F.Promise.pure(Results.forbidden());
 
@@ -125,7 +124,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return true;
     }
 
-    private Application getApplicationByName(String name) {
+    public Application getApplicationByName(String name) {
         return getApplicationByName(name, User.current());
     }
 
@@ -141,54 +140,6 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     public int getApplicationPrice(Application application) {
         return application.getSize() * getTypeByName(application.getType()).getPrice();
-    }
-
-    private Result showKvit() {
-        User user = User.current();
-        Kvit kvit = Kvit.getKvitForUser(user);
-
-        if (kvit.isGenerated())
-            return Results.ok(views.html.applications.kvit.render(null, this, kvit));
-        else
-            return Results.redirect(routes.Resources.returnFile(kvit.getKvitFileName()));
-    }
-
-    private Result showKvit(String name) {
-        User user = User.current();
-
-        Kvit kvit = Kvit.getKvitForUser(user);
-        Application application = getApplicationByName(name);
-        if (application == null)
-            return Controller.notFound();
-        return Controller.ok(views.html.applications.kvit.render(application, this, kvit));
-    }
-
-    private F.Promise<Result> showPdfKvit(String name) {
-        //https://code.google.com/p/wkhtmltopdf
-        //may need to install ubuntu fontconfig package
-
-        final Application application = "example".equals(name) ?
-                getExampleApplication() :
-                getApplicationByName(name);
-        final Kvit kvit = Kvit.getKvitForUser(User.current());
-
-        if (application == null)
-            return F.Promise.pure(Controller.notFound());
-
-        F.Promise<File> promiseOfVoid = F.Promise.promise(
-                () -> kvit.generatePdfKvit(Applications.this, application)
-        );
-
-        return promiseOfVoid.map(
-                file -> {
-                    Controller.response().setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
-                    return Controller.ok(file).as("application/pdf");
-                }
-        );
-    }
-
-    private Application getExampleApplication() {
-        return new Application(User.current(), 100, 1, applicationTypes.get(0).getTypeName(), Application.NEW);
     }
 
     private Result addApplication() {
@@ -563,6 +514,14 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return null;
     }
 
+    public List<ApplicationType> getApplicationTypes() {
+        return applicationTypes;
+    }
+
+    public List<PaymentType> getPaymentTypes() {
+        return paymentTypes;
+    }
+
     @Override
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
@@ -570,8 +529,9 @@ public class Applications extends Plugin { //TODO test for right in all calls
         serializer.write("right", right);
         serializer.write("admin right", adminRight);
         serializer.write("menu", menuTitle);
-        serializer.write("show kvits", showKvits);
+//        serializer.write("show kvits", showKvits);
         SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).write(serializer, "types", applicationTypes);
+        SerializationTypesRegistry.list(new PaymentTypeSerializationType()).write(serializer, "payment types", paymentTypes);
     }
 
     @Override
@@ -581,8 +541,18 @@ public class Applications extends Plugin { //TODO test for right in all calls
         right = deserializer.readString("right", "school org");
         adminRight = deserializer.readString("admin right", "region org");
         menuTitle = deserializer.readString("menu", "Заявки");
-        showKvits = deserializer.readBoolean("show kvits", true);
         applicationTypes = SerializationTypesRegistry.list(new SerializableSerializationType<>(ApplicationType.class)).read(deserializer, "types");
+
+        paymentTypes = SerializationTypesRegistry.list(new PaymentTypeSerializationType()).read(deserializer, "payment types");
+        //legacy. If payment types are not specified, then add one depending on the legacy "show kvits" field:
+        //true: add KvitBankTransferPaymentType, false: add SelfConfirmPaymentType
+        if (paymentTypes.isEmpty()) {
+            showKvits = deserializer.readBoolean("show kvits", true);
+            if (showKvits)
+                paymentTypes.add(new KvitBankTransferPaymentType());
+            else
+                paymentTypes.add(new SelfConfirmPaymentType());
+        }
     }
 
     public void updateSelfApplications() {

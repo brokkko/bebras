@@ -1,4 +1,5 @@
-@(event: Event, applications: java.util.List[models.applications.Application], addApplicationForm: models.forms.RawForm, transferApplicationsForm: models.forms.RawForm, plugin:plugins.Applications, kvit:models.applications.Kvit)
+@import plugins.applications.Applications
+@(event: Event, applications: java.util.List[models.applications.Application], addApplicationForm: models.forms.RawForm, transferApplicationsForm: models.forms.RawForm, plugin:Applications, kvit:models.applications.Kvit)
 @import views.widgets.FormsWidget
 @import views.widgets.ApplicationsWidget
 @import views.widgets.AdminWidget
@@ -17,10 +18,11 @@
                     <td>Код заявки</td>
                     <td>Участников</td>
                     <td>Статус оплаты</td>
-                    @if(plugin.isShowKvits) {
+                    <!--@if(plugin.isShowKvits) {
                         <td>Квитанция</td>
                     }
-                    <td>Дата оплаты</td>
+                    <td>Дата оплаты</td>-->
+                    <td>Оплата</td>
                     <td>Удаление</td>
                 </tr>
             </thead>
@@ -42,6 +44,7 @@
                                 case 2 => {@*Подтврждено*@&#x2714;}
                             }
                         </td>
+                        <!--
                         @if(plugin.isShowKvits) {
                             <td>@plugin.getKvitHtml(User.current, application, kvit)</td>
                         }
@@ -55,6 +58,12 @@
                                 </form>
                             }
                         </td>
+                        -->
+                        <td>@for(paymentType <- plugin.getPaymentTypes) {
+                            <div class="app-payment-type">
+                                @paymentType.render(plugin, application)
+                            </div>
+                        }</td>
                         <td class='remove'>
                             @if(plugin.mayRemoveApplication(application)) {
                                 <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
