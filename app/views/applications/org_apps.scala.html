@@ -34,15 +34,15 @@
                         <td class='number'>@(ind + 1)</td>
                         <td>@application.getName@if(app_type != null){<span class='app-type'>@app_type.getDescription</span>}</td>
                         <td>@application.getSize</td>
-                        <td class="@application.getState match {
+                        <td@* class="@application.getState match {
                                 case 0 => {app-new}
                                 case 1 => {app-pay}
                                 case 2 => {app-acc}
-                        }">
+                        }"*@>
                             @application.getState match {
-                                case 0 => {-}
-                                case 1 => {+}
-                                case 2 => {@*Подтврждено*@&#x2714;}
+                                case 0 => {<div class="app-new">-</div>}
+                                case 1 => {<div class="app-pay">+</div><div>@application.getComment</div>}
+                                case 2 => {<div class="app-acc">&#x2714;</div><div>@application.getComment</div>}
                             }
                         </td>
                         @*
@@ -66,9 +66,6 @@
                             <div class="app-payment-type">
                                 @if(application.getState != Application.NEW) {
                                     @paymentType.renderPayed(User.current, plugin, application)
-                                    <span>
-                                        @application.getComment
-                                    </span>
                                 } else {
                                     @paymentType.render(User.current, plugin, application)
                                 }

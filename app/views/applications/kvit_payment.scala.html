@@ -4,9 +4,8 @@
 @import models.User
 @(pt: KvitBankTransferPaymentType, apps: Applications, application: Application)
 
-<span>
+<div style="display: inline-block; margin-right: 1em">
     @pt.getKvitHtml(User.current, apps, application)
-</span>
-<span>
+</div><div style="display: inline-block">
     @views.html.applications.set_comment_button(apps, application)
-</span>
+</div>
