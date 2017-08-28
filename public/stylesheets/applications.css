@@ -35,6 +35,14 @@ table.applications td.remove a {
     color: red;
 }
 
+.app-kvit-element {
+    display: inline-block;
+}
+
+.app-kvit-links {
+    margin-right: 1em;
+}
+
 .app-new, .app-pay, .app-acc {
     font-weight: bold !important;
     font-family: "Courier New", courier, serif !important;
@@ -67,4 +75,12 @@ table.applications td.remove a {
 
 .app-no-confirm {
     background-color: #e6ffe6;
+}
+
+.rfi-payment-submit {
+    width: 378px;
+    height: 54px;
+    border: none;
+    background: transparent url("../images/rfi/small-rfi.png");
+    cursor: pointer;
 }

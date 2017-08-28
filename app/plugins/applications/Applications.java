@@ -128,7 +128,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return getApplicationByName(name, User.current());
     }
 
-    private Application getApplicationByName(String name, User user) {
+    public Application getApplicationByName(String name, User user) {
         List<Application> applications = getApplications(user);
 
         for (Application application : applications)

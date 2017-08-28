@@ -5,5 +5,5 @@
     @for((name, value) <- rfi.getFormFields) {
         <input type="hidden" name="@name" value="@value">
     }
-    <input type="image" style="border: 0;" src="@routes.Assets.at("images/rfi/small-rfi.png")" value="Оплатить" />
+    <input class="rfi-payment-submit" type="submit" value="" />
 </form>

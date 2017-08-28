@@ -146,7 +146,7 @@ POST        /:event/:domain/update_mailer                              controlle
 GET         /:event/domain_contests                                    controllers.DomainContests.contests(event)
 
 #rfi payment
-GET         /rfi_output                                                controllers.RfiPayment.output()
+POST        /rfi_output                                                controllers.RfiPayment.output()
 GET         /rfi_success                                               controllers.RfiPayment.success()
 GET         /rfi_error                                                 controllers.RfiPayment.error()
 

@@ -10,7 +10,6 @@ import play.Play;
 import play.cache.Cache;
 import play.mvc.Http;
 
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -34,6 +33,8 @@ public class MongoConnection {
     public static final String COLLECTION_MAILING_LIST = "mail_list";
     public static final String COLLECTION_MAILING_LIST_QUEUE = "mail_list_queue";
     public static final String COLLECTION_WORKERS = "workers";
+
+    public static final String COLLECTION_RFI_LOG = "rfi_log";
 
     private static final Migrator[] migrators = new Migrator[] {
             null, //0
@@ -91,6 +92,10 @@ public class MongoConnection {
 
     public static DBCollection getWorkersCollection() {
         return getCollection(COLLECTION_WORKERS);
+    }
+
+    public static DBCollection getRfiLogCollection() {
+        return getCollection(COLLECTION_RFI_LOG);
     }
 
     public static List<DBCollection> getContestCollections() {

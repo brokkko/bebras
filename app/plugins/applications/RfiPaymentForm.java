@@ -45,13 +45,14 @@ public class RfiPaymentForm {
                 application.getName())
         );
         result.put("email", user.getEmail());
-        result.put("order_id", event.getId() + "::" + apps.getRef() + "::" + application.getName());
+        result.put("order_id", user.getId().toHexString() + "::" + apps.getRef() + "::" + application.getName());
         result.put("comment", "application " + application.getName());
         result.put("service_id", payment.getServiceId());
         result.put("version", "2.0");
 
         try {
             result.put("check", sign("POST", RFI_INPUT, result, payment.getSecretKey()));
+            Logger.info("secret key = " + payment.getSecretKey());
         } catch (Exception e) {
             Logger.error("Failed to sign request: " + result, e);
         }
@@ -74,7 +75,10 @@ public class RfiPaymentForm {
                 sb.append("&");
             }
 
-            sb.append(String.format("%s=%s", key, URLEncoder.encode(params.get(key), "UTF-8")));
+            sb.append(String.format("%s=%s",
+                    key,
+                    URLEncoder.encode(params.get(key), "UTF-8").replace("+", "%20")
+            ));
         }
         String urlParameters = sb.toString();
         String data = method.toUpperCase() + "\n" +
