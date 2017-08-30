@@ -17,6 +17,7 @@ import java.util.List;
 
 public class RfiResponseForm {
 
+    public static final String CAN_NOT_CHECK_SIGANTURE = "not enough information to check signature";
     //https://lib.rfibank.ru/pages/viewpage.action?pageId=885370
     protected String tid;
     protected String name;
@@ -37,8 +38,7 @@ public class RfiResponseForm {
     private String applicationName;
     private Application application;
 
-    public void log() {
-        DBCollection col = MongoConnection.getRfiLogCollection();
+    private BasicDBObject formAsBSON() {
         BasicDBObject o = new BasicDBObject();
 
         o.put("tid", tid);
@@ -53,12 +53,23 @@ public class RfiResponseForm {
         o.put("system_income", system_income);
         o.put("test", test);
 
-        col.insert(o, WriteConcern.MAJORITY); //TODO write concern
-        Logger.info("rfi output: " + o.toString());
+        return o;
     }
-    
-    public void parseOrderId() {
-        String[] parts = order_id.split("::");
+
+    public void serialize() {
+        DBCollection col = MongoConnection.getRfiLogCollection();
+        col.insert(formAsBSON(), WriteConcern.MAJORITY); //TODO write concern
+    }
+
+    public String toString() {
+        return formAsBSON().toString();
+    }
+
+    public void parseOrderInformation() {
+        if (comment == null)
+            throw new IllegalArgumentException("noto order information specified");
+
+        String[] parts = comment.split("::");
         if (parts.length != 3)
             throw new IllegalArgumentException("order id does not have 3 parts: " + order_id);
         String userId = parts[0];
@@ -89,6 +100,8 @@ public class RfiResponseForm {
                 + getPartner_income() + getSystem_income() + getTest();
 
         //search for RFI payment type
+        if (apps == null)
+            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGANTURE);
         List<PaymentType> paymentTypes = apps.getPaymentTypes();
         RfiPaymentType pay = null;
         for (PaymentType paymentType : paymentTypes)
@@ -98,7 +111,7 @@ public class RfiResponseForm {
             }
 
         if (pay == null)
-            throw new IllegalArgumentException("no rfi payment in apps plugin found");
+            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGANTURE);
 
         concat += pay.getSecretKey();
 
@@ -211,6 +224,8 @@ public class RfiResponseForm {
     public void setCheck(String check) {
         this.check = check;
     }
+
+    // ---------------------------- evaluated fields
 
     public Event getEvent() {
         return event;

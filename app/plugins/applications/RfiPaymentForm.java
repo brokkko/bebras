@@ -45,8 +45,8 @@ public class RfiPaymentForm {
                 application.getName())
         );
         result.put("email", user.getEmail());
-        result.put("order_id", user.getId().toHexString() + "::" + apps.getRef() + "::" + application.getName());
-        result.put("comment", "application " + application.getName());
+        result.put("order_id", "0");
+        result.put("comment", user.getId().toHexString() + "::" + apps.getRef() + "::" + application.getName());
         result.put("service_id", payment.getServiceId());
         result.put("version", "2.0");
 

@@ -16,17 +16,17 @@ import java.util.Date;
 public class RfiPayment extends Controller {
 
     public static Result output() {
-        RfiResponseForm form;
+        RfiResponseForm form = getRfiResponseForm();
         try {
-            form = getRfiResponseForm();
+            processForm(form);
         } catch (IllegalArgumentException e) {
-            log("impossible to process the request: " + e.getMessage());
+            log(form,"impossible to process the request: " + e.getMessage());
             return ok("impossible to process the request: " + e.getMessage());
         }
 
         models.applications.Application application = form.getApplication();
         if (application == null) {
-            log("unknown application " + form.getApplicationName());
+            log(form,"unknown application " + form.getApplicationName());
             return ok("unknown application, will not proceed");
         }
 
@@ -37,7 +37,7 @@ public class RfiPayment extends Controller {
         );
 
         if (application.getState() == Application.CONFIRMED) {
-            log("application already confirmed " + form.getApplicationName());
+            log(form,"application already confirmed " + form.getApplicationName());
             return ok("application already confirmed");
         }
 
@@ -48,7 +48,7 @@ public class RfiPayment extends Controller {
                 application
         );
         if (confirmationResult != null) {
-            log("error during confirmation: " + confirmationResult);
+            log(form,"error during confirmation: " + confirmationResult);
             return ok("error during confirmation");
         }
 
@@ -56,28 +56,47 @@ public class RfiPayment extends Controller {
     }
 
     public static Result success() {
-        RfiResponseForm form = getRfiResponseForm();
-        flash("page-info", "Оплата заявки " + form.getApplicationName() + " прошла успешно");
-
-        return redirect(form.getApps().getAppsCall());
+        return processSuccessOrErrorUserRedirection("прошла успешно");
     }
 
     public static Result error() {
+        return processSuccessOrErrorUserRedirection("не удалась");
+    }
+
+    private static Result processSuccessOrErrorUserRedirection(String message) {
         RfiResponseForm form = getRfiResponseForm();
-        flash("page-info", "Оплата заявки " + form.getApplicationName() + " не удалась");
+        try {
+            processForm(form);
+        } catch (IllegalArgumentException e) {
+            Logger.info("RFI bad success request: " + e.getMessage() + " : " + form);
+            return badRequest("failed to parse form");
+        }
+        flash("page-info", "Оплата заявки " + form.getApplicationName() + " " + message);
 
         return redirect(form.getApps().getAppsCall());
     }
 
-    private static RfiResponseForm getRfiResponseForm() {
-        RfiResponseForm form = Form.form(RfiResponseForm.class).bindFromRequest().get();
-        form.parseOrderId();
+    private static void processForm(RfiResponseForm form) {
+        form.serialize();
+        IllegalArgumentException parserException = null;
+        try {
+            form.parseOrderInformation();
+        } catch (IllegalArgumentException e) {
+            parserException = e;
+        }
+
         form.checkSignature();
-        return form;
+
+        if (parserException != null)
+            throw parserException;
     }
 
-    private static void log(String message) {
-        Logger.info("RFI PAYMENT: " + message + ": " + request().body().asText());
+    private static RfiResponseForm getRfiResponseForm() {
+        return Form.form(RfiResponseForm.class).bindFromRequest().get();
+    }
+
+    private static void log(RfiResponseForm form, String message) {
+        Logger.info("RFI PAYMENT: " + message + ": " + form);
     }
 
 }
