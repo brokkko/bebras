@@ -46,6 +46,8 @@ public class Applications extends Plugin { //TODO test for right in all calls
     private List<ApplicationType> applicationTypes;
     private List<PaymentType> paymentTypes;
 
+    private Event appsEvent; //TODO every plugin has event
+
     @Override
     public void initPage() {
         Menu.addMenuItem(menuTitle, getCall("apps"), right);
@@ -53,6 +55,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     @Override
     public void initEvent(Event event) {
+        appsEvent = event;
         event.registerExtraUserField(
                 right,
                 userField,

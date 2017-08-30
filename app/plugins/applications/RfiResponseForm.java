@@ -126,7 +126,7 @@ public class RfiResponseForm {
         }
 
         if (!md5.equalsIgnoreCase(check)) {
-            Logger.info(String.format("wrong check: md5(%s) = %s != %s", concat, md5, check));
+//            Logger.info(String.format("wrong check: md5(%s) = %s != %s", concat, md5, check));
             throw new IllegalArgumentException("wrong check");
         }
     }

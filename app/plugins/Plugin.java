@@ -51,7 +51,11 @@ public abstract class Plugin implements SerializableUpdatable {
     }
 
     public Call getCall(String action, boolean get, String params) {
-        String currentId = Event.currentId();
+        return getCall(action, get, params, Event.current());
+    }
+
+    public Call getCall(String action, boolean get, String params, Event event) {
+        String currentId = event.getId();
 
         if (params == null)
             params = "";
