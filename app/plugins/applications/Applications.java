@@ -211,14 +211,17 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
         Result result = Controller.redirect(getAppsCall());
 
-        if (application.getState() != Application.NEW)
-            return result;
-
-        application.setState(Application.PAYED);
-        application.setComment(comment);
-        User.current().store();
+        doPayment(User.current(), application, comment);
 
         return result;
+    }
+
+    public void doPayment(User user, Application application, String comment) {
+        if (application.getState() == Application.NEW) {
+            application.setState(Application.PAYED);
+            application.setComment(comment);
+            user.store();
+        }
     }
 
     private Result confirmApplication(String params) {
@@ -245,31 +248,41 @@ public class Applications extends Plugin { //TODO test for right in all calls
         if (application == null)
             return Results.notFound();
 
+        String confirmationResult = confirmApplication(Event.current(), user, User.current(), application);
+        if (confirmationResult == null)
+            return Results.redirect(returnTo);
+        else
+            return Results.badRequest(confirmationResult);
+    }
+
+    //returns error string or null
+    //application must be either PAYED or CONFIRMED
+    public String confirmApplication(Event event, User user, User confirmingUser, Application application) {
+        if (application == null)
+            return "Unknown application";
+
         int state = application.getState();
         if (state == Application.NEW)
-            return Results.badRequest();
+            return "Application must not have the state NEW";
 
         ApplicationType appType = getTypeByName(application.getType());
         if (appType == null)
-            return Results.badRequest();
+            return "Unknown application type " + application.getType();
 
         int newState = state == Application.CONFIRMED ? Application.PAYED : Application.CONFIRMED;
 
-        User currentUser = User.current();
         Logger.info(String.format(
                 "Application %s of user %s (%s) changed to %s by %s (%s) (event %s)",
-                appName,
+                application.getName(),
                 user.getLogin(),
                 user.getId().toString(),
                 newState == Application.CONFIRMED ? "confirmed" : "payed",
-                currentUser == null ? "[nobody]" : currentUser.getLogin(),
-                currentUser == null ? "[nobody]" : currentUser.getId().toString(),
-                Event.currentId()
+                confirmingUser == null ? "[nobody]" : confirmingUser.getLogin(),
+                confirmingUser == null ? "[nobody]" : confirmingUser.getId().toString(),
+                event.getId()
         ));
 
         application.setState(newState);
-
-        Event event = Event.current();
 
         String participantRoleName = appType.getParticipantRole();
 
@@ -277,7 +290,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         if (participantRoleName != null) {
             UserRole participantRole = event.getRole(participantRoleName);
             if (participantRole == UserRole.EMPTY)
-                Controller.badRequest();
+                return"unknown participant role " + participantRoleName;
 
             boolean usersManipulationResult;
             if (newState == Application.CONFIRMED)
@@ -286,12 +299,12 @@ public class Applications extends Plugin { //TODO test for right in all calls
                 usersManipulationResult = application.removeUsers(event);
 
             if (!usersManipulationResult)
-                return Results.internalServerError();
+                return "no manipulation was performed with users";
         }
 
         user.store();
 
-        return Results.redirect(returnTo);
+        return null;
     }
 
     public boolean mayRemoveApplication(Application application) {

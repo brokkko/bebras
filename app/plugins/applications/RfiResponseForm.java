@@ -13,28 +13,28 @@ import plugins.Plugin;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class RfiResponseForm {
 
     //https://lib.rfibank.ru/pages/viewpage.action?pageId=885370
-    private String tid;
-    private String name;
-    private String comment;
-    private String partner_id;
-    private String service_id;
-    private String order_id;
-    private String type;
-    private String currency;
-    private String partner_income;
-    private String system_income;
-    private String test = "";
-    private String check;
+    protected String tid;
+    protected String name;
+    protected String comment;
+    protected String partner_id;
+    protected String service_id;
+    protected String order_id;
+    protected String type;
+    protected String currency;
+    protected String partner_income;
+    protected String system_income;
+    protected String test = "";
+    protected String check;
     
     private Event event;
     private User user;
     private Applications apps;
+    private String applicationName;
     private Application application;
 
     public void log() {
@@ -59,26 +59,28 @@ public class RfiResponseForm {
     
     public void parseOrderId() {
         String[] parts = order_id.split("::");
-        if (parts.length != 0)
-            throw new IllegalArgumentException("checking rfi output signature: order id has not 3 parts");
+        if (parts.length != 3)
+            throw new IllegalArgumentException("order id does not have 3 parts: " + order_id);
         String userId = parts[0];
         String ref = parts[1];
-        String appName = parts[2];
+        applicationName = parts[2];
 
         user = User.getUserById(new ObjectId(userId));
         if (user == null)
-            throw new IllegalArgumentException("checking rfi output signature: unknown user id " + userId);
+            throw new IllegalArgumentException("unknown user id " + userId);
 
         event = user.getEvent();
 
         Plugin plugin = event.getPlugin(ref);
         if (plugin == null)
-            throw new IllegalArgumentException("checking rfi output signature: unknown plugin ref " + ref);
+            throw new IllegalArgumentException("unknown plugin ref " + ref);
         if (!(plugin instanceof Applications))
-            throw new IllegalArgumentException("checking rfi output signature: plugin has a wrong type");
+            throw new IllegalArgumentException("plugin has a wrong type " + plugin.getClass());
 
         apps = (Applications) plugin;
-        application = apps.getApplicationByName(appName, user);
+        application = apps.getApplicationByName(applicationName, user);
+        if (application == null)
+            throw new IllegalArgumentException("unknown application name");
     }
 
     public void checkSignature() {
@@ -96,7 +98,7 @@ public class RfiResponseForm {
             }
 
         if (pay == null)
-            throw new IllegalArgumentException("checking rfi output signature: no rfi payment in apps plugin found");
+            throw new IllegalArgumentException("no rfi payment in apps plugin found");
 
         concat += pay.getSecretKey();
 
@@ -106,11 +108,12 @@ public class RfiResponseForm {
             byte[] md5digest = md5digester.digest(concat.getBytes("UTF8"));
             md5 = DatatypeConverter.printHexBinary(md5digest);
         } catch (Exception e) {
-            throw new IllegalArgumentException("checking rfi output signature: no such algorithm MD5 or no such encoding UTF8");
+            throw new IllegalArgumentException("no such algorithm MD5 or no such encoding UTF8");
         }
 
         if (!md5.equals(check))
-            throw new IllegalArgumentException("checking rfi output signature: wrong check, expected " + md5 + " but got " + check);
+//            throw new IllegalArgumentException("wrong check, expected " + md5 + " but got " + check);
+            throw new IllegalArgumentException("wrong check, got " + check);
     }
 
     public String getTid() {
@@ -149,16 +152,16 @@ public class RfiResponseForm {
         return service_id;
     }
 
-    public void setService_id(String service_id) {
-        this.service_id = service_id;
+    public void setService_id(String serviceId) {
+        this.service_id = serviceId;
     }
 
     public String getOrder_id() {
         return order_id;
     }
 
-    public void setOrder_id(String order_id) {
-        this.order_id = order_id;
+    public void setOrder_id(String orderId) {
+        this.order_id = orderId;
     }
 
     public String getType() {
@@ -181,16 +184,16 @@ public class RfiResponseForm {
         return partner_income;
     }
 
-    public void setPartner_income(String partner_income) {
-        this.partner_income = partner_income;
+    public void setPartner_income(String partnerIncome) {
+        this.partner_income = partnerIncome;
     }
 
     public String getSystem_income() {
         return system_income;
     }
 
-    public void setSystem_income(String system_income) {
-        this.system_income = system_income;
+    public void setSystem_income(String systemIncome) {
+        this.system_income = systemIncome;
     }
 
     public String getTest() {
@@ -219,6 +222,10 @@ public class RfiResponseForm {
 
     public Applications getApps() {
         return apps;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
     }
 
     public Application getApplication() {

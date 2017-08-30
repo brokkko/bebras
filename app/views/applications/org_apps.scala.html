@@ -9,6 +9,10 @@
 @main_with_menu(event.getTitle)(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get, FormsWidget.get)) { } {
     <h1>Список поданных заявок</h1>
 
+    @if(flash.containsKey("page-info")) {
+        <p class="info-box">@flash.get("page-info")</p>
+    }
+
     @Event.current.getHtmlBlock("school_org_applications_list_top_" + plugin.getRef).format
 
     @if(applications != null && applications.size > 0) {

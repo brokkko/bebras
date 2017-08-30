@@ -163,7 +163,7 @@ public class MongoConnection {
 
         //noinspection unchecked
         Set<User> usersToStore = (Set<User>) contextArgs.get("users-to-store");
-
+        
         if (usersToStore != null)
             for (User user : usersToStore)
                 user.serialize();

@@ -52,7 +52,6 @@ public class RfiPaymentForm {
 
         try {
             result.put("check", sign("POST", RFI_INPUT, result, payment.getSecretKey()));
-            Logger.info("secret key = " + payment.getSecretKey());
         } catch (Exception e) {
             Logger.error("Failed to sign request: " + result, e);
         }
