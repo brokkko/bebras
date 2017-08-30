@@ -125,7 +125,7 @@ public class RfiResponseForm {
             throw new IllegalArgumentException("no such algorithm MD5 or no such encoding UTF8");
         }
 
-        if (!md5.equals(check)) {
+        if (!md5.equalsIgnoreCase(check)) {
             Logger.info(String.format("wrong check: md5(%s) = %s != %s", concat, md5, check));
             throw new IllegalArgumentException("wrong check");
         }
