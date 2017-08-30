@@ -52,6 +52,7 @@ public class RfiResponseForm {
         o.put("partner_income", partner_income);
         o.put("system_income", system_income);
         o.put("test", test);
+        o.put("check", check);
 
         return o;
     }
@@ -125,7 +126,7 @@ public class RfiResponseForm {
         }
 
         if (!md5.equals(check)) {
-            Logger.info(String.format("wrong check: md5(%s) != %s", concat, check));
+            Logger.info(String.format("wrong check: md5(%s) = %s != %s", concat, md5, check));
             throw new IllegalArgumentException("wrong check");
         }
     }
