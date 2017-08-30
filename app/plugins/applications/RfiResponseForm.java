@@ -124,9 +124,10 @@ public class RfiResponseForm {
             throw new IllegalArgumentException("no such algorithm MD5 or no such encoding UTF8");
         }
 
-        if (!md5.equals(check))
-//            throw new IllegalArgumentException("wrong check, expected " + md5 + " but got " + check);
-            throw new IllegalArgumentException("wrong check, got " + check);
+        if (!md5.equals(check)) {
+            Logger.info(String.format("wrong check: md5(%s) != %s", concat, check));
+            throw new IllegalArgumentException("wrong check");
+        }
     }
 
     public String getTid() {
