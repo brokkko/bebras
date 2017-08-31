@@ -3,6 +3,6 @@
 @(apps: Applications, application: Application)
 
 <form method="POST" action="@apps.getDoPayCall(application.getName)">
-    <input type='submit' class='input-payment form-button small' value='Ввести'>
+    <input type='submit' class='input-payment form-button small' value='Подтердить оплату'>
     <input type='hidden' class='payment-comment' name='comment'>
 </form>

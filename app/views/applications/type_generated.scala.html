@@ -3,4 +3,4 @@
 @import models.applications.Kvit
 @import plugins.applications.KvitBankTransferPaymentType
 @(app:Application, apps: Applications, pt:KvitBankTransferPaymentType, kvit:Kvit)
-<a href="@pt.getPdfKvitCall(apps, app.getName)">PDF</a> | <a href="@pt.getKvitCall(apps, app.getName)">Текст</a>
+Квитанция <a href="@pt.getPdfKvitCall(apps, app.getName)">PDF</a> | <a href="@pt.getKvitCall(apps, app.getName)">Текст</a>

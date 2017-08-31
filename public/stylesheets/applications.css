@@ -22,6 +22,11 @@ table.applications tbody td {
     vertical-align: middle;
 }
 
+table.applications tbody td.payment-type-column {
+    padding-left: 0.8em;
+    text-align: left;
+}
+
 table.applications tbody tr.app-no-button td {
     padding-top: 4px;
     padding-bottom: 4px;
@@ -78,9 +83,20 @@ table.applications td.remove a {
 }
 
 .rfi-payment-submit {
-    width: 378px;
-    height: 54px;
+    width: 189px;
+    height: 51px;
     border: none;
-    background: transparent url("../images/rfi/small-rfi.png");
+    background: transparent url("../images/rfi/rfi_h.png");
     cursor: pointer;
+}
+
+form.application {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.app-payment-type.not-top {
+    margin-top: 0.4em;
+    border-top: 1px dotted black;
+    padding-top: 0.4em;
 }

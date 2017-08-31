@@ -27,7 +27,7 @@
                         <td>Квитанция</td>
                     }
                     <td>Дата оплаты</td>-->
-                    <td>Оплата</td>
+                    <td>Варианты оплаты</td>
                     <td>Удаление</td>
                 </tr>
             </thead>
@@ -66,15 +66,19 @@
 
                         </td>
                         *@
-                        <td>@for(paymentType <- plugin.getPaymentTypes) {
-                            <div class="app-payment-type">
+                        <td class="payment-type-column">
+                        @if(application.getState == 0) {
+                            @for((paymentType, payInd) <- plugin.getPaymentTypes.zipWithIndex) {
+                                <div class="app-payment-type@if(payInd > 0) { not-top}">
                                 @if(application.getState != Application.NEW) {
                                     @paymentType.renderPayed(User.current, plugin, application)
                                 } else {
                                     @paymentType.render(User.current, plugin, application)
                                 }
-                            </div>
-                        }</td>
+                                </div>
+                            }
+                        }
+                        </td>
                         <td class='remove'>
                             @if(plugin.mayRemoveApplication(application)) {
                                 <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
