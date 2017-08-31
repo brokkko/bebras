@@ -15,6 +15,7 @@ import play.Logger;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class Mailer implements SerializableUpdatable {
 
@@ -130,6 +131,8 @@ public class Mailer implements SerializableUpdatable {
     }
 
     private void prepareEmail(String to, String subject, Email email) throws EmailException {
+        email.setCharset("UTF8");
+
         email.setHostName(host);
         email.setSmtpPort(port);
 
@@ -148,12 +151,11 @@ public class Mailer implements SerializableUpdatable {
 
         if (replyTo != null && !replyTo.isEmpty())
             try {
-                email.setReplyTo(Arrays.asList(new InternetAddress(replyTo)));
+                email.setReplyTo(Collections.singletonList(new InternetAddress(replyTo)));
             } catch (AddressException e) {
                 Logger.error("Failed to make Internet address out of " + replyTo);
             }
 
-        email.setCharset("UTF8");
         email.setSubject(subject);
     }
 
