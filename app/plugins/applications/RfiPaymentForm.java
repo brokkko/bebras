@@ -40,7 +40,7 @@ public class RfiPaymentForm {
 
         result.put("cost", String.valueOf(apps.getApplicationPrice(application)));
         result.put("name", String.format(
-                "Регистрационный взнос %s, заявка %s",
+                "%s, заявка %s",
                 apps.getTypeByName(application.getType()).getDescription(),
                 application.getName())
         );

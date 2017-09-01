@@ -83,10 +83,10 @@ table.applications td.remove a {
 }
 
 .rfi-payment-submit {
-    width: 189px;
-    height: 51px;
+    width: 336px;
+    height: 41px;
     border: none;
-    background: transparent url("../images/rfi/rfi_h.png");
+    background: transparent url("../images/rfi/small-rfi.png");
     cursor: pointer;
 }
 
@@ -96,7 +96,5 @@ form.application {
 }
 
 .app-payment-type.not-top {
-    margin-top: 0.4em;
     border-top: 1px dotted black;
-    padding-top: 0.4em;
 }
