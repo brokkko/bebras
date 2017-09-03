@@ -74,14 +74,9 @@ public class RfiPayment extends Controller {
         }
         flash("page-info", "Оплата заявки " + form.getApplicationName() + " " + message);
 
-        User currentPayingUser = User.current();
-        User applicationUser = form.getUser();
-        if (applicationUser.hasSameId(currentPayingUser))
-            return redirect(form.getApps().getCall("apps", true, "", form.getEvent()));
-        else {
-            String params = applicationUser.getId().toHexString() + "/" + form.getApplicationName();
-            return redirect(form.getApps().getCall("view-app", true, params, form.getEvent()));
-        }
+//        return redirect(form.getApps().getCall("apps", true, "", form.getEvent()));
+        String params = form.getUser().getId().toHexString() + "/" + form.getApplicationName();
+        return redirect(form.getApps().getCall("view-app", true, params, form.getEvent()));
     }
 
     private static void processForm(RfiResponseForm form) {
