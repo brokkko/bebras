@@ -212,7 +212,8 @@ public class Application implements SerializableUpdatable {
     }
 
     private void sendEmailAboutCreatedUsers(User user) throws EmailException {
-        String title = Event.current().getTitle();
+        Event event = user.getEvent();
+        String title = event.getTitle();
         String subject = Messages.get("mail.application_confirm.subject", title);
 
         String greeting = user.getGreeting();
@@ -223,7 +224,7 @@ public class Application implements SerializableUpdatable {
 
         int size = getSize();
         String message = Messages.get("mail.application_confirm.body", greeting, getName(), size, size == 1 ? "а" : "", title, "Мои участники",
-                                             controllers.routes.Application.enter(Event.currentId()).absoluteURL(Http.Context.current().request()));
+                                             controllers.routes.Application.enter(event.getId()).absoluteURL(Http.Context.current().request()));
 
         ServerConfiguration.getInstance().getCurrentDomain().getMailer().sendEmail(user.getEmail(), subject, message);
     }
