@@ -8,5 +8,9 @@
 
 @(plugin: Applications, application: Application, applicationUser: User)
 @main_with_menu(Event.current.getTitle + " просмотр заявки " + application.getName)(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get, FormsWidget.get)) { } {
+    @if(flash.containsKey("page-info")) {
+        <p class="info-box">@flash.get("page-info")</p>
+    }
+
     @list_apps(plugin, applicationUser, scala.List(application))
 }
