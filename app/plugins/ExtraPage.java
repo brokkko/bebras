@@ -172,5 +172,4 @@ public class ExtraPage extends Plugin {
             return "extra_page_" + plugin.getRef() + (pageId != null ? "__" + pageId : "");
         }
     }
-
 }

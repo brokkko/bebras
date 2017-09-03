@@ -26,15 +26,13 @@ public class RfiPaymentType extends PaymentType {
     }
 
     @Override
-    public Html render(User user, Applications apps, Application application) {
-        Event event = Event.current();
-        RfiPaymentForm form = new RfiPaymentForm(event, this, apps, application, user);
-
+    public Html render(User applicationUser, User payingUser, Applications apps, Application application) {
+        RfiPaymentForm form = new RfiPaymentForm(this, apps, application, payingUser, applicationUser);
         return rfi_payment.render(form);
     }
 
     @Override
-    public Html renderPayed(User user, Applications apps, Application application) {
+    public Html renderPayed(User applicationUser, User payingUser, Applications apps, Application application) {
         return null;
     }
 

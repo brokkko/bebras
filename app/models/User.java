@@ -369,6 +369,10 @@ public class User implements SerializableUpdatable {
         return getInstance(FIELD_CONFIRMATION_UUID, confirmationUUID);
     }
 
+    public boolean hasSameId(User that) {
+        return that != null && getId().equals(that.getId());
+    }
+
     public static class UsersEnumeration implements Enumeration<User>, AutoCloseable {
 
         private DBCursor cursor;

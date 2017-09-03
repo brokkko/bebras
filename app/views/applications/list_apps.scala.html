@@ -1,0 +1,86 @@
+@import models.User
+@import models.applications.Application
+@import plugins.applications.Applications
+@(plugin: Applications, applicationsUser: User, applications: java.util.List[Application])
+
+@if(applications != null && applications.size > 0) {
+    <table class='applications'>
+        <thead>
+            <tr>
+                <td>№</td>
+                <td>Код заявки</td>
+                <td>Участников</td>
+                <td>Статус оплаты</td>
+                    <!--@if(plugin.isShowKvits) {
+                <td>Квитанция</td>
+            }
+                <td>Дата оплаты</td>-->
+                <td>Варианты оплаты</td>
+                <td>Удаление</td>
+            </tr>
+        </thead>
+        <tbody>
+        @for((application, ind) <- applications.zipWithIndex) {
+            @defining(plugin.getTypeByName(application.getType)) { app_type =>
+                <tr class="@if(application.getState != 0){app-no-button} else {app-has-button} @if(app_type != null && app_type.isNeedsConfirmation){app-need-confirm} else {app-no-confirm}">
+                    <td class='number'>@(ind + 1)</td>
+                    <td>@application.getName@if(app_type != null){<span class='app-type'>@app_type.getDescription</span>}</td>
+                    <td>@application.getSize</td>
+                    <td@* class="@application.getState match {
+                       case 0 => {app-new}
+                       case 1 => {app-pay}
+                       case 2 => {app-acc}
+                       }"*@>
+                    @application.getState match {
+                        case 0 => {<div class="app-new">-</div>}
+                        case 1 => {<div class="app-pay">+</div><div>@application.getComment</div>}
+                        case 2 => {<div class="app-acc">&#x2714;</div><div>@application.getComment</div>}
+                    }
+                    </td>
+                    @*
+                    @if(plugin.isShowKvits) {
+                    <td>@plugin.getKvitHtml(User.current, application, kvit)</td>
+                    }
+                    <td>
+
+                    @if(application.getState != Application.NEW) {
+                    @application.getComment
+                    } else {
+                    <form method="POST" action="@plugin.getDoPayCall(application.getName)">
+                    <input type='submit' class='input-payment form-button small' value='Ввести'>
+                    <input type='hidden' class='payment-comment' name='comment'>
+                    </form>
+                    }
+
+                    </td>
+                    *@
+                    <td class="payment-type-column">
+                    @if(application.getState == Application.NEW) {
+                        @for((paymentType, payInd) <- plugin.getPaymentTypes.zipWithIndex) {
+                            <div class="app-payment-type@if(payInd > 0) { not-top}">
+                            @* @if(application.getState != Application.NEW) {
+                                @paymentType.renderPayed(applicationsUser, User.current, plugin, application)
+                            } else {
+                                @paymentType.render(applicationsUser, User.current, plugin, application)
+                            }*@
+                            @paymentType.render(applicationsUser, User.current, plugin, application)
+                            </div>
+                        }
+                    }
+                    </td>
+                    <td class='remove'>
+                    @if(plugin.mayRemoveApplication(application)) {
+                        <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
+                        <a href="#" class="submit actions-remove-app-@ind" title="Удалить заявку @application.getName">Удалить</a>
+                    } else {
+                            &nbsp;
+                    }
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+} else {
+    <p>Ни одной заявки пока не подано</p>
+}

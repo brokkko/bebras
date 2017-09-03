@@ -1,6 +1,7 @@
 package controllers;
 
 import controllers.actions.DcesController;
+import models.User;
 import models.applications.Application;
 import play.Logger;
 import play.data.Form;
@@ -73,7 +74,14 @@ public class RfiPayment extends Controller {
         }
         flash("page-info", "Оплата заявки " + form.getApplicationName() + " " + message);
 
-        return redirect(form.getApps().getCall("apps", true, "", form.getEvent()));
+        User currentPayingUser = User.current();
+        User applicationUser = form.getUser();
+        if (applicationUser.hasSameId(currentPayingUser))
+            return redirect(form.getApps().getCall("apps", true, "", form.getEvent()));
+        else {
+            String params = applicationUser.getId().toHexString() + "/" + form.getApplicationName();
+            return redirect(form.getApps().getCall("view-app", true, params, form.getEvent()));
+        }
     }
 
     private static void processForm(RfiResponseForm form) {

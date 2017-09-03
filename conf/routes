@@ -148,6 +148,8 @@ GET         /:event/domain_contests                                    controlle
 #rfi payment
 POST        /rfi_output                                                controllers.RfiPayment.output()
 GET         /rfi_success                                               controllers.RfiPayment.success()
+POST        /rfi_success                                               controllers.RfiPayment.success()
+GET         /rfi_error                                                 controllers.RfiPayment.error()
 POST        /rfi_error                                                 controllers.RfiPayment.error()
 
 # Map static resources from the /public folder to the /assets URL path

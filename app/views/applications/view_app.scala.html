@@ -1,0 +1,12 @@
+@import models.applications.Application
+@import models.User
+@import plugins.applications.Applications
+@import views.widgets.FormsWidget
+@import views.widgets.ApplicationsWidget
+@import views.widgets.AdminWidget
+@import views.htmlblocks.HtmlBlockWidget
+
+@(plugin: Applications, application: Application, applicationUser: User)
+@main_with_menu(Event.current.getTitle + " просмотр заявки " + application.getName)(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get, FormsWidget.get)) { } {
+    @list_apps(plugin, applicationUser, scala.List(application))
+}

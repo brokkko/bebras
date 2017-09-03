@@ -1,6 +1,5 @@
 package plugins.applications;
 
-import models.Event;
 import models.User;
 import models.applications.Application;
 import play.Logger;
@@ -21,18 +20,18 @@ public class RfiPaymentForm {
 
     public static final String RFI_INPUT = "https://partner.rficb.ru/alba/input/";
 
-    private Event event;
     private RfiPaymentType payment;
     private Applications apps;
     private Application application;
-    private User user;
+    private User payingUser;
+    private User applicationUser;
 
-    public RfiPaymentForm(Event event, RfiPaymentType payment, Applications apps, Application application, User user) {
-        this.event = event;
+    public RfiPaymentForm(RfiPaymentType payment, Applications apps, Application application, User payingUser, User applicationUser) {
         this.payment = payment;
         this.apps = apps;
         this.application = application;
-        this.user = user;
+        this.payingUser = payingUser;
+        this.applicationUser = applicationUser;
     }
 
     public Map<String, String> getFormFields() {
@@ -44,9 +43,10 @@ public class RfiPaymentForm {
                 apps.getTypeByName(application.getType()).getDescription(),
                 application.getName())
         );
-        result.put("email", user.getEmail());
+        if (payingUser != null  && payingUser.getEmail() != null && !payingUser.getEmail().endsWith("@autoregistered"))
+            result.put("email", payingUser.getEmail());
         result.put("order_id", "0");
-        result.put("comment", user.getId().toHexString() + "::" + apps.getRef() + "::" + application.getName());
+        result.put("comment", applicationUser.getId().toHexString() + "::" + apps.getRef() + "::" + application.getName());
         result.put("service_id", payment.getServiceId());
         result.put("version", "2.0");
 

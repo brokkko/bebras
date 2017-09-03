@@ -9,14 +9,12 @@ import models.Event;
 import models.User;
 import models.UserRole;
 import models.applications.Application;
-import models.applications.Kvit;
 import models.forms.InputForm;
 import models.forms.RawForm;
 import models.newserialization.*;
 import models.utils.Utils;
 import org.bson.types.ObjectId;
 import play.Logger;
-import play.twirl.api.Html;
 import play.libs.F;
 import play.mvc.Call;
 import play.mvc.Controller;
@@ -25,10 +23,11 @@ import play.mvc.Results;
 import plugins.Plugin;
 import views.Menu;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static play.mvc.Results.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,8 +45,6 @@ public class Applications extends Plugin { //TODO test for right in all calls
     private List<ApplicationType> applicationTypes;
     private List<PaymentType> paymentTypes;
 
-    private Event appsEvent; //TODO every plugin has event
-
     @Override
     public void initPage() {
         Menu.addMenuItem(menuTitle, getCall("apps"), right);
@@ -55,7 +52,6 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     @Override
     public void initEvent(Event event) {
-        appsEvent = event;
         event.registerExtraUserField(
                 right,
                 userField,
@@ -75,14 +71,21 @@ public class Applications extends Plugin { //TODO test for right in all calls
                 return result;
         }
 
-        if (!level1 && !level2)
-            return F.Promise.pure(Results.forbidden());
-
-        updateSelfApplications();
+        if (level1)
+            updateSelfApplications();
 
         switch (action) {
             case "apps":
-                return F.Promise.pure(organizerApplications());
+                if (level1)
+                    return F.Promise.pure(organizerApplications());
+                break;
+            case "view-app":
+                String[] splitParams = params.split("/");
+                if (splitParams.length != 2)
+                    return F.Promise.pure(badRequest());
+                String userId = splitParams[0];
+                String appName = splitParams[1];
+                return F.Promise.pure(showApp(userId, appName));
         }
 
         return F.Promise.pure(Results.notFound());
@@ -124,7 +127,8 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     @Override
     public boolean needsAuthorization() {
-        return true;
+//        return true;
+        return false;
     }
 
     public Application getApplicationByName(String name) {
@@ -154,7 +158,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         FormDeserializer deserializer = new FormDeserializer(getAddApplicationForm());
         RawForm rawForm = deserializer.getRawForm();
         if (rawForm.hasErrors())
-            return Controller.ok(views.html.applications.org_apps.render(Event.current(), applications, rawForm, new RawForm(), this));
+            return ok(views.html.applications.org_apps.render(Event.current(), applications, rawForm, new RawForm(), this));
 
         String type = deserializer.readString("type");
         int size = deserializer.readInt("size");
@@ -163,7 +167,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
         if (appType == null) {
             Logger.warn("Adding application with unknown type " + type);
-            return Results.badRequest();
+            return badRequest();
         }
 
         addApplicationForUser(user, event, size, appType);
@@ -191,7 +195,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
             if (participantRoleName != null) {
                 UserRole participantRole = event.getRole(participantRoleName);
                 if (participantRole == UserRole.EMPTY)
-                    Controller.badRequest();
+                    badRequest();
 
                 newApplication.createUsers(event, user, participantRole, appType);
             }
@@ -234,7 +238,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
         String[] userAndName = params.split("/");
         if (userAndName.length != 2)
-            return Controller.badRequest();
+            return badRequest();
 
         String userId = userAndName[0];
         String appName = userAndName[1];
@@ -243,7 +247,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         try {
             user = User.getInstance("_id", new ObjectId(userId));
         } catch (IllegalArgumentException ignored) { //failed to instantiate Object id
-            return Controller.badRequest();
+            return badRequest();
         }
 
         Application application = getApplicationByName(appName, user);
@@ -255,7 +259,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         if (confirmationResult == null)
             return Results.redirect(returnTo);
         else
-            return Results.badRequest(confirmationResult);
+            return badRequest(confirmationResult);
     }
 
     //returns error string or null
@@ -293,7 +297,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         if (participantRoleName != null) {
             UserRole participantRole = event.getRole(participantRoleName);
             if (participantRole == UserRole.EMPTY)
-                return"unknown participant role " + participantRoleName;
+                return "unknown participant role " + participantRoleName;
 
             boolean usersManipulationResult;
             if (newState == Application.CONFIRMED)
@@ -355,7 +359,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
         List<Application> applications = getApplications(user);
 
-        return Results.ok(views.html.applications.org_apps.render(Event.current(), applications, addForm, transferForm, this));
+        return ok(views.html.applications.org_apps.render(Event.current(), applications, addForm, transferForm, this));
     }
 
     public List<Application> getApplications(User user) { //TODO report: extract method does not extract //noinspection
@@ -582,32 +586,32 @@ public class Applications extends Plugin { //TODO test for right in all calls
         final ApplicationType appType = getTypeByName(type);
 
         if (appType == null)
-            return Results.badRequest();
+            return badRequest();
 
         final String destEventId = rawForm.get("dest_event");
         final Event destEvent = Event.getInstance(destEventId);
 
         if (destEvent == null)
-            return Results.badRequest("No destination event " + destEventId);
+            return badRequest("No destination event " + destEventId);
 
         final String destRoleName = rawForm.get("dest_role");
         final UserRole destRole = destEvent.getRole(destRoleName);
         if (destRole == UserRole.EMPTY)
-            return Results.badRequest("Unknown destination role");
+            return badRequest("Unknown destination role");
 
         final Applications destPlugin = findApplicationPlugin(destEvent, type);
 
         if (destPlugin == null)
-            return Results.badRequest("no such app type in destination");
+            return badRequest("no such app type in destination");
 
         final ApplicationType destAppType = destPlugin.getTypeByName(type);
 
         if (destAppType == null)
-            return Results.badRequest("destination event does not have corresponding type");
+            return badRequest("destination event does not have corresponding type");
 
         final UserRole newParticipantRole = destEvent.getRole(destAppType.getParticipantRole());
         if (newParticipantRole == UserRole.EMPTY)
-            return Results.badRequest("invalid destination role");
+            return badRequest("invalid destination role");
 
         final Worker worker = new Worker("transfer apps", "From event " + Event.currentId() + " to " + destEventId + ", type " + type);
         worker.execute(new Worker.Task() {
@@ -718,5 +722,30 @@ public class Applications extends Plugin { //TODO test for right in all calls
                         return (Applications) plugin;
 
         return null;
+    }
+
+    private Result showApp(String userId, String appName) {
+        User applicationUser;
+        try {
+            applicationUser = User.getUserById(new ObjectId(userId));
+        } catch (IllegalArgumentException e) {
+            return notFound("user not found");
+        }
+
+        if (applicationUser == null)
+            return notFound("user not found");
+
+        Application application = getApplicationByName(appName, applicationUser);
+        if (application == null)
+            return notFound("application not found");
+
+        ApplicationType type = getTypeByName(application.getType());
+        if (type == null)
+            return notFound("application type not found");
+
+        if (!User.currentRole().hasRight(type.getRightToPay()))
+            return forbidden();
+
+        return ok(views.html.applications.view_app.render(this, application, applicationUser));
     }
 }
