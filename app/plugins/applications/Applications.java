@@ -735,7 +735,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         if (applicationUser == null)
             return notFound("user not found");
 
-        if (applicationUser.getId().equals(User.current().getId()))
+        if (applicationUser.hasSameId(User.current()))
             redirect(getAppsCall());
 
         Application application = getApplicationByName(appName, applicationUser);
