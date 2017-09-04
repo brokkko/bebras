@@ -72,6 +72,8 @@
                             @paymentType.render(applicationsUser, User.current, plugin, application)
                             </div>
                         }
+                    } else {
+                        <div style="text-align: center; color: #888">Оплачено</div>
                     }
                     </td>
                     @if(showRemove) {
