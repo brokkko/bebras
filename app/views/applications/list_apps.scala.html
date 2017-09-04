@@ -1,7 +1,8 @@
 @import models.User
 @import models.applications.Application
 @import plugins.applications.Applications
-@(plugin: Applications, applicationsUser: User, applications: java.util.List[Application], showNumbers:Boolean=true, showRemove:Boolean = true)
+@import plugins.applications.PaymentType
+@(plugin: Applications, paymentTypes: java.util.List[PaymentType], applicationsUser: User, applications: java.util.List[Application], showNumbers:Boolean=true, showRemove:Boolean = true)
 
 @if(applications != null && applications.size > 0) {
     <table class='applications'>
@@ -62,7 +63,7 @@
                     *@
                     <td class="payment-type-column">
                     @if(application.getState == Application.NEW) {
-                        @for((paymentType, payInd) <- plugin.getPaymentTypes.zipWithIndex) {
+                        @for((paymentType, payInd) <- paymentTypes.zipWithIndex) {
                             <div class="app-payment-type@if(payInd > 0) { not-top}">
                             @* @if(application.getState != Application.NEW) {
                                 @paymentType.renderPayed(applicationsUser, User.current, plugin, application)

@@ -27,6 +27,7 @@ import views.Menu;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static play.mvc.Results.*;
 
@@ -559,6 +560,13 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     public List<PaymentType> getPaymentTypes() {
         return paymentTypes;
+    }
+
+    //TODO this is just a hack, we should invent smth else
+    public List<PaymentType> getPaymentTypesForOtherUser() {
+        return paymentTypes.stream()
+                .filter(pt -> pt instanceof RfiPaymentType)
+                .collect(Collectors.toList());
     }
 
     @Override

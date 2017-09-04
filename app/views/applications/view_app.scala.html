@@ -18,7 +18,7 @@
         @applicationUser.getInfo.get("school_name") <br>
         @applicationUser.getInfo.get("address")</p>
 
-    @list_apps(plugin, applicationUser, scala.List(application), showNumbers = false, showRemove = false)
+    @list_apps(plugin, plugin.getPaymentTypesForOtherUser, applicationUser, scala.List(application), showNumbers = false, showRemove = false)
 
     @Event.current.getHtmlBlock("view_single_application_list_bottom_" + plugin.getRef).format
 }

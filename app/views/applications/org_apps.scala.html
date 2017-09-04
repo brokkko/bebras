@@ -15,7 +15,7 @@
 
     @Event.current.getHtmlBlock("school_org_applications_list_top_" + plugin.getRef).format
 
-    @list_apps(plugin, User.current(), applications)
+    @list_apps(plugin, plugin.getPaymentTypes, User.current(), applications)
 
     @Event.current.getHtmlBlock("school_org_applications_list_middle_" + plugin.getRef).format
 
