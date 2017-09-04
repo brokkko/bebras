@@ -16,18 +16,33 @@
         </nav>
     }
 
-    @if(subpage.isTwoColumns) {
-        <table class="two-columns-page">
-            <tr>
-                <td class="info-col">
-                @HtmlBlock.load(eventId, subpage.getBlockId + "-col1").format
-                </td>
-                <td class="info-col">
-                @HtmlBlock.load(eventId, subpage.getBlockId + "-col2").format
-                </td>
-            </tr>
-        </table>
-    } else {
-        @HtmlBlock.load(eventId, subpage.getBlockId).format
+    @subpage.getLayout match {
+        case "2" => {
+            <table class="two-columns-page">
+                <tr>
+                    <td class="info-col">
+                    @HtmlBlock.load(eventId, subpage.getBlockId + "-col1").format
+                    </td>
+                    <td class="info-col">
+                    @HtmlBlock.load(eventId, subpage.getBlockId + "-col2").format
+                    </td>
+                </tr>
+            </table>
+        }
+        case "1" => { @HtmlBlock.load(eventId, subpage.getBlockId).format }
+        case "12" => {
+            @HtmlBlock.load(eventId, subpage.getBlockId + "-top").format
+
+            <table class="two-columns-page">
+                <tr>
+                    <td class="info-col">
+                    @HtmlBlock.load(eventId, subpage.getBlockId + "-col1").format
+                    </td>
+                    <td class="info-col">
+                    @HtmlBlock.load(eventId, subpage.getBlockId + "-col2").format
+                    </td>
+                </tr>
+            </table>
+        }
     }
 }

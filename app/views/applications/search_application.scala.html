@@ -6,7 +6,7 @@
 
 @(code: String, notFoundMessage: Boolean, plugin: SearchApplications)
 @main_with_menu("Поиск заявок")(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get, FormsWidget.get)) { } {
-    <h1>Поиск заявки по номеру</h1>
+    <h1>Поиск заявки по коду</h1>
 
     @Event.current.getHtmlBlock("search_applications_top_" + plugin.getRef).format
 

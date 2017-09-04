@@ -88,7 +88,9 @@ public class ExtraPage extends Plugin {
             boolean global = deserializer.readBoolean("global", false);
             boolean twoColumns = deserializer.readBoolean("two columns", false);
 
-            subpages.add(new SubPage(this, null, "", blockId, global, twoColumns));
+            String layout = twoColumns ? "2" : "1";
+
+            subpages.add(new SubPage(this, null, "", blockId, global, layout));
         }
     }
 
@@ -103,17 +105,17 @@ public class ExtraPage extends Plugin {
         private String subtitle; //названия на дополнительных пунктах меню
         private String blockId; //название html блока для хранения страницы
         private boolean global; //является ли html блок глобальным, т.е. одинаковым для всех событий
-        private boolean twoColumns; //отображать ли в двух колонках
+        private String layout; //отображать ли в двух колонках, в одной колонке или еще как-то
 
         public SubPage() {}
 
-        public SubPage(ExtraPage plugin, String pageId, String subtitle, String blockId, boolean global, boolean twoColumns) {
+        public SubPage(ExtraPage plugin, String pageId, String subtitle, String blockId, boolean global, String layout) {
             this.plugin = plugin;
             this.pageId = pageId;
             this.subtitle = subtitle;
             this.blockId = blockId;
             this.global = global;
-            this.twoColumns = twoColumns;
+            this.layout = layout;
         }
 
         private void setPlugin(ExtraPage plugin) {
@@ -136,8 +138,8 @@ public class ExtraPage extends Plugin {
             return global;
         }
 
-        public boolean isTwoColumns() {
-            return twoColumns;
+        public String getLayout() {
+            return layout;
         }
 
         public Call getCall() {
@@ -155,8 +157,7 @@ public class ExtraPage extends Plugin {
                 serializer.write("block", blockId);
             if (global)
                 serializer.write("global", true);
-            if (twoColumns)
-                serializer.write("two columns", true);
+            serializer.write("layout", layout);
         }
 
         @Override
@@ -165,7 +166,12 @@ public class ExtraPage extends Plugin {
             subtitle = deserializer.readString("title", "");
             blockId = deserializer.readString("block");
             global = deserializer.readBoolean("global", false);
-            twoColumns = deserializer.readBoolean("two columns", false);
+
+            layout = deserializer.readString("layout");
+            if (layout == null || layout.isEmpty()) {
+                boolean twoColumns = deserializer.readBoolean("two columns", false);
+                layout = twoColumns ? "2" : "1";
+            }
         }
 
         private String getDefaultBlockId() {
