@@ -1,13 +1,15 @@
 @import models.User
 @import models.applications.Application
 @import plugins.applications.Applications
-@(plugin: Applications, applicationsUser: User, applications: java.util.List[Application])
+@(plugin: Applications, applicationsUser: User, applications: java.util.List[Application], showNumbers:Boolean=true, showRemove:Boolean = true)
 
 @if(applications != null && applications.size > 0) {
     <table class='applications'>
         <thead>
             <tr>
-                <td>№</td>
+                @if(showNumbers) {
+                    <td>№</td>
+                }
                 <td>Код заявки</td>
                 <td>Участников</td>
                 <td>Статус оплаты</td>
@@ -16,14 +18,18 @@
             }
                 <td>Дата оплаты</td>-->
                 <td>Варианты оплаты</td>
-                <td>Удаление</td>
+                @if(showRemove) {
+                    <td>Удаление</td>
+                }
             </tr>
         </thead>
         <tbody>
         @for((application, ind) <- applications.zipWithIndex) {
             @defining(plugin.getTypeByName(application.getType)) { app_type =>
                 <tr class="@if(application.getState != 0){app-no-button} else {app-has-button} @if(app_type != null && app_type.isNeedsConfirmation){app-need-confirm} else {app-no-confirm}">
-                    <td class='number'>@(ind + 1)</td>
+                    @if(showNumbers) {
+                        <td class='number'>@(ind + 1)</td>
+                    }
                     <td>@application.getName@if(app_type != null){<span class='app-type'>@app_type.getDescription</span>}</td>
                     <td>@application.getSize</td>
                     <td@* class="@application.getState match {
@@ -68,14 +74,17 @@
                         }
                     }
                     </td>
-                    <td class='remove'>
-                    @if(plugin.mayRemoveApplication(application)) {
-                        <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
-                        <a href="#" class="submit actions-remove-app-@ind" title="Удалить заявку @application.getName">Удалить</a>
-                    } else {
-                            &nbsp;
+                    @if(showRemove) {
+                        <td class='remove'>
+                        @if(plugin.mayRemoveApplication(application)) {
+                            <form action="@plugin.getRemoveCall(application.getName)" method="POST" class='actions-remove-app-@ind'></form>
+                            <a href="#" class="submit actions-remove-app-@ind" title="Удалить заявку @application.getName">
+                                Удалить</a>
+                        } else {
+                                &nbsp;
+                        }
+                        </td>
                     }
-                    </td>
                 </tr>
             }
         }

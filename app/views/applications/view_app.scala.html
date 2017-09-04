@@ -12,5 +12,13 @@
         <p class="info-box">@flash.get("page-info")</p>
     }
 
-    @list_apps(plugin, applicationUser, scala.List(application))
+    <h1>Заявка @application.getName</h1>
+    @* TODO now these fields are hard coded *@
+    <p class="info-box">@applicationUser.getFullName <br>
+        @applicationUser.getInfo.get("school_name") <br>
+        @applicationUser.getInfo.get("address")</p>
+
+    @list_apps(plugin, applicationUser, scala.List(application), showNumbers = false, showRemove = false)
+
+    @Event.current.getHtmlBlock("view_single_application_list_bottom_" + plugin.getRef).format
 }
