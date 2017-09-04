@@ -74,9 +74,7 @@ public class RfiPayment extends Controller {
         }
         flash("page-info", "Оплата заявки " + form.getApplicationName() + " " + message);
 
-//        return redirect(form.getApps().getCall("apps", true, "", form.getEvent()));
-        String params = form.getUser().getId().toHexString() + "/" + form.getApplicationName();
-        return redirect(form.getApps().getCall("view-app", true, params, form.getEvent()));
+        return redirect(form.getApps().getViewAppCall(form.getUser(), form.getApplicationName()));
     }
 
     private static void processForm(RfiResponseForm form) {

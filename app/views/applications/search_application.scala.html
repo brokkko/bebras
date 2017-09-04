@@ -1,0 +1,23 @@
+@import plugins.applications.SearchApplications
+@import views.widgets.FormsWidget
+@import views.widgets.ApplicationsWidget
+@import views.widgets.AdminWidget
+@import views.htmlblocks.HtmlBlockWidget
+
+@(code: String, notFoundMessage: Boolean, plugin: SearchApplications)
+@main_with_menu("Поиск заявок")(scala.List(HtmlBlockWidget.get, AdminWidget.get, ApplicationsWidget.get, FormsWidget.get)) { } {
+    <h1>Поиск заявки по номеру</h1>
+
+    @Event.current.getHtmlBlock("search_applications_top_" + plugin.getRef).format
+
+    @if(notFoundMessage) {
+        <p class="info-box">Заявка @code не найдена</p>
+    }
+
+    <form action="@plugin.getCall("go", false, "")" method="POST" class="search-applications">
+        <input placeholder="Код заявки" name="code" value="@code" class="application-code" size="25">
+        <input type="submit" value="Искать">
+    </form>
+
+    @Event.current.getHtmlBlock("search_applications_bottom_" + plugin.getRef).format
+}

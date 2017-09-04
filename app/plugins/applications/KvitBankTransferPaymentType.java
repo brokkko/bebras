@@ -11,7 +11,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Results;
 import play.twirl.api.Html;
-import views.html.applications.set_comment_button;
 
 import java.io.File;
 
@@ -44,7 +43,7 @@ public class KvitBankTransferPaymentType extends PaymentType {
 
     @Override
     public Html render(User applicationUser, User payingUser, Applications apps, Application application) {
-        return views.html.applications.kvit_payment.render(this, apps, application);
+        return views.html.applications.kvit_payment.render(this, apps, application, applicationUser);
     }
 
     @Override

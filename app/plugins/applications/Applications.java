@@ -103,14 +103,17 @@ public class Applications extends Plugin { //TODO test for right in all calls
                 return result;
         }
 
-        if (!level1 && !level2)
-            return F.Promise.pure(Results.forbidden());
-
         switch (action) {
             case "remove_app":
-                return F.Promise.pure(removeApplication(params));
+                if (level1 || level2)
+                    return F.Promise.pure(removeApplication(params));
+                else
+                    return F.Promise.pure(Results.forbidden());
             case "add_app":
-                return F.Promise.pure(addApplication());
+                if (level1 || level2)
+                    return F.Promise.pure(addApplication());
+                else
+                    return F.Promise.pure(Results.forbidden());
             case "do_payment":
                 return F.Promise.pure(doPayment(params));
             case "confirm_app":
@@ -138,6 +141,9 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
     public Application getApplicationByName(String name, User user) {
         List<Application> applications = getApplications(user);
+
+        if (applications == null)
+            return null;
 
         for (Application application : applications)
             if (application.getName().equals(name))
@@ -208,18 +214,45 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return newApplication;
     }
 
-    private Result doPayment(String name) {
+    private Result doPayment(String userAndName) {
+        String[] userAndNameSplit = userAndName.split("/");
+        if (userAndNameSplit.length != 2)
+            return badRequest();
+
+        //get user
+        String userId = userAndNameSplit[0];
+        ObjectId userObjectId;
+        try {
+            userObjectId = new ObjectId(userId);
+        } catch (IllegalArgumentException e) {
+            return notFound("user not found");
+        }
+        User user = User.getUserById(userObjectId);
+        if (user == null)
+            return notFound("user not found");
+
+        //get app name
+        String applicationName = userAndNameSplit[1];
+
         RawForm form = new RawForm();
         form.bindFromRequest();
         String comment = form.get("comment");
 
-        Application application = getApplicationByName(name);
+        Application application = getApplicationByName(applicationName, user);
         if (application == null)
-            return Controller.notFound();
+            return Controller.notFound("user not found");
 
-        Result result = Controller.redirect(getAppsCall());
+        String type = application.getType();
+        ApplicationType applicationType = getTypeByName(type);
+        if (applicationType == null)
+            return Controller.notFound("app not found");
 
-        doPayment(User.current(), application, comment);
+        if (!User.currentRole().hasRight(applicationType.getRightToPay()))
+            return Controller.forbidden();
+
+        Result result = Controller.redirect(getViewAppCall(user, applicationName));
+
+        doPayment(user, application, comment);
 
         return result;
     }
@@ -380,12 +413,17 @@ public class Applications extends Plugin { //TODO test for right in all calls
         return getCall("apps");
     }
 
-    public Call getDoPayCall(String name) {
-        return getCall("do_payment", false, name);
+    public Call getDoPayCall(User user, String name) {
+        return getCall("do_payment", false, user.getId() + "/" + name);
     }
 
     public Call getTransferApplicationCall() {
         return getCall("transfer", false, "");
+    }
+
+    public Call getViewAppCall(User user, String applicationName) {
+        String params = user.getId().toHexString() + "/" + applicationName;
+        return this.getCall("view-app", true, params, user.getEvent());
     }
 
     public boolean needApplicationForm() {

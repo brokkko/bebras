@@ -98,3 +98,14 @@ form.application {
 .app-payment-type.not-top {
     border-top: 1px dotted black;
 }
+
+/* search applications */
+
+.search-applications input {
+    font-size: 1.4em;
+    margin: 1em 0;
+}
+.search-applications .application-code {
+    font-family: "Courier New", courier, serif;
+    text-align: center;
+}

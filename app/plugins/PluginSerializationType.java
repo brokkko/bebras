@@ -2,6 +2,7 @@ package plugins;
 
 import models.newserialization.SerializableTreeSerializationType;
 import plugins.applications.Applications;
+import plugins.applications.SearchApplications;
 import plugins.bebrascard.BebrasCardsPlugin;
 import plugins.bebraspdf.BebrasPDFs;
 import plugins.certificates.DiplomaPlugin;
@@ -20,6 +21,7 @@ public class PluginSerializationType extends SerializableTreeSerializationType<P
         registerClass("fields uploader", FieldsUploader.class);
         registerClass("extra page", ExtraPage.class);
         registerClass("applications", Applications.class);
+        registerClass("search applications", SearchApplications.class);
         registerClass("link", LinkPlugin.class);
         registerClass("flags", EventFlagsPlugin.class);
         registerClass("bebras pdf", BebrasPDFs.class);

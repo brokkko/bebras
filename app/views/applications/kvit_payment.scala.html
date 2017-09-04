@@ -2,11 +2,11 @@
 @import plugins.applications.Applications
 @import models.applications.Application
 @import models.User
-@(pt: KvitBankTransferPaymentType, apps: Applications, application: Application)
+@(pt: KvitBankTransferPaymentType, apps: Applications, application: Application, applicationUser: User)
 
 <div class='app-kvit-element app-kvit-links'>
     @pt.getKvitHtml(User.current, apps, application)
 </div>
 <div class="app-kvit-element">
-    @views.html.applications.set_comment_button(apps, application)
+    @views.html.applications.set_comment_button(apps, application, applicationUser)
 </div>
