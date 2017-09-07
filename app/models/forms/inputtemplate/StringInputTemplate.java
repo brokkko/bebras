@@ -20,7 +20,7 @@ public class StringInputTemplate extends InputTemplate<String> {
 
     @Override
     public Html render(RawForm form, String field) {
-        return text.render("input", form, field, placeholder);
+        return text.render("input", form, field, placeholder, hint);
     }
 
     @Override

@@ -15,7 +15,6 @@ import play.twirl.api.Html;
  */
 public class BooleanInputTemplate extends InputTemplate<Boolean> {
 
-    private String hint;
     private boolean defaultValue;
     private boolean falseIsNull;
 
@@ -53,7 +52,6 @@ public class BooleanInputTemplate extends InputTemplate<Boolean> {
     @Override
     public void update(Deserializer deserializer) {
         super.update(deserializer);
-        hint = deserializer.readString("hint", "");
         defaultValue = deserializer.readBoolean("default", false);
         falseIsNull = deserializer.readBoolean("false is null", false);
     }
@@ -61,7 +59,6 @@ public class BooleanInputTemplate extends InputTemplate<Boolean> {
     @Override
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
-        serializer.write("hint", hint);
         serializer.write("default", defaultValue);
         if (falseIsNull)
             serializer.write("false is null", true);

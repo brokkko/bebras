@@ -16,6 +16,7 @@ public abstract class InputTemplate<T> implements SerializableUpdatable { //Obje
     private InputBlock block; //TODO implement description of view by means of blocks
 
     protected String title;
+    protected String hint;
 
     public String getTitle() {
         return title;
@@ -34,11 +35,14 @@ public abstract class InputTemplate<T> implements SerializableUpdatable { //Obje
     @Override
     public void serialize(Serializer serializer) {
         serializer.write("title", title);
+        if (hint != null && !hint.isEmpty())
+            serializer.write("hint", hint);
     }
 
     @Override
     public void update(Deserializer deserializer) {
         title = deserializer.readString("title", "-");
+        hint = deserializer.readString("hint", "");
     }
 
     public String[] getUserInputFields() {

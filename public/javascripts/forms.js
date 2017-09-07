@@ -9,4 +9,7 @@ $(function () {
     $form.find('.form-undo').click(function () {
         window.location.reload();
     });
+
+    //enable hints
+
 });
