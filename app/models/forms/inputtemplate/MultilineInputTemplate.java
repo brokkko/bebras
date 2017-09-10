@@ -21,7 +21,7 @@ public class MultilineInputTemplate extends InputTemplate<String> {
 
     @Override
     public Html render(RawForm form, String field) {
-        return multiline.render(form, field, placeholder, true, small);
+        return multiline.render(form, field, placeholder, true, small, hint);
     }
 
     @Override

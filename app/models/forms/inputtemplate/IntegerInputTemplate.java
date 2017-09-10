@@ -20,7 +20,7 @@ public class IntegerInputTemplate extends InputTemplate<Integer> {
 
     @Override
     public Html render(RawForm form, String field) {
-        return views.html.fields.text.render("input", form, field, placeholder);
+        return views.html.fields.text.render("input", form, field, placeholder, hint);
     }
 
     @Override

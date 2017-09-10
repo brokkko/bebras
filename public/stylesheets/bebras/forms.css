@@ -223,3 +223,28 @@ form.basic-form .addr-input-field {
 form.basic-form .error {
     background-color: #ffd5bf;
 }
+
+form.basic-form .hint-popup::before {
+    content: '!';
+    /*display: inline-block;*/
+    float: left;
+    color: blue;
+    font-size: 2em;
+    margin-right: 0.5em;
+    border-radius: 1em;
+    border: 2px solid blue;
+    width: 1em;
+    height: 1em;
+    text-align: center;
+    /*vertical-align: middle;*/
+}
+
+form.basic-form .hint-popup {
+    position: absolute;
+    background-color: #fceaa4;
+    padding: 0.8em;
+    margin: 0 0.4em;
+    width: 25em;
+    border: 1px solid blue;
+    border-radius: 4px;
+}
