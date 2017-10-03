@@ -83,8 +83,8 @@ table.applications td.remove a {
 }
 
 .rfi-payment-submit {
-    width: 336px;
-    height: 41px;
+    width: 268px;
+    height: 43px;
     border: none;
     background: transparent url("../images/rfi/small-rfi.png");
     cursor: pointer;
