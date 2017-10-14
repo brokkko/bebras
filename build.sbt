@@ -82,6 +82,8 @@ lazy val dces2 = project.in(file("."))
 
     sources in doc in Compile := Seq(), //do not compile documentation
 
+    javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
+
     libraryDependencies ++= Seq(
       cache,
       javaWs,
@@ -96,10 +98,10 @@ lazy val dces2 = project.in(file("."))
     //packaging
     packagingSettings,
 
-    if (sys.props.get("pckg") == Some("ubuntu14")) {
+    if (sys.props.get("pckg") == Some("ubuntu14")) { //TODO test packaging. What if we move SystemLoaderPlugin.projectSettings here? And add more types of packages
       println("generating ubuntu 14 package")
       UpstartPlugin.projectSettings ++ debianPackaging
-    } else {
+    } else { //if (sys.props.get("pckg") == Some("fedora")) {
       println("generating fedora package")
       SystemdPlugin.projectSettings ++ fedoraPackaging
     }
