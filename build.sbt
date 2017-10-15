@@ -72,7 +72,7 @@ lazy val fedoraPackaging = Seq(
 )
 
 lazy val dces2 = project.in(file("."))
-  .enablePlugins(PlayJava, SystemloaderPlugin)
+  .enablePlugins(PlayJava)
   .settings(
     name := "dces2",
     version := "0.4.0",
@@ -100,10 +100,12 @@ lazy val dces2 = project.in(file("."))
 
     if (sys.props.get("pckg") == Some("ubuntu14")) { //TODO test packaging. What if we move SystemLoaderPlugin.projectSettings here? And add more types of packages
       println("generating ubuntu 14 package")
-      UpstartPlugin.projectSettings ++ debianPackaging
-    } else { //if (sys.props.get("pckg") == Some("fedora")) {
+      SystemloaderPlugin.projectSettings ++ UpstartPlugin.projectSettings ++ debianPackaging
+    } else if (sys.props.get("pckg") == Some("fedora")) {
       println("generating fedora package")
-      SystemdPlugin.projectSettings ++ fedoraPackaging
+      SystemloaderPlugin.projectSettings ++ SystemdPlugin.projectSettings ++ fedoraPackaging
+    } else {
+      Seq()
     }
   ).aggregate(authSubProject).aggregate(certificates).aggregate(kioJsProblems)
   .dependsOn(authSubProject).dependsOn(certificates).dependsOn(kioJsProblems)
