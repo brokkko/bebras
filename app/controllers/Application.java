@@ -34,6 +34,7 @@ public class Application extends Controller {
         imagesExtensions.add("jpg");
         imagesExtensions.add("jpeg");
         imagesExtensions.add("gif");
+        imagesExtensions.add("svg");
         imagesExtensions.add("bmp");
     }
 
