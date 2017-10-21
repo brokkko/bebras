@@ -118,6 +118,8 @@ public class Resources extends Controller {
             content = "text/javascript";
         else if (fileName.endsWith(".png"))
             content = "image/png";
+        else if (fileName.endsWith(".svg"))
+            content = "image/svg+xml";
         else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg"))
             content = "image/jpeg";
         else if (fileName.endsWith(".doc"))
