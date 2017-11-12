@@ -36,7 +36,7 @@ lazy val kioJsProblems = Project("kio-js-problems", file("kio-js-problems")).set
 )
 
 lazy val packagingSettings = Seq(
-  packageName in Linux := "dces2",
+  packageName in Linux := sys.props.getOrElse("packageName", "dces2"),
 
   mappings in Universal :=
     (mappings in Universal).value filter {
@@ -53,6 +53,7 @@ lazy val packagingSettings = Seq(
   mappings in Universal ++= directory("public"),
 
   linuxPackageMappings += packageTemplateMapping(s"/var/lib/${packageName.value}")(),
+//  daemonUser := "", //default Daemon user = package name
   linuxPackageSymlinks += LinuxSymlink(s"/usr/share/${packageName.value}/data", s"/var/lib/${packageName.value}")
 )
 
@@ -75,7 +76,7 @@ lazy val dces2 = project.in(file("."))
   .enablePlugins(PlayJava)
   .settings(
     name := "dces2",
-    version := "0.4.0",
+    version := "0.4.1", // [VERSION] do not remove this comment, it is used by ansible to retrieve program version
     scalaVersion := "2.11.8",
     // Add your own project settings here
     //      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
@@ -98,15 +99,17 @@ lazy val dces2 = project.in(file("."))
     //packaging
     packagingSettings,
 
-    if (sys.props.get("pckg") == Some("ubuntu14")) { //TODO test packaging. What if we move SystemLoaderPlugin.projectSettings here? And add more types of packages
-      println("generating ubuntu 14 package")
-      SystemloaderPlugin.projectSettings ++ UpstartPlugin.projectSettings ++ debianPackaging
-    } else if (sys.props.get("pckg") == Some("fedora")) {
-      println("generating fedora package")
-      SystemloaderPlugin.projectSettings ++ SystemdPlugin.projectSettings ++ fedoraPackaging
-    } else {
-      Seq()
+    sys.props.get("packageType") match {
+      case Some("ubuntu14") =>
+        println("generating ubuntu 14 package")
+        SystemloaderPlugin.projectSettings ++ UpstartPlugin.projectSettings ++ debianPackaging
+      case Some("fedora") =>
+        println("generating fedora package")
+        SystemloaderPlugin.projectSettings ++ SystemdPlugin.projectSettings ++ fedoraPackaging
+      case _ =>
+        Seq()
     }
+
   ).aggregate(authSubProject).aggregate(certificates).aggregate(kioJsProblems)
   .dependsOn(authSubProject).dependsOn(certificates).dependsOn(kioJsProblems)
 

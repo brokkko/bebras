@@ -62,7 +62,13 @@ public class BebrasProblem implements Problem {
             "US", "США",
             "ZA", "Южная Африка",
             "IE", "Ирландия",
-            "PK", "Пакистан"
+            "PK", "Пакистан",
+            "AZ", "Азербайджан",
+            "HR", "Хорватия",
+            "IR", "Иран",
+            "KR", "Корея",
+            "RO", "Румыния",
+            "RS", "Сербия"
     );
 
     private String title;
