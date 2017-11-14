@@ -7,7 +7,7 @@
 @import views.widgets.ResourceLink
 @import models.User
 @import scala.List
-@main_with_menu_ex(Event.current.getTitle)(List(new ResourceLink("es6-symbol.bundle.js"), new ResourceLink("jquery.splitpages.js"), CssJsWidget get "contest", problemsWidgets))(show_header, show_footer, show_menu, scrolling, menu_to_left){
+@main_with_menu_ex(Event.current.getTitle)(List(new ResourceLink("polyfill.min.js"), new ResourceLink("jquery.splitpages.js"), CssJsWidget get "contest", problemsWidgets))(show_header, show_footer, show_menu, scrolling, menu_to_left){
     @if(scrolling && status == "results") {
         <h1>Результаты соревнования:</h1>
         <div id='contest-results'>@info(User.current.getContestResults(Contest.current), Contest.current.getResultsInfoPattern, null)</div>

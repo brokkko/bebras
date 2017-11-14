@@ -196,7 +196,7 @@ public class UserInfo extends Controller {
     }
 
     public static List<Contest> listOfContestsStartedByUser(User user) {
-        List<Contest> contests = user.getEvent().getContestsAvailableForUser();
+        List<Contest> contests = user.getEvent().getContestsAvailableForUser(user);
         List<Contest> startedContests = new ArrayList<>();
         for (Contest contest : contests)
             if (/*!contest.isAvailableForAnon() &&*/ user.getContestInfoCreateIfNeeded(contest.getId()).getStarted() != null)
