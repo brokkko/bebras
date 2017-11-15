@@ -166,7 +166,7 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                 object.on('dragstart', function () {
                     this.is_dragging = true;
                     this.setZIndex(1000);
-                    if (this.ref.current) {
+                    if (this.ref.current || this.ref.current === 0) {
                         magnetPlaces[this.ref.current].current = false;
                         this.ref.current.current = false;
                         this.ref.current = false;
