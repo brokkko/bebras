@@ -1,8 +1,6 @@
 package controllers;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -26,7 +24,6 @@ import models.newserialization.FormSerializer;
 import models.newserialization.JSONDeserializer;
 import models.newserialization.MongoSerializer;
 import models.results.Info;
-import models.results.Translator;
 import models.results.kio.KioLevelTranslator;
 import models.utils.Utils;
 import org.bson.types.ObjectId;
