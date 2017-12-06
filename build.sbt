@@ -52,9 +52,9 @@ lazy val packagingSettings = Seq(
   mappings in Universal ++= directory("scripts"),
   mappings in Universal ++= directory("public"),
 
-  linuxPackageMappings += packageTemplateMapping(s"/var/lib/${packageName.value}")(),
+  linuxPackageMappings += packageTemplateMapping(s"/var/lib/${(packageName in Linux).value}")(),
 //  daemonUser := "", //default Daemon user = package name
-  linuxPackageSymlinks += LinuxSymlink(s"/usr/share/${packageName.value}/data", s"/var/lib/${packageName.value}")
+  linuxPackageSymlinks += LinuxSymlink(s"/usr/share/${(packageName in Linux).value}/data", s"/var/lib/${(packageName in Linux).value}")
 )
 
 lazy val debianPackaging = Seq(
