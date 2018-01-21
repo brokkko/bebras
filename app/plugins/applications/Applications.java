@@ -140,7 +140,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
     }
 
     public Application getApplicationByName(String name, User user) {
-        List<Application> applications = getApplications(user);
+        List<Application> applications = getApplicationsOnlyWithSupportedTypes(user);
 
         if (applications == null)
             return null;
@@ -160,7 +160,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
         User user = User.current();
         Event event = Event.current();
 
-        List<Application> applications = getApplications(user);
+        List<Application> applications = getApplicationsOnlyWithSupportedTypes(user);
 
         FormDeserializer deserializer = new FormDeserializer(getAddApplicationForm());
         RawForm rawForm = deserializer.getRawForm();
@@ -391,14 +391,22 @@ public class Applications extends Plugin { //TODO test for right in all calls
     private Result organizerApplications(RawForm addForm, RawForm transferForm) {
         User user = User.current();
 
-        List<Application> applications = getApplications(user);
+        List<Application> applications = getApplicationsOnlyWithSupportedTypes(user);
 
         return ok(views.html.applications.org_apps.render(Event.current(), applications, addForm, transferForm, this));
     }
 
+    //returns all applications, even not created by this plugin
     public List<Application> getApplications(User user) { //TODO report: extract method does not extract //noinspection
         //noinspection unchecked
         return (List<Application>) user.getInfo().get(userField);
+    }
+
+    public List<Application> getApplicationsOnlyWithSupportedTypes(User user) {
+        List<Application> applications = getApplications(user);
+        return applications.stream() //leave only apps from the same type
+                .filter(app -> getTypeByName(app.getType()) != null)
+                .collect(Collectors.toList());
     }
 
     public Call getRemoveCall(String appName) {
@@ -470,7 +478,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
                 new MemoryDeserializer(
                         "fields",
                         Utils.listify(
-                                getAppTypeDropdown(),
+                                getAppTypeDropdown(), //TODO add 'unselectable' apps also
                                 Utils.mapify(
                                         "name", "dest_event",
                                         "view", Utils.mapify(
