@@ -1030,6 +1030,9 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         if (orgAddress == null || orgAddress.isEmpty())
             orgAddress = (String) orgInfo.get("address");
 
+        if (orgAddress == null) //TODO why is this possible?
+            orgAddress = "Неизвестный адрес";
+
         orgAddress = orgAddress.replaceAll("(\\t|\\r?\\n)+", " ");
 
         return orgAddress;

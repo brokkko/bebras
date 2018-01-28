@@ -705,8 +705,10 @@ public class Applications extends Plugin { //TODO test for right in all calls
                         List<Application> transferredApplications;
 
                         User userWithSameLogin = User.getUserByLogin(destEventId, user.getLogin());
-                        if (userWithSameLogin != null) {
-                            if (user.getEmail().toLowerCase().equals(userWithSameLogin.getEmail().toLowerCase()))
+                        if (userWithSameLogin != null && userWithSameLogin.getEmail() != null) {
+                            String emailOfUserWithSameLogin = userWithSameLogin.getEmail();
+
+                            if (emailOfUserWithSameLogin != null && user.getEmail().toLowerCase().equals(emailOfUserWithSameLogin.toLowerCase()))
                                 worker.logWarn("User with this login already exists, and emails equal: " + userWithSameLogin.getLogin());
                             else {
                                 worker.logWarn("User with this login already exists, but emails differ: " + userWithSameLogin.getLogin());
@@ -721,6 +723,10 @@ public class Applications extends Plugin { //TODO test for right in all calls
 
                             newUser = userWithSameLogin;
                         } else {
+                            //remove old user first if it exists
+                            if (userWithSameLogin != null) //it means, his email is empty
+                                User.removeUserById(destEvent, userWithSameLogin.getId(), null);
+
                             newUser = transferUser(user, appsToTransfer);
                             transferredApplications = getApplications(newUser);
                         }
