@@ -84,7 +84,10 @@ public class BebrasAddressCertificate extends Diploma<DiplomaFactory> {
         printAddrText(writer, "Куда: ", true, x0, y0, position);
         printAddrText(writer, (String) user.getInfo().get("index"), false, x0 + WHERE_WIDTH, y0, position);
 
-        String[] addressLines = BebrasPlacesEvaluator.splitProbablyLongLine((String) user.getInfo().get("address"));
+        String address = (String) user.getInfo().get("address");
+        if (address == null)
+            address = "Unknown address";
+        String[] addressLines = BebrasPlacesEvaluator.splitProbablyLongLine(address);
 
         for (String addressLine : addressLines) {
             y0 -= ls;
