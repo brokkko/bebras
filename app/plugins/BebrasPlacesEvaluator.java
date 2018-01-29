@@ -423,6 +423,10 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             String reg1 = (String) o1.getInfo().get("region");
             String reg2 = (String) o2.getInfo().get("region");
 
+            //TODO how is it possible that regs are null?
+            if (reg1 == null) reg1 = "Unknown region";
+            if (reg2 == null) reg2 = "Unknown region";
+
             int res = reg1.compareTo(reg2);
             if (res != 0)
                 return res;
