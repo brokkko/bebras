@@ -154,6 +154,7 @@ public class Event {
                 }
             }, 0);
         } catch (Exception e) {
+            Logger.error("Failed to load event " + eventId, e);
             return null;
         }
     }
