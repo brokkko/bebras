@@ -115,7 +115,12 @@ public class KioJSTranslator implements Translator {
             return;
 
         KioOnlineProblem kop = (KioOnlineProblem) mainProblem;
-        problem = kop.asJsKioProblem();
+        try {
+            problem = kop.asJsKioProblem();
+        } catch (Exception e) {
+            Logger.error("Error while loading kio-online problem", e);
+            return;
+        }
         if (problem == null) return;
 
         visibleParameters = problem.getParameters() //TODO invisible parameters are defined in KioAPI
