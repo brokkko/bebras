@@ -12,7 +12,8 @@ class JsTester extends FlatSpec with Matchers {
   private def getExampleProblem = new JsKioProblem(
     Resource("/ru/ipo/kio/js/task_example.js").asString(),
     "task_example.TaskExample",
-    "{level: 2}"
+    "{level: 2}",
+    null
   )
 
   "Problem reader" should "not fail reading js kio problem" in {
@@ -36,6 +37,6 @@ class JsTester extends FlatSpec with Matchers {
   it should "display results correctly" in {
     val p = getExampleProblem
     val r = new Result(Map("steps" -> 42, "max" -> 100, "info1" -> 0.2))
-    p.parameters.map(param => param.)
+//    p.parameters.map(param => param.)
   }
 }

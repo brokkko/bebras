@@ -2,10 +2,12 @@ package ru.ipo.kio.js
 
 import java.io.File
 import java.net.{URL, URLClassLoader}
+import java.nio.file.Files
 import javax.script.ScriptEngineManager
 
 import scala.collection.JavaConverters._
 import jdk.nashorn.api.scripting.ScriptObjectMirror
+import ru.ipo.Resource
 
 case class ExternalChecker(jar: File, className: String)
 
@@ -23,6 +25,11 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String, exte
   private val parametersView = parameters.view
 
   private def createProblem(): ScriptObjectMirror = {
+    //TODO how to eval polyfill only once
+    val polyfillResource = Resource("/ru/ipo/kio/js/polyfill.min.js")
+
+    scriptEngine.eval("var window = window || {}")
+    scriptEngine.eval(polyfillResource.asString())
     scriptEngine.eval(jsCode)
     scriptEngine.eval(s"new $className($settingsJson);").asInstanceOf[ScriptObjectMirror]
   }
