@@ -1,0 +1,10 @@
+@import scala.List
+@(solutions:java.util.Map[String, java.util.List[models.Submission]])
+
+@main_with_menu("")(List()) { } {
+
+    @for((key, value) <- solutions) {
+        @key @value <br>
+    }
+
+}

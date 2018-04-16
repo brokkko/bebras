@@ -34,12 +34,12 @@ public class Submission implements Serializable {
             "v", new BasicSerializationType<>(String.class), "value"
     );
 
-    public static enum TimeType {
+    public enum TimeType {
         LOCAL,
         SERVER
     }
 
-    public static enum AnswerOrdering {
+    public enum AnswerOrdering {
         FIRST,
         LAST
     }

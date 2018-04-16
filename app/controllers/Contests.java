@@ -241,7 +241,7 @@ public class Contests extends Controller {
 
         //get all submissions
         List<Submission> submissions = new ArrayList<>();
-        for (JsonNode jsonNode : (ArrayNode) submissionJson) {
+        for (JsonNode jsonNode : submissionJson) {
             if (!(jsonNode instanceof ObjectNode))
                 return badRequest();
 

@@ -584,9 +584,9 @@ public class User implements SerializableUpdatable {
      */
 
     public void store() {
-        if (MongoConnection.mayEnqueueEvents())
-            MongoConnection.enqueueUserStorage(this);
-        else
+//        if (MongoConnection.mayEnqueueEvents())
+//            MongoConnection.enqueueUserStorage(this);
+//        else
             serialize();
     }
 
@@ -799,12 +799,17 @@ public class User implements SerializableUpdatable {
                 DBCursor submissionsCursor = submissionsCollection.find(query).sort(sort)
         ) {
             long previousLocalTime = -1;
+            ObjectId previousPid = null;
+
             while (submissionsCursor.hasNext()) {
                 Submission submission = new Submission(contest, new MongoDeserializer(submissionsCursor.next()));
 
                 //local time may be the same if contestant sent the same several times
-                if (submission.getLocalTime() == previousLocalTime)
+                if (submission.getLocalTime() == previousLocalTime && submission.getProblemId() == previousPid)
                     continue;
+
+                previousLocalTime = submission.getLocalTime();
+                previousPid = submission.getProblemId();
 
                 allSubmissions.add(submission);
             }

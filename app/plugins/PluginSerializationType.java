@@ -30,6 +30,7 @@ public class PluginSerializationType extends SerializableTreeSerializationType<P
         registerClass("kio problem", KioProblemPlugin.class);
         registerClass("diploma", DiplomaPlugin.class);
         registerClass("bebras cards", BebrasCardsPlugin.class);
+        registerClass("answers gallery", AnswersGallery.class);
     }
 
 }

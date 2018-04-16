@@ -1,10 +1,11 @@
-@(user:models.User, mayChange:Boolean, form:models.forms.RawForm, otherUser:Boolean, message:String)
 @import views.widgets.AdminWidget
 @import views.htmlblocks.HtmlBlockWidget
 @import views.widgets.FormsWidget
 @import models.Event
 @import scala.List
 @import play.i18n.Messages
+@import plugins.AnswersGallery
+@(user:models.User, mayChange:Boolean, form:models.forms.RawForm, otherUser:Boolean, message:String)
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get, HtmlBlockWidget.get, AdminWidget.get)) { } {
     @if(otherUser) {
         <h1>Личные данные пользователя @user.getLogin</h1>
@@ -82,44 +83,54 @@
 
     @* block with list of started contests *@
 
-    @if(User.currentRole().hasRight("edit contest time")) {
-        <div class="info-box">
-            @defining(UserInfo.listOfContestsStartedByUser(user)) { contests =>
-              @if(contests.isEmpty) {
-                  Пользователь еще не начинал соревнований
-              } else {
-                  <table class="visits-list">
-                      <thead>
-                          <tr>
-                              <td>Соревнование</td>
-                              <td>Начало</td>
-                              <td>Окончание</td>
-                              <td>Статус</td>
-                              @*<td>Сбросить окончание</td> TODO: implement*@
-                              <td>Сбросить участие</td>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          @for(contest <- contests) {
-                              @defining(user.getContestInfoCreateIfNeeded(contest.getId)) { info =>
-                                  <tr>
-                                    <td>@contest.getName</td>
-                                    <td>@if(info.getStarted == null) { - } else { @info.getStarted }</td>
-                                    <td>@if(info.getFinished == null) { - } else { @info.getFinished }</td>
-                                    <td>@if(info.getStarted == null) { - } else {
-                                        @if(user.userParticipatedAndFinished(contest)) {
-                                            завершено
-                                        } else {
-                                            в процессе
-                                        }
-                                    }</td>
-                                    @*
-                                    <td>
+    @defining(Event.current.getPluginByType(classOf[AnswersGallery]).asInstanceOf[AnswersGallery]) { answersGalleryPlugin =>
+        @defining(answersGalleryPlugin != null && (User.currentRole().hasEventAdminRight || User.current.isUpper(user))) { show_answers_gallery =>
+
+            @if(User.currentRole().hasRight("edit contest time")) {
+                <div class="info-box">
+                @defining(UserInfo.listOfContestsStartedByUser(user)) { contests =>
+                    @if(contests.isEmpty) {
+                        Пользователь еще не начинал соревнований
+                    } else {
+                        <table class="visits-list">
+                            <thead>
+                                <tr>
+                                    <td>Соревнование</td>
+                                    <td>Начало</td>
+                                    <td>Окончание</td>
+                                    <td>Статус</td>
+                                    @*<td>Сбросить окончание</td> TODO: implement*@
+                                    <td>Сбросить участие</td>
+                                    @if(show_answers_gallery) {
+                                        <td>Галерея решений</td>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @for(contest <- contests) {
+                                @defining(user.getContestInfoCreateIfNeeded(contest.getId)) { info =>
+                                    <tr>
+                                        <td>@contest.getName</td>
+                                        <td>@if(info.getStarted == null) { - } else {
+                                            @info.getStarted
+                                        }</td>
+                                        <td>@if(info.getFinished == null) { - } else {
+                                            @info.getFinished
+                                        }</td>
+                                        <td>@if(info.getStarted == null) { - } else {
+                                            @if(user.userParticipatedAndFinished(contest)) {
+                                                завершено
+                                            } else {
+                                                в процессе
+                                            }
+                                        }</td>
+                                        @*
+                                        <td>
                                         <form class="submit actions-reset-finish-@contest.getId" action="." method="POST"></form>
                                         <a href="#" class="submit actions-reset-finish-@contest.getId" title="Сбросить окончание @contest.getName">сбросить</a>
-                                    </td>
-                                    *@
-                                    <td>
+                                        </td>
+                                        *@
+                                        <td>
                                         @if(user.mayClearContestParticipation(contest)) {
                                             <form
                                             class="submit actions-reset-finish-@contest.getId"
@@ -134,14 +145,21 @@
                                         } else {
                                             -
                                         }
-                                    </td>
-                                  </tr>
-                              }
-                          }
-                      </tbody>
-                  </table>
-              }
+                                        </td>
+                                        @if(show_answers_gallery) {
+                                            <td>
+                                                <a href="@answersGalleryPlugin.getCall("user", true, contest.getId + "/" + user.getId.toString)">Все решения</a>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    }
+                }
+                </div>
             }
-        </div>
+        }
     }
 }

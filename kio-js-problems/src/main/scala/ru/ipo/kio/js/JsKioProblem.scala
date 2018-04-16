@@ -1,8 +1,7 @@
 package ru.ipo.kio.js
 
 import java.io.File
-import java.net.{URL, URLClassLoader}
-import java.nio.file.Files
+import java.net.URLClassLoader
 import javax.script.ScriptEngineManager
 
 import scala.collection.JavaConverters._
@@ -18,18 +17,11 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String, exte
 
   import JsKioProblem._
 
-  private val scriptEngine = factory.getEngineByName("nashorn")
-
   val problem: ScriptObjectMirror = createProblem()
   val parameters: Seq[Parameter] = extractParameters()
   private val parametersView = parameters.view
 
   private def createProblem(): ScriptObjectMirror = {
-    //TODO how to eval polyfill only once
-    val polyfillResource = Resource("/ru/ipo/kio/js/polyfill.min.js")
-
-    scriptEngine.eval("var window = window || {}")
-    scriptEngine.eval(polyfillResource.asString())
     scriptEngine.eval(jsCode)
     scriptEngine.eval(s"new $className($settingsJson);").asInstanceOf[ScriptObjectMirror]
   }
@@ -83,4 +75,11 @@ object JsKioProblem {
   private val classLoader: ClassLoader = ClassLoader.getSystemClassLoader.getParent
 
   private val factory: ScriptEngineManager = new ScriptEngineManager(classLoader)
+
+  private val polyfillResource = Resource("/ru/ipo/kio/js/polyfill.min.js")
+
+  private val scriptEngine = factory.getEngineByName("nashorn")
+
+  scriptEngine.eval("var window = window || {}")
+  scriptEngine.eval(polyfillResource.asString())
 }

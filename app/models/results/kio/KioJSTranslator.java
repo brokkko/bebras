@@ -162,6 +162,7 @@ public class KioJSTranslator implements Translator {
         };
     }
 
+    //TODO user type should be a field in translator
     @Override
     public Object getUserType(User user) {
         int level = KioLevelTranslator.grade2level(user);
