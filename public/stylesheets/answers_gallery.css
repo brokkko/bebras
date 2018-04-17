@@ -5,3 +5,7 @@ section.answers-gallery-problem {
 .answers-gallery-submission {
     margin: 0.6em 0;
 }
+
+.answers-gallery-user-info {
+    font-style: italic;
+}

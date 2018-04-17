@@ -14,13 +14,16 @@
                 <h2>@contest.getProblemName(problem_id)</h2> @*TODO we need to extract problem name somehow. But different problems store name differently*@
 
                 @for(solution <- solutions_list) {
+                    <div class="answers-gallery-submission">
                     @* @info(solution.getAnswer, problem.getAnswerPattern) *@
                     @* @info(problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)), contest.getResultTranslator.getInfoPattern) *@
-                    @info(problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)), problem.getCheckerPattern, "answers-gallery-submission")
+                    <a class="answers-gallery-user-info" href="@routes.UserInfo.info(Event.currentId, solution.getUser.toString)">@User.getUserById(solution.getUser).getLogin</a>
+                    @info(problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)), problem.getCheckerPattern)
                     <a href="@plugin.getCall("view", true, contest.getId + "/" + solution.getUser.toString + "/" + solution.getProblemId.toString + "/" +
-                            URLEncoder.encode(problem.getAnswerPattern.toJSON("ans", solution.getAnswer), "UTF-8")
+                            URLEncoder.encode(problem.getAnswerPattern.toJSON(solution.getAnswer), "UTF-8")
                     )">Просмотреть</a>
                     @* @problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)) *@
+                    </div>
                 }
             </section>
         }

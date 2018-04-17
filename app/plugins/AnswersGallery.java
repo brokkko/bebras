@@ -13,10 +13,11 @@ import models.newserialization.MongoDeserializer;
 import org.bson.types.ObjectId;
 import play.libs.F;
 import play.mvc.Result;
-import play.mvc.Results;
 import views.html.solutions_view;
 import views.html.submission_view;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,27 +29,28 @@ public class AnswersGallery extends Plugin {
 
     @Override
     public F.Promise<Result> doGet(String action, String params) {
-        //event = [contest]
-        //contest = [problem]
-        //problem = [user type]
-        //user type = [user type]
-
         String[] contestAndOther = params.split("/", 2);
-        if (contestAndOther.length != 2)
+        if (contestAndOther.length < 1)
             return F.Promise.pure(badRequest());
         String contestId = contestAndOther[0];
         Contest contest = Event.current().getContestById(contestId);
         if (contest == null)
             return F.Promise.pure(badRequest());
 
-        String other = contestAndOther[1];
-
         switch (action) {
             case "user":
-                return F.Promise.pure(showUser(contest, other));
-            case "problem":
-                return F.Promise.pure(showProblem(contest, other));
+                if (contestAndOther.length != 2)
+                    return F.Promise.pure(badRequest());
+                String uid = contestAndOther[1];
+                return F.Promise.pure(showUser(contest, uid));
+            case "contest":
+                if (contestAndOther.length != 1)
+                    return F.Promise.pure(badRequest());
+                return F.Promise.pure(showContest(contest));
             case "view":
+                if (contestAndOther.length != 2)
+                    return F.Promise.pure(badRequest());
+                String other = contestAndOther[1];
                 return F.Promise.pure(showSubmission(contest, other));
         }
 
@@ -56,6 +58,9 @@ public class AnswersGallery extends Plugin {
     }
 
     private Result showSubmission(Contest contest, String pidAndUidAndSubmission) {
+        if (!User.currentRole().hasEventAdminRight()) //TODO allow for everybody
+            return forbidden();
+
         String[] pidAndUidAndSubmissionSplit = pidAndUidAndSubmission.split("/", 3);
 
         if (pidAndUidAndSubmissionSplit.length != 3)
@@ -63,7 +68,13 @@ public class AnswersGallery extends Plugin {
 
         String uid = pidAndUidAndSubmissionSplit[0];
         String pid = pidAndUidAndSubmissionSplit[1];
-        String submission = pidAndUidAndSubmissionSplit[2];
+        String submission = null;
+        try {
+            submission = URLDecoder.decode(pidAndUidAndSubmissionSplit[2], "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            //do nothing
+        }
+        System.out.println("sub" + submission);
 
         User user;
         try {
@@ -112,10 +123,19 @@ public class AnswersGallery extends Plugin {
         return ok(solutions_view.render(this, contest, pid2subs));
     }
 
-    private Result showProblem(Contest contest, String pid) {
-        //group by user types, in each types sort by rank
+    private Result showContest(Contest contest) {
+        User adminUser = User.current();
+        if (adminUser == null)
+            return unauthorized();
 
-        return null;
+        if (!adminUser.hasEventAdminRight())
+            return unauthorized("you don't have any rights");
+
+        Map<ObjectId, List<Submission>> pid2subs = getAllSubmissions(contest).stream()
+                .sorted(Comparator.comparingLong(Submission::getLocalTime)) // not sure this is needed
+                .collect(Collectors.groupingBy(Submission::getProblemId));
+
+        return ok(solutions_view.render(this, contest, pid2subs));
     }
 
     @Override

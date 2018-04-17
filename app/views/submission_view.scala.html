@@ -3,13 +3,15 @@
 @import models.newproblems.ConfiguredProblem
 @import models.User
 @(user:User, contestId:String, problem:ConfiguredProblem, jsonProblemInfo:String)
-@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), problem.getProblem.getWidget(true))) { } {
+@main_with_menu(Event.current.getTitle)(List(new ResourceLink("contest_stub.js"), new ResourceLink("contest.css"), problem.getProblem.getWidget(false))) { } {
     @* -- header -- *@
     @* <div class='info-box'>
         <h2>Задание <span class='folder-name'>@problem.</span></h2>
     </div> *@
 
     @* -- problem statement / answer -- *@
+
+    <div id="problem-info" class="hidden">@Html(jsonProblemInfo)</div>
 
     <div class='problem-statement-answer'>
         <div class='problem'><span class='hidden pr_type'>@problem.getProblem.getType</span>
@@ -19,6 +21,7 @@
     <script type="text/javascript">
             var $problem_div = $('.problem');
             @* TODO what if ans contains quotes*@
-            dces2contest.solutions_loaders_registry['@problem.getProblem.getType']($problem_div, JSON.parse('@jsonProblemInfo').ans);
+            console.log('json', $('#problem-info').text());
+            dces2contest.solutions_loaders_registry['@problem.getProblem.getType']($problem_div, JSON.parse($('#problem-info').text()));
     </script>
 }
