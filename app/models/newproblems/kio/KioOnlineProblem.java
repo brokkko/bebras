@@ -7,12 +7,14 @@ import models.forms.RawForm;
 import models.newproblems.Problem;
 import models.newserialization.BasicSerializationType;
 import models.newserialization.Deserializer;
+import models.newserialization.SerializationType;
 import models.newserialization.Serializer;
 import models.results.Info;
 import models.results.InfoPattern;
 import play.Logger;
 import play.twirl.api.Html;
 import ru.ipo.kio.js.JsKioProblem;
+import ru.ipo.kio.js.Parameter;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
@@ -20,6 +22,7 @@ import views.widgets.Widget;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.LinkedHashMap;
 import java.util.Random;
 
 /**
@@ -49,6 +52,8 @@ public class KioOnlineProblem implements Problem {
     private String settings;
     private String dependencies;
     private String checker;
+
+    private JsKioProblem jsKioProblem;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -111,6 +116,8 @@ public class KioOnlineProblem implements Problem {
         settings = form.get("settings");
         dependencies = form.get("dependencies");
         checker = form.get("checker");
+
+        jsKioProblem = evalJsKioProblem();
     }
 
     @Override
@@ -163,6 +170,23 @@ public class KioOnlineProblem implements Problem {
     }
 
     @Override
+    public InfoPattern getCheckerPattern() {
+        if (jsKioProblem == null)
+            return new InfoPattern();
+
+        LinkedHashMap<String, SerializationType<?>> field2type = new LinkedHashMap<>();
+        LinkedHashMap<String, String> field2title = new LinkedHashMap<>();
+
+        for (Parameter parameter : jsKioProblem.getParameters())
+            if (parameter.title() != null && !parameter.title().isEmpty()) {
+                field2title.put(parameter.name(), parameter.title());
+                field2type.put(parameter.name(), new BasicSerializationType<>(String.class));
+            }
+
+        return new InfoPattern(field2type, field2title);
+    }
+
+    @Override
     public String getType() {
         return "kio-online";
     }
@@ -188,7 +212,11 @@ public class KioOnlineProblem implements Problem {
         return w;
     }
 
-    public JsKioProblem asJsKioProblem() {
+    public JsKioProblem getJsKioProblem() {
+        return jsKioProblem;
+    }
+
+    public JsKioProblem evalJsKioProblem() {
         String className = getClassName();
         String settings = getSettings();
         String dependencies = getDependencies();
@@ -232,5 +260,7 @@ public class KioOnlineProblem implements Problem {
         settings = deserializer.readString("settings", "");
         dependencies = deserializer.readString("dependencies", "");
         checker = deserializer.readString("checker", "");
+
+        jsKioProblem = evalJsKioProblem();
     }
 }

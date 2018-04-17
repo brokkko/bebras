@@ -1,10 +1,29 @@
 @import scala.List
-@(solutions:java.util.Map[String, java.util.List[models.Submission]])
+@import org.bson.types.ObjectId
+@import models.newproblems.ProblemInfo
+@import models.Contest
+@import views.widgets.ResourceLink
+@import plugins.AnswersGallery
+@import java.net.URLEncoder
+@(plugin: AnswersGallery, contest: Contest, solutions:java.util.Map[ObjectId, java.util.List[models.Submission]])
 
-@main_with_menu("")(List()) { } {
+@main_with_menu("")(List(new ResourceLink("answers_gallery.css"))) { } {
+    @for((problem_id, solutions_list) <- solutions) {
+        @defining(ProblemInfo.get(problem_id).getProblem) { problem =>
+            <section class="answers-gallery-problem">
+                <h2>@contest.getProblemName(problem_id)</h2> @*TODO we need to extract problem name somehow. But different problems store name differently*@
 
-    @for((key, value) <- solutions) {
-        @key @value <br>
+                @for(solution <- solutions_list) {
+                    @* @info(solution.getAnswer, problem.getAnswerPattern) *@
+                    @* @info(problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)), contest.getResultTranslator.getInfoPattern) *@
+                    @info(problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)), problem.getCheckerPattern, "answers-gallery-submission")
+                    <a href="@plugin.getCall("view", true, contest.getId + "/" + solution.getUser.toString + "/" + solution.getProblemId.toString + "/" +
+                            URLEncoder.encode(problem.getAnswerPattern.toJSON("ans", solution.getAnswer), "UTF-8")
+                    )">Просмотреть</a>
+                    @* @problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)) *@
+                }
+            </section>
+        }
     }
 
 }

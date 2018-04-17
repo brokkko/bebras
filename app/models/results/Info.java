@@ -1,5 +1,7 @@
 package models.results;
 
+import models.newserialization.JSONSerializer;
+
 import java.util.HashMap;
 
 /**

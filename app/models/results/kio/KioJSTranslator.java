@@ -116,7 +116,7 @@ public class KioJSTranslator implements Translator {
 
         KioOnlineProblem kop = (KioOnlineProblem) mainProblem;
         try {
-            problem = kop.asJsKioProblem();
+            problem = kop.getJsKioProblem();
         } catch (Exception e) {
             Logger.error("Error while loading kio-online problem", e);
             return;

@@ -126,6 +126,11 @@ public class KioProblem implements Problem {
     }
 
     @Override
+    public InfoPattern getCheckerPattern() {
+        return getAnswerPattern();
+    }
+
+    @Override
     public String getType() {
         return "kio";
     }

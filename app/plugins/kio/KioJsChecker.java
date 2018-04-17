@@ -69,7 +69,7 @@ public class KioJsChecker extends Plugin {
     }
 
     private void checkProblem(Worker w, Event event, Contest contest, User user, KioOnlineProblem problem, List<Submission> submissions) {
-        JsKioProblem jsKioProblem = problem.asJsKioProblem();
+        JsKioProblem jsKioProblem = problem.getJsKioProblem();
         if (jsKioProblem == null)
             throw new RuntimeException("Failed to get kio problem. Dependencies: " + problem.getDependencies());
 

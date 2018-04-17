@@ -9,24 +9,22 @@ import models.Event;
 import models.Submission;
 import models.User;
 import models.newproblems.ConfiguredProblem;
-import models.newproblems.ProblemInfo;
 import models.newserialization.MongoDeserializer;
 import org.bson.types.ObjectId;
 import play.libs.F;
 import play.mvc.Result;
 import play.mvc.Results;
 import views.html.solutions_view;
+import views.html.submission_view;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.unauthorized;
+import static play.mvc.Results.*;
 
 public class AnswersGallery extends Plugin {
+
+    public static final String SYSTEM_SUBMISSION_KEY = "__system__";
 
     @Override
     public F.Promise<Result> doGet(String action, String params) {
@@ -50,15 +48,44 @@ public class AnswersGallery extends Plugin {
                 return F.Promise.pure(showUser(contest, other));
             case "problem":
                 return F.Promise.pure(showProblem(contest, other));
+            case "view":
+                return F.Promise.pure(showSubmission(contest, other));
         }
 
         return F.Promise.pure(badRequest());
     }
 
+    private Result showSubmission(Contest contest, String pidAndUidAndSubmission) {
+        String[] pidAndUidAndSubmissionSplit = pidAndUidAndSubmission.split("/", 3);
+
+        if (pidAndUidAndSubmissionSplit.length != 3)
+            return badRequest();
+
+        String uid = pidAndUidAndSubmissionSplit[0];
+        String pid = pidAndUidAndSubmissionSplit[1];
+        String submission = pidAndUidAndSubmissionSplit[2];
+
+        User user;
+        try {
+            user = User.getUserById(new ObjectId(uid));
+        } catch (IllegalArgumentException iae) {
+            return badRequest("user not found");
+        }
+        if (user == null)
+            return badRequest("user not found");
+
+        List<ConfiguredProblem> userProblems = contest.getUserProblems(user);
+        //TODO what if user has one problem several times?
+        Optional<ConfiguredProblem> ocp = userProblems.stream().filter(cp -> cp.getProblemId().toString().equals(pid)).findFirst();
+        if (!ocp.isPresent())
+            return notFound("pid not found " + pid);
+        ConfiguredProblem cp = ocp.get();
+
+        return ok(submission_view.render(user, contest.getId(), cp, submission));
+    }
+
     private Result showUser(Contest contest, String uid) {
         //group by problem
-
-        System.out.println("here 2");
 
         User adminUser = User.current();
 
@@ -66,30 +93,23 @@ public class AnswersGallery extends Plugin {
             return unauthorized();
 
         User user;
-        System.out.println("here 2");
         try {
              user = User.getUserById(new ObjectId(uid));
         } catch (IllegalArgumentException iae) {
-            System.out.println("here 1");
             return badRequest("user not found");
         }
 
         if (!adminUser.hasEventAdminRight() && !adminUser.isUpper(user))
             return unauthorized("you don't have any rights");
 
-        List<ConfiguredProblem> userProblems = contest.getUserProblems(user);
+//        List<ConfiguredProblem> userProblems = contest.getUserProblems(user);
 
-        Map<String, List<Submission>> pid2subs = getAllSubmissions(contest, "u", user.getId()).stream()
+        Map<ObjectId, List<Submission>> pid2subs = getAllSubmissions(contest, "u", user.getId()).stream()
                 .sorted(Comparator.comparingLong(Submission::getLocalTime)) // not sure this is needed
-                .collect(Collectors.groupingBy(
-                        submission -> {
-                            String problemName = contest.getProblemName(submission.getProblemId());
-                            return problemName == null ? "NULL" : problemName;
-                        }
-                ));
+                .collect(Collectors.groupingBy(Submission::getProblemId));
 
 
-        return Results.ok(solutions_view.render(pid2subs));
+        return ok(solutions_view.render(this, contest, pid2subs));
     }
 
     private Result showProblem(Contest contest, String pid) {
@@ -115,7 +135,7 @@ public class AnswersGallery extends Plugin {
         List<Submission> allSubmissions = new ArrayList<>();
 
         DBObject query = new BasicDBObject();
-        query.put("pid", new BasicDBObject("$ne", null)); //TODO all queries ask for non null
+        query.put("pid", new BasicDBObject("$ne", null)); //TODO allow admin view system submissions
         for (int i = 0; i < nameValue.length; i += 2) {
             String name = (String)nameValue[i];
             Object value = nameValue[i + 1];

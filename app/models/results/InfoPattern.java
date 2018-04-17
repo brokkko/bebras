@@ -102,6 +102,12 @@ public class InfoPattern extends SerializationType<Info> {
         write(value, subSerializer);
     }
 
+    public String toJSON(String field, Info value) {
+        JSONSerializer serializer = new JSONSerializer();
+        write(serializer, field, value);
+        return serializer.getNode().toString();
+    }
+
     @Override
     public void write(ListSerializer serializer, Info value) {
         Serializer subSerializer = serializer.getSerializer();

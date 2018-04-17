@@ -203,6 +203,14 @@ public class BebrasDynamicProblem implements Problem {
     }
 
     @Override
+    public InfoPattern getCheckerPattern() {
+        return new InfoPattern(
+                "result", new BasicSerializationType<>(int.class), "Результат",
+                "answer", new BasicSerializationType<>(String.class), "Ответ"
+        );
+    }
+
+    @Override
     public String getType() {
         return "bebras-dyn";
     }

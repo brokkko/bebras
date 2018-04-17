@@ -52,6 +52,8 @@ public interface Problem extends SerializableUpdatable {
      */
     InfoPattern getAnswerPattern();
 
+    InfoPattern getCheckerPattern();
+
     String getType();
 
     Widget getWidget(boolean editor);
