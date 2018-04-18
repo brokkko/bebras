@@ -50,49 +50,40 @@ public class AnswersGallery extends Plugin {
             case "view":
                 if (contestAndOther.length != 2)
                     return F.Promise.pure(badRequest());
-                String other = contestAndOther[1];
-                return F.Promise.pure(showSubmission(contest, other));
+                String sid = contestAndOther[1];
+                return F.Promise.pure(showSubmission(contest, sid));
         }
 
         return F.Promise.pure(badRequest());
     }
 
-    private Result showSubmission(Contest contest, String pidAndUidAndSubmission) {
-        if (!User.currentRole().hasEventAdminRight()) //TODO allow for everybody
-            return forbidden();
-
-        String[] pidAndUidAndSubmissionSplit = pidAndUidAndSubmission.split("/", 3);
-
-        if (pidAndUidAndSubmissionSplit.length != 3)
-            return badRequest();
-
-        String uid = pidAndUidAndSubmissionSplit[0];
-        String pid = pidAndUidAndSubmissionSplit[1];
-        String submission = null;
+    private Result showSubmission(Contest contest, String submissionIdString) {
+        ObjectId submissionId;
         try {
-            submission = URLDecoder.decode(pidAndUidAndSubmissionSplit[2], "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            //do nothing
-        }
-        System.out.println("sub" + submission);
-
-        User user;
-        try {
-            user = User.getUserById(new ObjectId(uid));
+            submissionId = new ObjectId(submissionIdString);
         } catch (IllegalArgumentException iae) {
-            return badRequest("user not found");
+            return badRequest("ill-formed submission id");
         }
+        Submission submission = Submission.getSubmissionById(contest, submissionId);
+        if (submission == null)
+            return badRequest("unknown submission id");
+
+        User user = User.getUserById(submission.getUser());
         if (user == null)
             return badRequest("user not found");
 
         List<ConfiguredProblem> userProblems = contest.getUserProblems(user);
+
+        ObjectId pid = submission.getProblemId();
         //TODO what if user has one problem several times?
-        Optional<ConfiguredProblem> ocp = userProblems.stream().filter(cp -> cp.getProblemId().toString().equals(pid)).findFirst();
+        Optional<ConfiguredProblem> ocp = userProblems.stream().filter(cp -> cp.getProblemId().equals(pid)).findFirst();
         if (!ocp.isPresent())
             return notFound("pid not found " + pid);
         ConfiguredProblem cp = ocp.get();
 
-        return ok(submission_view.render(user, contest.getId(), cp, submission));
+        String jsonAnswer = cp.getProblem().getAnswerPattern().toJSON(submission.getAnswer());
+
+        return ok(submission_view.render(user, contest.getId(), cp, jsonAnswer));
     }
 
     private Result showUser(Contest contest, String uid) {

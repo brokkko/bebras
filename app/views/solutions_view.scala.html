@@ -19,9 +19,7 @@
                     @* @info(problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)), contest.getResultTranslator.getInfoPattern) *@
                     <a class="answers-gallery-user-info" href="@routes.UserInfo.info(Event.currentId, solution.getUser.toString)">@User.getUserById(solution.getUser).getLogin</a>
                     @info(problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)), problem.getCheckerPattern)
-                    <a href="@plugin.getCall("view", true, contest.getId + "/" + solution.getUser.toString + "/" + solution.getProblemId.toString + "/" +
-                            URLEncoder.encode(problem.getAnswerPattern.toJSON(solution.getAnswer), "UTF-8")
-                    )">Просмотреть</a>
+                    <a href="@plugin.getCall("view", true, contest.getId + "/" + solution.getId.toString)">Просмотреть</a>
                     @* @problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)) *@
                     </div>
                 }

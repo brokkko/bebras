@@ -3,6 +3,7 @@ package models;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import controllers.actions.AuthenticatedAction;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
@@ -45,6 +46,7 @@ public class Submission implements Serializable {
     }
 
     private Contest contest;
+    private ObjectId id;
 
     private ObjectId user;
     private long localTime; /* time in milliseconds from the beginning*/
@@ -52,7 +54,7 @@ public class Submission implements Serializable {
     private ObjectId problemId;
     private Info answer;
 
-    public static Submission getSubmissionForUser(Contest contest, ObjectId user, ObjectId problemId, AnswerOrdering answerOrdering, TimeType timeType) {
+    /*public static Submission getSubmissionForUser(Contest contest, ObjectId user, ObjectId problemId, AnswerOrdering answerOrdering, TimeType timeType) {
         DBCollection collection = contest.getCollection();
 
         BasicDBObject query = new BasicDBObject();
@@ -72,6 +74,13 @@ public class Submission implements Serializable {
             else
                 return null;
         }
+    }*/
+
+    public static Submission getSubmissionById(Contest contest, ObjectId sid) {
+        DBObject submissionObject = contest.getCollection().findOne(new BasicDBObject("_id", sid));
+        if (submissionObject == null)
+            return null;
+        return new Submission(contest, new MongoDeserializer(submissionObject));
     }
 
     public Submission(Contest contest, Deserializer deserializer) {
@@ -98,6 +107,8 @@ public class Submission implements Serializable {
     public Submission(ObjectId user, Contest contest, Deserializer deserializer) {
         this.user = user;
         this.contest = contest;
+
+        this.id = deserializer.readObjectId("_id");
 
         serverTime = deserializer.readDate(SERVER_TIME_FIELD);
         problemId = deserializer.readObjectId(PROBLEM_ID_FIELD);
@@ -136,6 +147,8 @@ public class Submission implements Serializable {
 
     @Override
     public void serialize(Serializer serializer) {
+        if (id != null)
+            serializer.write("_id", id);
         serializer.write(USER_FIELD, user);
         serializer.write(LOCAL_TIME_FIELD, localTime);
         serializer.write(SERVER_TIME_FIELD, serverTime);
@@ -153,6 +166,10 @@ public class Submission implements Serializable {
         serialize(serializer);
 
         contest.getCollection().save(serializer.getObject());
+    }
+
+    public ObjectId getId() {
+        return id;
     }
 
     public Contest getContest() {

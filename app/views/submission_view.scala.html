@@ -19,9 +19,12 @@
         </div>
     </div>
     <script type="text/javascript">
+        $(function() {
             var $problem_div = $('.problem');
             @* TODO what if ans contains quotes*@
-            console.log('json', $('#problem-info').text());
-            dces2contest.solutions_loaders_registry['@problem.getProblem.getType']($problem_div, JSON.parse($('#problem-info').text()));
+            var problem_info_as_json = $('#problem-info').text();
+            var problem_info_as_object = JSON.parse(problem_info_as_json);
+            dces2contest.solutions_loaders_registry['@problem.getProblem.getType']($problem_div, problem_info_as_object);
+        });
     </script>
 }
