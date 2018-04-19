@@ -52,6 +52,7 @@ $(function() {
     function load_answer_for_problem($problem_div, ans) {
         var type = $problem_div.find('.pr_type').text();
         dces2contest.solutions_loaders_registry[type]($problem_div, ans);
+        console.trace('loading answer', ans);
     }
 
     //load solutions for all problems

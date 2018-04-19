@@ -14,6 +14,7 @@ import play.Logger;
 import ru.ipo.kio.js.JsKioProblem;
 import ru.ipo.kio.js.Parameter;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class KioJSTranslator implements Translator {
 
     public static final ListSerializationType<Double> RANK_SORTER_TYPE = SerializationTypesRegistry.list(new BasicSerializationType<>(Double.class));
+    private KioOnlineProblem mainProblem = null;
     private JsKioProblem problem = null;
     private List<Parameter> visibleParameters;
 
@@ -35,21 +37,20 @@ public class KioJSTranslator implements Translator {
         Info source = from.get(0);
 
         Info result = new Info();
-
+        List<Parameter> visibleParameters = mainProblem.getVisibleParameters();
         int n = visibleParameters.size();
         for (int i = 0; i < n; i++) {
-            Parameter param = visibleParameters.get(i);
             String paramName = "p" + i;
-            Object paramValue = source == null ? null : source.get(param.name());
-            result.put(paramName, paramValue == null ? "-" : param.v(paramValue)); //TODO process null on view level
+            Object paramValue = source == null ? null : source.get(paramName);
+            result.put(paramName, paramValue); //TODO process null on view level
         }
 
-        List<Parameter> params = problem.getParameters();
-        List<Double> rankSorterValue = params.stream().map(p -> {
-            Object paramValue = source == null ? null : source.get(p.name());
-            return paramValue == null ? -Double.MAX_VALUE : p.normalizeWithOrdering(paramValue);
-        }).collect(Collectors.toList());
-        result.put("rank-sorter", rankSorterValue);
+        if (source != null)
+            result.put("rank-sorter", source.get("rank-sorter"));
+        else {
+            List<Double> sorter = Collections.nCopies(problem.getParameters().size(), -Double.MAX_VALUE);
+            result.put("rank-sorter", sorter);
+        }
         result.put("rank", 0);
         result.put("scores", 0);
 
@@ -110,9 +111,11 @@ public class KioJSTranslator implements Translator {
         if (allPossibleProblems == null || allPossibleProblems.isEmpty())
             return;
         ConfiguredProblem mainConfiguredProblem = allPossibleProblems.get(0);
-        Problem mainProblem = mainConfiguredProblem.getProblem();
-        if (!(mainProblem instanceof KioOnlineProblem))
+        Problem mainProblem1 = mainConfiguredProblem.getProblem();
+        if (!(mainProblem1 instanceof KioOnlineProblem))
             return;
+
+        mainProblem = (KioOnlineProblem) mainProblem1;
 
         KioOnlineProblem kop = (KioOnlineProblem) mainProblem;
         try {

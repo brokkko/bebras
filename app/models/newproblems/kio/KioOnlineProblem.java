@@ -22,8 +22,11 @@ import views.widgets.Widget;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -138,17 +141,45 @@ public class KioOnlineProblem implements Problem {
         Info checkResult = new Info(); //TODO what to do?
 
         String resultJson = (String) answer.get("res");
-        JsonNode result;
+        JsonNode jsonResult;
         try {
-            result = objectMapper.readTree(resultJson);
+            jsonResult = objectMapper.readTree(resultJson);
         } catch (IOException e) {
             //TODO do we need to log here?
             return checkResult;
         }
 
-        result.fields().forEachRemaining(e -> checkResult.put(e.getKey(), decode(e.getValue())));
+        jsonResult.fields().forEachRemaining(e -> checkResult.put(e.getKey(), decode(e.getValue())));
 
-        return checkResult;
+        //checkResult: real param name -> decoded value of real type
+
+        List<Parameter> visibleParameters = getVisibleParameters();
+
+        Info result = new Info();
+
+        int n = visibleParameters.size();
+        for (int i = 0; i < n; i++) {
+            Parameter param = visibleParameters.get(i);
+            String paramName = "p" + i;
+            Object paramValue = checkResult.get(param.name());
+            result.put(paramName, paramValue == null ? "-" : param.v(paramValue)); //TODO process null on view level
+        }
+
+        List<Parameter> params = jsKioProblem.getParameters();
+        List<Double> rankSorterValue = params.stream().map(p -> {
+            Object paramValue = checkResult.get(p.name());
+            return paramValue == null ? -Double.MAX_VALUE : p.normalizeWithOrdering(paramValue);
+        }).collect(Collectors.toList());
+        result.put("rank-sorter", rankSorterValue);
+
+        return result;
+    }
+
+    public List<Parameter> getVisibleParameters() {
+        return jsKioProblem.getParameters() //TODO invisible parameters are defined in KioAPI
+                .stream()
+                .filter(p -> p.title() != null && !p.title().isEmpty())
+                .collect(Collectors.toList());
     }
 
     private Object decode(JsonNode value) {
@@ -177,11 +208,15 @@ public class KioOnlineProblem implements Problem {
         LinkedHashMap<String, SerializationType<?>> field2type = new LinkedHashMap<>();
         LinkedHashMap<String, String> field2title = new LinkedHashMap<>();
 
-        for (Parameter parameter : jsKioProblem.getParameters())
-            if (parameter.title() != null && !parameter.title().isEmpty()) {
-                field2title.put(parameter.name(), parameter.title());
-                field2type.put(parameter.name(), new BasicSerializationType<>(String.class));
-            }
+        List<Parameter> visibleParameters = getVisibleParameters();
+
+        int i = 0;
+        for (Parameter parameter : visibleParameters) {
+            String parameterName = "p" + i;
+            i++;
+            field2title.put(parameterName, parameter.title());
+            field2type.put(parameterName, new BasicSerializationType<>(String.class));
+        }
 
         return new InfoPattern(field2type, field2title);
     }
@@ -238,6 +273,34 @@ public class KioOnlineProblem implements Problem {
         }
 
         return new JsKioProblem(jsCode, className, settings, null); //TODO add external checker
+    }
+
+    @Override
+    public Comparator<Info> comparator() {
+        //TODO do not duplicate code with KioJSTranslator
+        return (info1, info2) -> {
+            List<Double> r1 = (List<Double>) info1.get("rank-sorter");
+            List<Double> r2 = (List<Double>) info2.get("rank-sorter");
+
+            if (r1 == null && r2 == null)
+                return 0;
+            if (r1 == null)
+                return -1;
+            if (r2 == null)
+                return 1;
+
+            int n = r1.size();
+            for (int i = 0; i < n; i++) {
+                double diff = r1.get(i) - r2.get(i);
+                if (Math.abs(diff) < 1e-8)
+                    continue;
+                if (diff < 0)
+                    return -1;
+                return 1;
+            }
+
+            return 0;
+        };
     }
 
     @Override

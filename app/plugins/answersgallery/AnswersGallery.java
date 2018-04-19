@@ -1,4 +1,4 @@
-package plugins;
+package plugins.answersgallery;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -9,17 +9,19 @@ import models.Event;
 import models.Submission;
 import models.User;
 import models.newproblems.ConfiguredProblem;
+import models.newproblems.Problem;
+import models.newproblems.ProblemInfo;
 import models.newserialization.MongoDeserializer;
 import org.bson.types.ObjectId;
 import play.libs.F;
 import play.mvc.Result;
+import plugins.Plugin;
 import views.html.solutions_view;
 import views.html.submission_view;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static play.mvc.Results.*;
 
@@ -86,6 +88,19 @@ public class AnswersGallery extends Plugin {
         return ok(submission_view.render(user, contest.getId(), cp, jsonAnswer));
     }
 
+    private Map<ObjectId, List<SubmissionAndCheck>> processSubmissionsStream(Stream<Submission> stream, Contest contest) {
+        return stream.sorted(Comparator.comparingLong(Submission::getLocalTime)) // not sure this is needed
+                .map(s -> {
+                    ProblemInfo problemInfo = ProblemInfo.get(s.getProblemId());
+                    if (problemInfo == null)
+                        return null;
+                    Problem problem = problemInfo.getProblem();
+                    User user = User.getUserById(s.getUser());
+                    return new SubmissionAndCheck(s, problem.check(s.getAnswer(), user.getContestRandSeed(contest.getId())));
+                })
+                .collect(Collectors.groupingBy(sac -> sac.getSubmission().getProblemId()));
+    }
+
     private Result showUser(Contest contest, String uid) {
         //group by problem
 
@@ -96,7 +111,7 @@ public class AnswersGallery extends Plugin {
 
         User user;
         try {
-             user = User.getUserById(new ObjectId(uid));
+            user = User.getUserById(new ObjectId(uid));
         } catch (IllegalArgumentException iae) {
             return badRequest("user not found");
         }
@@ -106,10 +121,10 @@ public class AnswersGallery extends Plugin {
 
 //        List<ConfiguredProblem> userProblems = contest.getUserProblems(user);
 
-        Map<ObjectId, List<Submission>> pid2subs = getAllSubmissions(contest, "u", user.getId()).stream()
-                .sorted(Comparator.comparingLong(Submission::getLocalTime)) // not sure this is needed
-                .collect(Collectors.groupingBy(Submission::getProblemId));
-
+        Map<ObjectId, List<SubmissionAndCheck>> pid2subs = processSubmissionsStream(
+                getAllSubmissions(contest, "u", user.getId()).stream(),
+                contest
+        );
 
         return ok(solutions_view.render(this, contest, pid2subs));
     }
@@ -122,9 +137,18 @@ public class AnswersGallery extends Plugin {
         if (!adminUser.hasEventAdminRight())
             return unauthorized("you don't have any rights");
 
-        Map<ObjectId, List<Submission>> pid2subs = getAllSubmissions(contest).stream()
-                .sorted(Comparator.comparingLong(Submission::getLocalTime)) // not sure this is needed
-                .collect(Collectors.groupingBy(Submission::getProblemId));
+        Map<ObjectId, List<SubmissionAndCheck>> pid2subs = processSubmissionsStream(
+                getAllSubmissions(contest).stream(),
+                contest
+        );
+
+        pid2subs.forEach((oid, subs) -> {
+            ProblemInfo problemInfo = ProblemInfo.get(oid);
+            if (problemInfo == null)
+                return;
+
+            subs.sort((s1, s2) -> problemInfo.getProblem().comparator().compare(s2.getCheck(), s1.getCheck()));
+        });
 
         return ok(solutions_view.render(this, contest, pid2subs));
     }
@@ -148,7 +172,7 @@ public class AnswersGallery extends Plugin {
         DBObject query = new BasicDBObject();
         query.put("pid", new BasicDBObject("$ne", null)); //TODO allow admin view system submissions
         for (int i = 0; i < nameValue.length; i += 2) {
-            String name = (String)nameValue[i];
+            String name = (String) nameValue[i];
             Object value = nameValue[i + 1];
             query.put(name, value);
         }

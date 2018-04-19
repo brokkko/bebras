@@ -3,9 +3,9 @@
 @import models.newproblems.ProblemInfo
 @import models.Contest
 @import views.widgets.ResourceLink
-@import plugins.AnswersGallery
-@import java.net.URLEncoder
-@(plugin: AnswersGallery, contest: Contest, solutions:java.util.Map[ObjectId, java.util.List[models.Submission]])
+@import plugins.answersgallery.AnswersGallery
+@import plugins.answersgallery.SubmissionAndCheck
+@(plugin: AnswersGallery, contest: Contest, solutions:java.util.Map[ObjectId, java.util.List[SubmissionAndCheck]])
 
 @main_with_menu("")(List(new ResourceLink("answers_gallery.css"))) { } {
     @for((problem_id, solutions_list) <- solutions) {
@@ -15,12 +15,9 @@
 
                 @for(solution <- solutions_list) {
                     <div class="answers-gallery-submission">
-                    @* @info(solution.getAnswer, problem.getAnswerPattern) *@
-                    @* @info(problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)), contest.getResultTranslator.getInfoPattern) *@
-                    <a class="answers-gallery-user-info" href="@routes.UserInfo.info(Event.currentId, solution.getUser.toString)">@User.getUserById(solution.getUser).getLogin</a>
-                    @info(problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)), problem.getCheckerPattern)
-                    <a href="@plugin.getCall("view", true, contest.getId + "/" + solution.getId.toString)">Просмотреть</a>
-                    @* @problem.check(solution.getAnswer, User.getUserById(solution.getUser).getContestRandSeed(contest.getId)) *@
+                    <a class="answers-gallery-user-info" href="@routes.UserInfo.info(Event.currentId, solution.getSubmission.getUser.toString)">@User.getUserById(solution.getSubmission.getUser).getLogin</a>
+                    @info(solution.getCheck, problem.getCheckerPattern)
+                    <a href="@plugin.getCall("view", true, contest.getId + "/" + solution.getSubmission.getId.toString)">Просмотреть</a>
                     </div>
                 }
             </section>

@@ -7,6 +7,8 @@ import models.results.InfoPattern;
 import play.twirl.api.Html;
 import views.widgets.Widget;
 
+import java.util.Comparator;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ilya
@@ -52,7 +54,19 @@ public interface Problem extends SerializableUpdatable {
      */
     InfoPattern getAnswerPattern();
 
+    /**
+     * Checker pattern is used after the submission is checked
+     * @return
+     */
     InfoPattern getCheckerPattern();
+
+    /**
+     * comparator for checked solutions
+     * @return
+     */
+    default Comparator<Info> comparator() {
+        return (c1, c2) -> 0;
+    }
 
     String getType();
 

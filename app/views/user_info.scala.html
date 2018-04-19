@@ -2,9 +2,10 @@
 @import views.htmlblocks.HtmlBlockWidget
 @import views.widgets.FormsWidget
 @import models.Event
+
 @import scala.List
 @import play.i18n.Messages
-@import plugins.AnswersGallery
+@import plugins.answersgallery.AnswersGallery
 @(user:models.User, mayChange:Boolean, form:models.forms.RawForm, otherUser:Boolean, message:String)
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get, HtmlBlockWidget.get, AdminWidget.get)) { } {
     @if(otherUser) {

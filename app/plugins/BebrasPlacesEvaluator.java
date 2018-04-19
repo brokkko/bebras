@@ -333,7 +333,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                             lines = getCertificateLinesForOrg(user, organizerActive);
                             isOrg = true;
                         } else { //roleName.equals("PARTICIPANT")
-                            try { //if we can not parse a user's grade, then she did not participate
+                            try { //if we can not parse a user'submission grade, then she did not participate
                                 int grade = Integer.parseInt((String) user.getInfo().get("grade"));
                                 if (grade < 1 || grade > 11)
                                     continue;

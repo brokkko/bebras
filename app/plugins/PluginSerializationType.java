@@ -1,6 +1,7 @@
 package plugins;
 
 import models.newserialization.SerializableTreeSerializationType;
+import plugins.answersgallery.AnswersGallery;
 import plugins.applications.Applications;
 import plugins.applications.SearchApplications;
 import plugins.bebrascard.BebrasCardsPlugin;
