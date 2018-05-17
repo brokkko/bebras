@@ -22,6 +22,16 @@ import java.util.List;
 import java.util.Objects;
 
 //      http://localhost:9000/kio18/kiojschecker/contest/elasticity0/p
+//      http://localhost:9000/kio18/kiojschecker/contest/elasticity1/p
+//      http://localhost:9000/kio18/kiojschecker/contest/elasticity2/p
+
+//      http://localhost:9000/kio18/kiojschecker/contest/hexagons0/p
+//      http://localhost:9000/kio18/kiojschecker/contest/hexagons1/p
+//      http://localhost:9000/kio18/kiojschecker/contest/hexagons2/p
+
+//      http://localhost:9000/kio18/kiojschecker/contest/lamps0/p
+//      http://localhost:9000/kio18/kiojschecker/contest/lamps1/p
+//      http://localhost:9000/kio18/kiojschecker/contest/lamps2/p
 
 public class KioJsChecker extends Plugin {
 
