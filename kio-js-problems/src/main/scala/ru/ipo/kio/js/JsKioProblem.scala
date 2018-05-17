@@ -52,12 +52,13 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String, exte
     if (ScriptObjectMirror.isUndefined(checkerFun))
       checkerFunFromExternalChecker
     else
-      x => checkerFun.asInstanceOf[ScriptObjectMirror].call(null, x).asInstanceOf[String]
+      x => checkerFun.asInstanceOf[ScriptObjectMirror].call(problem, x).asInstanceOf[String]
   }
 
   def checkerFunFromExternalChecker: String => String = {
     if (externalChecker == null)
-      throw new IllegalStateException("external checker is not defined")
+//      throw new IllegalStateException("external checker is not defined")
+        return x => null; //TODO or may be really thrown an exception?
 
     val ucl: URLClassLoader = new URLClassLoader(Array(externalChecker.jar.toURI.toURL))
     val checkerClass = ucl.loadClass(externalChecker.className)

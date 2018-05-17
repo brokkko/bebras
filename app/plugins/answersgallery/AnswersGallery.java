@@ -9,7 +9,6 @@ import models.Event;
 import models.Submission;
 import models.User;
 import models.newproblems.ConfiguredProblem;
-import models.newproblems.Problem;
 import models.newproblems.ProblemInfo;
 import models.newserialization.MongoDeserializer;
 import org.bson.types.ObjectId;
@@ -84,20 +83,15 @@ public class AnswersGallery extends Plugin {
         ConfiguredProblem cp = ocp.get();
 
         String jsonAnswer = cp.getProblem().getAnswerPattern().toJSON(submission.getAnswer());
+        System.out.println(submission.getAnswer().get("sol"));
+        System.out.println(submission.getAnswer().get("res"));
 
         return ok(submission_view.render(user, contest.getId(), cp, jsonAnswer));
     }
 
-    private Map<ObjectId, List<SubmissionAndCheck>> processSubmissionsStream(Stream<Submission> stream, Contest contest) {
+    private Map<ObjectId, List<SubmissionAndCheck>> processSubmissionsStream(Stream<Submission> stream) {
         return stream.sorted(Comparator.comparingLong(Submission::getLocalTime)) // not sure this is needed
-                .map(s -> {
-                    ProblemInfo problemInfo = ProblemInfo.get(s.getProblemId());
-                    if (problemInfo == null)
-                        return null;
-                    Problem problem = problemInfo.getProblem();
-                    User user = User.getUserById(s.getUser());
-                    return new SubmissionAndCheck(s, problem.check(s.getAnswer(), user.getContestRandSeed(contest.getId())));
-                })
+                .map(SubmissionAndCheck::new)
                 .collect(Collectors.groupingBy(sac -> sac.getSubmission().getProblemId()));
     }
 
@@ -122,8 +116,7 @@ public class AnswersGallery extends Plugin {
 //        List<ConfiguredProblem> userProblems = contest.getUserProblems(user);
 
         Map<ObjectId, List<SubmissionAndCheck>> pid2subs = processSubmissionsStream(
-                getAllSubmissions(contest, "u", user.getId()).stream(),
-                contest
+                getAllSubmissions(contest, "u", user.getId()).stream()
         );
 
         return ok(solutions_view.render(this, contest, pid2subs));
@@ -137,10 +130,7 @@ public class AnswersGallery extends Plugin {
         if (!adminUser.hasEventAdminRight())
             return unauthorized("you don't have any rights");
 
-        Map<ObjectId, List<SubmissionAndCheck>> pid2subs = processSubmissionsStream(
-                getAllSubmissions(contest).stream(),
-                contest
-        );
+        Map<ObjectId, List<SubmissionAndCheck>> pid2subs = processSubmissionsStream(getAllSubmissions(contest).stream());
 
         pid2subs.forEach((oid, subs) -> {
             ProblemInfo problemInfo = ProblemInfo.get(oid);

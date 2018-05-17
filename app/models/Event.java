@@ -526,6 +526,8 @@ public class Event {
                 this.user = user;
                 this.result = result;
                 this.type = user2type.apply(user);
+
+                Logger.info("Created user and result " + user.getLogin() + " " + result);
             }
         }
 
@@ -541,7 +543,7 @@ public class Event {
                     continue;
                 types.add(type);
 
-                Info eventResults = user2result.apply(u);//u.getEventResults();
+                Info eventResults = user2result.apply(u);
                 UserAndResult ur = new UserAndResult(u, eventResults);
                 allUsersAndResults.add(ur);
             }

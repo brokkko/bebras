@@ -8,9 +8,9 @@ public class SubmissionAndCheck {
     private Submission submission;
     private Info check;
 
-    public SubmissionAndCheck(Submission submission, Info check) {
+    public SubmissionAndCheck(Submission submission) {
         this.submission = submission;
-        this.check = check;
+        this.check = submission.getCheckResult();
     }
 
     public Submission getSubmission() {

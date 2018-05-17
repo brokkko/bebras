@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import models.ServerConfiguration;
 import models.forms.RawForm;
 import models.newproblems.Problem;
-import models.newserialization.BasicSerializationType;
-import models.newserialization.Deserializer;
-import models.newserialization.SerializationType;
-import models.newserialization.Serializer;
+import models.newserialization.*;
 import models.results.Info;
 import models.results.InfoPattern;
 import play.Logger;
@@ -138,9 +135,14 @@ public class KioOnlineProblem implements Problem {
 
     @Override
     public Info check(Info answer, long randSeed) {
-        Info checkResult = new Info(); //TODO what to do?
-
         String resultJson = (String) answer.get("res");
+
+        return check(resultJson);
+    }
+
+    public Info check(String resultJson) {
+        Info checkResult = new Info();
+
         JsonNode jsonResult;
         try {
             jsonResult = objectMapper.readTree(resultJson);
@@ -171,6 +173,7 @@ public class KioOnlineProblem implements Problem {
             return paramValue == null ? -Double.MAX_VALUE : p.normalizeWithOrdering(paramValue);
         }).collect(Collectors.toList());
         result.put("rank-sorter", rankSorterValue);
+        Logger.info("rank sorter checked " + rankSorterValue);
 
         return result;
     }
@@ -217,6 +220,9 @@ public class KioOnlineProblem implements Problem {
             field2title.put(parameterName, parameter.title());
             field2type.put(parameterName, new BasicSerializationType<>(String.class));
         }
+
+        field2title.put("rank-sorter", "Сортировка");
+        field2type.put("rank-sorter", new ListSerializationType<>(new BasicSerializationType<>(double.class)));
 
         return new InfoPattern(field2type, field2title);
     }

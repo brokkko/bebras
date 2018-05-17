@@ -32,6 +32,12 @@ public class Worker implements SerializableUpdatable {
     public Worker() {}
 
     public Worker(String name, String description) {
+        try {
+            throw new Exception("create worker exception");
+        } catch (Exception e) {
+            Logger.info("created logger " + id, e);
+        }
+
         this.eventId = Event.currentId();
         this.name = name;
         this.description = description;

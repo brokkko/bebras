@@ -783,7 +783,9 @@ public class User implements SerializableUpdatable {
     }
 
     public List<Submission> getAllSubmissions(Contest contest) {
-        return cachedAllSubmissions.computeIfAbsent(contest, this::evaluateAllSubmissions);
+//        return cachedAllSubmissions.computeIfAbsent(contest, this::evaluateAllSubmissions);
+        //FIXME do we need to cache all submissions?
+        return this.evaluateAllSubmissions(contest);
     }
 
     private List<Submission> evaluateAllSubmissions(Contest contest) {
@@ -964,7 +966,7 @@ public class User implements SerializableUpdatable {
 
             Submission submission = submissions.get(i);
             if (submission != null) {
-                problemsInfo.add(problem.check(submission.getAnswer(), getContestRandSeed(contest.getId()))); //TODO implement remote check, online check
+                problemsInfo.add(submission.getCheckResult());
                 problemsSettingsInfo.add(configuredProblem.getSettings());
             } else {
                 problemsInfo.add(null);
@@ -983,10 +985,22 @@ public class User implements SerializableUpdatable {
         if (finalResults != null)
             return finalResults;
 
+        /*Logger.info(String.format(
+                "Evaluating contest result for user %s (event %s, contest %s).",
+                getLogin(),
+                getEvent().getId(),
+                contest.getId()
+        ));*/
+
         finalResults = evaluateContestResults(contest);
 
         contestInfo.setFinalResults(finalResults);
         store();
+
+        /*Logger.info(String.format(
+                "Filnal results are: %s",
+                finalResults
+        ));*/
 
         return finalResults;
     }

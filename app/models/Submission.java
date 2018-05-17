@@ -2,7 +2,6 @@ package models;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import controllers.actions.AuthenticatedAction;
 import models.newproblems.ConfiguredProblem;
@@ -12,6 +11,7 @@ import models.newserialization.*;
 import models.results.Info;
 import models.results.InfoPattern;
 import org.bson.types.ObjectId;
+import play.Logger;
 
 import java.util.Date;
 
@@ -27,6 +27,7 @@ public class Submission implements Serializable {
     public static final String LOCAL_TIME_FIELD = "lt";
     public static final String SERVER_TIME_FIELD = "st";
     public static final String ANSWER_FIELD = "a";
+    public static final String CHECK_FIELD = "c";
     public static final String PROBLEM_ID_FIELD = "pid";
     public static final String PROBLEM_NUM_FIELD = "pn";
 
@@ -53,6 +54,8 @@ public class Submission implements Serializable {
     private Date serverTime;
     private ObjectId problemId;
     private Info answer;
+
+    private Info externalCheckResult = null;
 
     /*public static Submission getSubmissionForUser(Contest contest, ObjectId user, ObjectId problemId, AnswerOrdering answerOrdering, TimeType timeType) {
         DBCollection collection = contest.getCollection();
@@ -124,8 +127,10 @@ public class Submission implements Serializable {
 
         if (problem == null) //means system message
             answer = systemPattern.read(deserializer, ANSWER_FIELD);
-        else
+        else {
             answer = problem.getAnswerPattern().read(deserializer, ANSWER_FIELD);
+            externalCheckResult = problem.getCheckerPattern().read(deserializer, CHECK_FIELD);
+        }
     }
 
     private void populateAbsentData(Contest contest, Integer problemNumber) {
@@ -155,8 +160,15 @@ public class Submission implements Serializable {
         serializer.write(PROBLEM_ID_FIELD, problemId);
 
         if (problemId != null) {
-            Problem problem = ProblemInfo.get(problemId).getProblem();
+            ProblemInfo problemInfo = ProblemInfo.get(problemId);
+            if (problemInfo == null) {
+                Logger.info("trying to serialize submission with problemId " + problemId + ", that does not exist");
+                return;
+            }
+            Problem problem = problemInfo.getProblem();
             problem.getAnswerPattern().write(serializer, ANSWER_FIELD, answer);
+            if (externalCheckResult != null)
+                problem.getCheckerPattern().write(serializer, CHECK_FIELD, externalCheckResult);
         } else
             systemPattern.write(serializer, ANSWER_FIELD, answer);
     }
@@ -166,6 +178,11 @@ public class Submission implements Serializable {
         serialize(serializer);
 
         contest.getCollection().save(serializer.getObject());
+    }
+
+    public void setExternalCheckResult(Info externalCheckResult) {
+        this.externalCheckResult = externalCheckResult;
+        serialize();
     }
 
     public ObjectId getId() {
@@ -206,6 +223,28 @@ public class Submission implements Serializable {
 
     public String getSystemValue() {
         return (String) answer.get("v");
+    }
+
+    public Info getExternalCheckResult() {
+        return externalCheckResult;
+    }
+
+    public Info getCheckResult() {
+        if (externalCheckResult != null)
+            return externalCheckResult;
+
+        //first get problem
+        ProblemInfo problemInfo = ProblemInfo.get(problemId);
+        if (problemInfo == null)
+            return null;
+        Problem problem = problemInfo.getProblem();
+
+        //now get user
+        User user = User.getUserById(this.user);
+        if (user == null)
+            return null;
+
+        return problem.check(answer, user.getContestRandSeed(contest.getId()));
     }
 
     public static void removeAllAnswersForUser(ObjectId userId, Contest contest) {

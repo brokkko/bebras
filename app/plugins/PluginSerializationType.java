@@ -7,6 +7,7 @@ import plugins.applications.SearchApplications;
 import plugins.bebrascard.BebrasCardsPlugin;
 import plugins.bebraspdf.BebrasPDFs;
 import plugins.certificates.DiplomaPlugin;
+import plugins.kio.KioJsChecker;
 import plugins.kio.KioProblemPlugin;
 import plugins.questionnaire.QuestionnairePlugin;
 
@@ -32,6 +33,7 @@ public class PluginSerializationType extends SerializableTreeSerializationType<P
         registerClass("diploma", DiplomaPlugin.class);
         registerClass("bebras cards", BebrasCardsPlugin.class);
         registerClass("answers gallery", AnswersGallery.class);
+        registerClass("kio js checker", KioJsChecker.class);
     }
 
 }
