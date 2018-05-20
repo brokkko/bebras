@@ -84,7 +84,7 @@ public abstract class Diploma<Factory extends DiplomaFactory> {
 
     protected String getResult(String field, String contestId) {
         Object res = getResults(contestId).get(field);
-        return res == null ? null : String.valueOf(res);
+        return res == null ? "-" : String.valueOf(res);
     }
 
     public abstract int getWidthsInMM();

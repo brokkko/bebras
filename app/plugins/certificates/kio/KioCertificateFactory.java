@@ -17,6 +17,7 @@ public class KioCertificateFactory extends DiplomaFactory {
     private List<Integer> participantsByLevels = new ArrayList<>();
     private List<KioProblemDescription> problems;
     private int year;
+    private int resultsShiftInMM = 0;
 
     @Override
     public Diploma getDiploma(User user) {
@@ -39,6 +40,10 @@ public class KioCertificateFactory extends DiplomaFactory {
         return year;
     }
 
+    public int getResultsShiftInMM() {
+        return resultsShiftInMM;
+    }
+
     @Override
     public void serialize(Serializer serializer) {
         super.serialize(serializer);
@@ -46,6 +51,8 @@ public class KioCertificateFactory extends DiplomaFactory {
         SerializationTypesRegistry.list(int.class).write(serializer, "participants by levels", participantsByLevels);
         problemDescriptionsListType.write(serializer, "problems", problems);
         serializer.write("year", year);
+        if (resultsShiftInMM != 0)
+            serializer.write("results shift", resultsShiftInMM);
     }
 
     @Override
@@ -55,5 +62,6 @@ public class KioCertificateFactory extends DiplomaFactory {
         participantsByLevels = SerializationTypesRegistry.list(int.class).read(deserializer, "participants by levels");
         problems = problemDescriptionsListType.read(deserializer, "problems");
         year = deserializer.readInt("year", 2014);
+        resultsShiftInMM = deserializer.readInt("results shift", 0);
     }
 }

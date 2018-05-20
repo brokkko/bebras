@@ -16,4 +16,4 @@ printjson(rdk._contests.lamps0);
 
 print("rdk id is " + rdk._id);
 // db['contest-kio18_elasticity0'].update({u: rdk._id}, {$unset: {c: 1}}, {multi: true});
-// db['contest-kio18_elasticity0'].update({}, {$unset: {c: 1}}, {multi: true});
+// db['contest-kio18_lamps0'].update({}, {$unset: {c: 1}}, {multi: true});

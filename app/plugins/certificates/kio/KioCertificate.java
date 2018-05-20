@@ -194,7 +194,7 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
         float y0 = 111;
         float lineSkip = 4.7f;
         float x0 = 19;
-        float x1 = 141;
+        float x1 = 141 + factory.getResultsShiftInMM();
 
         for (KioProblemDescription problemDescription : getProblems()) {
             String title = String.format("Результат в задаче «%s»", problemDescription.getName());
