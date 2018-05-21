@@ -28,7 +28,10 @@ public class KioProblemDescription implements SerializableUpdatable {
     }
 
     public String getScoresField() {
-        return rankField.replace("rank_", "scores_");
+        String result = rankField.replace("rank_", "scores_");
+        if (rankField.equals("rank"))
+            return "scores";
+        return result;
     }
 
     public String getProblemContestId() {
