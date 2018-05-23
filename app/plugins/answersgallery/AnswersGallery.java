@@ -19,6 +19,7 @@ import views.html.solutions_view;
 import views.html.submission_view;
 
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -119,7 +120,7 @@ public class AnswersGallery extends Plugin {
                 getAllSubmissions(contest, "u", user.getId()).stream()
         );
 
-        return ok(solutions_view.render(this, contest, pid2subs));
+        return ok(solutions_view.render(this, contest, pid2subs, adminUser));
     }
 
     private Result showContest(Contest contest) {
@@ -127,10 +128,15 @@ public class AnswersGallery extends Plugin {
         if (adminUser == null)
             return unauthorized();
 
-        if (!adminUser.hasEventAdminRight())
-            return unauthorized("you don't have any rights");
+//        if (!adminUser.hasEventAdminRight())
+//            return unauthorized("you don't have any rights");
 
-        Map<ObjectId, List<SubmissionAndCheck>> pid2subs = processSubmissionsStream(getAllSubmissions(contest).stream());
+        Stream<Submission> usersLastSubmissions = getAllSubmissions(contest).stream().collect(Collectors.groupingBy(
+                Submission::getUser,
+                Collectors.reducing(null, (x, y) -> y)
+        )).values().stream();
+
+        Map<ObjectId, List<SubmissionAndCheck>> pid2subs = processSubmissionsStream(usersLastSubmissions);
 
         pid2subs.forEach((oid, subs) -> {
             ProblemInfo problemInfo = ProblemInfo.get(oid);
@@ -140,7 +146,7 @@ public class AnswersGallery extends Plugin {
             subs.sort((s1, s2) -> problemInfo.getProblem().comparator().compare(s2.getCheck(), s1.getCheck()));
         });
 
-        return ok(solutions_view.render(this, contest, pid2subs));
+        return ok(solutions_view.render(this, contest, pid2subs, adminUser));
     }
 
     @Override

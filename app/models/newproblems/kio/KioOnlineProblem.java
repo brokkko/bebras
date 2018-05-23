@@ -173,7 +173,6 @@ public class KioOnlineProblem implements Problem {
             return paramValue == null ? -Double.MAX_VALUE : p.normalizeWithOrdering(paramValue);
         }).collect(Collectors.toList());
         result.put("rank-sorter", rankSorterValue);
-        Logger.info("rank sorter checked " + rankSorterValue);
 
         return result;
     }
@@ -283,7 +282,6 @@ public class KioOnlineProblem implements Problem {
 
     @Override
     public Comparator<Info> comparator() {
-        //TODO do not duplicate code with KioJSTranslator
         return (info1, info2) -> {
             List<Double> r1 = (List<Double>) info1.get("rank-sorter");
             List<Double> r2 = (List<Double>) info2.get("rank-sorter");

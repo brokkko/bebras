@@ -140,6 +140,7 @@ public class KioJSTranslator implements Translator {
 
     @Override
     public Comparator<Info> comparator() {
+        //TODO do not duplicate code with KioOnlineProblem
         return (info1, info2) -> {
             List<Double> r1 = (List<Double>) info1.get("rank-sorter");
             List<Double> r2 = (List<Double>) info2.get("rank-sorter");

@@ -1,27 +1,25 @@
 @import scala.List
 @import org.bson.types.ObjectId
-@import models.newproblems.ProblemInfo
 @import models.Contest
+@import models.User
 @import views.widgets.ResourceLink
 @import plugins.answersgallery.AnswersGallery
 @import plugins.answersgallery.SubmissionAndCheck
-@(plugin: AnswersGallery, contest: Contest, solutions:java.util.Map[ObjectId, java.util.List[SubmissionAndCheck]])
+@(plugin: AnswersGallery, contest: Contest, solutions: java.util.Map[ObjectId, java.util.List[SubmissionAndCheck]], adminUser: User)
 
 @main_with_menu("")(List(new ResourceLink("answers_gallery.css"))) { } {
     @for((problem_id, solutions_list) <- solutions) {
-        @defining(ProblemInfo.get(problem_id).getProblem) { problem =>
-            <section class="answers-gallery-problem">
-                <h2>@contest.getProblemName(problem_id)</h2> @*TODO we need to extract problem name somehow. But different problems store name differently*@
-
-                @for(solution <- solutions_list) {
-                    <div class="answers-gallery-submission">
-                    <a class="answers-gallery-user-info" href="@routes.UserInfo.info(Event.currentId, solution.getSubmission.getUser.toString)">@User.getUserById(solution.getSubmission.getUser).getLogin</a>
-                    @info(solution.getCheck, problem.getCheckerPattern)
-                    <a href="@plugin.getCall("view", true, contest.getId + "/" + solution.getSubmission.getId.toString)">Просмотреть</a>
-                    </div>
-                }
-            </section>
-        }
+        <section class="answers-gallery-problem">
+            <h2>@contest.getProblemName(problem_id)</h2> @*TODO we need to extract problem name somehow. But different problems store name differently*@
+            @for(solution <- solutions_list) {
+                <div class="answers-gallery-submission">
+                    @if(adminUser != null && adminUser.isUpper(solution.getUser) || adminUser.hasEventAdminRight) {
+                        <a class="answers-gallery-user-info" href="@routes.UserInfo.info(Event.currentId, solution.getUser.getId.toString)">@solution.getUser.getLogin</a>
+                    }
+                    @info(solution.getCheck, solution.getCheckPattern)
+                <a href="@plugin.getCall("view", true, contest.getId + "/" + solution.getSubmission.getId.toString)">Просмотреть</a>
+                </div>
+            }
+        </section>
     }
-
 }
