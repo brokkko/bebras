@@ -11,8 +11,6 @@ public class JsonObjectsComparator implements Comparator<JsonNode> {
 
     public JsonObjectsComparator(List<KioParameter> params) {
         this.params = params;
-        if (params == null)
-            System.out.println("hm");
     }
 
     @Override

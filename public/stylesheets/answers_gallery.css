@@ -3,7 +3,16 @@ section.answers-gallery-problem {
 }
 
 .answers-gallery-submission {
-    margin: 0.6em 0;
+    margin: 0.6em;
+    display: inline-block;
+    padding: 1em;
+    background-color: #fdf5a7;
+}
+
+.answers-gallery-submission a {
+    margin-top: 1em;
+    display: block;
+    text-align: center;
 }
 
 .answers-gallery-user-info {

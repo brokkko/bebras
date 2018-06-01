@@ -135,6 +135,8 @@ public class KioOnlineProblem implements Problem {
 
     @Override
     public Info check(Info answer, long randSeed) {
+        if (answer == null)
+            return null;
         String resultJson = (String) answer.get("res");
 
         return check(resultJson);

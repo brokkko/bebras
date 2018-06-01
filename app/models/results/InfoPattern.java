@@ -66,6 +66,11 @@ public class InfoPattern extends SerializationType<Info> {
         field2title.put(field, title);
     }
 
+    public void unregister(String field) {
+        field2type.remove(field);
+        field2title.remove(field);
+    }
+
     public Collection<String> getFields() {
         return field2title.keySet();
     }

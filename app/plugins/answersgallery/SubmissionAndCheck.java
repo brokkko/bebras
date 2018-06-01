@@ -42,6 +42,8 @@ public class SubmissionAndCheck {
         Translator translator = contest.getResultTranslator();
 
         checkPattern = translator.getInfoPattern();
+        checkPattern.unregister("rank");
+        checkPattern.unregister("scores");
 
         user = User.getUserById(lastSubmission.getUser());
 
@@ -51,7 +53,6 @@ public class SubmissionAndCheck {
                 .map(ConfiguredProblem::getSettings)
                 .findFirst().orElseGet(Info::new);
 
-        System.out.println("checking submission " + submissions.get(0).getAnswer());
         check = translator.translate(
                 submissions.stream().map(Submission::getCheckResult).collect(Collectors.toList()),
                 Collections.nCopies(submissions.size(), problemConfig),

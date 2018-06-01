@@ -8,12 +8,13 @@
 @(plugin: AnswersGallery, contest: Contest, solutions: java.util.Map[ObjectId, java.util.List[SubmissionAndCheck]], adminUser: User)
 
 @main_with_menu("")(List(new ResourceLink("answers_gallery.css"))) { } {
+    <h2>@contest.getName</h2>
     @for((problem_id, solutions_list) <- solutions) {
         <section class="answers-gallery-problem">
-            <h2>@contest.getProblemName(problem_id)</h2> @*TODO we need to extract problem name somehow. But different problems store name differently*@
+            @*<h2>@contest.getProblemName(problem_id)</h2> *@@*TODO we need to extract problem name somehow. But different problems store name differently*@
             @for(solution <- solutions_list) {
                 <div class="answers-gallery-submission">
-                    @if(adminUser != null && adminUser.isUpper(solution.getUser) || adminUser.hasEventAdminRight) {
+                    @if(adminUser != null && (adminUser.isUpper(solution.getUser) || adminUser.hasEventAdminRight)) {
                         <a class="answers-gallery-user-info" href="@routes.UserInfo.info(Event.currentId, solution.getUser.getId.toString)">@solution.getUser.getLogin</a>
                     }
                     @info(solution.getCheck, solution.getCheckPattern)

@@ -124,13 +124,6 @@ public class AnswersGallery extends Plugin {
     }
 
     private Result showContest(Contest contest) {
-        User adminUser = User.current();
-        if (adminUser == null)
-            return unauthorized();
-
-//        if (!adminUser.hasEventAdminRight())
-//            return unauthorized("you don't have any rights");
-
         Stream<Submission> usersLastSubmissions = getAllSubmissions(contest).stream().collect(Collectors.groupingBy(
                 Submission::getUser,
                 Collectors.reducing(null, (x, y) -> y)
@@ -146,6 +139,7 @@ public class AnswersGallery extends Plugin {
             subs.sort((s1, s2) -> problemInfo.getProblem().comparator().compare(s2.getCheck(), s1.getCheck()));
         });
 
+        User adminUser = User.current();
         return ok(solutions_view.render(this, contest, pid2subs, adminUser));
     }
 
