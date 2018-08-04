@@ -274,7 +274,7 @@ public class Forms {
                                             "type", "dropdown",
                                             "title", "Оформление",
                                             "placeholder", "Выберите тип оформления",
-                                            "variants", Utils.listify("bbtc", "bebras", "bebras-by", "kio")
+                                            "variants", Utils.listify("bbtc", "bebras", "bebras-by", "kio", "issep2018")
                                     ),
                                     "required", true
                             ),
