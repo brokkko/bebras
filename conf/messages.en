@@ -56,3 +56,11 @@ form.do_add=Add
 
 actions.unknown_event=Unknown event
 actions.unknown_contest=Unknown contest
+
+menu.enter=Login
+menu.exit=Logout
+menu.register=Register
+menu.password_restore=Password restore
+menu.personal_data=Personal data
+
+form.enter_credentials=Enter your credentials

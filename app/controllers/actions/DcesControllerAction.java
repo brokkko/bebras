@@ -38,7 +38,6 @@ public class DcesControllerAction extends Action<DcesController> {
     @Override
     public F.Promise<Result> call(Http.Context ctx) throws Throwable {
         Http.Context.current.set(ctx);
-        ctx.changeLang(LANG_RU);
 
         ServerConfiguration config = ServerConfiguration.getInstance();
 

@@ -7,6 +7,7 @@ import models.User;
 import models.UserRole;
 import models.data.TableDescription;
 import models.forms.inputtemplate.BooleanInputTemplate;
+import play.i18n.Messages;
 import play.mvc.Call;
 import play.mvc.Http;
 
@@ -78,14 +79,14 @@ public class Menu {
         boolean loginFieldsNeeded = !Boolean.TRUE.equals(event.getExtraField("no_login_in_menu", false));
 
         if (loginFieldsNeeded)
-            menu.add(new MenuItem("Вход", routes.Registration.login(eventId)));
+            menu.add(new MenuItem(Messages.get("menu.enter"), routes.Registration.login(eventId)));
 
         UserRole role = event.getAnonymousRole();
         if (role.mayRegisterSomebody())
-            menu.add(new MenuItem("Регистрация", routes.Registration.registration(eventId)));
+            menu.add(new MenuItem(Messages.get("menu.register"), routes.Registration.registration(eventId)));
 
         if (loginFieldsNeeded)
-            menu.add(new MenuItem("Восстановление пароля", routes.Registration.passwordRemind(eventId)));
+            menu.add(new MenuItem(Messages.get("menu.password_restore"), routes.Registration.passwordRemind(eventId)));
 
         addDomainContestsMenuItem(menu, eventId);
 
@@ -104,7 +105,7 @@ public class Menu {
 
         UserRole role = user.getRole();
         if (role.mayRegisterSomebody())
-            menu.add(new MenuItem("Регистрация", routes.Registration.registrationByUser(eventId)));
+            menu.add(new MenuItem(Messages.get("menu.register"), routes.Registration.registrationByUser(eventId)));
 
         List<TableDescription<?>> tables = user.getTables();
         String tablesTitle = user.getRole().getTablesMenuTitle();
@@ -132,7 +133,7 @@ public class Menu {
     }
 
     private boolean addPersonalDataMenuItem(List<MenuItem> menu, String eventId) {
-        return menu.add(new MenuItem("Личные данные", routes.UserInfo.info(eventId, null)));
+        return menu.add(new MenuItem(Messages.get("menu.personal_data"), routes.UserInfo.info(eventId, null)));
     }
 
     private void addExitMenuItem(List<MenuItem> menu, String eventId) {
@@ -141,7 +142,7 @@ public class Menu {
             title += "Вернуться к " + User.getSubstitutedUser();
             menu.add(new MenuItem(title, routes.Application.substituteUserExit(Event.currentId())));
         } else
-            menu.add(new MenuItem("Выход", routes.Registration.logout(eventId)));
+            menu.add(new MenuItem(Messages.get("menu.exit"), routes.Registration.logout(eventId)));
     }
 
     private static List<RestrictedAccessMenuItem> getExtraItems() {

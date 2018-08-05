@@ -84,8 +84,6 @@ public class AnswersGallery extends Plugin {
         ConfiguredProblem cp = ocp.get();
 
         String jsonAnswer = cp.getProblem().getAnswerPattern().toJSON(submission.getAnswer());
-        System.out.println(submission.getAnswer().get("sol"));
-        System.out.println(submission.getAnswer().get("res"));
 
         return ok(submission_view.render(user, contest.getId(), cp, jsonAnswer));
     }

@@ -13,6 +13,7 @@ import play.Logger;
 import play.Play;
 import play.i18n.Messages;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import scala.Option;
 
