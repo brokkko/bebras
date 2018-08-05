@@ -44,11 +44,15 @@ page.user_info.do_subscribe=Subscribe
 page.user_info.do_unsubscribe=Unsubscribe
 pages.user_info.title.simple=Personal data
 
+mail.greeting=Dear {0},
+mail.greeting_noname=Dear Sir or Madam,
+mail.signature=--\nSincerely yours,\n    {0}
+
 mail.registration.subject=Registration confirmation. {0}
-mail.registration.body=Dear{0},\n\nYou have registered this email to participate in: {1}. If it was not you, ignore this letter.\n\nTo confirm the registration, follow the link: {2}.\n\nTo login to the site, use the following credentals:\n\nlogin: {3}\npassword: {4}\n\nНе отвечайте на это письмо.\n\n--\nС уважением,\n    {1}
+mail.registration.body=You have registered this email to participate in: {0}. If it was not you, ignore this letter.\n\nTo confirm the registration, follow the link: {1}.\n\nTo login to the site, use the following credentals:\n\nlogin: {2}\npassword: {3}\n\nDo not reply to this letter.
 
 mail.password_remind.subject=Password recovery. {0}
-mail.password_remind.body=Dear{0},\n\nYour ordered a password recovery to participate in: {1}. If it was not you, ignore this letter.\n\nYour new credentials are:\n\nlogin: {3}\npassword: {4}\n\nTo use this new credentials, follow the link {2}.\n\nDo not reply to this letter.\n\n--\nSincerely yours,\n    {1}
+mail.password_remind.body=Your ordered a password recovery to participate in: {0}. If it was not you, ignore this letter.\n\nYour new credentials are:\n\nlogin: {2}\npassword: {3}\n\nTo use this new credentials, follow the link {1}.\n\nDo not reply to this letter.
 
 mail.application_confirm.subject=Application confirmed. {0}
 mail.application_confirm.body=Dear {0},\n\nYour application {1} for {2} people{3} for competition {4} is confirmed!\nПосмотреть логины и пароли своих новых участников, распечатать их вы можете в разделе "{5}" в своём личном кабинете на сайте конкурса: {6}.\n\nНе отвечайте на это письмо.\n\n--\nС уважением,\n    {4}

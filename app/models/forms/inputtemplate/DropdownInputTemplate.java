@@ -26,7 +26,7 @@ public class DropdownInputTemplate extends InputTemplate<String> {
 
     @Override
     public Html render(RawForm form, String field) {
-        return views.html.fields.dropdown.render(form, field, placeholder, extraVariants, extraTitles);
+        return views.html.fields.dropdown.render(form, field, placeholder, extraVariants, extraTitles, hint);
     }
 
     @Override

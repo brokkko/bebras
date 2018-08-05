@@ -17,6 +17,7 @@ $(function () {
     function show_hint(e) {
         var $el = $(this);
         var hint_text = $el.data('hint');
+        console.log('showing hint ' + hint_text);
         if (!hint_text)
             return;
         var $hint = $('<div>');

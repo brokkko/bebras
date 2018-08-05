@@ -1,6 +1,6 @@
-@(form:models.forms.RawForm, field: String, not_selected_value:String, options:java.util.List[String], titles:java.util.List[String])
+@(form:models.forms.RawForm, field: String, not_selected_value:String, options:java.util.List[String], titles:java.util.List[String], hint:String)
 @import models.forms.RawForm
-<select class='input-text dropdown' name="@field" size="1">
+<select class='input-text dropdown hint-provider' name="@field" size="1" data-hint="@hint">
     @defining(form.get(field)) {cur_value =>
         <option @if(cur_value == null || cur_value == "") {selected} class='grayed' value='' disabled>@not_selected_value</option>
         @for((option, ind) <- options.zipWithIndex) {

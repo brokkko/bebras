@@ -16,35 +16,46 @@ import play.mvc.Http;
 @DcesController
 public class Email {
 
-    public static void sendRegistrationConfirmationEmail(Mailer mailer, String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
+    private static String transformGreeting(String greeting) {
         if (greeting != null && !greeting.isEmpty())
-            greeting = ", " + greeting;
+            greeting = Messages.get("mail.greeting", greeting);
         else
-            greeting = "";
+            greeting = Messages.get("mail.greeting_noname");
+        return greeting;
+    }
+
+    public static void sendRegistrationConfirmationEmail(Mailer mailer, String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
+        greeting = transformGreeting(greeting);
 
         String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, false)
-                                          .absoluteURL(Http.Context.current().request());
+                .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();
         mailer.sendEmail(
                 email,
                 Messages.get("mail.registration.subject", title),
-                createLineBreaks(Messages.get("mail.registration.body", greeting, title, registrationLink, login, password))
+                createLineBreaks(
+                        greeting + "\n\n" +
+                                Messages.get("mail.registration.body", title, registrationLink, login, password) + "\n\n" +
+                                Messages.get("mail.signature", title)
+                )
         );
     }
 
     public static void sendPasswordRestoreEmail(Mailer mailer, String greeting, String email, String login, String password, String confirmationUUID) throws EmailException {
-        if (greeting != null && !greeting.isEmpty())
-            greeting = ", " + greeting;
-        else
-            greeting = "";
+        greeting = transformGreeting(greeting);
 
         String registrationLink = routes.Registration.confirmRegistration(Event.currentId(), confirmationUUID, true)
-                                          .absoluteURL(Http.Context.current().request());
+                .absoluteURL(Http.Context.current().request());
         String title = Event.current().getTitle();
         mailer.sendEmail(
                 email,
                 Messages.get("mail.password_remind.subject", title),
-                createLineBreaks(Messages.get("mail.password_remind.body", greeting, title, registrationLink, login, password))
+                createLineBreaks(
+                        greeting + "\n\n" +
+                        Messages.get("mail.password_remind.body", title, registrationLink, login, password) + "\n\n" +
+                                Messages.get("mail.signature", title)
+
+                )
         );
     }
 
