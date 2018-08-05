@@ -3,6 +3,7 @@
 @import views.widgets.FormsWidget
 @import views.htmlblocks.HtmlBlockWidget
 @import scala.List
+@import play.api.i18n.Messages
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get, HtmlBlockWidget.get)) { } {
     <h1>Регистрация: @role.getTitle</h1>
 
@@ -13,9 +14,8 @@
         оставите незаполненным обязательное поле, его будет предложено дозаполнить пользователю при первом входе в систему.</p>
     } else {
         @if(role.isShowRegistrationHint) {
-            <p class='warning'>Поля, отмеченные звездочкой, являются обязательными.
-                После заполнения анкеты вы получите письмо с паролем, поэтому
-                убедитесь, что вы правильно указали email.
+            <p class='warning'>
+                @Messages("page.registration.registration_hint")
             </p>
         }
     }

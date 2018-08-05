@@ -1,0 +1,58 @@
+form.user.register.submit=Register
+form.user.edit.submit=Change
+
+form.login.submit=Enter
+form.login.login.title=Login
+form.login.login.placeholder=Enter login
+form.login.password.title=Password
+form.login.password.placeholder=Enter password
+
+form.bbtc.remind.email_or_login.title=Login or email
+form.bbtc.remind.email_or_login.placeholder=Enter login or email
+form.bbtc.remind.submit=Restore
+
+error.msg.email=incorrect email email
+error.msg.phone=This does not look like a phone
+error.msg.required=The field must be filled
+
+error.msg.registration_not_started=Registration is still not sturted
+error.msg.registration_finished=Registration is closed
+
+error.window.title=Error
+
+page.registration.already_confirmed=Registration confirmation is no longer valid
+page.registration.confirmed=Registration is successfully confirmed
+page.registration.password_recovered=Password changed successfully
+page.registration.registration_hint=Fields marked with a star are required. After you fill in the form, you will get an email with your password, so we ask you to check your email.
+page.recovery.already_recovered=Confirmation for password recovery is no longer valid
+page.user_info.info_changed=Info successfully changed
+
+mail.registration.subject=Registration confirmation. {0}
+mail.registration.body=Dear{0},\n\nYou have registered this email to participate in: {1}. If it was not you, ignore this letter.\n\nTo confirm the registration, follow the link: {2}.\n\nTo login to the site, use the following credentals:\n\nlogin: {3}\npassword: {4}\n\nНе отвечайте на это письмо.\n\n--\nС уважением,\n    {1}
+
+mail.password_remind.subject=Password recovery. {0}
+mail.password_remind.body=Dear{0},\n\nYour ordered a password recovery to participate in: {1}. If it was not you, ignore this letter.\n\nYour new credentials are:\n\nlogin: {3}\npassword: {4}\n\nTo use this new credentials, follow the link {2}.\n\nDo not reply to this letter.\n\n--\nSincerely yours,\n    {1}
+
+mail.application_confirm.subject=Application confirmed. {0}
+mail.application_confirm.body=Dear {0},\n\nYour application {1} for {2} people{3} for competition {4} is confirmed!\nПосмотреть логины и пароли своих новых участников, распечатать их вы можете в разделе "{5}" в своём личном кабинете на сайте конкурса: {6}.\n\nНе отвечайте на это письмо.\n\n--\nС уважением,\n    {4}
+
+password_remind.wrong_login=There is no user with this login
+password_remind.wrong_email=There is no user with this email
+password_remind.no_email=It is impossible to send a letter to this user
+
+registration.ok=Registration successful
+registration.ok.title=Completion of registration
+
+button.undo=Undo
+
+form.do_register=Register
+form.do_register_user=Register
+form.do_change=Change
+form.do_save=Save
+form.do_start=Start
+form.do_login=Enter
+form.do_remind=Restore
+form.do_add=Add
+
+actions.unknown_event=Unknown event
+actions.unknown_contest=Unknown contest

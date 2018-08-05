@@ -3,6 +3,7 @@ package controllers.actions;
 import controllers.MongoConnection;
 import models.Event;
 import models.ServerConfiguration;
+import play.i18n.Lang;
 import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
@@ -18,6 +19,8 @@ public class DcesControllerAction extends Action<DcesController> {
     private static final String[] NOT_EVENT_ACTION = new String[] {
             "/~", "/~res/", "/assets/", "/~global/", "/~dat/", "/bebras_training/" //TODO remove last
     };
+    public static final Lang LANG_RU = Lang.forCode("ru");
+    public static final Lang LANG_EN = Lang.forCode("en");
 
     private boolean isEventAction() {
         String path = Http.Context.current().request().path();
@@ -35,6 +38,7 @@ public class DcesControllerAction extends Action<DcesController> {
     @Override
     public F.Promise<Result> call(Http.Context ctx) throws Throwable {
         Http.Context.current.set(ctx);
+        ctx.changeLang(LANG_RU);
 
         ServerConfiguration config = ServerConfiguration.getInstance();
 
@@ -53,6 +57,15 @@ public class DcesControllerAction extends Action<DcesController> {
             if (event != Event.ERROR_EVENT)
                 for (Plugin plugin : event.getPlugins())
                     plugin.initPage();
+            String lang = event.getExtraField("lang", "ru").toString();
+
+            switch (lang) {
+                case "en":
+                    ctx.changeLang(LANG_EN);
+                    break;
+                default:
+                    ctx.changeLang(LANG_RU);
+            }
         }
 
         F.Promise<Result> call = delegate.call(ctx);

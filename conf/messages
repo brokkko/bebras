@@ -71,6 +71,7 @@ error.window.title=Ошибка
 page.registration.already_confirmed=Подтверждение регистрации недействительно
 page.registration.confirmed=Регистрация успешно подтверждена
 page.registration.password_recovered=Пароль успешно заменен на новый
+page.registration.registration_hint=Поля, отмеченные звездочкой, являются обязательными. После заполнения анкеты вы получите письмо с паролем, поэтому убедитесь, что вы правильно указали email.
 page.recovery.already_recovered=Подтверждение восстановления пароля не действительно
 page.user_info.info_changed=Изменения успешно внесены
 
