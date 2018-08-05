@@ -7,6 +7,9 @@ form.login.login.placeholder=Enter login
 form.login.password.title=Password
 form.login.password.placeholder=Enter password
 
+form.recovery.login_or_email.title=Login or email
+form.recovery.login_or_email.placeholder=Enter login or email
+
 form.bbtc.remind.email_or_login.title=Login or email
 form.bbtc.remind.email_or_login.placeholder=Enter login or email
 form.bbtc.remind.submit=Restore
@@ -20,12 +23,19 @@ error.msg.registration_finished=Registration is closed
 
 error.window.title=Error
 
+page.registration.title=Registration
 page.registration.already_confirmed=Registration confirmation is no longer valid
 page.registration.confirmed=Registration is successfully confirmed
 page.registration.password_recovered=Password changed successfully
 page.registration.registration_hint=Fields marked with a star are required. After you fill in the form, you will get an email with your password, so we ask you to check your email.
+page.recovery.title=Password recovery
 page.recovery.already_recovered=Confirmation for password recovery is no longer valid
 page.user_info.info_changed=Info successfully changed
+
+page.wait_for_email.email_is_known.title=A letter with further instructions is sent to {0}
+page.wait_for_email.email_unknown.title=A letter with further instructions is sent to you
+page.wait_for_email.email_unknown.text=A letter with password recovery information is sent for user {0} on the email, specified upon registration.
+page.wait_for_email.do_wait=It may take several minutes for the letter to be delivered. If you don't receive a letter, check your spam folder.
 
 mail.registration.subject=Registration confirmation. {0}
 mail.registration.body=Dear{0},\n\nYou have registered this email to participate in: {1}. If it was not you, ignore this letter.\n\nTo confirm the registration, follow the link: {2}.\n\nTo login to the site, use the following credentals:\n\nlogin: {3}\npassword: {4}\n\nНе отвечайте на это письмо.\n\n--\nС уважением,\n    {1}
@@ -64,3 +74,4 @@ menu.password_restore=Password restore
 menu.personal_data=Personal data
 
 form.enter_credentials=Enter your credentials
+form.enter_for_password_restore=Enter your login or email to get a letter with a new password

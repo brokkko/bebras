@@ -11,6 +11,7 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.SimpleEmail;
 import play.Logger;
+import play.mvc.Http;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -194,6 +195,15 @@ public class Mailer implements SerializableUpdatable {
             return "";
 
         boolean isHtml = htmlMessage != null;
+
+        Http.Context context = Http.Context.current();
+        if (context != null && context.request().host().matches("localhost(|:.*)")) {
+            System.out.println("== sending email ==");
+            System.out.println(subject);
+            System.out.println(message);
+            System.out.println(htmlMessage);
+            return "--";
+        }
 
         if (isHtml) {
             HtmlEmail email = new HtmlEmail();

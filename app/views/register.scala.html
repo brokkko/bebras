@@ -5,7 +5,7 @@
 @import scala.List
 @import play.api.i18n.Messages
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get, HtmlBlockWidget.get)) { } {
-    <h1>Регистрация: @role.getTitle</h1>
+    <h1>@Messages("page.registration.title"): @role.getTitle</h1>
 
     @Event.current.getHtmlBlock("registration-top-for-" + role.getName).format
 

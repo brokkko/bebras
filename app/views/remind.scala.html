@@ -5,7 +5,7 @@
 @import models.Forms
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List(FormsWidget.get)) { } {
-    <h1>Восстановление пароля</h1>
-    <p class="warning">@Messages("")</p>
+    <h1>@Messages("page.recovery.title")</h1>
+    <p class="warning">@Messages("form.enter_for_password_restore")</p>
     @Forms.getPasswordRemindForm.formatExtended(form, routes.Registration.doPasswordRemind(Event.currentId), false, "form.do_remind")
 }

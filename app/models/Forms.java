@@ -22,112 +22,6 @@ public class Forms {
     public static String PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN = "email_or_login";
 
     @SuppressWarnings("unchecked")
-    public static InputForm loginForm = InputForm.deserialize(
-            new MemoryDeserializer(
-                    "fields",
-                    Utils.listify(
-                            Utils.mapify(
-                                    "name", LOGIN_FORM_LOGIN,
-                                    "view", Utils.mapify(
-                                            "type", "string",
-                                            "title", "Логин", //TODO do i18n
-                                            "placeholder", "Введите логин"
-                                    ),
-                                    "required", true
-                            ),
-                            Utils.mapify(
-                                    "name", LOGIN_FORM_PASSWORD,
-                                    "view", Utils.mapify(
-                                            "type", "password",
-                                            "title", "Пароль",
-                                            "placeholder", "Введите пароль"
-                                    ),
-                                    "required", true
-                            )
-                    ),
-                    "validators",
-                    Utils.listify(
-                            Utils.mapify("type", "authenticator")
-                    )
-            )
-    );
-
-    @SuppressWarnings("unchecked")
-    public static InputForm loginFormEn = InputForm.deserialize(
-            new MemoryDeserializer(
-                    "fields",
-                    Utils.listify(
-                            Utils.mapify(
-                                    "name", LOGIN_FORM_LOGIN,
-                                    "view", Utils.mapify(
-                                            "type", "string",
-                                            "title", "Login",
-                                            "placeholder", "Enter login"
-                                    ),
-                                    "required", true
-                            ),
-                            Utils.mapify(
-                                    "name", LOGIN_FORM_PASSWORD,
-                                    "view", Utils.mapify(
-                                            "type", "password",
-                                            "title", "Password",
-                                            "placeholder", "Enter password"
-                                    ),
-                                    "required", true
-                            )
-                    ),
-                    "validators",
-                    Utils.listify(
-                            Utils.mapify("type", "authenticator")
-                    )
-            )
-    );
-
-    @SuppressWarnings("unchecked")
-    public static InputForm passwordRemindForm = InputForm.deserialize(
-            new MemoryDeserializer(
-                    "fields",
-                    Utils.listify(
-                            Utils.mapify(
-                                    "name", PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN,
-                                    "view", Utils.mapify(
-                                            "type", "string",
-                                            "title", "Email или логин",
-                                            "placeholder", "Введите email или логин"
-                                    ),
-                                    "required", true
-                            )
-                    ),
-                    "validators",
-                    Utils.listify(
-
-                    )
-            )
-    );
-
-    @SuppressWarnings("unchecked")
-    public static InputForm passwordRemindFormEn = InputForm.deserialize(
-            new MemoryDeserializer(
-                    "fields",
-                    Utils.listify(
-                            Utils.mapify(
-                                    "name", PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN,
-                                    "view", Utils.mapify(
-                                            "type", "string",
-                                            "title", "Email or login",
-                                            "placeholder", "Enter email or login"
-                                    ),
-                                    "required", true
-                            )
-                    ),
-                    "validators",
-                    Utils.listify(
-
-                    )
-            )
-    );
-
-    @SuppressWarnings("unchecked")
     private static InputForm contestChangeForm = InputForm.deserialize(
             new MemoryDeserializer(
                     "fields",
@@ -627,18 +521,58 @@ public class Forms {
     );
 
     public static InputForm getLoginForm() {
-        if (Objects.equals(Http.Context.current().lang().language(), "ru"))
-            return loginForm;
-        else
-            return loginFormEn;
+        return InputForm.deserialize(
+                new MemoryDeserializer(
+                        "fields",
+                        Utils.listify(
+                                Utils.mapify(
+                                        "name", LOGIN_FORM_LOGIN,
+                                        "view", Utils.mapify(
+                                                "type", "string",
+                                                "title", Messages.get("form.login.login.title"),
+                                                "placeholder", Messages.get("form.login.login.placeholder")
+                                        ),
+                                        "required", true
+                                ),
+                                Utils.mapify(
+                                        "name", LOGIN_FORM_PASSWORD,
+                                        "view", Utils.mapify(
+                                                "type", "password",
+                                                "title", Messages.get("form.login.password.title"),
+                                                "placeholder", Messages.get("form.login.password.placeholder")
+                                        ),
+                                        "required", true
+                                )
+                        ),
+                        "validators",
+                        Utils.listify(
+                                Utils.mapify("type", "authenticator")
+                        )
+                )
+        );
     }
 
     public static InputForm getPasswordRemindForm() {
-        if (Objects.equals(Http.Context.current().lang().language(), "ru"))
-            return passwordRemindForm;
-        else
-            return passwordRemindFormEn;
+        return InputForm.deserialize(
+                new MemoryDeserializer(
+                        "fields",
+                        Utils.listify(
+                                Utils.mapify(
+                                        "name", PASSWORD_REMIND_FORM_EMAIL_OR_LOGIN,
+                                        "view", Utils.mapify(
+                                                "type", "string",
+                                                "title", Messages.get("form.recovery.login_or_email.title"),
+                                                "placeholder", Messages.get("form.recovery.login_or_email.placeholder")
+                                        ),
+                                        "required", true
+                                )
+                        ),
+                        "validators",
+                        Utils.listify(
 
+                        )
+                )
+        );
     }
 
     public static InputForm getContestChangeForm() {

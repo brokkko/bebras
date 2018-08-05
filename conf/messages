@@ -37,6 +37,9 @@ form.login.login.placeholder=Введите логин
 form.login.password.title=Пароль
 form.login.password.placeholder=Введите пароль
 
+form.recovery.login_or_email.title=Логин или email
+form.recovery.login_or_email.placeholder=Введите логин или email
+
 form.bbtc.remind.email_or_login.title=Логин или email
 form.bbtc.remind.email_or_login.placeholder=Введите логин или email
 form.bbtc.remind.submit=Восстановить
@@ -68,12 +71,19 @@ error.msg.registration_finished=Регистрация закрыта
 
 error.window.title=Ошибка
 
+page.registration.title=Регистрация
 page.registration.already_confirmed=Подтверждение регистрации недействительно
 page.registration.confirmed=Регистрация успешно подтверждена
 page.registration.password_recovered=Пароль успешно заменен на новый
 page.registration.registration_hint=Поля, отмеченные звездочкой, являются обязательными. После заполнения анкеты вы получите письмо с паролем, поэтому убедитесь, что вы правильно указали email.
+page.recovery.title=Восстановление пароля
 page.recovery.already_recovered=Подтверждение восстановления пароля не действительно
 page.user_info.info_changed=Изменения успешно внесены
+
+page.wait_for_email.email_is_known.title=На адрес {0} выслано письмо с дальнейшими инструкциями
+page.wait_for_email.email_unknown.title=Вам выслано письмо с дальнейшими инструкциями
+page.wait_for_email.email_unknown.text=Пользователю {0} на электронный адрес, указанный при регистрации, выслано письмо для восстановления пароля.
+page.wait_for_email.do_wait=Письмо может идти несколько минут. Если письмо не доходит, проверьте ящик со спамом.
 
 mail.registration.subject=Подтверждение регистрации. {0}
 mail.registration.body=Здравствуйте{0}!\n\nВы зарегистрировали этот email для участия в: {1}. Если это не так, проигнорируйте это письмо.\n\nДля подтверждения регистрации перейдите по ссылке {2}.\n\nДля входа на сайт используйте свои учетные данные:\n\nлогин: {3}\nпароль: {4}\n\nНе отвечайте на это письмо.\n\n--\nС уважением,\n    {1}
