@@ -30,12 +30,19 @@ page.registration.password_recovered=Password changed successfully
 page.registration.registration_hint=Fields marked with a star are required. After you fill in the form, you will get an email with your password, so we ask you to check your email.
 page.recovery.title=Password recovery
 page.recovery.already_recovered=Confirmation for password recovery is no longer valid
-page.user_info.info_changed=Info successfully changed
 
 page.wait_for_email.email_is_known.title=A letter with further instructions is sent to {0}
 page.wait_for_email.email_unknown.title=A letter with further instructions is sent to you
 page.wait_for_email.email_unknown.text=A letter with password recovery information is sent for user {0} on the email, specified upon registration.
 page.wait_for_email.do_wait=It may take several minutes for the letter to be delivered. If you don't receive a letter, check your spam folder.
+
+page.user_info.info_changed=Info successfully changed
+page.user_info.changes_forbidden=Attention! It is now not possible to change your personal data
+page.user_info.you_are_subscribed=You are subscribed to the mailing list with updates of the event: {0}.
+page.user_info.you_are_not_subscribed=You are not subscribed to the mailing list with updates of the event: {0}.
+page.user_info.do_subscribe=Subscribe
+page.user_info.do_unsubscribe=Unsubscribe
+pages.user_info.title.simple=Personal data
 
 mail.registration.subject=Registration confirmation. {0}
 mail.registration.body=Dear{0},\n\nYou have registered this email to participate in: {1}. If it was not you, ignore this letter.\n\nTo confirm the registration, follow the link: {2}.\n\nTo login to the site, use the following credentals:\n\nlogin: {3}\npassword: {4}\n\nНе отвечайте на это письмо.\n\n--\nС уважением,\n    {1}

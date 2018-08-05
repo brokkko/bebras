@@ -14,12 +14,12 @@
         @if(User.current.isPartialRegistration) {
             <h1>Введите недостающие данные, чтобы продолжить работу</h1>
         } else {
-            <h1>Личные данные</h1>
+            <h1>@Messages.get("pages.user_info.title.simple")</h1>
         }
     }
 
     @if(!mayChange) {
-        <div class="info-box">Внимание! Изменение личных данных сейчас невозможно.</div>
+        <div class="info-box">@Messages.get("page.user_info.changes_forbidden")</div>
     }
 
     @Event.current.getHtmlBlock("user_info_up").format
@@ -33,11 +33,11 @@
     @if(!otherUser && user.getEmail != null) {
         <div class='info-box'>
             @if(user.isWantAnnouncements) {
-                Вы подписаны на рассылку уведомлений о событии @Event.current.getTitle.
-                <a href='@routes.Application.setSubscription(Event.currentId, user.getId.toString, false)'>Отписаться</a>
+                @Messages.get("page.user_info.you_are_subscribed", Event.current.getTitle)
+                <a href='@routes.Application.setSubscription(Event.currentId, user.getId.toString, false)'>@Messages.get("page.user_info.do_unsubscribe")</a>
             } else {
-                Вы не подписаны на рассылку уведомлений о событии @Event.current.getTitle.
-                <a href='@routes.Application.setSubscription(Event.currentId, user.getId.toString, true)'>Подписаться</a>
+                @Messages.get("page.user_info.you_are_not_subscribed", Event.current.getTitle)
+                <a href='@routes.Application.setSubscription(Event.currentId, user.getId.toString, true)'>@Messages.get("page.user_info.do_subscribe")</a>
             }
         </div>
     }
