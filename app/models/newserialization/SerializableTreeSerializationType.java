@@ -80,7 +80,7 @@ public class SerializableTreeSerializationType<T extends SerializableUpdatable> 
 
         T value;
         try {
-            value = name2class.get(type).newInstance();
+            value = name2class.get(type).newInstance(); //TODO give good error explanation if get returns null
         } catch (Exception e) {
             throw new IllegalStateException("Deserialization Failed to instantiate an object of class " + type, e);
         }

@@ -25,7 +25,7 @@ $(function () {
         $hint.css('top', el_pos.top + 'px');
         $hint.css('left', el_pos.left + $el.outerWidth() + 'px');
         $hint.addClass('hint-popup');
-        $hint.text(hint_text);
+        $hint.html(hint_text);
         $el.parent().append($hint);
     }
 
