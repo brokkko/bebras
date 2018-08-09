@@ -90,7 +90,11 @@ page.user_info.you_are_subscribed=Вы подписаны на рассылку 
 page.user_info.you_are_not_subscribed=Вы не подписаны на рассылку уведомлений о событии {0}.
 page.user_info.do_subscribe=Подписаться
 page.user_info.do_unsubscribe=Отписаться
-pages.user_info.title.simple=Личные данные
+page.user_info.title.simple=Личные данные
+
+page.uploader.submit=Загрузить
+page.uploader.upload_date=загружен в
+page.uploader.not_uploaded=файл еще не загружен
 
 mail.greeting=Здравствуйте, {0}!
 mail.greeting_noname=Здравствуйте!

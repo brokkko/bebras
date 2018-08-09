@@ -27,7 +27,7 @@ page.registration.title=Registration
 page.registration.already_confirmed=Registration confirmation is no longer valid
 page.registration.confirmed=Registration is successfully confirmed
 page.registration.password_recovered=Password changed successfully
-page.registration.registration_hint=Fields marked with a star are required. After you fill in the form, you will get an email with your password, so we ask you to check your email.
+page.registration.registration_hint=Fields marked with a star are required. After you fill in the form, you will get an email with your password, so we ask you to carefully check your email.
 page.recovery.title=Password recovery
 page.recovery.already_recovered=Confirmation for password recovery is no longer valid
 
@@ -42,7 +42,11 @@ page.user_info.you_are_subscribed=You are subscribed to the mailing list with up
 page.user_info.you_are_not_subscribed=You are not subscribed to the mailing list with updates of the event: {0}.
 page.user_info.do_subscribe=Subscribe
 page.user_info.do_unsubscribe=Unsubscribe
-pages.user_info.title.simple=Personal data
+page.user_info.title.simple=Personal data
+
+page.uploader.submit=Upload
+page.uploader.upload_date=Uploaded at
+page.uploader.not_uploaded=No file has been uploaded
 
 mail.greeting=Dear {0},
 mail.greeting_noname=Dear Sir or Madam,

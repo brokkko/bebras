@@ -1,0 +1,17 @@
+@import plugins.upload.FileInfo
+@import views.htmlblocks.HtmlBlockWidget
+@import views.htmlblocks.HtmlBlock
+@import plugins.upload.UploadPlugin
+@import views.widgets.ResourceLink
+@(plugin:UploadPlugin, files: java.util.List[FileInfo], pageTitle:String)
+@main_with_menu(Event.current.getTitle)(scala.List(HtmlBlockWidget.get, new ResourceLink("uploader-plugin.css"))) { } {
+    <h1>@pageTitle</h1>
+    @HtmlBlock.load(Event.current.getId, "file-upload-" + plugin.getRef + "--TOP").format
+
+    @for(fi <- files) {
+        @HtmlBlock.load(Event.current.getId, "file-upload-" + plugin.getRef + "-" + fi.getDescription.getId).format
+        @upload.file_element(plugin, fi)
+    }
+
+    @HtmlBlock.load(Event.current.getId, "file-upload-" + plugin.getRef + "--BOTTOM").format
+}

@@ -1,0 +1,16 @@
+@import plugins.upload.UploadPlugin
+@import plugins.upload.FileInfo
+@(plugin:UploadPlugin, fi:FileInfo)
+<div class="uploaded-file-info">
+    <form class='file-upload-form' method="post" action="@plugin.getCall("upload", false, fi.getDescription.getId)" enctype="multipart/form-data">
+        <div class="file-loaded-info">
+        @if(fi.isUploaded) {
+            @Messages("page.uploader.upload_date"): @fi.getUploadDate <a class="file-download-link" href="@plugin.getCall("download", true, fi.getDescription.getId)">@fi.getFile.getName</a>
+        } else {
+            @Messages("page.uploader.not_uploaded")
+        }
+        </div>
+        <input required type="file" name="user-file">
+        <input type="submit" value="@Messages("page.uploader.submit")">
+    </form>
+</div>
