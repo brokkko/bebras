@@ -11,14 +11,13 @@ public class FileInfo {
     private FileDescription description;
     private File file;
 
-    public FileInfo(FileDescription description, File file) {
-        this.description = description;
-        this.file = file;
+    public FileInfo(Event event, User user, FileDescription description) {
+        this(event, user.getId().toString(), description);
     }
 
-    public FileInfo(Event event, User user, FileDescription description) {
+    public FileInfo(Event event, String userId, FileDescription description) {
         this.description = description;
-        File folderWithFile = description.getFolderWithFile(event, user);
+        File folderWithFile = description.getFolderWithFile(event, userId);
 
         File[] files = folderWithFile.listFiles();
         if (files == null)

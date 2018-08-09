@@ -3,6 +3,10 @@ package models.data.features;
 import models.User;
 import models.data.*;
 import org.bson.types.ObjectId;
+import plugins.Plugin;
+import plugins.upload.FileDescription;
+import plugins.upload.FileInfo;
+import plugins.upload.UploadPlugin;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,6 +49,34 @@ public class UserActionsFeatures extends FunctionFeaturesSet<User> {
                             String.valueOf(feature)
                     )
             );
+        }
+
+        if (function.startsWith("download-link---")) {
+            String info = function.substring("download-link---".length());
+            String[] refAndId = info.split("---");
+            if (refAndId.length != 2)
+                return feature;
+
+            String ref = refAndId[0];
+            String id = refAndId[1];
+
+            Plugin plugin = context.getEvent().getPlugin(ref);
+            if (!(plugin instanceof UploadPlugin))
+                return feature;
+            UploadPlugin uploadPlugin = (UploadPlugin) plugin;
+
+            FileDescription fd = uploadPlugin.searchFileDescription(id);
+            if (fd == null)
+                return feature;
+
+            FileInfo fi = new FileInfo(context.getEvent(), userId.toString(), fd);
+            if (fi.isUploaded())
+                return new WrappedFeatureValue(
+                        feature,
+                        views.html.htmlfeatures.user_link_to_uploaded_file.render(uploadPlugin, fi, userId.toString(), feature)
+                );
+            else
+                return feature;
         }
 
         switch (function) {

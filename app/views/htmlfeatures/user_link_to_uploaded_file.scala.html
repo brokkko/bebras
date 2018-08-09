@@ -1,0 +1,4 @@
+@import plugins.upload.UploadPlugin
+@import plugins.upload.FileInfo
+@(plugin:UploadPlugin, fi:FileInfo, userId:String, feature:Object)
+<a href="@plugin.getCall("download", true, fi.getDescription.getId + "/" + userId)"><b>@feature</b></a>

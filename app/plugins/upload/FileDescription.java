@@ -32,8 +32,12 @@ public class FileDescription implements SerializableUpdatable {
         return title;
     }
 
-    public File getFolderWithFile(Event event, User user) {
+    public File getFolderWithFile(Event event, String userId) {
         File uploadedFolder = new File(event.getEventDataFolder(), id);
-        return new File(uploadedFolder, user.getId().toHexString());
+        return new File(uploadedFolder, userId);
+    }
+
+    public File getFolderWithFile(Event event, User user) {
+        return getFolderWithFile(event, user.getId().toString());
     }
 }

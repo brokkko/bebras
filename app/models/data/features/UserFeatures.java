@@ -4,10 +4,15 @@ import models.Contest;
 import models.User;
 import models.data.FeaturesContext;
 import models.data.FeaturesSet;
+import models.data.WrappedFeatureValue;
 import models.forms.RawForm;
 import models.newserialization.FlatSerializer;
 import org.bson.types.ObjectId;
 import play.Logger;
+import plugins.Plugin;
+import plugins.upload.FileDescription;
+import plugins.upload.FileInfo;
+import plugins.upload.UploadPlugin;
 
 import java.util.*;
 
@@ -85,6 +90,28 @@ public class UserFeatures implements FeaturesSet<User> {
                 return null;
 
             featureName = "_contests." + contests.get(contestInd - 1).getId() + featureTail;
+        }
+
+        if (featureName.startsWith("uploaded-file-name---")) {
+            String info = featureName.substring("uploaded-file-name---".length());
+            String[] refAndId = info.split("---");
+            if (refAndId.length != 2)
+                return "??";
+
+            String ref = refAndId[0];
+            String id = refAndId[1];
+
+            Plugin plugin = context.getEvent().getPlugin(ref);
+            if (!(plugin instanceof UploadPlugin))
+                return "??";
+            UploadPlugin uploadPlugin = (UploadPlugin) plugin;
+
+            FileDescription fd = uploadPlugin.searchFileDescription(id);
+            if (fd == null)
+                return "??";
+
+            FileInfo fi = new FileInfo(context.getEvent(), user, fd);
+            return fi.isUploaded() ? fi.getFile().getName() : "not uploaded";
         }
 
         if (featureName.startsWith("~")) {

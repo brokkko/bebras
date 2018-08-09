@@ -154,7 +154,7 @@ public class UploadPlugin extends Plugin {
         return F.Promise.pure(redirect(getCall()));
     }
 
-    private FileDescription searchFileDescription(String id) {
+    public FileDescription searchFileDescription(String id) {
         for (FileDescription file : files) {
             if (file.getId().equals(id))
                 return file;
