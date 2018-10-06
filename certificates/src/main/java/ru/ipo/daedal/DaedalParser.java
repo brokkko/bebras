@@ -19,6 +19,10 @@ public class DaedalParser {
     private Map<String, CompilerCommand> commands;
     private ExpressionEvaluator evaluator;
 
+    public DaedalParser() {
+        this(e -> "???");
+    }
+
     public DaedalParser(ExpressionEvaluator evaluator) {
         this.evaluator = evaluator;
         commands = CoreCommands.instance.getCommands();
@@ -28,7 +32,15 @@ public class DaedalParser {
         commands.put(name, command);
     }
 
+    public void setEvaluator(ExpressionEvaluator evaluator) {
+        this.evaluator = evaluator;
+    }
+
     public CompilerContext parse(String code) throws IOException {
+        return parse(code, evaluator);
+    }
+
+    public CompilerContext parse(String code, ExpressionEvaluator evaluator) throws IOException {
         DaedalTokenizer in = new DaedalTokenizer(code, commands, evaluator);
         CompilerContext cc = new CompilerContext();
 

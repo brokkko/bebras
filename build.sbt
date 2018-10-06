@@ -17,7 +17,8 @@ lazy val certificates = project.in(file("certificates")).settings(
   scalaVersion := "2.11.8",
   libraryDependencies ++= Seq(
     "com.itextpdf" % "itext-xtra" % "5.4.4",
-    "org.testng" % "testng" % "6.8" % Test
+    "org.testng" % "testng" % "6.8" % Test,
+    "net.sf.opencsv" % "opencsv" % "2.3"
   ),
 
   //From SO. Disable JavaDoc (non utf8 symbols in path)
