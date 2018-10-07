@@ -12,14 +12,16 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PackDocument implements AutoCloseable {
+//#B57B36
+
+public class DocumentsPackPdf implements AutoCloseable {
 
     private final Document doc;
     private final PdfWriter writer;
     private final Map<String, Image> bgPath2Image = new HashMap<>();
     private final String baseFolder;
 
-    public PackDocument(String outputFile, String baseFolder) throws FileNotFoundException, DocumentException {
+    public DocumentsPackPdf(String outputFile, String baseFolder) throws FileNotFoundException, DocumentException {
         this.baseFolder = baseFolder;
         doc = new Document(
                 new Rectangle(
@@ -28,8 +30,8 @@ public class PackDocument implements AutoCloseable {
                 ),
                 0, 0, 0, 0
         );
-        doc.open();
         writer = PdfWriter.getInstance(doc, new FileOutputStream(outputFile));
+        doc.open();
     }
 
     public void addPage(CompilerContext cc) throws DocumentException {

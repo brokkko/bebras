@@ -2,7 +2,6 @@ package ru.ipo.daedal;
 
 import ru.ipo.daedal.commands.compiler.CompilerCommand;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static ru.ipo.daedal.Token.*;
@@ -17,12 +16,12 @@ public class DaedalTokenizer {
     private Map<String, CompilerCommand> commands;
     private int argsLeft = 0;
 
-    public DaedalTokenizer(String code, Map<String, CompilerCommand> commands, ExpressionEvaluator evaluator) throws IOException {
+    public DaedalTokenizer(String code, Map<String, CompilerCommand> commands, ExpressionEvaluator evaluator) {
         this.in = expandText(code, evaluator);
         this.commands = commands;
     }
 
-    public Token next() throws IOException {
+    public Token next() {
         if (argsLeft > 0) {
             argsLeft--;
             return readArgument();

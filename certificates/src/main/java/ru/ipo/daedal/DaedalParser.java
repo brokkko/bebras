@@ -51,7 +51,7 @@ public class DaedalParser {
 
         tokensLoop:
         while (true) {
-            Token token = in.next();
+            Token token = cc.hasExtraToken() ? cc.popExtraToken() : in.next();
             switch (token.getType()) {
                 case Text:
                     if (inSpace && text.length() > 0 && newLinesCount < 2)

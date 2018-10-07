@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Project: dces2
@@ -71,6 +72,45 @@ public class CoreCommands {
             }
         });
 
+        commands.put("colorCMYK", new CompilerCommand() {
+            @Override
+            public int getArgumentsCount() {
+                return 4;
+            }
+
+            @Override
+            public void exec(CompilerContext context, Arguments args) {
+                context.addInstruction(new Instruction(
+                        (c, a) -> c.getCanvas().setCMYKColorFill(
+                                args.getInt(0),
+                                args.getInt(1),
+                                args.getInt(2),
+                                args.getInt(3)
+                        ),
+                        args
+                ));
+            }
+        });
+
+        commands.put("colorRGB", new CompilerCommand() {
+            @Override
+            public int getArgumentsCount() {
+                return 3;
+            }
+
+            @Override
+            public void exec(CompilerContext context, Arguments args) {
+                context.addInstruction(new Instruction(
+                        (c, a) -> c.getCanvas().setRGBColorFill(
+                                args.getInt(0),
+                                args.getInt(1),
+                                args.getInt(2)
+                        ),
+                        args
+                ));
+            }
+        });
+
         commands.put("align", new CompilerCommand() {
             @Override
             public int getArgumentsCount() {
@@ -123,6 +163,27 @@ public class CoreCommands {
                         (c, a) -> c.setTextY(c.getTextY() - args.getLength(0).getInPoints()),
                         args
                 ));
+            }
+        });
+
+        commands.put("if", new CompilerCommand() {
+            @Override
+            public int getArgumentsCount() {
+                return 3;
+            }
+
+            @Override
+            public void exec(CompilerContext context, Arguments args) {
+                String expression = args.get(0).trim().toLowerCase();
+                boolean isFalse = expression.isEmpty() || expression.equals("0") || expression.equals("false") ||
+                        expression.equals("no");
+                if (expression.contains("==")) {
+                    String[] e1AndE2 = expression.split("==");
+                    if (e1AndE2.length == 2 && !Objects.equals(e1AndE2[0], e1AndE2[1]))
+                        isFalse = true;
+                }
+
+                context.prependTextAsTokens(args.get(isFalse ? 2 : 1));
             }
         });
     }

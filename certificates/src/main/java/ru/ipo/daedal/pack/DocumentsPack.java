@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class PackOfDiplomas {
+public class DocumentsPack {
 
     public static void main(String[] args) throws IOException, DocumentException {
         String source = args[0];
@@ -25,10 +25,10 @@ public class PackOfDiplomas {
         String baseFolder = args[5];
 
         //load csv
-        try (CSVReader in = new CSVReader(new InputStreamReader(new FileInputStream(new File(source)), encoding), separator)) {
+        try (CSVReader in = new CSVReader(new InputStreamReader(new FileInputStream(new File(baseFolder + "/" + source)), encoding), separator)) {
             String[] titles = in.readNext();
             List<String[]> allRows = in.readAll();
-            createOutput(outputFile, descriptionFile, titles, allRows, baseFolder);
+            createOutput(baseFolder + "/" + outputFile, baseFolder + "/" + descriptionFile, titles, allRows, baseFolder);
         }
     }
 
@@ -44,19 +44,47 @@ public class PackOfDiplomas {
 
         String code = new String(Files.readAllBytes(Paths.get(descriptionFile)), StandardCharsets.UTF_8);
 
-        try (PackDocument doc = new PackDocument(output, baseFolder)) {
+        try (DocumentsPackPdf doc = new DocumentsPackPdf(output, baseFolder)) {
             for (String[] row : allRows) {
                 CompilerContext compilerContext = parser.parse(code, title -> {
+                    int actionPos = title.indexOf('|');
+                    String action = null;
+                    if (actionPos >= 0) {
+                        action = title.substring(actionPos + 1);
+                        title = title.substring(0, actionPos);
+                    }
+
                     Integer ind = title2ind.get(title);
-                    if (ind == null)
-                        return "???";
-                    else
-                        return row[ind];
+                    String result = ind == null ? "???" : row[ind];
+
+                    return action == null ? result : applyAction(action, result);
                 });
 
                 doc.addPage(compilerContext);
             }
         }
+    }
+
+    private static String applyAction(String action, String result) {
+        int len2 = result.length() / 2;
+        int spacePos = result.indexOf(' ', len2);
+        if (spacePos == -1)
+            spacePos = result.length();
+
+        switch (action) {
+            case "line 1 of 2":
+                System.out.println("output 1");
+                System.out.println(result);
+                System.out.println(result.substring(0, spacePos));
+                return result.substring(0, spacePos);
+            case "line 2 of 2":
+                System.out.println("output 2");
+                System.out.println(result);
+                System.out.println(result.substring(spacePos + 1));
+                return result.substring(spacePos + 1);
+        }
+
+        return "???";
     }
 
 }
