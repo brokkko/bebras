@@ -69,18 +69,12 @@ public class DocumentsPack {
         int len2 = result.length() / 2;
         int spacePos = result.indexOf(' ', len2);
         if (spacePos == -1)
-            spacePos = result.length();
+            spacePos = result.length() - 1;
 
         switch (action) {
             case "line 1 of 2":
-                System.out.println("output 1");
-                System.out.println(result);
-                System.out.println(result.substring(0, spacePos));
                 return result.substring(0, spacePos);
             case "line 2 of 2":
-                System.out.println("output 2");
-                System.out.println(result);
-                System.out.println(result.substring(spacePos + 1));
                 return result.substring(spacePos + 1);
         }
 

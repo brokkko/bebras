@@ -84,7 +84,7 @@ public class BebrasDynamicProblem implements Problem {
         return views.html.bebras.bebras_dyn_problem.render(
                 index, scores, showSolutions,
                 title, country, BebrasProblem.COUNTRY_TO_NAME.get(country),
-                statement, problemScript, imgLinks, explanation, informatics, height, uniqueId, correctAnswer
+                statement, problemScriptToRender(), imgLinks, explanation, informatics, height, uniqueId, correctAnswer
         );
     }
 
@@ -96,8 +96,50 @@ public class BebrasDynamicProblem implements Problem {
     @Override
     public Html formatEditor() {
         return views.html.bebras.bebras_dyn_editor.render(
-                title, country, statement, problemScript, imagesHtml, explanation, informatics, correctAnswer, dependencies, height
+                title, country, statement, problemScriptToRender(), imagesHtml, explanation, informatics, correctAnswer, dependencies, height
         );
+    }
+
+    private String problemScriptToRender() {
+        if (problemScript == null || problemScript.trim().isEmpty())
+            return "function Task(container, images) {\n" +
+                    "    this.enabled = true;\n" +
+                    "    this.initCallback = null;\n" +
+                    "}\n" +
+                    "\n" +
+                    "Task.reset = function () {\n" +
+                    "};\n" +
+                    "\n" +
+                    "Task.isEnabled = function () {\n" +
+                    "    return this.enabled;\n" +
+                    "};\n" +
+                    "\n" +
+                    "Task.setEnabled = function (state) {\n" +
+                    "    this.enabled = state;\n" +
+                    "};\n" +
+                    "\n" +
+                    "Task.setInitCallback = function (_initCallback) {\n" +
+                    "    this.initCallback = _initCallback;\n" +
+                    "\n" +
+                    "    if (this.initCallback)\n" +
+                    "        this.initCallback();\n" +
+                    "};\n" +
+                    "\n" +
+                    "Task.getSolution = function () {\n" +
+                    "    return '';\n" +
+                    "};\n" +
+                    "\n" +
+                    "Task.loadSolution = function (solution) {\n" +
+                    "\n" +
+                    "};\n" +
+                    "\n" +
+                    "Task.getAnswer = function () {\n" +
+                    "    return 2;\n" +
+                    "};\n" +
+                    "\n" +
+                    "return Task;";
+        else
+            return problemScript;
     }
 
     @Override
