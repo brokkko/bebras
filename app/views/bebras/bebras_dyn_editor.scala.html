@@ -1,4 +1,4 @@
-@(title:String, country:String, statement:String, problemScript:String, imagesHtml:String, explanation:String, informatics:String, correctAnswer: String, dependencies: String, height:Int)
+@(title:String, country:String, statement:String, problemScript:String, imagesHtml:String, explanation:String, informatics:String, correctAnswer: String, dependencies: String, taskStatementCssClass: String, height:Int)
 @import  models.newproblems.bebras.BebrasProblem
 <p><span class='bebras-editor-title'>Название:</span> <input class='bebras-editor' value="@title" name="title"></p>
 <p><span class='bebras-editor-title'>Страна:</span>
@@ -27,5 +27,6 @@
 
 <p><span class='bebras-editor-correct_answer'>Правильный ответ:</span> <input class='bebras-editor' value="@correctAnswer" name="correct_answer"></p>
 <p><span class='bebras-editor-dependencies'>Зависимости:</span> <input class='bebras-editor' value="@dependencies" name="dependencies"></p>
+<p><span class='task-statement-css-class'>Дополнительный css-класс для условия:</span> <input class='bebras-editor' value="@taskStatementCssClass" name="task_statement_css_class"></p>
 
 <p><span class='bebras-editor-title'>Высота:</span> <input class='bebras-editor' value="@height" name="height"></p>

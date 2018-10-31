@@ -49,6 +49,7 @@ public class BebrasDynamicProblem implements Problem {
     private String informatics;
     private String dependencies;
     private String correctAnswer;
+    private String taskStatementCssClass;
     private int height;
 
     public BebrasDynamicProblem() {
@@ -84,7 +85,8 @@ public class BebrasDynamicProblem implements Problem {
         return views.html.bebras.bebras_dyn_problem.render(
                 index, scores, showSolutions,
                 title, country, BebrasProblem.COUNTRY_TO_NAME.get(country),
-                statement, problemScriptToRender(), imgLinks, explanation, informatics, height, uniqueId, correctAnswer
+                statement, problemScriptToRender(), imgLinks, explanation, informatics, height, uniqueId, correctAnswer,
+                taskStatementCssClass
         );
     }
 
@@ -96,7 +98,7 @@ public class BebrasDynamicProblem implements Problem {
     @Override
     public Html formatEditor() {
         return views.html.bebras.bebras_dyn_editor.render(
-                title, country, statement, problemScriptToRender(), imagesHtml, explanation, informatics, correctAnswer, dependencies, height
+                title, country, statement, problemScript, imagesHtml, explanation, informatics, correctAnswer, dependencies, taskStatementCssClass, height
         );
     }
 
@@ -153,6 +155,7 @@ public class BebrasDynamicProblem implements Problem {
         informatics = form.get("informatics");
         correctAnswer = form.get("correct_answer");
         dependencies = form.get("dependencies");
+        taskStatementCssClass = form.get("task_statement_css_class");
         try {
             height = Integer.parseInt(form.get("height"));
         } catch (NumberFormatException e) {
@@ -286,6 +289,7 @@ public class BebrasDynamicProblem implements Problem {
         serializer.write("height", height);
         serializer.write("correct_answer", correctAnswer);
         serializer.write("dependencies", dependencies);
+        serializer.write("task_statement_css_class", taskStatementCssClass);
     }
 
     @Override
@@ -300,6 +304,7 @@ public class BebrasDynamicProblem implements Problem {
         height = deserializer.readInt("height", 0);
         correctAnswer = deserializer.readString("correct_answer", "");
         dependencies = deserializer.readString("dependencies", "kinetic,ddlib");
+        taskStatementCssClass = deserializer.readString("task_statement_css_class", "big-font");
     }
 
     private boolean showFullAnswer() {

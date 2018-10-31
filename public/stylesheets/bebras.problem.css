@@ -224,7 +224,7 @@ form#edit-problem textarea {
     overflow: hidden;
 }
 
-.task-statement.dynamic {
+.task-statement.big-font {
     font-size: 1.4em;
 }
 

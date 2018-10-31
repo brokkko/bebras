@@ -1,4 +1,4 @@
-@(index:String, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, problemScript:String, images:java.util.Map[String, String], explanation:String, informatics:String, height:Int, uniqueId:String, correctAnswer:String)
+@(index:String, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, problemScript:String, images:java.util.Map[String, String], explanation:String, informatics:String, height:Int, uniqueId:String, correctAnswer:String, taskStatementCssClass:String)
 @import scala.List
 <div class='task-title section-title'>
     <span class='problem-index'>Задача @index.</span>
@@ -9,7 +9,7 @@
     <span class='problem-country'><img alt="@country" src="@routes.Assets.at("images/flags/" + country + ".png")">@countryName</span>
 </div>
 <div class='dyn-type'>@uniqueId</div>
-<div class='task-statement dynamic'>
+<div class='task-statement @taskStatementCssClass'>
     @Html(statement)
     <div id='container-@uniqueId' style='height:@{height}px'></div>
     <div class='bebras-dyn-status'>Загрузка...</div>
