@@ -55,7 +55,7 @@ if (!Object.keys) {
  _type - Тип объекта (0 - место, куда можно перенести его. 1 - статический объект. 2 - перемещаемый объект)
  _vObject - визуальный объект
  Имеет следующие свойства:
- imageId,stroke,strokeWidth
+ imageId,stroke,strokeWidth, crop {x, y, width, height}
  _beforeRender - функция, вызывающаяся перед рендерингом каждого элемента
  */
 var Place = function (_x, _y, _width, _height, _name, _type, _vObject, _beforeRender) {
@@ -66,7 +66,7 @@ var Place = function (_x, _y, _width, _height, _name, _type, _vObject, _beforeRe
         width: _width,
         height: _height,
         name: _name,
-        vObject: (_vObject ? _vObject : {imageId: false, stroke: "000000", strokeWidth: 2}),
+        vObject: (_vObject ? _vObject : {imageId: false, stroke: "000000", strokeWidth: 2, fill: "rgba(0, 0, 0, 0)"}),
         getType: function () {
             return type;
         },
@@ -150,7 +150,8 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                     width: place.width,
                     height: place.height,
                     strokeWidth: place.vObject.strokeWidth,
-                    stroke: place.vObject.stroke
+                    stroke: place.vObject.stroke,
+                    fill: place.vObject.fill
                 });
 
             //empty place
@@ -198,6 +199,10 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                         var magnetPlaceId = magnetPlaces[minPlaceKey].id;
                         var dstX = places[magnetPlaceId].x + places[magnetPlaceId].width / 2 - this.getWidth() / 2;
                         var dstY = places[magnetPlaceId].y + places[magnetPlaceId].height / 2 - this.getHeight() / 2;
+
+                        dstX = Math.round(dstX);
+                        dstY = Math.round(dstY);
+
                         this.transitionTo({x: dstX, y: dstY, duration: 0.3});
                         magnetPlaces[minPlaceKey].current = this.ref.id;
                         this.ref.current = minPlaceKey;
@@ -311,6 +316,7 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                 if (!(key in magnetPlaces))
                     continue;
                 var place = magnetPlaces[key];
+                //TODO place.current == 0 ?!?!?!?!, don't make flying places first
                 returnObject[places[place.id].name] = place.current ? places[place.current].name : -1;
             }
             return returnObject;
