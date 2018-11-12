@@ -264,7 +264,8 @@ public class BebrasDynamicProblem implements Problem {
     public Widget getWidget(boolean editor) {
         ListWidget w = new ListWidget(
                 new ResourceLink("bebras.problem.css"),
-                new ResourceLink("bebras-dyn.problem.js")
+                new ResourceLink("bebras-dyn.problem.js"),
+                new ResourceLink("polyfill.min.js")
         );
 
         if (editor)
