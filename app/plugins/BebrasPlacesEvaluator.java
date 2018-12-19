@@ -241,8 +241,13 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                                 return 1;
 
                             if (compareRegions) {
-                                String region1 = uid2region.get(u1.getRegisteredBy());
-                                String region2 = uid2region.get(u2.getRegisteredBy());
+                                //TODO how is it possible that we have no region info
+                                String region1 = uid2region.getOrDefault(u1.getRegisteredBy(), "UNKN_COMP");
+                                String region2 = uid2region.getOrDefault(u2.getRegisteredBy(), "UNKN_COMP");
+                                if (region1 == null)
+                                    region1 = "NULL_COMP";
+                                if (region2 == null)
+                                    region2 = "NULL_COMP";
 
                                 int regionCompare = region1.compareTo(region2);
                                 if (regionCompare != 0)
@@ -903,7 +908,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             if (better == 1)
                 lines.add(new BebrasCertificateLine("и занял первое место по России", 12, false));
             else if (percents == 1)
-                lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + better + " лучших участников по России", 12, false)); //don't write 1%, write instead the whole number
+                lines.add(new BebrasCertificateLine("и вошёл (вошла) в число " + better + " лучших участников по России", 12, false)); //don't write 1%, write instead the whole number
             else
                 lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
             lines.add(new BebrasCertificateLine("(всего участников " + grade + " класса: " + totalParticipants + ")", 12, false));
