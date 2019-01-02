@@ -52,6 +52,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
     private String roleName; //role of users
     private boolean showCertificates;
     private int year = 2013;
+    private int teacherGramotaMinParticipants = 30;
 
     private String gradesDescription; //TODO implement in the other way
 
@@ -578,7 +579,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                     break;
             }
 
-        if (bCount + bkCount >= 30) {
+        if (bCount + bkCount >= teacherGramotaMinParticipants) {
 
             List<BebrasCertificateLine> lines = new ArrayList<>();
             addSchoolAndAddr(lines, user.getInfo(), user);
@@ -751,6 +752,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         gradesDescription = deserializer.readString("grades description", "");
         showCertificates = deserializer.readBoolean("show certificates", false);
         year = deserializer.readInt("year", 2013);
+        teacherGramotaMinParticipants = deserializer.readInt("gramota participants", 30);
     }
 
     @Override
@@ -762,6 +764,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         serializer.write("grades description", gradesDescription);
         serializer.write("show certificates", showCertificates);
         serializer.write("year", year);
+        serializer.write("gramota participants", teacherGramotaMinParticipants);
     }
 
     private Result showPdf(Event event, String userLogin) {
