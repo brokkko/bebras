@@ -1,18 +1,20 @@
-@(html:views.htmlblocks.HtmlBlock, editable:Boolean)
+@(html: views.htmlblocks.HtmlBlock, editable: Boolean)
 <div class='html-block'>
-@if(editable) {
-<span class='html-block-ref hidden'>@if(html.getEventId == "~global"){
-    @routes.Application.setGlobalHtmlBlock(html.getName)
-} else {
-    @routes.EventAdministration.setHtmlBlock(html.getEventId, html.getName)
-}</span>
-<div class='html-block-actions'>
-<a class='html-block-edit-action' href='#'>Edit</a>
-<a class='html-block-undo-action' href='#'>Undo</a>
-</div>
-}
-@if(html.getHtml.trim != "") {
-    <div class='contents@if(editable){ admin}else{}'>@Html(html.getHtml)</div>
-}
-<div style='clear: both'></div>
+    @if(editable) {
+        <span class='html-block-ref hidden'>@if(html.getEventId == "~global") {
+            @routes.Application.setGlobalHtmlBlock(html.getName)
+        } else {
+            @routes.EventAdministration.setHtmlBlock(html.getEventId, html.getName)
+        }</span>
+        <div class='html-block-actions'>
+            <a class='html-block-edit-action' href='#'>Edit</a>
+            <a class='html-block-undo-action' href='#'>Undo</a>
+        </div>
+    }
+    @defining(html.getHtml) { rawHtml =>
+        @if(rawHtml.trim != "") {
+            <div class='contents@if(editable) { admin} else {}'>@Html(rawHtml)</div>
+        }
+    }
+    <div style='clear: both'></div>
 </div>

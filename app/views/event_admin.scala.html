@@ -14,8 +14,8 @@
 
     <p>
         Просмотр всех заданий в каталоге события:
-        <a href="@routes.Problems.printFolder(Event.currentId, Event.currentId, true, false)">без ответов</a>,
-        <a href="@routes.Problems.printFolder(Event.currentId, Event.currentId, true, true)">с ответами</a>.
+        <a href="@routes.ProblemsShare.printFolder(Event.currentId, Event.currentId, true, false)">без ответов</a>,
+        <a href="@routes.ProblemsShare.printFolder(Event.currentId, Event.currentId, true, true)">с ответами</a>.
     </p>
 
     <div class='info-box@if(eventForm.hasErrors){ initially-open}'>

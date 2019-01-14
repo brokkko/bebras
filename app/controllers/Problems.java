@@ -75,21 +75,6 @@ public class Problems extends Controller {
         return ok(problem_view_raw.render(pid, info.getProblem()));
     }
 
-    public static Result viewPrintProblem(String eventId, String pidAsString, boolean answers) {
-        ObjectId pid;
-        try {
-            pid = new ObjectId(pidAsString);
-        } catch (IllegalArgumentException ignored) {
-            return notFound(error.render("Не удается найти задачу", new String[0]));
-        }
-
-        ProblemInfo pi = ProblemInfo.get(pid);
-        if (pi == null)
-            return notFound(error.render("Не удается найти задачу", new String[0]));
-
-        return ok(views.html.problem_view_print.render(pid, pi.getProblem(), answers));
-    }
-
     //TODO generalize to move to other folders
     public static Result renameProblem(String eventId, String path) {
         ProblemLink link = new ProblemLink(path);
@@ -229,46 +214,5 @@ public class Problems extends Controller {
         info.store();
 
         return redirect(routes.Problems.viewRawProblem(eventId, pid.toHexString()));
-    }
-
-    public static Result printFolder(String eventId, String folder, boolean subfolders, boolean showAnswers) {
-        if (!User.current().hasEventAdminRight())
-            return forbidden();
-
-        ProblemLink link = new ProblemLink(folder);
-
-        List<List<ConfiguredProblem>> pagedProblems = new LinkedList<>(); //one page for one folder
-        listProblems(link, subfolders, pagedProblems);
-
-        Map<ConfiguredProblem, String> problem2title = new HashMap<>();
-        for (List<ConfiguredProblem> problemsInPage : pagedProblems)
-            for (ConfiguredProblem problem : problemsInPage)
-                problem2title.put(problem, problem.getName().substring(link.getLink().length() + 1)); //1 for slash /
-
-        return ok(contest_print.render(showAnswers, pagedProblems, problem2title, Contests.getProblemsWidgets(pagedProblems), 0L));
-    }
-
-    private static void listProblems(ProblemLink link, boolean recursively, List<List<ConfiguredProblem>> pagedProblems) {
-        List<ConfiguredProblem> problems = new LinkedList<>();
-        List<ProblemLink> links = link.listProblems();
-
-        for (ProblemLink problemLink : links) {
-            ProblemInfo info = ProblemInfo.get(problemLink.getProblemId());
-            if (info == null) //broken link
-                continue;
-
-            problems.add(new ConfiguredProblem(
-                    problemLink.getProblemId(),
-                    info.getProblem(),
-                    problemLink.getLink(),
-                    null
-            ));
-        }
-
-        pagedProblems.add(problems);
-
-        if (recursively) //may be optimized with one query
-            for (ProblemLink folderLink : link.listFolders())
-                listProblems(folderLink, true, pagedProblems);
     }
 }

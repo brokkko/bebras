@@ -206,30 +206,6 @@ public class Contests extends Controller {
         ));
     }
 
-    public static Result allContestProblems(String eventId, String contestId, boolean showAnswers) {
-        User user = User.current();
-        if (!user.hasEventAdminRight())
-            return forbidden();
-
-        Contest contest = Contest.current();
-
-        List<ConfiguredProblem> allUserProblems = contest.getAllPossibleProblems();
-        List<List<ConfiguredProblem>> pagedUserProblems = new ArrayList<>(1);
-        pagedUserProblems.add(allUserProblems);
-
-        Map<ConfiguredProblem, String> problem2title = new HashMap<>();
-        for (ConfiguredProblem problem : allUserProblems)
-            problem2title.put(problem, problem.getName());
-
-        return ok(views.html.contest_print.render(
-                showAnswers,
-                pagedUserProblems,
-                problem2title,
-                getProblemsWidgets(pagedUserProblems),
-                user.getContestRandSeed(contestId)
-        ));
-    }
-
     @SuppressWarnings("UnusedParameters")
     @BodyParser.Of(BodyParser.Json.class)
     public static Result submit(String eventId, String contestId) {
