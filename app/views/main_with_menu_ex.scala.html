@@ -6,7 +6,7 @@
     <div class="wrapper@if(!menu_to_left){ menu-to-right}">
         @if(show_header) {
             <header>
-                @Event.current.getTitle
+                @Html(Event.current.getHtmlTitle)
             </header>
         }
         <div class='navigation'>
