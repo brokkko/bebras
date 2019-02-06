@@ -8,12 +8,8 @@
         <span class="error-global">@Html(rawForm.getGlobalErrors().toList.mkString(", "))</span>
     }
     <fieldset>
-    @*
-    @if(form("id").value != null) {
-    <input type="hidden" value="@form("_id").value" name="id">
-    }
-    *@
     @for(field <- form.getFields) {
+		@Html(field.getHtmlBefore)
         <div class="controls @if(rawForm.hasFieldErrors(field.getName)) {error}">
             <label>@Html(field.getTitle) @if(field.isRequired) {<small>*</small>}</label>
             @if(rawForm.hasFieldErrors(field.getName)) {
@@ -23,7 +19,6 @@
                 @field.format(rawForm)
             </div>
             <div class="error-inline-empty"></div>
-            @*@if(field.getHint != null) {<span class="help-inline">field.getHint</span>}*@
         </div>
     }
     </fieldset>
