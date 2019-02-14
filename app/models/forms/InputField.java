@@ -28,6 +28,7 @@ public class InputField implements SerializableUpdatable {
     private boolean store;
     private boolean extra; //do not create form entry for it
     private List<Validator> validators;
+	private String htmlBefore;
 
     public InputField() {
         //emtpy constructor
@@ -88,6 +89,7 @@ public class InputField implements SerializableUpdatable {
         skipForEdit = deserializer.readBoolean("skip for edit", false);
         store = deserializer.readBoolean("store", true);
         required = deserializer.readBoolean("required", false);
+		htmlBefore = deserializer.readString("html before", "");
         validators = SerializationTypesRegistry.list(SerializationTypesRegistry.VALIDATOR).read(deserializer, "validators");
         extra = false;
     }
@@ -98,6 +100,8 @@ public class InputField implements SerializableUpdatable {
         serializer.write("skip for edit", skipForEdit);
         serializer.write("store", store);
         serializer.write("required", required);
+		if (htmlBefore != null && !htmlBefore.isEmpty())
+			serializer.write("html before", htmlBefore);
         SerializationTypesRegistry.list(SerializationTypesRegistry.VALIDATOR).write(serializer, "validators", validators);
     }
 
@@ -120,4 +124,8 @@ public class InputField implements SerializableUpdatable {
     public String getTitle() {
         return inputTemplate.getTitle();
     }
+	
+	public String getHtmlBefore() {
+		return htmlBefore;
+	}
 }

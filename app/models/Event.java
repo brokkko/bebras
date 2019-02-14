@@ -251,8 +251,14 @@ public class Event {
     }
 
     public String getTitle() {
-        return title;
+		String[] splitTitle = title.split("\\|");
+        return splitTitle[0];
     }
+	
+	public String getHtmlTitle() {
+		String[] splitTitle = title.split("\\|");
+        return splitTitle.length > 1 ? splitTitle[1] : splitTitle[0];
+	}
 
     public UserRole getRole(String name) {
         if ("ANON".equals(name))
