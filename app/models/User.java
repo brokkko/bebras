@@ -8,6 +8,8 @@ import models.forms.InputField;
 import models.forms.InputForm;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
+import models.newproblems.kio.KioOnlineProblem;
+import models.newproblems.kio.KioProblem;
 import models.newserialization.*;
 import models.results.Info;
 import models.results.InfoPattern;
@@ -507,7 +509,7 @@ public class User implements SerializableUpdatable {
         serializer.write("_id", id);
         serializer.write(FIELD_EVENT, eventId);
         serializer.write(FIELD_PASS_HASH, passwordHash);
-        
+
         fixRegisteredByWithRegions(event);
 
         SerializationTypesRegistry.list(ObjectId.class).write(serializer, FIELD_REGISTERED_BY, registeredBy);
@@ -587,7 +589,7 @@ public class User implements SerializableUpdatable {
 //        if (MongoConnection.mayEnqueueEvents())
 //            MongoConnection.enqueueUserStorage(this);
 //        else
-            serialize();
+        serialize();
     }
 
     public Date contestStartTime(String contestId) {
@@ -621,7 +623,7 @@ public class User implements SerializableUpdatable {
 
     public ContestInfoForUser getContestInfoCreateIfNeeded(String contestId) {
         return contest2info
-                        .computeIfAbsent(contestId, i -> new ContestInfoForUser(getEvent().getContestById(i)));
+                .computeIfAbsent(contestId, i -> new ContestInfoForUser(getEvent().getContestById(i)));
     }
 
     public void setContestStartTime(String contestId, Date requestTime) {
@@ -737,28 +739,56 @@ public class User implements SerializableUpdatable {
      * @return a list with user answers
      */
     public List<Submission> getSubmissionsForContest(Contest contest) {
-        return getSubmissionsListsForProblems(contest)
-                .stream()
-                .map(list -> list == null || list.isEmpty() ? null : list.get(list.size() - 1))
-                .collect(Collectors.toList());
+        LinkedHashMap<ConfiguredProblem, List<Submission>> listsForProblems = getSubmissionsListsForProblems(contest);
+
+        List<Submission> result = new ArrayList<>(listsForProblems.size());
+
+        listsForProblems.forEach((configuredProblem, submissions) -> {
+            Problem p = configuredProblem.getProblem();
+            if (p instanceof KioOnlineProblem) {
+                Info bestCheck = new Info();
+                Submission bestSubmission = null;
+                Comparator<Info> comparator = p.comparator();
+                for (Submission submission : submissions) {
+                    Info checkResult = submission.getCheckResult();
+                    if (comparator.compare(checkResult, bestCheck) > 0) {
+//                        System.out.printf("better %s %s\n", checkResult, bestCheck);
+                        bestCheck = checkResult;
+                        bestSubmission = submission;
+                    }
+                }
+
+                System.out.println("adding submission with best check " + bestCheck);
+                result.add(bestSubmission);
+            } else
+                result.add(submissions == null || submissions.isEmpty() ? null : submissions.get(submissions.size() - 1));
+        });
+
+        return result;
     }
 
     /**
      * returns a list of lists with all submissions of problems.
      * System submissions are filtered out, submissions are sorted in the ascending order of local time.
      * If there are no submission, an empty list is returned.
+     *
      * @param contest the contest to get submissions
      * @return list of submissions lists
      */
-    public List<List<Submission>> getSubmissionsListsForProblems(Contest contest) {
+    public LinkedHashMap<ConfiguredProblem, List<Submission>> getSubmissionsListsForProblems(Contest contest) {
         Map<ObjectId, List<Submission>> problem2allSubmissions = getAllSubmissions(contest)
                 .stream()
                 .filter(submission -> submission.getProblemId() != null)
                 .collect(Collectors.groupingBy(Submission::getProblemId));
-        return contest.getUserProblems(this)
-                .stream()
-                .map(configuredProblem -> problem2allSubmissions.get(configuredProblem.getProblemId()))
-                .collect(Collectors.toList());
+
+        List<ConfiguredProblem> userProblems = contest.getUserProblems(this);
+
+        LinkedHashMap<ConfiguredProblem, List<Submission>> result = new LinkedHashMap<>();
+
+        for (ConfiguredProblem userProblem : userProblems)
+            result.put(userProblem, problem2allSubmissions.get(userProblem.getProblemId()));
+
+        return result;
     }
 
     public Map<String, String> getProblemsDataForContest(Contest contest) {

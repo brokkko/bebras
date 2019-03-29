@@ -18,8 +18,7 @@ import plugins.Plugin;
 import ru.ipo.kio.js.JsKioProblem;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 //      http://localhost:9000/kio18/kiojschecker/contest/elasticity0/p
 //      http://localhost:9000/kio18/kiojschecker/contest/elasticity1/p
@@ -133,17 +132,13 @@ public class KioJsChecker extends Plugin {
     }
 
     private void checkContest(Worker w, Event event, Contest contest, User user) {
-        List<ConfiguredProblem> userProblems = contest.getUserProblems(user);
-        List<List<Submission>> allSubmissions = user.getSubmissionsListsForProblems(contest);
+        LinkedHashMap<ConfiguredProblem, List<Submission>> submissionsForProblems = user.getSubmissionsListsForProblems(contest);
 
-        for (int i = 0; i < userProblems.size(); i++) {
-            ConfiguredProblem cp = userProblems.get(i);
+        submissionsForProblems.forEach((cp, submissions) -> {
             Problem problem = cp.getProblem();
-            if (problem instanceof KioOnlineProblem) {
-                List<Submission> submissions = allSubmissions.get(i);
+            if (problem instanceof KioOnlineProblem)
                 checkProblem(w, event, contest, user, (KioOnlineProblem) problem, submissions);
-            }
-        }
+        });
     }
 
     private void checkProblem(Worker w, Event event, Contest contest, User user, KioOnlineProblem problem, List<Submission> submissions) {

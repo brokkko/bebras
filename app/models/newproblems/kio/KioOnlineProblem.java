@@ -193,6 +193,8 @@ public class KioOnlineProblem implements Problem {
             return value.asInt();
         if (value.isNumber())
             return value.asDouble();
+        if (value.isBoolean())
+            return value.asBoolean() ? 1 : 0;
         return value.asText(); //TODO ???
     }
 
