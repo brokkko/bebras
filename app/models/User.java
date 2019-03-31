@@ -749,14 +749,14 @@ public class User implements SerializableUpdatable {
                 Info bestCheck = new Info();
                 Submission bestSubmission = null;
                 Comparator<Info> comparator = p.comparator();
-                for (Submission submission : submissions) {
-                    Info checkResult = submission.getCheckResult();
-                    if (comparator.compare(checkResult, bestCheck) > 0) {
-//                        System.out.printf("better %s %s\n", checkResult, bestCheck);
-                        bestCheck = checkResult;
-                        bestSubmission = submission;
+                if (submissions != null)
+                    for (Submission submission : submissions) {
+                        Info checkResult = submission.getCheckResult();
+                        if (comparator.compare(checkResult, bestCheck) > 0) {
+                            bestCheck = checkResult;
+                            bestSubmission = submission;
+                        }
                     }
-                }
 
                 System.out.println("adding submission with best check " + bestCheck);
                 result.add(bestSubmission);
