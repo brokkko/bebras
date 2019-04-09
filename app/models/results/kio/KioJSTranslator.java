@@ -145,11 +145,14 @@ public class KioJSTranslator implements Translator {
             List<Double> r1 = (List<Double>) info1.get("rank-sorter");
             List<Double> r2 = (List<Double>) info2.get("rank-sorter");
 
-            if (r1 == null && r2 == null)
+            boolean r1isEmpty = r1 == null || r1.isEmpty();
+            boolean r2isEmpty = r2 == null || r2.isEmpty();
+
+            if (r1isEmpty && r2isEmpty)
                 return 0;
-            if (r1 == null)
+            if (r1isEmpty)
                 return -1;
-            if (r2 == null)
+            if (r2isEmpty)
                 return 1;
 
             int n = r1.size();

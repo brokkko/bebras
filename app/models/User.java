@@ -758,7 +758,6 @@ public class User implements SerializableUpdatable {
                         }
                     }
 
-                System.out.println("adding submission with best check " + bestCheck);
                 result.add(bestSubmission);
             } else
                 result.add(submissions == null || submissions.isEmpty() ? null : submissions.get(submissions.size() - 1));

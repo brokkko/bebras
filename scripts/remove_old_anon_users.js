@@ -34,5 +34,6 @@ function remove(collectionName, query) {
     db[collectionName].remove(query);
     print("removed : " + c);
     print("compacting...");
-    db.runCommand({compact: collectionName});
+    if (c > 0)
+        db.runCommand({compact: collectionName});
 }
