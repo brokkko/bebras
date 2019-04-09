@@ -200,6 +200,10 @@ public class MongoConnection {
             collection.createIndex(new BasicDBObject(Submission.USER_FIELD, 1));
             collection.createIndex(new BasicDBObject(Submission.SERVER_TIME_FIELD, 1));
             collection.createIndex(new BasicDBObject(Submission.LOCAL_TIME_FIELD, 1));
+
+            BasicDBObject pidLocalTimeIndex = new BasicDBObject(Submission.PROBLEM_ID_FIELD, 1);
+            pidLocalTimeIndex.put(Submission.LOCAL_TIME_FIELD, 1);
+            collection.createIndex(pidLocalTimeIndex);
         }
     }
 
