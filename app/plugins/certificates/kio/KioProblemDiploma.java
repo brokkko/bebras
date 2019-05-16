@@ -85,10 +85,11 @@ public class KioProblemDiploma extends Diploma<KioProblemDiplomaFactory> {
 
         canvas.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_CLIP);
 
-        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 24);
-        canvas.showTextAligned(Element.ALIGN_CENTER, KioCertificate.surnameName(user), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(120), 0);
+        String surnameName = KioCertificate.surnameName(user);
+        canvas.setFontAndSize(KioCertificate.getDefaultFontR(surnameName), 24);
+        canvas.showTextAligned(Element.ALIGN_CENTER, surnameName, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(120), 0);
 
-        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 14);
+        canvas.setFontAndSize(KioCertificate.getDefaultFontR(""), 14);
         float y0 = 115;
         float lineSkip = 5;
 
@@ -106,7 +107,7 @@ public class KioProblemDiploma extends Diploma<KioProblemDiplomaFactory> {
         y0 -= lineSkip * 1.4f;
         KioCertificate.drawUserFrom(canvas, user, y0);
 
-        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 17);
+        canvas.setFontAndSize(KioCertificate.getDefaultFontR(""), 17);
         canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + factory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(6), 0);
 
         canvas.endText();

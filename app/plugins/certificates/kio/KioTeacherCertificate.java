@@ -43,18 +43,19 @@ public class KioTeacherCertificate extends Diploma<KioTeacherCertificateFactory>
 
         canvas.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_CLIP);
 
-        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 24);
+        String surnameNamePatronymic = surnameNamePatronymic();
+        canvas.setFontAndSize(KioCertificate.getDefaultFontR(surnameNamePatronymic), 24);
 
         int yPos = 153;
 
-        canvas.showTextAligned(Element.ALIGN_CENTER, surnameNamePatronymic(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(yPos), 0);
+        canvas.showTextAligned(Element.ALIGN_CENTER, surnameNamePatronymic, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(yPos), 0);
 
         KioCertificate.drawUserFrom(canvas, user, yPos - 8);
 
-        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 17);
+        canvas.setFontAndSize(KioCertificate.getDefaultFontR(""), 17);
         canvas.showTextAligned(Element.ALIGN_LEFT, "(КИО " + factory.getYear() % 100 + ")", Utilities.millimetersToPoints(141), Utilities.millimetersToPoints(106.5f), 0);
 
-        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 17);
+        canvas.setFontAndSize(KioCertificate.getDefaultFontR(""), 17);
         canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + factory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(6), 0);
 
         canvas.endText();

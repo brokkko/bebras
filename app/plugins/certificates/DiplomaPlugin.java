@@ -171,7 +171,7 @@ public class DiplomaPlugin extends Plugin {
         canvas.saveState();
         canvas.beginText();
 
-        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 42); //TODO take font from some normal place
+        canvas.setFontAndSize(KioCertificate.getDefaultFontR(""), 42); //TODO take font from some normal place
         for (int y0 = 280; y0 > 0; y0 -= 30)
             canvas.showTextAligned(Element.ALIGN_CENTER, "Этот документ пустой", Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
 

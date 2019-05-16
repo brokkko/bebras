@@ -49,9 +49,10 @@ public class BabiorCertificate extends Diploma<BabiorCertificateFactory> {
 
         canvas.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_CLIP);
 
-        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 24);
+        String surnameName = surnameName(user);
+        canvas.setFontAndSize(KioCertificate.getDefaultFontR(surnameName), 24);
         float y0 = 143;
-        canvas.showTextAligned(Element.ALIGN_CENTER, surnameName(user), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
+        canvas.showTextAligned(Element.ALIGN_CENTER, surnameName, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
 
         drawUserFrom(canvas, user, y0 - 6);
 
@@ -75,11 +76,11 @@ public class BabiorCertificate extends Diploma<BabiorCertificateFactory> {
         if (schoolLine == null)
             schoolLine = "";
 
-        schoolLine = schoolLine.replaceAll("  ", " ").replaceAll("[\n\r]+", " ");
+        schoolLine = schoolLine.replaceAll(" {2,}", " ").replaceAll("[\n\r]+", " ");
 
         String[] schoolLines = BebrasPlacesEvaluator.splitProbablyLongLine(schoolLine);
 
-        canvas.setFontAndSize(KioCertificate.DEFAULT_FONT_R, 12);
+        canvas.setFontAndSize(KioCertificate.getDefaultFontR(""), 12);
         for (String line : schoolLines) {
             canvas.showTextAligned(Element.ALIGN_CENTER, line, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
             y0 -= 4;

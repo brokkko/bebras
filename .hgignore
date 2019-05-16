@@ -13,6 +13,7 @@ target/
 ^.project/
 
 ^conf/application.conf$
+^conf/application.ini$
 
 ^logs/
 ^data/

@@ -21,7 +21,7 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
 
     public static final String PLUGIN_NAME = "KioDiplomas";
     public static final File R_FONT_FILE = ServerConfiguration.getInstance().getPluginFile(PLUGIN_NAME, "AmbassadoreType.ttf");
-    public static BaseFont DEFAULT_FONT_R;
+    private static BaseFont DEFAULT_FONT_R;
     public static final File I_FONT_FILE = ServerConfiguration.getInstance().getPluginFile(PLUGIN_NAME, "AmbassadoreType Italic.ttf");
     public static BaseFont DEFAULT_FONT_I;
     public static final File R_RESULTS_FONT_FILE = ServerConfiguration.getInstance().getPluginFile(PLUGIN_NAME, "Arial-R.ttf");
@@ -38,6 +38,13 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
         } catch (DocumentException | IOException e) {
             Logger.error("Error in font initialization", e);
         }
+    }
+
+    public static BaseFont getDefaultFontR(String text) {
+        if (text.matches("[ a-zA-Zа-яА-ЯёЁ]*"))
+            return DEFAULT_FONT_R;
+        else
+            return RESULTS_FONT_R;
     }
 
     public KioCertificate(User user, KioCertificateFactory factory) {
@@ -125,7 +132,7 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
         schoolLine = schoolLine.replaceAll("  ", " ").replaceAll("[\n\r]+", " ");
         addressLine = addressLine.replaceAll("  ", "").replaceAll("[\n\r]+", " ");
 
-        canvas.setFontAndSize(DEFAULT_FONT_R, 12);
+        canvas.setFontAndSize(getDefaultFontR(""), 12);
         canvas.showTextAligned(Element.ALIGN_CENTER, schoolLine, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0), 0);
         canvas.showTextAligned(Element.ALIGN_CENTER, addressLine, Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(y0 - 5), 0);
     }
@@ -165,12 +172,12 @@ public class KioCertificate extends Diploma<KioCertificateFactory> {
 
         canvas.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_CLIP);
 
-        canvas.setFontAndSize(DEFAULT_FONT_R, 24);
+        canvas.setFontAndSize(getDefaultFontR(surnameName()), 24);
         canvas.showTextAligned(Element.ALIGN_CENTER, surnameName(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(161), 0);
 
         drawUserFrom(canvas, user, 156);
 
-        canvas.setFontAndSize(DEFAULT_FONT_R, 17);
+        canvas.setFontAndSize(getDefaultFontR(""), 17);
         canvas.showTextAligned(Element.ALIGN_CENTER, "Санкт-Петербург " + factory.getYear(), Utilities.millimetersToPoints(105), Utilities.millimetersToPoints(3), 0);
 
         if (hasAtLeastOneSolution()) {
