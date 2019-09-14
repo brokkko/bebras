@@ -549,8 +549,8 @@ public class Event {
                     continue;
                 types.add(type);
 
-                Info eventResults = user2result.apply(u);
-                UserAndResult ur = new UserAndResult(u, eventResults);
+                Info userResults = user2result.apply(u);
+                UserAndResult ur = new UserAndResult(u, userResults);
                 allUsersAndResults.add(ur);
             }
         } catch (Exception e) {

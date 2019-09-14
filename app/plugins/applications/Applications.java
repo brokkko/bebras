@@ -399,7 +399,10 @@ public class Applications extends Plugin { //TODO test for right in all calls
     //returns all applications, even not created by this plugin
     public List<Application> getApplications(User user) { //TODO report: extract method does not extract //noinspection
         //noinspection unchecked
-        return (List<Application>) user.getInfo().get(userField);
+        List<Application> applications = (List<Application>) user.getInfo().get(userField);
+        if (applications == null)
+            applications = new ArrayList<>();
+        return applications;
     }
 
     public List<Application> getApplicationsOnlyWithSupportedTypes(User user) {

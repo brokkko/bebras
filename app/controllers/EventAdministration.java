@@ -449,8 +449,12 @@ public class EventAdministration extends Controller {
                     Event e = Event.current();
 
                     //globalize each contest
-                    for (Contest c : e.getContests())
+                    for (Contest c : e.getContests()) {
+                        Logger.info("globalizing contest " + c.getId());
                         c.globalizeResults();
+                    }
+
+                    Logger.info("globalizing event");
 
                     e.globalizeResults(
                             e.getResultTranslator(),
@@ -465,6 +469,9 @@ public class EventAdministration extends Controller {
                             User::getEventResults,
                             User::updateEventResults
                     );
+
+                    Logger.info("event results globalized");
+
                     return true;
                 }
         );

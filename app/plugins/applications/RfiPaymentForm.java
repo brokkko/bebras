@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -86,10 +87,10 @@ public class RfiPaymentForm {
                 urlParameters;
 
         Mac hmacInstance = Mac.getInstance("HmacSHA256");
-        Charset charSet = Charset.forName("UTF-8");
+        Charset charSet = StandardCharsets.UTF_8;
         SecretKeySpec keySpec = new javax.crypto.spec.SecretKeySpec(charSet.encode(secretKey).array(), "HmacSHA256");
         hmacInstance.init(keySpec);
 
-        return DatatypeConverter.printBase64Binary(hmacInstance.doFinal(data.getBytes("UTF-8")));
+        return DatatypeConverter.printBase64Binary(hmacInstance.doFinal(data.getBytes(StandardCharsets.UTF_8)));
     }
 }

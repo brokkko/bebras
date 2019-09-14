@@ -142,21 +142,17 @@ public class Tables extends Controller {
         );
 
         return promiseOfVoid.map(
-                new F.Function<MemoryDataWriter, Result>() {
-                    public Result apply(MemoryDataWriter dataWriter) {
-                        return ok(view_table.render(
-                                tableDescription.getTitle(),
-                                tableDescription.isShowSearch() || currentUser.hasEventAdminRight(),
-                                tableDescription.getComment(),
-                                table.getTitles(), dataWriter.getList(), tableIndex, tableDescription.isShowAsTable(),
-                                objectsProviderFactory.getTitles(),
-                                objectsProviderFactory.getFields(),
-                                allSearchValues,
-                                finalFullTextSearch == null ? "" : finalFullTextSearch,
-                                finalInside
-                        ));
-                    }
-                }
+                dataWriter -> ok(view_table.render(
+                        tableDescription.getTitle(),
+                        tableDescription.isShowSearch() || currentUser.hasEventAdminRight(),
+                        tableDescription.getComment(),
+                        table.getTitles(), dataWriter.getList(), tableIndex, tableDescription.isShowAsTable(),
+                        objectsProviderFactory.getTitles(),
+                        objectsProviderFactory.getFields(),
+                        allSearchValues,
+                        finalFullTextSearch == null ? "" : finalFullTextSearch,
+                        finalInside
+                ))
         );
     }
 
