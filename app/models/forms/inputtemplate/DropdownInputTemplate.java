@@ -198,7 +198,8 @@ public class DropdownInputTemplate extends InputTemplate<String> {
             "~group",
             "KZH",
             "BLR",
-            "UKR"
+            "UKR",
+            "UZB"
     );
 
     private static List<String> REGION_TITLES = Arrays.asList(
@@ -293,7 +294,8 @@ public class DropdownInputTemplate extends InputTemplate<String> {
             "другая страна",
             "Казахстан",
             "Белоруссия",
-            "Украина"
+            "Украина",
+            "Узбекистан"
     );
 
     private static List<String> BY_REGION_VARIANTS = Arrays.asList(
