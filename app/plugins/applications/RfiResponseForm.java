@@ -68,7 +68,7 @@ public class RfiResponseForm {
 
     public void parseOrderInformation() {
         if (comment == null)
-            throw new IllegalArgumentException("noto order information specified");
+            throw new IllegalArgumentException("no order information specified");
 
         String[] parts = comment.split("::");
         if (parts.length != 3)

@@ -202,7 +202,7 @@ public class Applications extends Plugin { //TODO test for right in all calls
             if (participantRoleName != null) {
                 UserRole participantRole = event.getRole(participantRoleName);
                 if (participantRole == UserRole.EMPTY)
-                    badRequest();
+                    badRequest(); //TODO ???
 
                 newApplication.createUsers(event, user, participantRole, appType);
             }

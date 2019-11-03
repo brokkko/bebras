@@ -4,12 +4,19 @@ import models.newserialization.Deserializer;
 import models.newserialization.SerializableUpdatable;
 import models.newserialization.Serializer;
 
+import java.util.Objects;
+
 public class Item implements SerializableUpdatable {
 
     private String name;
     private int price;
 
     public Item() {
+    }
+
+    public Item(String name, int price) {
+        this.name = name;
+        this.price = price;
     }
 
     @Override
