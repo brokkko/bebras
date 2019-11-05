@@ -4,10 +4,7 @@ import models.Event;
 import play.Play;
 import play.mvc.Call;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,6 +59,9 @@ public class ResourceLink implements Widget {
     }
 
     private static String localize(String type, String localUrl) {
+        if (localUrl.startsWith("data:"))
+            return localUrl;
+
         switch (type) {
             case "js":
                 localUrl = "javascripts/" + localUrl;
@@ -139,9 +139,9 @@ public class ResourceLink implements Widget {
 
         ResourceLink that = (ResourceLink) o;
 
-        if (externalUrl != null ? !externalUrl.equals(that.externalUrl) : that.externalUrl != null) return false;
-        if (localUrl != null ? !localUrl.equals(that.localUrl) : that.localUrl != null) return false;
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
+        if (!Objects.equals(externalUrl, that.externalUrl)) return false;
+        if (!Objects.equals(localUrl, that.localUrl)) return false;
+        if (!Objects.equals(type, that.type)) return false;
 
         return true;
     }
@@ -152,5 +152,9 @@ public class ResourceLink implements Widget {
         result = 31 * result + (externalUrl != null ? externalUrl.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
         return result;
+    }
+
+    public String getLocalUrl() {
+        return localUrl;
     }
 }

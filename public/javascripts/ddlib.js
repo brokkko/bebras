@@ -99,6 +99,7 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
 
     var disabledCallback = false;
     var initCallback = false;
+    var dragendCallback = false;
     var enabled = true;
 
     for (var key = 0; key < places.length; key++)
@@ -151,7 +152,8 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                     height: place.height,
                     strokeWidth: place.vObject.strokeWidth,
                     stroke: place.vObject.stroke,
-                    fill: place.vObject.fill
+                    fill: place.vObject.fill,
+                    dashArray: place.vObject.dashArray
                 });
 
             //empty place
@@ -208,6 +210,9 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                         this.ref.current = minPlaceKey;
                     } else
                         this.transitionTo({x: this.ref.x, y: this.ref.y, duration: 0.1});
+
+                    if (dragendCallback)
+                        dragendCallback();
                 });
             }
 
@@ -249,6 +254,9 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
         },
         setInitCallback: function (_initCallback) {
             initCallback = _initCallback;
+        },
+        setDragendCallback: function(_dragendCallback) {
+            dragendCallback = _dragendCallback;
         },
         isEnabled: function () {
             return enabled;
@@ -308,6 +316,8 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
             return true;
         },
         getAnswer: function () {
+            if (this.getSolution() === "")
+                return -1;
             return 2;
         },
         getOutput: function () { //not needed in all dyn problems
@@ -316,7 +326,7 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                 if (!(key in magnetPlaces))
                     continue;
                 var place = magnetPlaces[key];
-                //TODO place.current == 0 ?!?!?!?!, don't make flying places first
+                //TODO place.current == 0 ?!?!?!?!, don't make flying places first. Should be place.current !== false here and everywhere
                 returnObject[places[place.id].name] = place.current ? places[place.current].name : -1;
             }
             return returnObject;

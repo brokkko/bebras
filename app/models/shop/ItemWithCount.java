@@ -1,3 +1,4 @@
+/*
 package models.shop;
 
 import models.newserialization.*;
@@ -27,3 +28,4 @@ public class ItemWithCount implements SerializableUpdatable {
         count = deserializer.readInt("count", 0);
     }
 }
+*/

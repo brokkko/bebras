@@ -11,6 +11,7 @@ import models.results.InfoPattern;
 import models.utils.Utils;
 import play.Logger;
 import play.twirl.api.Html;
+import views.widgets.EmbeddedLink;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
@@ -69,7 +70,7 @@ public class BebrasProblem implements Problem {
             "SE", "Швеция",
             "SI", "Словения",
             "SK", "Словакия",
-            "TH", "Тайланд",
+            "TH", "Таиланд",
             "TR", "Турция",
             "TW", "Тайвань",
             "UA", "Украина",
@@ -87,6 +88,7 @@ public class BebrasProblem implements Problem {
     private int rightAnswer; //0, 1, 2, 3
     private String explanation;
     private String informatics;
+    private String extraJS;
 
     public BebrasProblem() {
     }
@@ -161,7 +163,7 @@ public class BebrasProblem implements Problem {
 
     @Override
     public Html formatEditor() {
-        return views.html.bebras.bebras_editor.render(title, country, statement, question, answers, rightAnswer, answersLayout, explanation, informatics);
+        return views.html.bebras.bebras_editor.render(title, country, statement, question, answers, rightAnswer, answersLayout, explanation, informatics, extraJS);
     }
 
     @Override
@@ -185,6 +187,7 @@ public class BebrasProblem implements Problem {
 
         explanation = form.get("explanation");
         informatics = form.get("informatics");
+        extraJS = form.get("extrajs");
     }
 
     public static String fixTables(String text) {
@@ -280,17 +283,15 @@ public class BebrasProblem implements Problem {
 
     @Override
     public Widget getWidget(boolean editor) {
+        List<ResourceLink> links = new ArrayList<>();
+        links.add(new ResourceLink("bebras.problem.css"));
+        links.add(new ResourceLink("bebras.problem.js"));
         if (editor)
-            return new ListWidget(
-                    new ResourceLink("bebras.problem.css"),
-                    new ResourceLink("bebras.edit.problem.js"),
-                    new ResourceLink("bebras.problem.js")
-            );
-        else
-            return new ListWidget(
-                    new ResourceLink("bebras.problem.css"),
-                    new ResourceLink("bebras.problem.js")
-            );
+            links.add(new ResourceLink("bebras.edit.problem.js"));
+        if (extraJS != null && !extraJS.trim().isEmpty())
+            links.add(new EmbeddedLink(extraJS));
+
+        return new ListWidget(links);
     }
 
     @Override
@@ -304,6 +305,8 @@ public class BebrasProblem implements Problem {
         serializer.write("right", rightAnswer);
         serializer.write("explanation", explanation);
         serializer.write("informatics", informatics);
+        if (extraJS != null && !extraJS.trim().isEmpty())
+            serializer.write("extrajs", extraJS);
     }
 
     @Override
@@ -317,6 +320,7 @@ public class BebrasProblem implements Problem {
         rightAnswer = deserializer.readInt("right", 0);
         explanation = deserializer.readString("explanation", "");
         informatics = deserializer.readString("informatics", "");
+        extraJS = deserializer.readString("extrajs",  "");
 
         while (answers.size() < 4)
             answers.add("");

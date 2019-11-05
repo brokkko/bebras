@@ -1,3 +1,4 @@
+/*
 package models.shop;
 
 import models.newserialization.Deserializer;
@@ -39,3 +40,4 @@ public class Item implements SerializableUpdatable {
         return price;
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package models.shop;
 
 import models.newserialization.Deserializer;
@@ -67,3 +68,4 @@ public class Order implements SerializableUpdatable {
         this.comment = comment;
     }
 }
+*/

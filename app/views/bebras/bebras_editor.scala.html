@@ -1,4 +1,4 @@
-@(title:String, country:String, statement:String, question:String, answers:java.util.List[String], rightAnswer:Int, answersLayout:Int, explanation:String, informatics:String)
+@(title:String, country:String, statement:String, question:String, answers:java.util.List[String], rightAnswer:Int, answersLayout:Int, explanation:String, informatics:String, extraJS:String)
 @import models.newproblems.bebras.BebrasProblem
 <p><span class='bebras-editor-title'>Название:</span> <input class='bebras-editor' value="@title" name="title"></p>
 <p><span class='bebras-editor-title'>Страна:</span>
@@ -50,3 +50,6 @@
 
 <p class='bebras-editor-title'>Это информатика!</p>
 <textarea rows=10 class='bebras-editor' name="informatics">@informatics</textarea>
+
+<p class='bebras-editor-title'>Доплнительный JS</p>
+<textarea rows=4 name="extrajs">@extraJS</textarea>

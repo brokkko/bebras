@@ -108,12 +108,7 @@ public class UserRole implements SerializableUpdatable {
     }
 
     public InputForm getUsersForm() {
-        return usersForm.filter(new InputForm.FieldFilter() {
-            @Override
-            public boolean accept(InputField field) {
-                return !field.isExtra();
-            }
-        });
+        return usersForm.filter(field -> !field.isExtra());
     }
 
     public InfoPattern getUserInfoPattern() {
@@ -121,12 +116,7 @@ public class UserRole implements SerializableUpdatable {
     }
 
     public InputForm getEditUserForm() {
-        return usersForm.filter(new InputForm.FieldFilter() {
-            @Override
-            public boolean accept(InputField field) {
-                return !field.isSkipForEdit() && field.isStore() && !field.isExtra();
-            }
-        });
+        return usersForm.filter(field -> !field.isSkipForEdit() && field.isStore() && !field.isExtra());
     }
 
     public List<String> getMayRegister() {
