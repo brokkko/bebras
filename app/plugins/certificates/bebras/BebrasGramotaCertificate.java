@@ -72,7 +72,7 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
 
             formatGramotaData(writer);
 
-            formatDiplomGramotaFooter(writer, false);
+            formatDiplomGramotaFooter(writer, false, year);
 
         } catch (Exception e) {
             Logger.error("failed to write text", e);
@@ -111,21 +111,42 @@ public class BebrasGramotaCertificate extends Diploma<DiplomaFactory> {
         }
     }
 
-    public static void formatDiplomGramotaFooter(PdfWriter writer, boolean shorterSkipForDiploma) {
+    public static void formatDiplomGramotaFooter(PdfWriter writer, boolean shorterSkipForDiploma, int year) {
         float y0 = 101;
         float x0 = shorterSkipForDiploma ? 210 / 2 : 216 / 2;
         float size = 11;
         float lineSkipSmall = Utilities.pointsToMillimeters(size) * 1.5f;
         float lineSkipBig = 4.9f + lineSkipSmall;
-        printDiplomGramotaText(writer, "ЧЛЕНЫ ЖЮРИ:", size, false, x0, y0);
-        y0 -= lineSkipBig / 1.4f;
 
-        printDiplomGramotaText(writer, "Председатель Организационного комитета  конкурса «Бобёр»,", size, false, x0, y0);
-        y0 -= lineSkipSmall;
-        printDiplomGramotaText(writer, "декан факультета компьютерных технологий и информатики СПбГЭТУ «ЛЭТИ», д.т.н.", size, false, x0, y0);
-        y0 -= lineSkipSmall * 1.4f;
-        printDiplomGramotaText(writer, "М. С. Куприянов", size, false, x0 + 50, y0, false);
-        y0 -= lineSkipBig;
+        if (year <= 2018) {
+            printDiplomGramotaText(writer, "ЧЛЕНЫ ЖЮРИ:", size, false, x0, y0);
+            y0 -= lineSkipBig / 1.4f;
+
+            printDiplomGramotaText(writer, "Председатель Организационного комитета  конкурса «Бобёр»,", size, false, x0, y0);
+            y0 -= lineSkipSmall;
+            printDiplomGramotaText(writer, "декан факультета компьютерных технологий и информатики СПбГЭТУ «ЛЭТИ», д.т.н.", size, false, x0, y0);
+            y0 -= lineSkipSmall * 1.4f;
+            printDiplomGramotaText(writer, "М. С. Куприянов", size, false, x0 + 50, y0, false);
+            y0 -= lineSkipBig;
+        } else {
+            y0 += lineSkipSmall;
+            printDiplomGramotaText(writer, "ЧЛЕНЫ ЖЮРИ:", size, false, x0, y0);
+            y0 -= lineSkipBig / 1.4f;
+
+            /*
+            Директор департамента образования,
+            председатель Организационного комитета Конкурса «Бобёр»
+            доктор технических наук, профессор,
+            */
+            printDiplomGramotaText(writer, "Директор департамента образования,", size, false, x0, y0);
+            y0 -= lineSkipSmall;
+            printDiplomGramotaText(writer, "председатель Организационного комитета Конкурса «Бобёр»", size, false, x0, y0);
+            y0 -= lineSkipSmall;
+            printDiplomGramotaText(writer, "доктор технических наук, профессор,", size, false, x0, y0);
+            y0 -= lineSkipSmall * 1.4f;
+            printDiplomGramotaText(writer, "М. С. Куприянов", size, false, x0 + 50, y0, false);
+            y0 -= lineSkipBig;
+        }
 
         printDiplomGramotaText(writer, "Директор Инновационного института продуктивного обучения СЗО РАО,", size, false, x0, y0);
         y0 -= lineSkipSmall;

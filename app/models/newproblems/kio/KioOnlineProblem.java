@@ -281,7 +281,11 @@ public class KioOnlineProblem implements Problem {
             return null;
         }
 
-        return new JsKioProblem(jsCode, className, settings, null); //TODO add external checker
+        try {
+            return new JsKioProblem(jsCode, className, settings, null); //TODO add external checker
+        } catch (Exception e) {
+            return null; //TODO !!!
+        }
     }
 
     @Override

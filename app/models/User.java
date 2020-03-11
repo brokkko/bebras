@@ -240,7 +240,7 @@ public class User implements SerializableUpdatable {
             SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
             byte[] hash = f.generateSecret(spec).getEncoded(); //TODO I didn't know this was so slow (~100ms)
-            return new BigInteger(1, hash).toString(16);
+            return new BigInteger(hash).toString(16);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             return null;
         }
