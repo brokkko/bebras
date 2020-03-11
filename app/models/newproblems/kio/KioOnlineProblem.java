@@ -18,11 +18,9 @@ import views.widgets.Widget;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -169,6 +167,8 @@ public class KioOnlineProblem implements Problem {
             result.put(paramName, paramValue == null ? "-" : param.v(paramValue)); //TODO process null on view level
         }
 
+        if (jsKioProblem == null)
+            throw new IllegalStateException("jsKioProblem == null");
         List<Parameter> params = jsKioProblem.getParameters();
         List<Double> rankSorterValue = params.stream().map(p -> {
             Object paramValue = checkResult.get(p.name());
@@ -269,22 +269,30 @@ public class KioOnlineProblem implements Problem {
         String[] jsCodes = dependencies.split("\\s*,\\s*");
         if (jsCodes.length == 0)
             return null;
-        String jsCodeFilename = jsCodes[0];
+
         File kioOnlineFolder = ServerConfiguration.getInstance().getPluginFolder("KioOnline");
-        File jsCodeFile = new File(kioOnlineFolder, jsCodeFilename);
-        String jsCode;
-        try {
-            byte[] bytes = Files.readAllBytes(jsCodeFile.toPath());
-            jsCode = new String(bytes, "UTF-8");
-        } catch (IOException e) {
-            Logger.error("Failed to read file " + jsCodeFile, e);
-            return null;
+
+        StringBuilder jsCode = new StringBuilder();
+        for (String jsCodeFilename : jsCodes) {
+            if (!jsCodeFilename.toLowerCase().endsWith(".js") || jsCodeFilename.toLowerCase().startsWith("easeljs"))
+                continue;
+            File jsCodeFile = new File(kioOnlineFolder, jsCodeFilename);
+            try {
+                byte[] bytes = Files.readAllBytes(jsCodeFile.toPath());
+                jsCode.append(new String(bytes, StandardCharsets.UTF_8));
+                jsCode.append(" ");
+            } catch (IOException e) {
+                Logger.error("Failed to read file " + jsCodeFile, e);
+                return null;
+            }
         }
 
+        String fixedJsCode = "createjs = {Container: {}, Bitmap: {}, Shape: {}, Event: {}, EventDispatcher: {}}; " + jsCode;
+
         try {
-            return new JsKioProblem(jsCode, className, settings, null); //TODO add external checker
+            return new JsKioProblem(fixedJsCode, className, settings, null); //TODO add external checker
         } catch (Exception e) {
-            return null; //TODO !!!
+            throw new IllegalStateException("failed to load js code", e);
         }
     }
 
