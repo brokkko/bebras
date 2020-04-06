@@ -310,6 +310,9 @@ public class KioOnlineProblem implements Problem {
                 return 1;
 
             int n = r1.size();
+            int n2 = r2.size();
+            if (n2 != n) //TODO why is this possible, seems, that data may change by itself (n2 = 0 sometimes)
+                return n - n2;
             for (int i = 0; i < n; i++) {
                 double diff = r1.get(i) - r2.get(i);
                 if (Math.abs(diff) < 1e-8)
