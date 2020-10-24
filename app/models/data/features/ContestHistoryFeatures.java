@@ -122,17 +122,14 @@ public class ContestHistoryFeatures implements FeaturesSet<User> {
         List<Submission> allSubmissions = user.getAllSubmissions(contest);
 
         allSubmissions = new ArrayList<>(allSubmissions);
-        allSubmissions.sort(new Comparator<Submission>() {
-            @Override
-            public int compare(Submission s1, Submission s2) {
-                long dif = s1.getLocalTime() - s2.getLocalTime();
-                if (dif < 0)
-                    return -1;
-                else if (dif == 0)
-                    return 0;
-                else
-                    return 1;
-            }
+        allSubmissions.sort((s1, s2) -> {
+            long dif = s1.getLocalTime() - s2.getLocalTime();
+            if (dif < 0)
+                return -1;
+            else if (dif == 0)
+                return 0;
+            else
+                return 1;
         });
 
         StringBuilder result = new StringBuilder();

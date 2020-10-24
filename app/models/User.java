@@ -9,14 +9,15 @@ import models.forms.InputForm;
 import models.newproblems.ConfiguredProblem;
 import models.newproblems.Problem;
 import models.newproblems.kio.KioOnlineProblem;
-import models.newproblems.kio.KioProblem;
 import models.newserialization.*;
 import models.results.Info;
 import models.results.InfoPattern;
 import models.results.Translator;
+import net.sf.ehcache.Ehcache;
 import org.bson.types.ObjectId;
 import play.Logger;
 import play.Play;
+import play.api.cache.CacheManagerProvider;
 import play.cache.Cache;
 import play.mvc.Http;
 
@@ -817,6 +818,7 @@ public class User implements SerializableUpdatable {
         return this.evaluateAllSubmissions(contest);
     }
 
+    // returns all submissions, but selects only last
     private List<Submission> evaluateAllSubmissions(Contest contest) {
         DBCollection submissionsCollection = contest.getCollection();
 
