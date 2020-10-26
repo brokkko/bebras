@@ -1,0 +1,4 @@
+@(ind: Int, answer: String)
+@import models.newproblems.bebras.BebrasProblem
+<td><div class="bebras-task-answer-selector"><span class='aid hidden'>@ind</span>@BebrasProblem.numberAnswer2string(ind)</div></td>
+<td class="bebras-answer-wrapper">@Html(answer)</td>

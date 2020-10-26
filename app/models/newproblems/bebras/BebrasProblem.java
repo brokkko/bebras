@@ -11,17 +11,18 @@ import models.results.InfoPattern;
 import models.utils.Utils;
 import play.Logger;
 import play.twirl.api.Html;
+import views.html.bebras.answer_cell;
+import views.html.bebras.no_answer_cell;
 import views.widgets.EmbeddedLink;
 import views.widgets.ListWidget;
 import views.widgets.ResourceLink;
 import views.widgets.Widget;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -92,6 +93,7 @@ public class BebrasProblem implements Problem {
     private String statement;
     private String question;
     private List<String> answers;
+    private int answersCount = 4;
     private int answersLayout; //layout of answers, number of lines with answers:1,2,3,5
     private int rightAnswer; //0, 1, 2, 3
     private String explanation;
@@ -238,16 +240,16 @@ public class BebrasProblem implements Problem {
 
         //далее русские А
         if (res < 0)
-            return (char)(ansInt + 'а') + "";
+            return (char) (ansInt + 'а') + "";
         else if (res == 0)
             return ".";
         else
-            return (char)(ansInt + 'А') + "";
+            return (char) (ansInt + 'А') + "";
     }
 
     @Override
     public String answerString() {
-        return (char)(rightAnswer + 'А') + "";
+        return (char) (rightAnswer + 'А') + "";
     }
 
     @Override
@@ -328,7 +330,7 @@ public class BebrasProblem implements Problem {
         rightAnswer = deserializer.readInt("right", 0);
         explanation = deserializer.readString("explanation", "");
         informatics = deserializer.readString("informatics", "");
-        extraJS = deserializer.readString("extrajs",  "");
+        extraJS = deserializer.readString("extrajs", "");
 
         while (answers.size() < 4)
             answers.add("");
@@ -337,7 +339,7 @@ public class BebrasProblem implements Problem {
     public static String numberAnswer2string(int answer) {
         if (answer < 0)
             return "";
-        return String.valueOf((char)('А' + answer)); //русское А
+        return String.valueOf((char) ('А' + answer)); //русское А
     }
 
     // shuffling answers
@@ -386,5 +388,25 @@ public class BebrasProblem implements Problem {
             g[f[i]] = i;
 
         return g[realAnswer];
+    }
+
+    private Html createAnswersHtml(List<String> userAnswers) {
+        int cells = this.answersCount + 1;
+        int rows = this.answersLayout;
+        int cols = (int) Math.ceil((double) cells / rows);
+        rows = (int) Math.ceil((double) cells / cols);
+
+        List<String> htmlCells = IntStream
+                .range(0, this.answersCount)
+                .mapToObj(i -> answer_cell.render(i, userAnswers.get(i)).toString())
+                .collect(Collectors.toList());
+
+        htmlCells.add(no_answer_cell.render().toString());
+        htmlCells.addAll(Collections.nCopies(rows * cols - htmlCells.size(), ""));
+
+        IntStream
+                .iterate(0, i -> i + cols)
+                .limit(rows * cols)
+                .mapToObj(i -> String.join("", htmlCells.subList(i, i + cols)));
     }
 }
