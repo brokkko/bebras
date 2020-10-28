@@ -10,7 +10,7 @@ play.crypto.secret="asdlkfjahsdflkahsdflkjhasdlkfhalskdfhalksdfhalkshfowqeuihrfd
 
 # The application languages
 # ~~~~~
-play.i18n.langs=["en"]
+play.i18n.langs=["en", "ru"]
 
 # Global storedObject class
 # ~~~~~
