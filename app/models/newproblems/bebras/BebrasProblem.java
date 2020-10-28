@@ -127,29 +127,13 @@ public class BebrasProblem implements Problem {
         }
 
         //render answers
-        Html answersHtml;
         List<String> userAnswers = getUserAnswers(randSeed);
-        switch (answersLayout) {
-            case 1:
-                answersHtml = views.html.bebras.answers_1x5.render(userAnswers);
-                break;
-            case 2:
-                answersHtml = views.html.bebras.answers_2x3.render(userAnswers);
-                break;
-            case 3:
-                answersHtml = views.html.bebras.answers_3x2.render(userAnswers);
-                break;
-            case 5:
-                answersHtml = views.html.bebras.answers_5x1.render(userAnswers);
-                break;
-            default:
-                answersHtml = views.html.bebras.answers_5x1.render(userAnswers);
-        }
+        Html answersHtml = createAnswersHtml(userAnswers);
 
         int scores = 0;
         if (settings != null) {
             Object oScores = settings.get("r");
-            if (oScores != null && oScores instanceof Integer)
+            if (oScores instanceof Integer)
                 scores = (Integer) oScores;
         }
 
@@ -173,7 +157,7 @@ public class BebrasProblem implements Problem {
 
     @Override
     public Html formatEditor() {
-        return views.html.bebras.bebras_editor.render(title, country, statement, question, answers, rightAnswer, answersLayout, explanation, informatics, extraJS);
+        return views.html.bebras.bebras_editor.render(title, country, statement, question, answersCount, answers, rightAnswer, answersLayout, explanation, informatics, extraJS);
     }
 
     @Override
@@ -182,18 +166,14 @@ public class BebrasProblem implements Problem {
         country = form.get("country");
         statement = form.get("statement");
         question = form.get("question");
+        answersCount = form.getAsInt("answersCount", 4);
 
         answers = new ArrayList<>();
-        answers.add(form.get("answers-0"));
-        answers.add(form.get("answers-1"));
-        answers.add(form.get("answers-2"));
-        answers.add(form.get("answers-3"));
+        for (int i = 0; i < answersCount; i++)
+            answers.add(form.get("answers-" + i));
 
-        try {
-            rightAnswer = Integer.parseInt(form.get("rightAnswer"));
-            answersLayout = Integer.parseInt(form.get("answersLayout"));
-        } catch (NumberFormatException ignored) {
-        }
+        rightAnswer = form.getAsInt("rightAnswer", 0);
+        answersLayout = form.getAsInt("answersLayout", 1);
 
         explanation = form.get("explanation");
         informatics = form.get("informatics");
@@ -311,6 +291,7 @@ public class BebrasProblem implements Problem {
         serializer.write("statement", statement);
         serializer.write("question", question);
         SerializationTypesRegistry.list(String.class).write(serializer, "answers", answers);
+        serializer.write("answers count", answersCount);
         serializer.write("answers layout", answersLayout);
         serializer.write("right", rightAnswer);
         serializer.write("explanation", explanation);
@@ -326,13 +307,14 @@ public class BebrasProblem implements Problem {
         statement = deserializer.readString("statement", "");
         question = deserializer.readString("question", "");
         answers = SerializationTypesRegistry.list(String.class).read(deserializer, "answers");
+        answersCount = deserializer.readInt("answers count", 4);
         answersLayout = deserializer.readInt("answers layout", 0);
         rightAnswer = deserializer.readInt("right", 0);
         explanation = deserializer.readString("explanation", "");
         informatics = deserializer.readString("informatics", "");
         extraJS = deserializer.readString("extrajs", "");
 
-        while (answers.size() < 4)
+        while (answers.size() < answersCount)
             answers.add("");
     }
 
@@ -344,15 +326,18 @@ public class BebrasProblem implements Problem {
 
     // shuffling answers
 
-    private static final int[] idPermutation = {0, 1, 2, 3};
-
     private int[] userAnswerToRealAnswerPermutation(long randSeed) {
-        if (randSeed == 0)
-            return idPermutation;
+        int[] result = new int[answersCount];
+
+        if (randSeed == 0) {
+            for (int i = 0; i < answersCount; i++)
+                result[i] = i;
+            return result;
+        }
 
         Random random = new Random(randSeed);
-        int[] result = new int[4];
-        for (int i = 0; i < 4; i++) {
+
+        for (int i = 0; i < answersCount; i++) {
             result[i] = i;
             int j = random.nextInt(i + 1); //0 .. i
 
@@ -366,12 +351,10 @@ public class BebrasProblem implements Problem {
 
     private List<String> getUserAnswers(long randSeed) {
         int[] f = userAnswerToRealAnswerPermutation(randSeed);
-        List<String> result = new ArrayList<>(4);
+        List<String> result = new ArrayList<>(answersCount);
 
-        result.add(answers.get(f[0]));
-        result.add(answers.get(f[1]));
-        result.add(answers.get(f[2]));
-        result.add(answers.get(f[3]));
+        for (int i = 0; i < answersCount; i++)
+            result.add(answers.get(f[i]));
 
         return result;
     }
@@ -383,8 +366,8 @@ public class BebrasProblem implements Problem {
 
     private int realAnswerToUserAnswer(int realAnswer, long randSeed) {
         int[] f = userAnswerToRealAnswerPermutation(randSeed);
-        int[] g = new int[4]; //we do not really need this array, but we will probably use it later
-        for (int i = 0; i < 4; i++)
+        int[] g = new int[answersCount]; //we do not really need this array, but we will probably use it later
+        for (int i = 0; i < answersCount; i++)
             g[f[i]] = i;
 
         return g[realAnswer];
@@ -393,6 +376,8 @@ public class BebrasProblem implements Problem {
     private Html createAnswersHtml(List<String> userAnswers) {
         int cells = this.answersCount + 1;
         int rows = this.answersLayout;
+        if (rows == 0)
+            rows = cells;
         int cols = (int) Math.ceil((double) cells / rows);
         rows = (int) Math.ceil((double) cells / cols);
 
@@ -404,9 +389,13 @@ public class BebrasProblem implements Problem {
         htmlCells.add(no_answer_cell.render().toString());
         htmlCells.addAll(Collections.nCopies(rows * cols - htmlCells.size(), ""));
 
-        IntStream
+        String text = IntStream
                 .iterate(0, i -> i + cols)
-                .limit(rows * cols)
-                .mapToObj(i -> String.join("", htmlCells.subList(i, i + cols)));
+                .limit(rows)
+                .mapToObj(i -> String.join("", htmlCells.subList(i, i + cols)))
+                .map(s -> "<tr>" + s + "</tr>")
+                .collect(Collectors.joining());
+
+        return Html.apply(text);
     }
 }

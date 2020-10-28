@@ -1,4 +1,4 @@
-@(title:String, country:String, statement:String, question:String, answers:java.util.List[String], rightAnswer:Int, answersLayout:Int, explanation:String, informatics:String, extraJS:String)
+@(title:String, country:String, statement:String, question:String, answersCount: Int, answers:java.util.List[String], rightAnswer:Int, answersLayout:Int, explanation:String, informatics:String, extraJS:String)
 @import models.newproblems.bebras.BebrasProblem
 <p><span class='bebras-editor-title'>Название:</span> <input class='bebras-editor' value="@title" name="title"></p>
 <p><span class='bebras-editor-title'>Страна:</span>
@@ -15,33 +15,46 @@
 <p class='bebras-editor-title'>Вопрос</p>
 <textarea rows=10 class='bebras-editor' name="question">@question</textarea>
 
+<p><span class='bebras-editor-title'>Количество вариантов ответов:</span>
+    <select class='bebras-editor' name="answersCount">
+        <option value="2"@if(answersCount == 2){ selected}>2</option>
+        <option value="3"@if(answersCount == 3){ selected}>3</option>
+        <option value="4"@if(answersCount == 4){ selected}>4</option>
+        <option value="5"@if(answersCount == 5){ selected}>5</option>
+        <option value="6"@if(answersCount == 6){ selected}>6</option>
+        <option value="7"@if(answersCount == 7){ selected}>7</option>
+        <option value="8"@if(answersCount == 8){ selected}>8</option>
+        <option value="9"@if(answersCount == 9){ selected}>9</option>
+    </select>
+</p>
+
 <p class='bebras-editor-title'>Варианты ответов</p>
 <table class='bebras-questions-table'>
-    <tr>
-        <td>А. <textarea rows=6 class='bebras-editor' name="answers-0">@answers.get(0)</textarea></td>
-        <td>Б. <textarea rows=6 class='bebras-editor' name="answers-1">@answers.get(1)</textarea></td>
-    </tr>
-    <tr>
-        <td>В. <textarea rows=6 class='bebras-editor' name="answers-2">@answers.get(2)</textarea></td>
-        <td>Г. <textarea rows=6 class='bebras-editor' name="answers-3">@answers.get(3)</textarea></td>
-    </tr>
+    @for(ind <- Range(0, answers.size(), 2)) {
+        <tr>
+            <td>@BebrasProblem.numberAnswer2string(ind).
+                <textarea rows=6 class='bebras-editor' name="answers-@ind">@answers.get(ind)</textarea>
+            </td>
+            <td>@if(ind + 1 < answers.size()) {@BebrasProblem.numberAnswer2string(ind + 1).
+                <textarea rows=6 class='bebras-editor' name="answers-@{ind+1}">@answers.get(ind + 1)</textarea>
+            }</td>
+        </tr>
+    }
 </table>
 
 <p><span class='bebras-editor-title'>Правильный ответ:</span>
     <select class='bebras-editor' name="rightAnswer">
-        <option value="0"@if(rightAnswer == 0){ selected}>А</option>
-        <option value="1"@if(rightAnswer == 1){ selected}>Б</option>
-        <option value="2"@if(rightAnswer == 2){ selected}>В</option>
-        <option value="3"@if(rightAnswer == 3){ selected}>Г</option>
+        @for(ind <- Range(0, answersCount)) {
+            <option value="@ind" @if(rightAnswer == ind){ selected}>@BebrasProblem.numberAnswer2string(ind)</option>
+        }
     </select>
 </p>
 
 <p><span class='bebras-editor-title'>Расположение вариантов ответов:</span>
     <select class='bebras-editor' name="answersLayout">
-        <option value="1"@if(answersLayout == 1){ selected}>1x5</option>
-        <option value="2"@if(answersLayout == 2){ selected}>2x3</option>
-        <option value="3"@if(answersLayout == 3){ selected}>3x2</option>
-        <option value="5"@if(answersLayout == 5){ selected}>5x1</option>
+        @for(rows <- Range.inclusive(1, answersCount + 1)) { @*TODO evaluate cols and fiter out impossible rows*@
+            <option value="@rows" @if(answersLayout == rows){ selected}>@{rows}x?</option>
+        }
     </select>
 </p>
 
