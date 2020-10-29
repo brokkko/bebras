@@ -196,7 +196,7 @@ public class Mailer implements SerializableUpdatable {
 
         boolean isHtml = htmlMessage != null;
 
-        Http.Context context = Http.Context.current();
+        Http.Context context = Http.Context.current.get();
         if (context != null && context.request().host().matches("localhost(|:.*)")) {
             System.out.println("== sending email ==");
             System.out.println(subject);
