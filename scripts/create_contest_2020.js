@@ -19,9 +19,9 @@ bebras19.contests.forEach(function (contest) {
     for (let i = 0; i < grades.length; i++)
         contest.rights.push("participant~grade=" + grades[i]);
 
-    contest.start = new Date(2020, 11 - 1, 9 - 1, 0, 0, 0, 0);
-    contest.finish = new Date(2020, 11 - 1, 22 - 1, 23, 59, 59, 0);
-    contest.results = new Date(2020, 11 - 1, 30 - 1, 23, 0, 0, 0)
+    contest.start = new Date(2020, 11 - 1, 9, 0, 0, 0, 0);
+    contest.finish = new Date(2020, 11 - 1, 22, 23, 59, 59, 0);
+    contest.results = new Date(2020, 11 - 1, 30, 23, 0, 0, 0)
     contest["allow restart"] = false;
     contest["only admin"] = true;
 
