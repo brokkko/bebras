@@ -13,7 +13,7 @@ bebras19.contests.forEach(function (contest) {
     var grades = id.split("-");
 
     contest.tables = [];
-
+    contest.name = contest.name.substr(0, contest.name.length - 2) + '20';
 
     contest.rights = [];
     for (let i = 0; i < grades.length; i++)
