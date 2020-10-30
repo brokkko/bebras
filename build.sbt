@@ -3,6 +3,7 @@ import Keys._
 import com.typesafe.sbt.packager.linux.LinuxSymlink
 import com.typesafe.sbt.packager.MappingsHelper._
 
+logLevel := Level.Debug
 scalaVersion := "2.11.8"
 
 lazy val authSubProject = project.in(file("auth")).settings(
@@ -77,7 +78,7 @@ lazy val dces2 = project.in(file("."))
   .enablePlugins(PlayJava)
   .settings(
     name := "dces2",
-    version := "0.4.68", // [VERSION] do not remove this comment, it is used by ansible to retrieve program version
+    version := "0.4.73", // [VERSION] do not remove this comment, it is used by ansible to retrieve program version
     scalaVersion := "2.11.8",
     // Add your own project settings here
     //      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
@@ -119,3 +120,7 @@ lazy val dces2 = project.in(file("."))
 //TODO aggreate and dependsOn together?
 //TODO auth sub project not visible
 //TODO where to define scala version?
+
+//change inside /usr/lib/rpm/redhat/macros: w19.zstdio to w9.gzdio
+//the same inside /usr/lib/rpm/macros. %_source_payload and %_binary_payload
+//to test: rpm --eval %{_binary_payload}
