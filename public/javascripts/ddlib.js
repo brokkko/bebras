@@ -82,7 +82,7 @@ var Place = function (_x, _y, _width, _height, _name, _type, _vObject, _beforeRe
  _pictures - массив адресов изображений, которые будут использоваться в приложении
  _places - массив объектов Place
  */
-var App = function (elementID, _width, _height, _pictures, _places, _auto_start) {
+var App = function (elementID, _width, _height, _pictures, _places, _auto_start, _need_overlay) {
     var stage = new Kinetic.Stage({
         container: elementID,
         width: _width,
@@ -91,6 +91,8 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
 
     var size = [_width, _height];
     var placesLayer = new Kinetic.Layer();
+    if (_need_overlay)
+        var overlayLayer = new Kinetic.Layer();
     var greyLayer = new Kinetic.Layer();
 
     var magnetPlaces = [];
@@ -110,7 +112,7 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
 
     var pictureLoaded = function () {
         picturesLoaded++;
-        if (picturesLoaded == Object.keys(pictures).length) {
+        if (picturesLoaded === Object.keys(pictures).length) {
             drawPlaces();
         }
     };
@@ -157,11 +159,14 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                 });
 
             //empty place
-            if (place.getType() == 0)
+            if (place.getType() === 0)
                 magnetPlaces[place.id] = {x: place.x, y: place.y, current: false, id: place.id};
+            //current : false or id of element inside this place
 
             //draggable object
-            if (place.getType() == 2) {
+            if (place.getType() === 2) {
+                place.current = false; // false of id of empty place for it
+
                 object.setDraggable("true");
                 object.ref = place;
                 object.is_dragging = false;
@@ -169,9 +174,8 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                 object.on('dragstart', function () {
                     this.is_dragging = true;
                     this.setZIndex(1000);
-                    if (this.ref.current || this.ref.current === 0) {
+                    if (this.ref.current !== false) {
                         magnetPlaces[this.ref.current].current = false;
-                        this.ref.current.current = false;
                         this.ref.current = false;
                     }
                 });
@@ -189,15 +193,15 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                         if (!(key2 in magnetPlaces))
                             continue;
                         var magnetPlace = magnetPlaces[key2];
-                        if (!magnetPlace.current) {
+                        if (magnetPlace.current === false) {
                             var dist = Math.sqrt((x - magnetPlace.x) * (x - magnetPlace.x) + (y - magnetPlace.y) * (y - magnetPlace.y));
-                            if (dist < minDist || minDist == -1) {
+                            if (dist < minDist || minDist === -1) {
                                 minDist = dist;
                                 minPlaceKey = key2;
                             }
                         }
                     }
-                    if (minDist != -1 && (minDist < this.getWidth() || minDist < this.getHeight())) {
+                    if (minDist !== -1 && (minDist < this.getWidth() || minDist < this.getHeight())) {
                         var magnetPlaceId = magnetPlaces[minPlaceKey].id;
                         var dstX = places[magnetPlaceId].x + places[magnetPlaceId].width / 2 - this.getWidth() / 2;
                         var dstY = places[magnetPlaceId].y + places[magnetPlaceId].height / 2 - this.getHeight() / 2;
@@ -223,6 +227,11 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
         }
 
         stage.add(placesLayer);
+
+        //overlay layer
+        if (_need_overlay === true) {
+            stage.add(overlayLayer);
+        }
 
         //grey layer
 
@@ -253,10 +262,21 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
             disabledCallback = _disabledCallback;
         },
         setInitCallback: function (_initCallback) {
-            initCallback = _initCallback;
+            if (!initCallback)
+                initCallback = _initCallback;
+            else {
+                var oldInit = initCallback;
+                initCallback = function () {
+                    oldInit();
+                    _initCallback();
+                }
+            }
         },
-        setDragendCallback: function(_dragendCallback) {
+        setDragendCallback: function (_dragendCallback) {
             dragendCallback = _dragendCallback;
+        },
+        getOverlayLayer: function () {
+            return overlayLayer;
         },
         isEnabled: function () {
             return enabled;
@@ -277,8 +297,8 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                 if (!(key in magnetPlaces))
                     continue;
                 var place = magnetPlaces[key];
-                returnObject[place.id] = place.current ? place.current : -1;
-                if (place.current) busyPlaceFound = true;
+                returnObject[place.id] = place.current !== false ? place.current : -1;
+                if (place.current !== false) busyPlaceFound = true;
             }
             if (!busyPlaceFound) return "";
             else return JSON.stringify(returnObject);
@@ -288,27 +308,34 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                 if (!(key in magnetPlaces))
                     continue;
                 var currentMagnet = magnetPlaces[key];
-                if (currentMagnet.current) {
-                    places[currentMagnet.current].current = false;
-                    places[currentMagnet.current].screenObject.setX(places[currentMagnet.current].x);
-                    places[currentMagnet.current].screenObject.setY(places[currentMagnet.current].y);
+                var currentPlaceInsideMagnetId = currentMagnet.current;
+                if (currentPlaceInsideMagnetId !== false) {
+                    places[currentPlaceInsideMagnetId].current = false;
+                    var so = places[currentPlaceInsideMagnetId].screenObject;
+                    so.setX(places[currentPlaceInsideMagnetId].x);
+                    so.setY(places[currentPlaceInsideMagnetId].y);
                     currentMagnet.current = false;
                 }
             }
-            if (solution.length != 0) {
+            if (solution.length !== 0) {
                 var solutionObject = JSON.parse(solution);
                 for (key = 0; key < places.length; key++) {
                     if (!(key in solutionObject))
                         continue;
                     var objectId = solutionObject[key];
-                    if (objectId != -1) {
+                    if (objectId !== -1) {
                         magnetPlaces[key].current = objectId;
                         var magnetPlaceId = magnetPlaces[key].id;
-                        var dstX = places[magnetPlaceId].x + places[magnetPlaceId].width / 2 - places[objectId].screenObject.getWidth() / 2;
-                        var dstY = places[magnetPlaceId].y + places[magnetPlaceId].height / 2 - places[objectId].screenObject.getHeight() / 2;
-                        places[objectId].screenObject.setX(dstX);
-                        places[objectId].screenObject.setY(dstY);
-                        places[objectId].current = key;
+                        let so = places[objectId].screenObject;
+
+                        var dstX = places[magnetPlaceId].x + places[magnetPlaceId].width / 2 - so.getWidth() / 2;
+                        var dstY = places[magnetPlaceId].y + places[magnetPlaceId].height / 2 - so.getHeight() / 2;
+                        dstX = Math.round(dstX);
+                        dstY = Math.round(dstY);
+                        so.setX(dstX);
+                        so.setY(dstY);
+                        so.setZIndex(1000);
+                        places[objectId].current = key; // точно, place.id это индекс места
                     }
                 }
             }
@@ -327,10 +354,11 @@ var App = function (elementID, _width, _height, _pictures, _places, _auto_start)
                     continue;
                 var place = magnetPlaces[key];
                 //TODO place.current == 0 ?!?!?!?!, don't make flying places first. Should be place.current !== false here and everywhere
-                returnObject[places[place.id].name] = place.current ? places[place.current].name : -1;
+                returnObject[places[place.id].name] = place.current !== false ? places[place.current].name : -1;
             }
             return returnObject;
-        }
+        },
+        stage: stage
     };
 
     if (_auto_start === true)
