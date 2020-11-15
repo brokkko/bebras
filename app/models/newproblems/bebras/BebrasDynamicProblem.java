@@ -227,6 +227,34 @@ public class BebrasDynamicProblem implements Problem {
     }
 
     private boolean testAnswerCorrectnessByServerChecker(String solution) {
+        /*
+        solution = solution.trim();
+        String ca = correctAnswer;
+        while (ca.startsWith("{{{")) {
+            int i = correctAnswer.indexOf("}}}");
+            if (i < 0)
+                break;
+            String prefix = ca.substring(3, i);
+            ca = ca.substring(i + 3);
+            switch (prefix) {
+                case "uppercase":
+                    solution = solution.toUpperCase();
+                    break;
+                case "nospaces":
+                    solution = solution.replaceAll("\\s", "");
+                    break;
+            }
+        }
+        if (ca.contains("{{{OR}}}")) {
+            String[] split = ca.split("\\{\\{\\{OR\\}\\}\\}");
+            for (String s : split)
+                if (solution.equals(s))
+                    return true;
+            return false;
+        }
+
+        return solution.equals(ca);
+         */
         solution = solution.trim();
         if (correctAnswer.contains("{{{OR}}}")) {
             String[] split = correctAnswer.split("\\{\\{\\{OR\\}\\}\\}");

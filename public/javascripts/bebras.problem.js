@@ -5,10 +5,11 @@
     }
 
     function choose_answer($problem_div, answer_ind) {
-        if (answer_ind < 0)
-            answer_ind = 4; // we have 4 answers
-
         var $selectors = $problem_div.find('.bebras-task-answer-selector');
+
+        if (answer_ind < 0)
+            answer_ind = $selectors.length - 1; //last selector is for "don't know"
+
         $selectors.removeClass('active');
         $($selectors.get(answer_ind)).addClass('active');
     }
