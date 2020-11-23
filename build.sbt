@@ -78,7 +78,7 @@ lazy val dces2 = project.in(file("."))
   .enablePlugins(PlayJava)
   .settings(
     name := "dces2",
-    version := "0.4.78", // [VERSION] do not remove this comment, it is used by ansible to retrieve program version
+    version := "0.4.79", // [VERSION] do not remove this comment, it is used by ansible to retrieve program version
     scalaVersion := "2.11.8",
     // Add your own project settings here
     //      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
@@ -104,7 +104,7 @@ lazy val dces2 = project.in(file("."))
     sys.props.get("packageType") match {
       case Some("ubuntu14") =>
         println("generating ubuntu 14 package")
-        SystemloaderPlugin.projectSettings ++ UpstartPlugin.projectSettings ++ debianPackaging
+          SystemloaderPlugin.projectSettings ++ UpstartPlugin.projectSettings ++ debianPackaging
       case Some("fedora") =>
         println("generating fedora package")
         SystemloaderPlugin.projectSettings ++ SystemdPlugin.projectSettings ++ fedoraPackaging
