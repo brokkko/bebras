@@ -56,14 +56,18 @@ public class DcesControllerAction extends Action<DcesController> {
             if (event != Event.ERROR_EVENT)
                 for (Plugin plugin : event.getPlugins())
                     plugin.initPage();
-            String lang = event.getExtraField("lang", "ru").toString();
 
-            switch (lang) {
-                case "en":
-                    ctx.changeLang(LANG_EN);
-                    break;
-                default:
-                    ctx.changeLang(LANG_RU);
+            // set language for event if it has not already been set
+            if (!ctx.args.containsKey("user language was set")) {
+                String lang = event.getExtraField("lang", "ru").toString();
+
+                switch (lang) {
+                    case "en":
+                        ctx.changeLang(LANG_EN);
+                        break;
+                    default:
+                        ctx.changeLang(LANG_RU);
+                }
             }
         }
 

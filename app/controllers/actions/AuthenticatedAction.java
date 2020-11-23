@@ -5,6 +5,7 @@ import controllers.routes;
 import models.Event;
 import models.User;
 import models.newserialization.MemoryDeserializer;
+import models.results.Info;
 import org.apache.commons.mail.EmailException;
 import org.bson.types.ObjectId;
 import play.Logger;
@@ -58,6 +59,12 @@ public class AuthenticatedAction extends Action<Authenticated> {
             if (user == null) {//call to current loads a user. And also tests if there is such a user
                 ctx.session().remove(User.getUsernameSessionKey());
                 return loginRedirect;
+            }
+
+            final Info info = user.getInfo();
+            if (info.containsKey("language")) {
+                ctx.changeLang(String.valueOf(info.get("language")));
+                ctx.args.put("user language was set", true);
             }
 
             if (configuration.admin() && !user.hasEventAdminRight())
