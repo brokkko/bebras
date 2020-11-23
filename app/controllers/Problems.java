@@ -39,6 +39,8 @@ public class Problems extends Controller {
     }
 
     public static Result viewProblem(String eventId, String link) {
+        System.out.println("HERE");
+
         link = link.replaceAll("%20", " ");
         ProblemLink pLink = new ProblemLink(link);
 

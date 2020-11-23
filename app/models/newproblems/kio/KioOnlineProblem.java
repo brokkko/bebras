@@ -292,7 +292,8 @@ public class KioOnlineProblem implements Problem {
         try {
             return new JsKioProblem(fixedJsCode, className, settings, null); //TODO add external checker
         } catch (Exception e) {
-            throw new IllegalStateException("failed to load js code", e);
+            return null;
+//            throw new IllegalStateException("failed to load js code", e);
         }
     }
 
