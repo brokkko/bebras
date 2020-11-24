@@ -78,7 +78,7 @@ lazy val dces2 = project.in(file("."))
   .enablePlugins(PlayJava)
   .settings(
     name := "dces2",
-    version := "0.4.79", // [VERSION] do not remove this comment, it is used by ansible to retrieve program version
+    version := "0.4.83", // [VERSION] do not remove this comment, it is used by ansible to retrieve program version
     scalaVersion := "2.11.8",
     // Add your own project settings here
     //      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.

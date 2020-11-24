@@ -12,11 +12,6 @@
     margin-bottom: 1em;
 }
 
-.section-title {
-    font-weight: bold;
-    margin: 1em 0;
-}
-
 /* editor styles */
 
 .problem img {
@@ -77,4 +72,16 @@ form#edit-problem textarea {
 
 .task-statement.dynamic {
     font-size: 1.4em;
+}
+
+.task-statement, .task-help {
+    line-height: 1.4;
+    margin: 1em 0;
+}
+
+.task-statement p, .task-help p,
+.task-statement ol, .task-help ol,
+.task-statement ul, .task-help ul
+{
+    margin: 0.8em 0;
 }
