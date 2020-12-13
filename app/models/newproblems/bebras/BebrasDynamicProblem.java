@@ -227,44 +227,46 @@ public class BebrasDynamicProblem implements Problem {
     }
 
     private boolean testAnswerCorrectnessByServerChecker(String solution) {
-        /*
-        solution = solution.trim();
+        Pattern p = Pattern.compile("\\{{3}(\\w+)}{3}(.*)");
         String ca = correctAnswer;
-        while (ca.startsWith("{{{")) {
-            int i = correctAnswer.indexOf("}}}");
-            if (i < 0)
+
+        boolean doLowerCase = false;
+        boolean doUpperCase = false;
+        boolean doRemoveSpaces = false;
+        while (true) {
+            Matcher m = p.matcher(ca);
+            if (!m.matches())
                 break;
-            String prefix = ca.substring(3, i);
-            ca = ca.substring(i + 3);
-            switch (prefix) {
-                case "uppercase":
-                    solution = solution.toUpperCase();
+            String command = m.group(1).toLowerCase();
+            ca = m.group(2);
+
+            switch (command) {
+                case "lower":
+                    doLowerCase = true;
+                    break;
+                case "upper":
+                    doUpperCase = true;
                     break;
                 case "nospaces":
-                    solution = solution.replaceAll("\\s", "");
+                    doRemoveSpaces = true;
                     break;
             }
         }
-        if (ca.contains("{{{OR}}}")) {
-            String[] split = ca.split("\\{\\{\\{OR\\}\\}\\}");
-            for (String s : split)
-                if (solution.equals(s))
-                    return true;
-            return false;
-        }
 
-        return solution.equals(ca);
-         */
+        if (doLowerCase)
+            solution = solution.toLowerCase();
+        if (doUpperCase)
+            solution = solution.toUpperCase();
+        if (doRemoveSpaces)
+            solution = solution.replaceAll("\\s", "");
+
         solution = solution.trim();
-        if (correctAnswer.contains("{{{OR}}}")) {
-            String[] split = correctAnswer.split("\\{\\{\\{OR\\}\\}\\}");
-            for (String s : split)
-                if (solution.equals(s))
-                    return true;
-            return false;
-        }
 
-        return solution.equals(correctAnswer);
+        String[] split = correctAnswer.split("\\{{3}OR}{3}");
+        for (String s : split)
+            if (solution.equals(s))
+                return true;
+        return false;
     }
 
     @Override

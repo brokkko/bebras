@@ -643,6 +643,9 @@ public class EventAdministration extends Controller {
     private static boolean tryProcessUserField(Event event, User user, String userField, String fieldValue) {
         // contest/1-2/RU-05
         switch (userField) {
+            case User.FIELD_REGISTERED_BY:
+                //TODO implement, copy some code from 'createUser'
+                break;
             case "~submission":
                 Pattern fieldValuePattern = Pattern.compile("(?<cid>[\\w-]+)/(?<pname>[\\w-]+)/(?<localtime>-?-?\\d+)/(?<answer>.+)");
                 Matcher m = fieldValuePattern.matcher(fieldValue);
