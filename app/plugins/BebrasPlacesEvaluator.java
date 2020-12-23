@@ -894,11 +894,11 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         считаем p = X в процентах от N, округляем до целого вверх.
 
         если X > 50, пишем
-            "И вошел в p% лучших участников по России"
+            "И вошел в p% лучших участников в России"
         eсли X = 1
-            "И занял первое место по России"
+            "И занял первое место в России"
         иначе пишем
-            "И вошел в X лучших участников по России"
+            "И вошел в X лучших участников в России"
          */
 
         if (scores >= s1) {
@@ -909,11 +909,11 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             lines.add(new BebrasCertificateLine("получил(а) отличные результаты,", 12, false));
             lines.add(new BebrasCertificateLine("участвуя в конкурсе «Бобёр-" + year + "»", 12, false));
             if (better == 1)
-                lines.add(new BebrasCertificateLine("и занял первое место по России", 12, false));
+                lines.add(new BebrasCertificateLine("и занял первое место в России", 12, false));
             else if (percents == 1)
-                lines.add(new BebrasCertificateLine("и вошёл (вошла) в число " + better + " лучших участников по России", 12, false)); //don't write 1%, write instead the whole number
+                lines.add(new BebrasCertificateLine("и вошёл (вошла) в число " + better + " лучших участников в России", 12, false)); //don't write 1%, write instead the whole number
             else
-                lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
+                lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников в России", 12, false));
             lines.add(new BebrasCertificateLine("(всего участников " + grade + " класса: " + totalParticipants + ")", 12, false));
         } else if (scores >= s2) {
             lines.add(new BebrasCertificateLine("Настоящим сертификатом", 12, false));
@@ -922,7 +922,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             addSchoolAndAddr(lines, orgInfo, user);
             lines.add(new BebrasCertificateLine("получил(а) хорошие результаты,", 12, false));
             lines.add(new BebrasCertificateLine("участвуя в конкурсе «Бобёр-" + year + "»", 12, false));
-            lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
+            lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников в России", 12, false));
             lines.add(new BebrasCertificateLine("(всего участников " + grade + " класса: " + totalParticipants + ")", 12, false));
         } else if (scores >= s3) {
             if (needOnlyGreatAndGoodResults)
@@ -932,7 +932,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
             lines.add(new BebrasCertificateLine(info.get("surname") + " " + info.get("name"), 12, true));
             addSchoolAndAddr(lines, orgInfo, user);
             lines.add(new BebrasCertificateLine("успешно участвовал(а) в конкурсе «Бобёр-" + year + "»", 12, false));
-            lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников по России", 12, false));
+            lines.add(new BebrasCertificateLine("и вошёл (вошла) в " + percents + "% лучших участников в России", 12, false));
             lines.add(new BebrasCertificateLine("(всего участников " + grade + " класса: " + totalParticipants + ")", 12, false));
         } else {
             if (needOnlyGreatAndGoodResults)

@@ -129,7 +129,7 @@ var add_bebras_dyn_problem = (function(){
         userAnswer = userAnswer.trim();
 
         var split = correctAnswer.split("{{{OR}}}");
-        for (var i = 0; i <= split.length; i++)
+        for (var i = 0; i < split.length; i++)
             if (userAnswer === split[i].trim())
                 return true;
         return false;
