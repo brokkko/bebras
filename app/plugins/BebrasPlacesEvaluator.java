@@ -188,7 +188,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
 
                             String nowRegion = uid2region.get(user.getRegisteredBy());
 
-                            if (grade != wasGrade || !wasRegion.equals(nowRegion)) {
+                            if (grade != wasGrade || !Objects.equals(nowRegion, wasRegion)) {
                                 wasPlace = 1;
                                 userIndex = 1;
                                 wasScores = getUsersScores(user);
