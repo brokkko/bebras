@@ -94,16 +94,45 @@ var add_bebras_dyn_problem = (function(){
     }
 
     function testAnswerCorrectness(correctAnswer, userAnswer) {
-        userAnswer = userAnswer.trim();
-        if (correctAnswer.indexOf("{{{OR}}}") >= 0) {
-            var s = correctAnswer.split("{{{OR}}}");
-            for (var i = 0; i < s.length; i++)
-                if (userAnswer === s[i])
-                    return true;
-            return false;
+        p = /\{{3}(\w+)}{3}(.*)/;
+
+        var doLowerCase = false;
+        var doUpperCase = false;
+        var doRemoveSpaces = false;
+        while (true) {
+            var m = p.exec(correctAnswer);
+            if (!m)
+                break;
+            var command = m[1].toLowerCase();
+            correctAnswer = m[2];
+
+            switch (command) {
+                case "lower":
+                    doLowerCase = true;
+                    break;
+                case "upper":
+                    doUpperCase = true;
+                    break;
+                case "nospaces":
+                    doRemoveSpaces = true;
+                    break;
+            }
         }
 
-        return userAnswer === correctAnswer;
+        if (doLowerCase)
+            userAnswer = userAnswer.toLowerCase();
+        if (doUpperCase)
+            userAnswer = userAnswer.toUpperCase();
+        if (doRemoveSpaces)
+            userAnswer = userAnswer.replace(/\s/g, "");
+
+        userAnswer = userAnswer.trim();
+
+        var split = correctAnswer.split("{{{OR}}}");
+        for (var i = 0; i <= split.length; i++)
+            if (userAnswer === split[i].trim())
+                return true;
+        return false;
     }
 
     function problem_final_init(dyn_type) {

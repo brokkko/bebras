@@ -262,7 +262,7 @@ public class BebrasDynamicProblem implements Problem {
 
         solution = solution.trim();
 
-        String[] split = correctAnswer.split("\\{{3}OR}{3}");
+        String[] split = ca.split("\\{{3}OR}{3}");
         for (String s : split)
             if (solution.equals(s))
                 return true;
