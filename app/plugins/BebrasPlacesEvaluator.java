@@ -1051,6 +1051,8 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
     }
 
     public static String[] splitProbablyLongLine(String line, int maxLength) {
+        if (line == null)
+            return new String[0];
         int len = line.length();
         if (len < maxLength)
             return new String[]{line};
