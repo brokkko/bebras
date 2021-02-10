@@ -3,21 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Task frontend development</title>
-    <script src="jquery-1.7.2.min.js"></script>
-    <script src="contest_stub.js"></script>
+    <script src="dces2-contest-stub.js"></script>
+
+    <!-- следующие два файла нужно разработать самостоятельно для конкретного типа задач -->
+    <script src="problem-example-type.js"></script>
+    <link rel="stylesheet" href="problem-example-type.css">
 </head>
 <body>
+<!-- Здесь в заголовке указывается тип тестируемого задания. Если вы разрабатываете новый тип заданий,
+этот идентификатор нужно придумать. Он должен быть осмысленный, потому что позже будет прописан в системе.
+-->
+<h2>Тестирование заданий типа <span style="font-family: monospace" id="task-type">example-type</span></h2>
+
+<!-- Далее случайный идентификатор. От него зависит ключ для хранения данных в localStorage.
+В реальности данные хранятся на сервере, и сервер сам понимает, какие данные отдавать в зависимости
+от соревнования и участника. Здесь идентификатор нужен, чтобы при тестировании разных задач их
+  данные не хранились в одном и том же месте -->
+<span id="contest-id" style="display: none">laksdfjiuYJHFSDLKsaksj</span>
+
 <div class='problem'>
-    <span class='hidden pr_type'>example-type</span>
-    <!--        Problem HTML-->
+    <!-- Здесь пишем произвольную HTML разметку для задачи.
+    Она будет генерироваться автоматически на сервере в зависимости от содержания задачи
+
+    Например, здесь будет условие задачи, сюда же можно вставить скрипт, если при работе участника
+    с задачей должен выполняться какой-то код, написанной специально под конкретное условие. Код,
+    который подходит для всех задач этого типа, лучше вынести в файл problem-example-type.js -->
+
+    <div class="exmaple-type-statement">
+        Условие задачи. Чему равно произведение 6 и 7?
+        Выберите вариант ответа:
+        <span class="example-type-answer">11</span>,
+        <span class="example-type-answer">22</span>,
+        <span class="example-type-answer">33</span>,
+        <span class="example-type-answer">44</span>,
+        <span class="example-type-answer">55</span>,
+        <span class="example-type-answer">66</span>,
+        <span class="example-type-answer">все ответы правильные</span>.
+    </div>
 </div>
 
-<script>
-    function solution_loader($problem_div, answer) {
-        console.log("loading solution");
-    }
-
-    dces2contest.register_solution_loader('example-type', solution_loader);
-</script>
+<h2>Текущее решение</h2>
+<input size="42" id="solution-to-load" placeholder="Вставьте решение, которое надо загрузить">
+<button id="load-solution">Загрузить</button>
+<pre id="current-solution"></pre>
 </body>
 </html>
