@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task frontend development</title>
+    <script src="jquery-1.7.2.min.js"></script>
+    <script src="contest_stub.js"></script>
+</head>
+<body>
+<div class='problem'>
+    <span class='hidden pr_type'>example-type</span>
+    <!--        Problem HTML-->
+</div>
+
+<script>
+    function solution_loader($problem_div, answer) {
+        console.log("loading solution");
+    }
+
+    dces2contest.register_solution_loader('example-type', solution_loader);
+</script>
+</body>
+</html>
