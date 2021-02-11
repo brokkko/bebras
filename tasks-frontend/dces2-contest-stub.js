@@ -1,10 +1,14 @@
-var dces2contest = {
+let problem_type_being_debugged = '';
+
+let dces2contest = {
 
     register_solution_loader: function (problem_type, loader) {
         solutions_loaders_registry[problem_type] = loader;
+        problem_type_being_debugged = problem_type;
     },
 
     get_problem_index: function ($problem_div) {
+        //Сейчас получится отлаживать только одну задачу на странице.
         return 0;
     },
 
@@ -46,14 +50,24 @@ const solutions_loaders_registry = {};
 //TODO it is better to use problem string id, but we do not have access to it here
 function contest_local_storage_key(problem_id) {
     let contest_id = document.getElementById('contest-id').innerText;
-    return 'contest-stub-storage-' + contest_id+ problem_id
+    return 'contest-stub-storage-' + contest_id + problem_id
 }
 
 function get_local_storage_key_for_data_key(problem_id, data_key) {
     return contest_local_storage_key(problem_id) + '-' + data_key;
 }
 
-$(function () {
+document.addEventListener('DOMContentLoaded', function () {
     let best = JSON.parse(localStorage.getItem(contest_local_storage_key()));
-    solutions_loaders_registry['kio-online']($('#problem'), best);
+    let problem_divs = document.getElementsByClassName('problem');
+
+    let problem_div = problem_divs[0];
+    //jquery mock
+    let $problem_div = {
+        get: function (index) {
+            return problem_div;
+        }
+    };
+
+    solutions_loaders_registry[problem_type_being_debugged]($problem_div, best);
 });
