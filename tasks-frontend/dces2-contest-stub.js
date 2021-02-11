@@ -13,9 +13,11 @@ let dces2contest = {
     },
 
     submit_answer: function (problem_id, answer) {
-        console.log('submitting to server', answer);
         let answerString = JSON.stringify(answer);
         localStorage.setItem(contest_local_storage_key(), answerString);
+
+        console.log('submitting to server', answer);
+        document.getElementById('current-solution').innerText = answerString;
     },
 
     save_problem_data: function (problem_id, data_key, value) {
