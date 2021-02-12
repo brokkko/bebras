@@ -71,5 +71,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    solutions_loaders_registry[problem_type_being_debugged]($problem_div, best);
+    let solution_loader = solutions_loaders_registry[problem_type_being_debugged];
+    solution_loader($problem_div, best);
+
+    document.getElementById('load-solution').addEventListener('click', function() {
+        let solution_string = document.getElementById('solution-to-load').value;
+        let solution = JSON.parse(solution_string);
+        solution_loader($problem_div, solution);
+        dces2contest.submit_answer(dces2contest.get_problem_index($problem_div), solution);
+    });
 });

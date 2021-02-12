@@ -1,4 +1,4 @@
-.example-type-answer {
+.example-type-answer, .example-type-bg-selector {
     border: 1px solid black;
     padding: 0.4rem;
     cursor: pointer;
@@ -9,6 +9,10 @@
     background-color: #1fb5b8;
 }
 
-.example-type-answers {
+.example-type-answers, .example-type-bg-selectors {
     padding: 1rem;
+}
+
+.example-type-bg-selectors {
+    font-size: 0.6rem;
 }
