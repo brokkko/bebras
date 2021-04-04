@@ -1,6 +1,5 @@
 package ru.ipo.kio.js
 
-import jdk.nashorn.api.scripting.{AbstractJSObject, ScriptObjectMirror}
 import org.scalatest.{FlatSpec, Matchers}
 import ru.ipo.Resource
 
@@ -9,19 +8,19 @@ import ru.ipo.Resource
   */
 class JsTester extends FlatSpec with Matchers {
 
-  private def getExampleProblem = new JsKioProblem(
-    Resource("/ru/ipo/kio/js/task_example.js").asString(),
-    "task_example.TaskExample",
+  private def getExampleProblem(name: String, className: String) = new JsKioProblem(
+    Resource("/ru/ipo/kio/js/" + name + ".js").asString(),
+    className,
     "{level: 2}",
     null
   )
 
   "Problem reader" should "not fail reading js kio problem" in {
-    val p = getExampleProblem
+    val p = getExampleProblem("task_example", "task_example.TaskExample")
   }
 
   it should "sort results correctly" in {
-    val p = getExampleProblem
+    val p = getExampleProblem("task_example", "task_example.TaskExample")
 
     val x1 = new Result(Map("steps" -> 42, "max" -> 100, "info1" -> 0.2))
     val x2 = new Result(Map("steps" -> 239, "max" -> 100, "info1" -> 0.3))
@@ -35,8 +34,12 @@ class JsTester extends FlatSpec with Matchers {
   }
 
   it should "display results correctly" in {
-    val p = getExampleProblem
+    val p = getExampleProblem("task_example", "task_example.TaskExample")
     val r = new Result(Map("steps" -> 42, "max" -> 100, "info1" -> 0.2))
 //    p.parameters.map(param => param.)
+  }
+
+  it should "not fail on tasks with arrow functions" in {
+    val p = getExampleProblem("heesch", "heesch.Heesch")
   }
 }

@@ -1,6 +1,7 @@
 package ru.ipo.kio.js
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror
+import org.mozilla.javascript.{Context, ContextAction, ContextFactory, NativeFunction, Scriptable}
+
 import scala.collection.JavaConverters._
 
 abstract sealed class ResultsOrdering
@@ -43,20 +44,29 @@ class Parameter(
 
 object Parameter {
 
-  private def mapUndefinedTo(x: Any, value: Any): Any = if (ScriptObjectMirror.isUndefined(x)) value else x
+  private def mapUndefinedTo(x: Any, value: Any): Any = if (x == Scriptable.NOT_FOUND) value else x
 
-  def apply(name: Any, title: Any, ordering: Any, view: Any, normalize: Any): Parameter = {
+  private def call(f: NativeFunction, thiz: JsKioProblem, args: Array[AnyRef]): AnyRef = {
+    ContextFactory.getGlobal.call(new ContextAction[AnyRef] {
+      override def run(cx: Context): AnyRef = {
+        val problem = thiz.problem
+        f.call(cx, thiz.problemScope, thiz.problem, args)
+      }
+    })
+  }
+
+  def apply(task: JsKioProblem, name: Any, title: Any, ordering: Any, view: Any, normalize: Any): Parameter = {
     val newName = mapUndefinedTo(name, "").toString
     val newTitle = mapUndefinedTo(title, "").toString
 
     val newView: Any => String = mapUndefinedTo(view, "") match {
-      case v: ScriptObjectMirror if v.isFunction => x => v.call(null, x.asInstanceOf[AnyRef]).toString
+      case v: NativeFunction => x => call(v, task, Array(x.asInstanceOf[AnyRef])).toString
       case s: String => x => x + s
     }
 
     val newNormalize: Any => Double = mapUndefinedTo(normalize, "") match {
       case "" => x => x.asInstanceOf[Number].doubleValue()
-      case v: ScriptObjectMirror => x => v.call(null, x.asInstanceOf[AnyRef]).asInstanceOf[Number].doubleValue()
+      case v: NativeFunction => x => call(v, task, Array(x.asInstanceOf[AnyRef])).asInstanceOf[Number].doubleValue()
     }
 
     val newOrdering = if (mapUndefinedTo(ordering, "maximize") == "maximize") Maximize else Minimize

@@ -1,12 +1,10 @@
 package ru.ipo.kio.js
 
+import org.mozilla.javascript.{Context, ContextAction, ContextFactory, NativeArray, NativeFunction, NativeObject, Scriptable, ScriptableObject}
+
 import java.io.File
 import java.net.URLClassLoader
-import javax.script.ScriptEngineManager
-
 import scala.collection.JavaConverters._
-import jdk.nashorn.api.scripting.ScriptObjectMirror
-import ru.ipo.Resource
 
 case class ExternalChecker(jar: File, className: String)
 
@@ -17,27 +15,34 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String, exte
 
   import JsKioProblem._
 
-  val problem: ScriptObjectMirror = createProblem()
+  val (problemScope, problem) = ContextFactory.getGlobal.call(new ContextAction[(ScriptableObject, NativeObject)] {
+    override def run(cx: Context): (ScriptableObject, NativeObject) = {
+      val problemScope = cx.newObject(globalScope).asInstanceOf[ScriptableObject]
+      cx.evaluateString(problemScope, jsCode, className + ".js", 1, null)
+      problemScope.sealObject()
+
+      val problem = cx.evaluateString(problemScope, s"new $className($settingsJson);", "", 1, null).asInstanceOf[NativeObject]
+
+      (problemScope, problem)
+    }
+  })
+
   val parameters: Seq[Parameter] = extractParameters()
   private val parametersView = parameters.view
 
-  private def createProblem(): ScriptObjectMirror = {
-    scriptEngine.eval(jsCode)
-    scriptEngine.eval(s"new $className($settingsJson);").asInstanceOf[ScriptObjectMirror]
-  }
-
   private def extractParameters(): Seq[Parameter] = {
-    val rawParameters = problem.callMember("parameters").asInstanceOf[ScriptObjectMirror]
-    val paramsCount: Int = rawParameters.getMember("length").asInstanceOf[Number].intValue()
+    val rawParameters = ScriptableObject.callMethod(problem, "parameters", Array()).asInstanceOf[NativeArray]
+    val paramsCount: Int = rawParameters.getLength.asInstanceOf[Int]
 
     (0 until paramsCount).map { i =>
-      val param = rawParameters.getSlot(i).asInstanceOf[ScriptObjectMirror]
+      val param = rawParameters.get(i).asInstanceOf[NativeObject]
       Parameter(
-        param.getMember("name"),
-        param.getMember("title"),
-        param.getMember("ordering"),
-        param.getMember("view"),
-        param.getMember("normalize")
+        this,
+        ScriptableObject.getProperty(param, "name"),
+        ScriptableObject.getProperty(param, "title"),
+        ScriptableObject.getProperty(param, "ordering"),
+        ScriptableObject.getProperty(param, "view"),
+        ScriptableObject.getProperty(param, "normalize")
       )
     }
   }
@@ -48,11 +53,21 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String, exte
   def getParameters: java.util.List[Parameter] = parameters.asJava
 
   lazy val checkerFunction: String => String = {
-    val checkerFun = problem.getMember("check")
-    if (ScriptObjectMirror.isUndefined(checkerFun))
+    val checkerFun = ScriptableObject.getProperty(problem, "check")
+    if (checkerFun == Scriptable.NOT_FOUND)
       checkerFunFromExternalChecker
     else
-      x => checkerFun.asInstanceOf[ScriptObjectMirror].call(problem, x).asInstanceOf[String]
+      x => {
+        val nativeChecker = checkerFun.asInstanceOf[NativeFunction]
+        ContextFactory.getGlobal.call(new ContextAction[String] {
+          override def run(cx: Context): String = nativeChecker.call(
+            cx,
+            ScriptableObject.getTopLevelScope(problem), //TODO specify another scope
+            problem,
+            Array(x)
+          ).asInstanceOf[String]
+        })
+      }
   }
 
   def checkerFunFromExternalChecker: String => String = {
@@ -73,14 +88,13 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String, exte
 }
 
 object JsKioProblem {
-  private val classLoader: ClassLoader = ClassLoader.getSystemClassLoader.getParent
 
-  private val factory: ScriptEngineManager = new ScriptEngineManager(classLoader)
+  val globalScope: Scriptable = ContextFactory.getGlobal.call(new ContextAction[Scriptable] {
+    override def run(cx: Context): Scriptable = {
+      val globalScope = cx.initSafeStandardObjects()
+      globalScope.sealObject()
+      globalScope
+    }
+  })
 
-  private val polyfillResource = Resource("/ru/ipo/kio/js/polyfill.min.js")
-
-  private val scriptEngine = factory.getEngineByName("nashorn")
-
-  scriptEngine.eval("var window = window || {}")
-  scriptEngine.eval(polyfillResource.asString())
 }
