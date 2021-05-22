@@ -117,9 +117,8 @@ public class KioJSTranslator implements Translator {
 
         mainProblem = (KioOnlineProblem) mainProblem1;
 
-        KioOnlineProblem kop = (KioOnlineProblem) mainProblem;
         try {
-            problem = kop.getJsKioProblem();
+            problem = mainProblem.getJsKioProblem();
         } catch (Exception e) {
             Logger.error("Error while loading kio-online problem", e);
             return;
@@ -134,7 +133,7 @@ public class KioJSTranslator implements Translator {
 
     @Override
     public <T> void updateFromPreorder(Info results, Preorder<T> preorder, int level) {
-        results.put("scores", level == 0 ? 0 : preorder.getAccumulatedLevelSize(level - 1));
+        results.put("scores", level == 0 ? 0 : preorder.getAccumulatedLevelSize(level));
         results.put("rank", preorder.getLevelsCount() - level);
     }
 

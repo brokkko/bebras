@@ -19,7 +19,6 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String, exte
     override def run(cx: Context): (ScriptableObject, NativeObject) = {
       val problemScope = cx.newObject(globalScope).asInstanceOf[ScriptableObject]
       cx.evaluateString(problemScope, jsCode, className + ".js", 1, null)
-      problemScope.sealObject()
 
       val problem = cx.evaluateString(problemScope, s"new $className($settingsJson);", "", 1, null).asInstanceOf[NativeObject]
 
@@ -92,7 +91,11 @@ object JsKioProblem {
   val globalScope: Scriptable = ContextFactory.getGlobal.call(new ContextAction[Scriptable] {
     override def run(cx: Context): Scriptable = {
       val globalScope = cx.initSafeStandardObjects()
-      globalScope.sealObject()
+//      globalScope.sealObject()
+      cx.evaluateString(globalScope,
+        """
+          |console = {log: () => {}};
+        """.stripMargin, "polyfill", 1, null);
       globalScope
     }
   })

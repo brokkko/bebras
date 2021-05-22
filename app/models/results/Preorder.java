@@ -44,7 +44,7 @@ public class Preorder<T> {
             if (i == 0)
                 accumulatedSizes[i] = 0;
             else
-                accumulatedSizes[i] = accumulatedSizes[i - 1] + levels.get(i).size();
+                accumulatedSizes[i] = accumulatedSizes[i - 1] + levels.get(i - 1).size();
     }
 
     public int getLevel(T t) {
