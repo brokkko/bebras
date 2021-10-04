@@ -117,7 +117,7 @@ public class TestSerializers {
         out.write((short) 10000);
         out.write((short) -10000);
         out.write(57121);
-        out.write(10000000000l);
+        out.write(10000000000L);
         out.write(2.39f);
         out.write(57.121);
         out.write(false);
