@@ -85,6 +85,10 @@ public class KvitBankTransferPaymentType extends PaymentType {
         return apps.getCall("kvit", true, name);
     }
 
+    public Call getQRKvitCall(Applications apps, String name) {
+        return apps.getCall("qrkvit", true, name);
+    }
+
     public Call getPdfKvitCall(Applications apps, String name) {
         return apps.getCall("pdfkvit", true, name);
     }
