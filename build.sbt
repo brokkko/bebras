@@ -96,7 +96,9 @@ lazy val dces2 = project.in(file("."))
       "org.apache.commons" % "commons-email" % "1.2", //simple email wrapper
       "javax.mail" % "mail" % "1.4.5", //not sure this needed, it may already be in dependencies
       "net.sf.opencsv" % "opencsv" % "2.3", // CSV reader and writer http://opencsv.sourceforge.net
-      "com.itextpdf" % "itext-xtra" % "5.4.4"
+      "com.itextpdf" % "itext-xtra" % "5.4.4",
+      "com.google.zxing" % "core" % "3.4.1",
+      "com.google.zxing" % "javase" % "3.4.1"
     ),
 
     //packaging
