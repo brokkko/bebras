@@ -6,13 +6,12 @@ import models.applications.Application;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
 import play.twirl.api.Html;
-import views.html.applications.rfi_payment;
+import views.html.applications.lifepay_payment;
 
-public class RfiPaymentType extends PaymentType {
+public class LifepayPaymentType extends PaymentType {
 
     private String serviceId;
     private String secretKey;
-    private String paymentUrl;
 
     @Override
     public void serialize(Serializer serializer) {
@@ -28,8 +27,8 @@ public class RfiPaymentType extends PaymentType {
 
     @Override
     public Html render(User applicationUser, User payingUser, Applications apps, Application application) {
-        RfiPaymentForm form = new RfiPaymentForm(this, apps, application, payingUser, applicationUser);
-        return rfi_payment.render(form);
+        LifepayPaymentForm form = new LifepayPaymentForm(this, apps, application, payingUser, applicationUser);
+        return lifepay_payment.render(form);
     }
 
     public String getServiceId() {

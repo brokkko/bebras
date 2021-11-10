@@ -13,10 +13,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @DcesController()
-public class RfiPayment extends Controller {
+public class LifepayPayment extends Controller {
 
     public static Result output() {
-        LifepayResponseForm form = getRfiResponseForm();
+        LifepayResponseForm form = getLifepayResponseForm();
         try {
             processForm(form);
         } catch (IllegalArgumentException e) {
@@ -24,7 +24,7 @@ public class RfiPayment extends Controller {
             return ok("impossible to process the request: " + e.getMessage());
         }
 
-        models.applications.Application application = form.getApplication();
+        Application application = form.getApplication();
         if (application == null) {
             log(form,"unknown application " + form.getApplicationName());
             return ok("unknown application, will not proceed");
@@ -64,11 +64,11 @@ public class RfiPayment extends Controller {
     }
 
     private static Result processSuccessOrErrorUserRedirection(String message) {
-        LifepayResponseForm form = getRfiResponseForm();
+        LifepayResponseForm form = getLifepayResponseForm();
         try {
             processForm(form);
         } catch (IllegalArgumentException e) {
-            Logger.info("RFI bad success request: " + e.getMessage() + " : " + form);
+            Logger.info("Lifepay bad success request: " + e.getMessage() + " : " + form);
             return badRequest("failed to parse form");
         }
         flash("page-info", "Оплата заявки " + form.getApplicationName() + " " + message);
@@ -91,12 +91,12 @@ public class RfiPayment extends Controller {
             throw parserException;
     }
 
-    private static LifepayResponseForm getRfiResponseForm() {
+    private static LifepayResponseForm getLifepayResponseForm() {
         return Form.form(LifepayResponseForm.class).bindFromRequest().get();
     }
 
     private static void log(LifepayResponseForm form, String message) {
-        Logger.info("RFI PAYMENT: " + message + ": " + form);
+        Logger.info("Lifepay PAYMENT: " + message + ": " + form);
     }
 
 }

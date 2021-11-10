@@ -83,6 +83,7 @@ public class Application implements SerializableUpdatable {
     private List<String> logins = new ArrayList<>();
 
     private String type;
+    private Info additionalPaymentInformation;
 
     public Application() {
     }

@@ -22,9 +22,4 @@ public class SelfConfirmPaymentType extends PaymentType {
     public Html render(User applicationUser, User payingUser, Applications apps, Application application) {
         return set_comment_button.render(apps, application, applicationUser);
     }
-
-    @Override
-    public Html renderPayed(User applicationUser, User payingUser, Applications apps, Application application) {
-        return Html.apply("");
-    }
 }

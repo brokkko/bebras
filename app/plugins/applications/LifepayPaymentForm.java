@@ -17,17 +17,17 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-public class RfiPaymentForm {
+public class LifepayPaymentForm {
 
-    public static final String RFI_INPUT = "https://partner.life-pay.ru/alba/input/";
+    public static final String LIFEPAY_INPUT = "https://partner.life-pay.ru/alba/input/";
 
-    private RfiPaymentType payment;
+    private LifepayPaymentType payment;
     private Applications apps;
     private Application application;
     private User payingUser;
     private User applicationUser;
 
-    public RfiPaymentForm(RfiPaymentType payment, Applications apps, Application application, User payingUser, User applicationUser) {
+    public LifepayPaymentForm(LifepayPaymentType payment, Applications apps, Application application, User payingUser, User applicationUser) {
         this.payment = payment;
         this.apps = apps;
         this.application = application;
@@ -52,7 +52,7 @@ public class RfiPaymentForm {
         result.put("version", "2.0");
 
         try {
-            result.put("check", sign("POST", RFI_INPUT, result, payment.getSecretKey()));
+            result.put("check", sign("POST", LIFEPAY_INPUT, result, payment.getSecretKey()));
         } catch (Exception e) {
             Logger.error("Failed to sign request: " + result, e);
         }
@@ -88,7 +88,7 @@ public class RfiPaymentForm {
 
         Mac hmacInstance = Mac.getInstance("HmacSHA256");
         Charset charSet = StandardCharsets.UTF_8;
-        SecretKeySpec keySpec = new javax.crypto.spec.SecretKeySpec(charSet.encode(secretKey).array(), "HmacSHA256");
+        SecretKeySpec keySpec = new SecretKeySpec(charSet.encode(secretKey).array(), "HmacSHA256");
         hmacInstance.init(keySpec);
 
         return DatatypeConverter.printBase64Binary(hmacInstance.doFinal(data.getBytes(StandardCharsets.UTF_8)));

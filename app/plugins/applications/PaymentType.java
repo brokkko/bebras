@@ -20,7 +20,4 @@ public abstract class PaymentType implements SerializableUpdatable {
     }
 
     public abstract Html render(User applicationUser, User payingUser, Applications apps, Application application);
-
-    //TODO remove, this method is not used
-    public abstract Html renderPayed(User applicationUser, User payingUser, Applications apps, Application application);
 }

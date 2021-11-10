@@ -8,16 +8,15 @@ import models.Event;
 import models.User;
 import models.applications.Application;
 import org.bson.types.ObjectId;
-import play.Logger;
 import plugins.Plugin;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.util.List;
 
-public class RfiResponseForm {
+public class LifepayResponseForm {
 
-    public static final String CAN_NOT_CHECK_SIGANTURE = "not enough information to check signature";
+    public static final String CAN_NOT_CHECK_SIGNATURE = "not enough information to check signature";
     //https://lib.rfibank.ru/pages/viewpage.action?pageId=885370
     protected String tid;
     protected String name;
@@ -102,7 +101,7 @@ public class RfiResponseForm {
 
         //search for RFI payment type
         if (apps == null)
-            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGANTURE);
+            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
         List<PaymentType> paymentTypes = apps.getPaymentTypes();
         RfiPaymentType pay = null;
         for (PaymentType paymentType : paymentTypes)
@@ -112,7 +111,7 @@ public class RfiResponseForm {
             }
 
         if (pay == null)
-            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGANTURE);
+            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
 
         concat += pay.getSecretKey();
 

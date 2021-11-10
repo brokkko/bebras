@@ -63,11 +63,6 @@ public class KvitBankTransferPaymentType extends PaymentType {
         return views.html.applications.kvit_payment.render(this, apps, application, applicationUser);
     }
 
-    @Override
-    public Html renderPayed(User applicationUser, User payingUser, Applications apps, Application application) {
-        return getKvitHtml(applicationUser, apps, application);
-    }
-
     public Html getKvitHtml(User user, Applications apps, Application application) {
         Kvit kvit = Kvit.getKvitForUser(user);
 
