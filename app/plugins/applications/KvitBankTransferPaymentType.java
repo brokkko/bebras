@@ -28,7 +28,7 @@ import static com.google.zxing.EncodeHintType.CHARACTER_SET;
 
 public class KvitBankTransferPaymentType extends PaymentType {
     //TODO move default kvit here as a parameter from settings
-
+    private boolean showQR;
 
     @Override
     public F.Promise<Result> processGetRequest(Applications apps, String action, String params, boolean level1rights, boolean level2rights) {
@@ -90,12 +90,12 @@ public class KvitBankTransferPaymentType extends PaymentType {
 
     @Override
     public void serialize(Serializer serializer) {
-
+        serializer.write("show_qr", showQR);
     }
 
     @Override
     public void update(Deserializer deserializer) {
-
+        showQR = deserializer.readBoolean("show_qr", false);
     }
 
     private Result showKvit(Applications apps) {
@@ -177,5 +177,9 @@ public class KvitBankTransferPaymentType extends PaymentType {
 
     private Application getExampleApplication(Applications apps) {
         return new Application(User.current(), 100, 1, apps.getApplicationTypes().get(0).getTypeName(), Application.NEW);
+    }
+
+    public boolean isShowQR() {
+        return showQR;
     }
 }
