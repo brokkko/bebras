@@ -1,6 +1,6 @@
 @import plugins.applications.RfiPaymentForm
 @(rfi: RfiPaymentForm)
-<form method="POST" class="application" accept-charset="UTF-8" action="https://partner.rficb.ru/alba/input/">
+<form method="POST" class="application" accept-charset="UTF-8" action="https://partner.life-pay.ru/alba/input/">
     @for((name, value) <- rfi.getFormFields) {
         <input type="hidden" name="@name" value="@value">
     }

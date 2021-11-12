@@ -5,4 +5,4 @@
 @(app:Application, apps: Applications, pt:KvitBankTransferPaymentType, kvit:Kvit)
 Квитанция <a href="@pt.getPdfKvitCall(apps, app.getName)">PDF</a> | <a href="@pt.getKvitCall(apps, app.getName)">Текст</a>
     <br>
-<img style="margin: 0.1em 0" src="@pt.getQRKvitCall(apps, app.getName)" title="qr оплаты квитанции">
+@*<img style="margin: 0.1em 0" src="@pt.getQRKvitCall(apps, app.getName)" title="qr оплаты квитанции">*@

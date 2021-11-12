@@ -83,10 +83,11 @@ table.applications td.remove a {
 }
 
 .rfi-payment-submit {
-    width: 268px;
-    height: 43px;
+    width: 200px;
+    height: 59px;
     border: none;
-    background: transparent url("../images/rfi/small-rfi.png");
+    /*background: transparent url("../images/rfi/small-rfi.png");*/
+    background: transparent url("https://partner.life-pay.ru/gui/images/a1lite_buttons/button_small.png");
     cursor: pointer;
 }
 

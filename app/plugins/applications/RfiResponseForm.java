@@ -8,13 +8,14 @@ import models.Event;
 import models.User;
 import models.applications.Application;
 import org.bson.types.ObjectId;
+import play.Logger;
 import plugins.Plugin;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.util.List;
 
-public class LifepayResponseForm {
+public class RfiResponseForm {
 
     public static final String CAN_NOT_CHECK_SIGNATURE = "not enough information to check signature";
     //https://lib.rfibank.ru/pages/viewpage.action?pageId=885370
@@ -30,7 +31,7 @@ public class LifepayResponseForm {
     protected String system_income;
     protected String test = "";
     protected String check;
-    
+
     private Event event;
     private User user;
     private Applications apps;
@@ -94,7 +95,67 @@ public class LifepayResponseForm {
             throw new IllegalArgumentException("unknown application name");
     }
 
+    public void checkSignature_new() {
+        String concat = getComment() +
+                getCurrency() +
+                getName() +
+                getOrder_id() +
+                getPartner_id() +
+                getPartner_income() +
+                getService_id() +
+                getSystem_income() +
+                getTest() +
+                getTid() +
+                getType();
+
+        //search for RFI payment type
+        if (apps == null)
+            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
+        List<PaymentType> paymentTypes = apps.getPaymentTypes();
+        RfiPaymentType pay = null;
+        for (PaymentType paymentType : paymentTypes)
+            if (paymentType instanceof RfiPaymentType) {
+                pay = (RfiPaymentType) paymentType;
+                break;
+            }
+
+        if (pay == null)
+            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
+
+        concat += pay.getSecretKey();
+
+        String md5;
+        try {
+            MessageDigest md5digester = MessageDigest.getInstance("MD5");
+            byte[] md5digest = md5digester.digest(concat.getBytes("UTF8"));
+            md5 = DatatypeConverter.printHexBinary(md5digest);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("no such algorithm MD5 or no such encoding UTF8");
+        }
+
+        if (!md5.equalsIgnoreCase(check)) {
+//            Logger.info(String.format("wrong check: md5(%s) = %s != %s", concat, md5, check));
+            throw new IllegalArgumentException("wrong check");
+        }
+    }
+
     public void checkSignature() {
+        boolean oldCheckOk = true;
+        try {
+            checkSignature_old();
+        } catch (IllegalArgumentException e) {
+            oldCheckOk = false;
+        }
+        boolean newCheckOk = true;
+        try {
+            checkSignature_new();
+        } catch (IllegalArgumentException e) {
+            newCheckOk = false;
+        }
+        Logger.info("checking request, old: " + oldCheckOk + ", new: " + newCheckOk + ": " + this);
+    }
+
+    public void checkSignature_old() {
         String concat = getTid() + getName() + getComment()
                 + getPartner_id() + getService_id() + getOrder_id() + getType()
                 + getPartner_income() + getSystem_income() + getTest();

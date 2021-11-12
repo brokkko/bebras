@@ -6,7 +6,7 @@ import play.Logger;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
-import plugins.applications.LifepayResponseForm;
+import plugins.applications.RfiResponseForm;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,7 +16,7 @@ import java.util.Date;
 public class RfiPayment extends Controller {
 
     public static Result output() {
-        LifepayResponseForm form = getRfiResponseForm();
+        RfiResponseForm form = getRfiResponseForm();
         try {
             processForm(form);
         } catch (IllegalArgumentException e) {
@@ -64,7 +64,7 @@ public class RfiPayment extends Controller {
     }
 
     private static Result processSuccessOrErrorUserRedirection(String message) {
-        LifepayResponseForm form = getRfiResponseForm();
+        RfiResponseForm form = getRfiResponseForm();
         try {
             processForm(form);
         } catch (IllegalArgumentException e) {
@@ -76,7 +76,7 @@ public class RfiPayment extends Controller {
         return redirect(form.getApps().getViewAppCall(form.getUser(), form.getApplicationName()));
     }
 
-    private static void processForm(LifepayResponseForm form) {
+    private static void processForm(RfiResponseForm form) {
         form.serialize();
         IllegalArgumentException parserException = null;
         try {
@@ -91,11 +91,11 @@ public class RfiPayment extends Controller {
             throw parserException;
     }
 
-    private static LifepayResponseForm getRfiResponseForm() {
-        return Form.form(LifepayResponseForm.class).bindFromRequest().get();
+    private static RfiResponseForm getRfiResponseForm() {
+        return Form.form(RfiResponseForm.class).bindFromRequest().get();
     }
 
-    private static void log(LifepayResponseForm form, String message) {
+    private static void log(RfiResponseForm form, String message) {
         Logger.info("RFI PAYMENT: " + message + ": " + form);
     }
 

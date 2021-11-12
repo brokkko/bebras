@@ -8,6 +8,5 @@ public class PaymentTypeSerializationType extends SerializableTreeSerializationT
         registerClass("self-confirm", SelfConfirmPaymentType.class);
         registerClass("kvit", KvitBankTransferPaymentType.class);
         registerClass("rfi", RfiPaymentType.class);
-        registerClass("lifepay", LifepayPaymentType.class);
     }
 }
