@@ -83,6 +83,7 @@ public class BebrasProblem implements Problem {
             "TW", "Тайвань",
             "UA", "Украина",
             "US", "США",
+            "UZ", "Узбекистан",
             "UY", "Уругвай",
             "VN", "Вьетнам",
             "ZA", "ЮАР"
