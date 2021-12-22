@@ -2,10 +2,7 @@ package models.forms;
 
 import play.data.DynamicForm;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -103,6 +100,10 @@ public class RawForm {
         return value == null ? null : value.toString();
     }
 
+    public Set<String> keys() {
+        return map.keySet();
+    }
+
     public static String postfixField(String field, String... postfixes) {
         StringBuilder res = new StringBuilder(field);
 
@@ -110,5 +111,10 @@ public class RawForm {
             res.append('[').append(prefix).append(']');
 
         return res.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "RawForm[" + map.toString() + "]";
     }
 }

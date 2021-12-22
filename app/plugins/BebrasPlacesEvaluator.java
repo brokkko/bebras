@@ -11,10 +11,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import controllers.MongoConnection;
 import controllers.worker.Worker;
-import models.Contest;
-import models.Event;
-import models.User;
-import models.UserRole;
+import models.*;
 import models.applications.Application;
 import models.newserialization.Deserializer;
 import models.newserialization.Serializer;
@@ -104,6 +101,8 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
         F.Promise<Boolean> promiseOfVoid = F.Promise.promise(
                 new F.Function0<Boolean>() {
                     public Boolean apply() throws Exception {
+                        ServerConfiguration.getInstance().setMaintenanceMode(true);
+
                         //select all logins from database
                         DBObject query = new BasicDBObject(User.FIELD_EVENT, eventId);
                         query.put(User.FIELD_USER_ROLE, roleName);
@@ -211,6 +210,7 @@ public class BebrasPlacesEvaluator extends Plugin { //TODO get rid of this class
                             user.store();
                         }
 
+                        ServerConfiguration.getInstance().setMaintenanceMode(false);
                         return true;
                     }
 

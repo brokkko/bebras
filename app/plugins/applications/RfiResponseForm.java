@@ -7,12 +7,23 @@ import controllers.MongoConnection;
 import models.Event;
 import models.User;
 import models.applications.Application;
+import models.forms.RawForm;
 import org.bson.types.ObjectId;
 import play.Logger;
 import plugins.Plugin;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RfiResponseForm {
@@ -37,6 +48,10 @@ public class RfiResponseForm {
     private Applications apps;
     private String applicationName;
     private Application application;
+    private RawForm rawForm;
+    private String method;
+    private String host;
+    private String path;
 
     private BasicDBObject formAsBSON() {
         BasicDBObject o = new BasicDBObject();
@@ -63,7 +78,13 @@ public class RfiResponseForm {
     }
 
     public String toString() {
-        return formAsBSON().toString();
+        return String.format("RfiResponseForm[%s;%s;%s;%s;%s]",
+                formAsBSON(),
+                rawForm,
+                method,
+                host,
+                path
+        );
     }
 
     public void parseOrderInformation() {
@@ -95,19 +116,23 @@ public class RfiResponseForm {
             throw new IllegalArgumentException("unknown application name");
     }
 
-    public void checkSignature_new() {
-        String concat = getComment() +
-                getCurrency() +
-                getName() +
-                getOrder_id() +
-                getPartner_id() +
-                getPartner_income() +
-                getService_id() +
-                getSystem_income() +
-                getTest() +
-                getTid() +
-                getType();
+    public void checkSignature() {
+        boolean oldCheckOk = true;
+        try {
+            checkSignatureRfi();
+        } catch (IllegalArgumentException e) {
+            oldCheckOk = false;
+        }
+        boolean newCheckOk = true;
+        try {
+            checkSignatureLifePay();
+        } catch (IllegalArgumentException e) {
+            newCheckOk = false;
+        }
+        Logger.info("checking request, old: " + oldCheckOk + ", new: " + newCheckOk + ": " + this);
+    }
 
+    public void checkSignatureLifePay() {
         //search for RFI payment type
         if (apps == null)
             throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
@@ -118,44 +143,46 @@ public class RfiResponseForm {
                 pay = (RfiPaymentType) paymentType;
                 break;
             }
-
         if (pay == null)
             throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
 
-        concat += pay.getSecretKey();
-
-        String md5;
         try {
-            MessageDigest md5digester = MessageDigest.getInstance("MD5");
-            byte[] md5digest = md5digester.digest(concat.getBytes("UTF8"));
-            md5 = DatatypeConverter.printHexBinary(md5digest);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("no such algorithm MD5 or no such encoding UTF8");
-        }
+            List<String> keys = new ArrayList<>(rawForm.keys());
+            Collections.sort(keys);
 
-        if (!md5.equalsIgnoreCase(check)) {
-//            Logger.info(String.format("wrong check: md5(%s) = %s != %s", concat, md5, check));
-            throw new IllegalArgumentException("wrong check");
+            StringBuilder sb = new StringBuilder();
+            for (String key : keys) {
+                if (sb.length() > 0) {
+                    sb.append("&");
+                }
+
+                final String encoded = URLEncoder
+                        .encode(rawForm.get(key), "UTF-8")
+                        .replace("+", "%20");
+                sb.append(String.format("%s=%s", key, encoded));
+            }
+            String urlParameters = sb.toString();
+            String data = method.toUpperCase() + "\n" +
+                    host + "\n" +
+                    path + "\n" +
+                    urlParameters;
+
+            Mac hmacInstance = Mac.getInstance("HmacSHA256");
+            Charset charSet = StandardCharsets.UTF_8;
+            SecretKeySpec keySpec = new javax.crypto.spec.SecretKeySpec(charSet.encode(pay.getSecretKey()).array(), "HmacSHA256");
+            hmacInstance.init(keySpec);
+
+            String md5 = DatatypeConverter.printBase64Binary(hmacInstance.doFinal(data.getBytes(charSet)));
+
+            if (!md5.equalsIgnoreCase(check)) {
+                throw new IllegalArgumentException("wrong check");
+            }
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException | InvalidKeyException e) {
+            //impossible
         }
     }
 
-    public void checkSignature() {
-        boolean oldCheckOk = true;
-        try {
-            checkSignature_old();
-        } catch (IllegalArgumentException e) {
-            oldCheckOk = false;
-        }
-        boolean newCheckOk = true;
-        try {
-            checkSignature_new();
-        } catch (IllegalArgumentException e) {
-            newCheckOk = false;
-        }
-        Logger.info("checking request, old: " + oldCheckOk + ", new: " + newCheckOk + ": " + this);
-    }
-
-    public void checkSignature_old() {
+    public void checkSignatureRfi() {
         String concat = getTid() + getName() + getComment()
                 + getPartner_id() + getService_id() + getOrder_id() + getType()
                 + getPartner_income() + getSystem_income() + getTest();
@@ -307,5 +334,16 @@ public class RfiResponseForm {
 
     public Application getApplication() {
         return application;
+    }
+
+    public void updateWithRequestInfo(RawForm rawForm, String method, String host, String path) {
+        this.rawForm = rawForm;
+        this.method = method;
+        this.host = host;
+        this.path = path;
+    }
+
+    public RawForm getRawForm() {
+        return rawForm;
     }
 }

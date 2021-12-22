@@ -94,7 +94,7 @@ var add_bebras_dyn_problem = (function(){
     }
 
     function testAnswerCorrectness(correctAnswer, userAnswer) {
-        p = /\{{3}(\w+)}{3}(.*)/;
+        p = /^\{{3}(\w+)}{3}(.*)/;
 
         var doLowerCase = false;
         var doUpperCase = false;

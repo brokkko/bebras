@@ -2,9 +2,11 @@ package controllers;
 
 import controllers.actions.DcesController;
 import models.applications.Application;
+import models.forms.RawForm;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import plugins.applications.RfiResponseForm;
 
@@ -92,7 +94,13 @@ public class RfiPayment extends Controller {
     }
 
     private static RfiResponseForm getRfiResponseForm() {
-        return Form.form(RfiResponseForm.class).bindFromRequest().get();
+        final RawForm rawForm = new RawForm();
+        rawForm.bindFromRequest();
+        final RfiResponseForm responseForm = Form.form(RfiResponseForm.class).bindFromRequest().get();
+        final Http.Request request = request();
+        responseForm.updateWithRequestInfo(rawForm, request.method(), request.host(), request.path());
+
+        return responseForm;
     }
 
     private static void log(RfiResponseForm form, String message) {
