@@ -75,6 +75,8 @@ GET         /:event/:user/:userBy/set_registered_by                    controlle
 
 POST        /:event/:user/su                                           controllers.Application.substituteUser(event, user)
 GET         /:event/su_exit                                            controllers.Application.substituteUserExit(event)
+GET         /maintain                                                  controllers.Application.maintain()
+GET         /demaintain                                                controllers.Application.demaintain()
 
 #html block
 POST        /~global/:block/set_html_block                             controllers.Application.setGlobalHtmlBlock(block)

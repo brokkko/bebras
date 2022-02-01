@@ -119,20 +119,21 @@ public class RfiResponseForm {
     public void checkSignature() {
         boolean oldCheckOk = true;
         try {
-            checkSignatureRfi();
+            checkFailSuccessSignature();
         } catch (IllegalArgumentException e) {
             oldCheckOk = false;
         }
         boolean newCheckOk = true;
         try {
-            checkSignatureLifePay();
+            checkOutputSignature();
         } catch (IllegalArgumentException e) {
             newCheckOk = false;
         }
         Logger.info("checking request, old: " + oldCheckOk + ", new: " + newCheckOk + ": " + this);
     }
 
-    public void checkSignatureLifePay() {
+    // https://lib.life-pay.ru/pages/viewpage.action?pageId=885386
+    public void checkOutputSignature() {
         //search for RFI payment type
         if (apps == null)
             throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
@@ -146,6 +147,37 @@ public class RfiResponseForm {
         if (pay == null)
             throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
 
+        if (rawForm.get("version").startsWith("1."))
+            checkOutputSignatureV1(pay);
+        else
+            checkOutputSignatureV2(pay);
+    }
+
+    private void checkOutputSignatureV1(RfiPaymentType pay) {
+        String[] fields = {"tid", "name", "comment", "partner_id", "service_id", "order_id", "type", "cost", "income_total", "income", "partner_income", "system_income", "command", "phone_number", "email", "result", "resultStr", "date_created", "version"};
+        StringBuilder concat = new StringBuilder();
+        for (String field : fields) {
+            final String value = rawForm.get(field, "");
+            if (value != null)
+                concat.append(value);
+        }
+
+        concat.append(pay.getSecretKey());
+
+        String md5;
+        try {
+            MessageDigest md5digester = MessageDigest.getInstance("MD5");
+            byte[] md5digest = md5digester.digest(concat.toString().getBytes(StandardCharsets.UTF_8));
+            md5 = DatatypeConverter.printHexBinary(md5digest);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("no such algorithm MD5 or no such encoding UTF8");
+        }
+
+        if (!md5.equalsIgnoreCase(rawForm.get("check")))
+            throw new IllegalArgumentException("wrong check");
+    }
+
+    private void checkOutputSignatureV2(RfiPaymentType pay) {
         try {
             List<String> keys = new ArrayList<>(rawForm.keys());
             Collections.sort(keys);
@@ -169,7 +201,7 @@ public class RfiResponseForm {
 
             Mac hmacInstance = Mac.getInstance("HmacSHA256");
             Charset charSet = StandardCharsets.UTF_8;
-            SecretKeySpec keySpec = new javax.crypto.spec.SecretKeySpec(charSet.encode(pay.getSecretKey()).array(), "HmacSHA256");
+            SecretKeySpec keySpec = new SecretKeySpec(charSet.encode(pay.getSecretKey()).array(), "HmacSHA256");
             hmacInstance.init(keySpec);
 
             String md5 = DatatypeConverter.printBase64Binary(hmacInstance.doFinal(data.getBytes(charSet)));
@@ -182,7 +214,8 @@ public class RfiResponseForm {
         }
     }
 
-    public void checkSignatureRfi() {
+    //https://lib.life-pay.ru/pages/viewpage.action?pageId=885374
+    public void checkFailSuccessSignature() {
         String concat = getTid() + getName() + getComment()
                 + getPartner_id() + getService_id() + getOrder_id() + getType()
                 + getPartner_income() + getSystem_income() + getTest();

@@ -222,4 +222,18 @@ public class Application extends Controller {
         String json = "{\"bebras\": 4239}";
         return ok(json).as("application/json");
     }
+
+
+    @Authenticated(admin = true)
+    public static Result demaintain() {
+        ServerConfiguration.getInstance().setMaintenanceMode(false);
+        return ok("maintenance set to false");
+    }
+
+    @Authenticated(admin = true)
+    public static Result maintain() {
+        ServerConfiguration.getInstance().setMaintenanceMode(true);
+        return ok("maintenance set to true");
+    }
+
 }

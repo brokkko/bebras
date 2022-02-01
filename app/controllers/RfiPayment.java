@@ -19,8 +19,9 @@ public class RfiPayment extends Controller {
 
     public static Result output() {
         RfiResponseForm form = getRfiResponseForm();
+        log(form, "start processing RFI output");
         try {
-            processForm(form);
+            processForm(form, true);
         } catch (IllegalArgumentException e) {
             log(form,"impossible to process the request: " + e.getMessage());
             return ok("impossible to process the request: " + e.getMessage());
@@ -67,10 +68,11 @@ public class RfiPayment extends Controller {
 
     private static Result processSuccessOrErrorUserRedirection(String message) {
         RfiResponseForm form = getRfiResponseForm();
+        log(form,"Payment return " + message);
         try {
-            processForm(form);
+            processForm(form, false);
         } catch (IllegalArgumentException e) {
-            Logger.info("RFI bad success request: " + e.getMessage() + " : " + form);
+            log(form,"RFI bad success request" + e.getMessage());
             return badRequest("failed to parse form");
         }
         flash("page-info", "Оплата заявки " + form.getApplicationName() + " " + message);
@@ -78,7 +80,7 @@ public class RfiPayment extends Controller {
         return redirect(form.getApps().getViewAppCall(form.getUser(), form.getApplicationName()));
     }
 
-    private static void processForm(RfiResponseForm form) {
+    private static void processForm(RfiResponseForm form, boolean isOutputRequest) {
         form.serialize();
         IllegalArgumentException parserException = null;
         try {
@@ -87,7 +89,12 @@ public class RfiPayment extends Controller {
             parserException = e;
         }
 
-        form.checkSignature();
+        if (isOutputRequest)
+            form.checkOutputSignature();
+        else
+            form.checkFailSuccessSignature();
+
+        log(form,"Form signature test ok");
 
         if (parserException != null)
             throw parserException;

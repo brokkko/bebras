@@ -287,7 +287,7 @@ public class KioOnlineProblem implements Problem {
             }
         }
 
-        String fixedJsCode = "createjs = {Container: {}, Bitmap: {}, Shape: {}, Event: {}, EventDispatcher: {}}; Symbol = 0; " + jsCode;
+        String fixedJsCode = "regeneratorRuntime = {mark: function(){}}; window = {}; createjs = {Container: {}, Bitmap: {}, Shape: {}, Event: {}, EventDispatcher: {}}; Symbol = 0; " + jsCode;
 
         try {
             return new JsKioProblem(fixedJsCode, className, settings, null); //TODO add external checker
