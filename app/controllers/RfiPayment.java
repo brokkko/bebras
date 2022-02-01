@@ -25,7 +25,6 @@ public class RfiPayment extends Controller {
 
     public static Result output() {
         RfiResponseForm form = getRfiResponseForm();
-        log(form, "start processing RFI output");
         try {
             processForm(form, true);
         } catch (IllegalArgumentException e) {
@@ -74,7 +73,6 @@ public class RfiPayment extends Controller {
 
     private static Result processSuccessOrErrorUserRedirection(String message) {
         RfiResponseForm form = getRfiResponseForm();
-        log(form,"Payment return " + message);
         try {
             processForm(form, false);
         } catch (IllegalArgumentException e) {
