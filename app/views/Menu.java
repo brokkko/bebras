@@ -72,7 +72,7 @@ public class Menu {
                 fillMenuForAnon(menu, event, eventId);
         }
 
-        items.sort((item1, item2) -> item2.getPriority() - item1.getPriority());
+        menu.sort((item1, item2) -> item2.getPriority() - item1.getPriority());
         items = menu;
     }
 
