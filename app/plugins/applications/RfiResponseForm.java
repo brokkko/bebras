@@ -157,11 +157,12 @@ public class RfiResponseForm {
         String[] fields = {"tid", "name", "comment", "partner_id", "service_id", "order_id", "type", "cost", "income_total", "income", "partner_income", "system_income", "command", "phone_number", "email", "result", "resultStr", "date_created", "version"};
         StringBuilder concat = new StringBuilder();
         for (String field : fields) {
-            final String value = rawForm.get(field, "");
+            final String value = rawForm.get(field);
             if (value != null)
                 concat.append(value);
         }
 
+        String concatWithoutSecret = concat.toString();
         concat.append(pay.getSecretKey());
 
         String md5;
@@ -172,6 +173,8 @@ public class RfiResponseForm {
         } catch (Exception e) {
             throw new IllegalArgumentException("no such algorithm MD5 or no such encoding UTF8");
         }
+
+        Logger.info("DEBUG md5 check: <<" + concatWithoutSecret + ">> -> " + md5);
 
         if (!md5.equalsIgnoreCase(rawForm.get("check")))
             throw new IllegalArgumentException("wrong check");
