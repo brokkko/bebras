@@ -8,11 +8,17 @@ import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import plugins.applications.Applications;
+import plugins.applications.PaymentType;
+import plugins.applications.RfiPaymentType;
 import plugins.applications.RfiResponseForm;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
+import static plugins.applications.RfiResponseForm.CAN_NOT_CHECK_SIGNATURE;
 
 @DcesController()
 public class RfiPayment extends Controller {
@@ -89,10 +95,25 @@ public class RfiPayment extends Controller {
             parserException = e;
         }
 
-        if (isOutputRequest)
-            form.checkOutputSignature();
-        else
-            form.checkFailSuccessSignature();
+        //search for RFI payment type
+        final Applications apps = form.getApps();
+        if (apps == null)
+            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
+        List<PaymentType> paymentTypes = apps.getPaymentTypes();
+        RfiPaymentType pay = null;
+        for (PaymentType paymentType : paymentTypes)
+            if (paymentType instanceof RfiPaymentType) {
+                pay = (RfiPaymentType) paymentType;
+                break;
+            }
+        if (pay == null)
+            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
+
+        if (isOutputRequest) {
+            form.checkOutputSignature(pay);
+            form.checkTransactionCorrect();
+        } else
+            form.checkFailSuccessSignature(pay);
 
         log(form,"Form signature test ok");
 

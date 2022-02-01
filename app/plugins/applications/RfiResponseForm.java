@@ -116,37 +116,8 @@ public class RfiResponseForm {
             throw new IllegalArgumentException("unknown application name");
     }
 
-    public void checkSignature() {
-        boolean oldCheckOk = true;
-        try {
-            checkFailSuccessSignature();
-        } catch (IllegalArgumentException e) {
-            oldCheckOk = false;
-        }
-        boolean newCheckOk = true;
-        try {
-            checkOutputSignature();
-        } catch (IllegalArgumentException e) {
-            newCheckOk = false;
-        }
-        Logger.info("checking request, old: " + oldCheckOk + ", new: " + newCheckOk + ": " + this);
-    }
-
     // https://lib.life-pay.ru/pages/viewpage.action?pageId=885386
-    public void checkOutputSignature() {
-        //search for RFI payment type
-        if (apps == null)
-            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
-        List<PaymentType> paymentTypes = apps.getPaymentTypes();
-        RfiPaymentType pay = null;
-        for (PaymentType paymentType : paymentTypes)
-            if (paymentType instanceof RfiPaymentType) {
-                pay = (RfiPaymentType) paymentType;
-                break;
-            }
-        if (pay == null)
-            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
-
+    public void checkOutputSignature(RfiPaymentType pay) {
         if (rawForm.get("version").startsWith("1."))
             checkOutputSignatureV1(pay);
         else
@@ -218,31 +189,17 @@ public class RfiResponseForm {
     }
 
     //https://lib.life-pay.ru/pages/viewpage.action?pageId=885374
-    public void checkFailSuccessSignature() {
+    public void checkFailSuccessSignature(RfiPaymentType pay) {
         String concat = getTid() + getName() + getComment()
                 + getPartner_id() + getService_id() + getOrder_id() + getType()
                 + getPartner_income() + getSystem_income() + getTest();
-
-        //search for RFI payment type
-        if (apps == null)
-            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
-        List<PaymentType> paymentTypes = apps.getPaymentTypes();
-        RfiPaymentType pay = null;
-        for (PaymentType paymentType : paymentTypes)
-            if (paymentType instanceof RfiPaymentType) {
-                pay = (RfiPaymentType) paymentType;
-                break;
-            }
-
-        if (pay == null)
-            throw new IllegalArgumentException(CAN_NOT_CHECK_SIGNATURE);
 
         concat += pay.getSecretKey();
 
         String md5;
         try {
             MessageDigest md5digester = MessageDigest.getInstance("MD5");
-            byte[] md5digest = md5digester.digest(concat.getBytes("UTF8"));
+            byte[] md5digest = md5digester.digest(concat.getBytes(StandardCharsets.UTF_8));
             md5 = DatatypeConverter.printHexBinary(md5digest);
         } catch (Exception e) {
             throw new IllegalArgumentException("no such algorithm MD5 or no such encoding UTF8");
@@ -252,6 +209,19 @@ public class RfiResponseForm {
 //            Logger.info(String.format("wrong check: md5(%s) = %s != %s", concat, md5, check));
             throw new IllegalArgumentException("wrong check");
         }
+    }
+
+    public void checkTransactionCorrect() {
+        final String command = rawForm.get("command");
+        if (!"success".equals(command))
+            throw new IllegalArgumentException("command is not success: " + command);
+        String needCost = apps.getApplicationPrice(application) + ".0";
+        String cost = rawForm.get("cost");
+        if (!needCost.equals(cost))
+            throw new IllegalArgumentException("cost is wrong: " + cost + " instead of " + needCost);
+        final String systemIncome = rawForm.get("system_income");
+        if (!needCost.equals(systemIncome))
+            throw new IllegalArgumentException("system_income is wrong: " + systemIncome + " instead of " + needCost);
     }
 
     public String getTid() {
