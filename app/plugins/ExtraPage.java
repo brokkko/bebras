@@ -28,13 +28,14 @@ public class ExtraPage extends Plugin {
     private String right; //право на просмотр
     private String title; //текст на кнопке меню
     private boolean showInMenu; //показывать ли в меню
+    private int priority; // чем больше, тем выше
 
     private List<SubPage> subpages = new ArrayList<>();
 
     @Override
     public void initPage() {
         if (showInMenu)
-            Menu.addMenuItem(title, getCall(), right);
+            Menu.addMenuItem(title, getCall(), right, null, priority);
     }
 
     @Override
@@ -65,6 +66,8 @@ public class ExtraPage extends Plugin {
         serializer.write("title", title);
         if (!showInMenu)
             serializer.write("menu", false);
+        if (priority != 0)
+            serializer.write("priority", priority);
 
         PAGES_LIST_TYPE.write(serializer, "subpages", subpages);
     }
@@ -92,6 +95,8 @@ public class ExtraPage extends Plugin {
 
             subpages.add(new SubPage(this, null, "", blockId, global, layout));
         }
+
+        priority = deserializer.readInt("priority", 0);
     }
 
     private String getDefaultBlockId() {

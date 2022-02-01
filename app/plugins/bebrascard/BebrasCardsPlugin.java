@@ -63,7 +63,7 @@ public class BebrasCardsPlugin extends Plugin {
     @Override
     public void initPage() {
         if (showInMenu)
-            Menu.addMenuItem(title, getCall(), right, "_blank");
+            Menu.addMenuItem(title, getCall(), right, "_blank", 0);
     }
 
     @Override

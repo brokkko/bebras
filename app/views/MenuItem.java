@@ -11,19 +11,23 @@ import play.mvc.Http;
  */
 public class MenuItem {
 
-    private String title;
-    private Call link;
-    private String target = null;
+    private final String title;
+    private final Call link;
+    private final String target;
+    private final int priority;
 
     public MenuItem(String title, Call link) {
         this.title = title;
         this.link = link;
+        this.target = null;
+        this.priority = 0;
     }
 
-    public MenuItem(String title, Call link, String target) {
+    public MenuItem(String title, Call link, String target, int priority) {
         this.title = title;
         this.link = link;
         this.target = target;
+        this.priority = priority;
     }
 
     public String getTitle() {
@@ -40,5 +44,9 @@ public class MenuItem {
 
     public boolean isCurrent() {
         return link != null && Http.Context.current().request().path().equals(link.url()); //TODO make sure this works in all situations;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 }

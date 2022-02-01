@@ -6,12 +6,12 @@ import models.Event;
 import models.User;
 import models.UserRole;
 import models.data.TableDescription;
-import models.forms.inputtemplate.BooleanInputTemplate;
 import play.i18n.Messages;
 import play.mvc.Call;
 import play.mvc.Http;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -42,10 +42,10 @@ public class Menu {
     }
 
     // if right is null, than allow for everybody even for anonymous
-    public static void addMenuItem(String title, Call call, String right, String target) {
+    public static void addMenuItem(String title, Call call, String right, String target, int priority) {
         List<RestrictedAccessMenuItem> extraItems = getExtraItems();
 
-        extraItems.add(new RestrictedAccessMenuItem(new MenuItem(title, call, target), right));
+        extraItems.add(new RestrictedAccessMenuItem(new MenuItem(title, call, target, priority), right));
     }
 
     public List<MenuItem> items() {
@@ -72,6 +72,7 @@ public class Menu {
                 fillMenuForAnon(menu, event, eventId);
         }
 
+        items.sort((item1, item2) -> item2.getPriority() - item1.getPriority());
         items = menu;
     }
 
