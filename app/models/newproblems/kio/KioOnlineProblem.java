@@ -272,13 +272,25 @@ public class KioOnlineProblem implements Problem {
 
         File kioOnlineFolder = ServerConfiguration.getInstance().getPluginFolder("KioOnline");
 
+        String actualClassName = className;
+
         StringBuilder jsCode = new StringBuilder();
         for (String jsCodeFilename : jsCodes) {
             if (!jsCodeFilename.toLowerCase().endsWith(".js") || jsCodeFilename.toLowerCase().startsWith("easeljs"))
                 continue;
+
+            //change .js file to _parameters.js, if such a file exists
+            String jsCodeParametersFilename = jsCodeFilename.replaceAll("\\.js$", "_parameters.js");
+            File jsCodeParametersFile = new File(kioOnlineFolder, jsCodeParametersFilename);
+
             File jsCodeFile = new File(kioOnlineFolder, jsCodeFilename);
             try {
-                byte[] bytes = Files.readAllBytes(jsCodeFile.toPath());
+                byte[] bytes;
+                if (jsCodeParametersFile.exists()) {
+                    bytes = Files.readAllBytes(jsCodeParametersFile.toPath());
+                    actualClassName = className.replace(".", "_parameters.");
+                } else
+                    bytes = Files.readAllBytes(jsCodeFile.toPath());
                 jsCode.append(new String(bytes, StandardCharsets.UTF_8));
                 jsCode.append(" ");
             } catch (IOException e) {
@@ -290,7 +302,7 @@ public class KioOnlineProblem implements Problem {
         String fixedJsCode = "regeneratorRuntime = {mark: function(){}}; window = {}; createjs = {Container: {}, Bitmap: {}, Shape: {}, Event: {}, EventDispatcher: {}}; Symbol = 0; " + jsCode;
 
         try {
-            return new JsKioProblem(fixedJsCode, className, settings, null); //TODO add external checker
+            return new JsKioProblem(fixedJsCode, actualClassName, settings, null); //TODO add external checker
         } catch (Exception e) {
             Logger.error("Failed to create js kio problem", e);
             return null;

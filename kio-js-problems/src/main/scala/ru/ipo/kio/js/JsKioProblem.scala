@@ -20,6 +20,9 @@ class JsKioProblem(jsCode: String, className: String, settingsJson: String, exte
       val problemScope = cx.newObject(globalScope).asInstanceOf[ScriptableObject]
       cx.evaluateString(problemScope, jsCode, className + ".js", 1, null)
 
+//      val sp = ScriptableObject.getProperty(problemScope, "streams_parameters").asInstanceOf[ScriptableObject];
+//      System.out.println("sp = " + ScriptableObject.getPropertyIds(sp).mkString("Array(", ", ", ")"))
+//      System.out.println(s"new $className($settingsJson);")
       val problem = cx.evaluateString(problemScope, s"new $className($settingsJson);", "", 1, null).asInstanceOf[NativeObject]
 
       (problemScope, problem)

@@ -34,7 +34,7 @@ lazy val kioJsProblems = Project("kio-js-problems", file("kio-js-problems")).set
   scalaVersion := "2.11.8",
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.0.1" % Test,
-    "org.mozilla" % "rhino" % "1.7.13"
+    "org.mozilla" % "rhino" % "1.7.14"
   )
 )
 
@@ -79,7 +79,7 @@ lazy val dces2 = project.in(file("."))
   .enablePlugins(PlayJava)
   .settings(
     name := "dces2",
-    version := "0.4.118", // [VERSION] do not remove this comment, it is used by ansible to retrieve program version
+    version := "0.4.120", // [VERSION] do not remove this comment, it is used by ansible to retrieve program version
     scalaVersion := "2.11.8",
     // Add your own project settings here
     //      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.

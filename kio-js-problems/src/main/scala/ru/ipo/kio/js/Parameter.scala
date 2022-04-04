@@ -65,7 +65,12 @@ object Parameter {
     }
 
     val newNormalize: Any => Double = mapUndefinedTo(normalize, "") match {
-      case "" => x => x.asInstanceOf[Number].doubleValue()
+      case "" => x => {
+        x match {
+          case str: String => Integer.parseInt(str)
+          case _ => x.asInstanceOf[Number].doubleValue()
+        }
+      }
       case v: NativeFunction => x => call(v, task, Array(x.asInstanceOf[AnyRef])).asInstanceOf[Number].doubleValue()
     }
 
