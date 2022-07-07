@@ -1,2 +1,1 @@
-#!/usr/bin/bash
-sbt -jvm-debug 9999 -java-home /home/ilya/opt/jdk1.8.0_201 run
+sbt -jvm-debug 9999 run

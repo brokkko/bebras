@@ -12,7 +12,7 @@
 
 #memory
 
-# -J-Xmx1024m
+# -J-Xmx2048m
 # -J-Xms512m
 
 #start as server
