@@ -10,6 +10,7 @@
             </header>
         }
         <div class='navigation'>
+            <input type="checkbox" id="menu_button" class="menu-logo">
             <nav>
                 <div class='contest-logo'></div>
                 @if(User.isAuthorized && User.currentRole != UserRole.ANON) {
