@@ -1,4 +1,35 @@
+.body{
+    font-family: 'Inter', system-ui;
+    font-style: normal;
+}
 
+header{
+    text-align: center;
+    background-color: #829A3D;
+    width: 100%;
+    font-size: 3.5rem;
+    padding: 1.5rem 0 1.5rem 0;
+    color: #FFF0AE;
+    font-weight: 600;
+    z-index: 101;
+    position: fixed;
+
+}
+
+.menu-logo{
+    /*background-image: url(""); !*TODO: ask where to put image*!*/
+    width: 48px;
+}
+
+
+
+.content h1{
+    font-weight: 500;
+    font-size: 3rem;
+    color: #000000;
+    padding: 0.7rem 0 1rem 0;
+    text-align: center;
+}
 
 .navigation nav{
     position: fixed;
@@ -15,7 +46,7 @@
 }
 
 .navigation .menu-item{
-    background: #F6B882;
+    background: #F3A25F;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -109,4 +140,29 @@
 
 .info .extra-contest-info{
     display: none; /*#TODO: ask why do we need it*/
+}
+
+footer{
+    display: flex;
+    flex-direction: column-reverse;
+    flex-wrap: nowrap;
+
+    font-size: 1.5rem;
+    font-weight: 400;
+    text-align: center;
+
+    color: #ffffff;
+    background-color: #829A3D;
+}
+
+.developed-in-kio{
+    padding-bottom: 10px;
+}
+
+.developed-in-kio a{
+    color: #ffffff;
+}
+
+.copyright{
+    padding: 0.7rem 0 1rem 0;
 }

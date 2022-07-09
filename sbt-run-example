@@ -1,1 +1,2 @@
-sbt -jvm-debug 9999 run
+sbt -jvm-debug 9999 -java-home C:\"Program Files"\Java\jdk1.8.0_311 run
+http://localhost:9000/debug/enter
