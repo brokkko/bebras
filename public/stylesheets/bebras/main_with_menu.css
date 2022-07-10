@@ -34,7 +34,7 @@ header{
 .navigation nav{
     position: fixed;
     display: flex;
-    /*display: none;*/
+    display: none;
     flex-direction: column;
     align-content: space-around;
     align-items: center;
@@ -192,4 +192,53 @@ footer{
 
 .copyright{
     padding: 0.7rem 0 1rem 0;
+}
+
+/* Вход */
+.input-text{
+    font-size: 3rem;
+    border-width: 0.3vw;
+    border-radius: 1vw;
+    margin: 1rem 0 1rem 0;
+    font-weight: 400;
+}
+
+.controls{
+    font-size: 3.5rem;
+    margin: 2rem 0 0 0;
+}
+
+.form-button{
+    background-color: #829A3D;
+    color: white;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    text-decoration-line: unset;
+    font-size: 3.5rem;
+    font-style: normal;
+    font-weight: 700;
+    border-radius: 3px;
+    margin: 1rem 0 1rem 0;
+}
+.form-actions{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.controls small{
+    color: #DB2100;
+}
+
+p[enter_credentials]{
+    font-size: 2.5rem;
+    margin: 2rem 0 0 0;
+
+}
+
+/* Восстановление пароля */
+
+.warning{
+    font-size: 2.5rem;
+    margin: 2rem 0 0 0;
+    text-align: center;
 }
