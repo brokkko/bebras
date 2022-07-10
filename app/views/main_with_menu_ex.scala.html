@@ -12,6 +12,7 @@
         <div class='navigation'>
             <input type="checkbox" id="menu_button" class="menu-logo">
             <nav>
+                <label for="menu_button"></label>
                 <div class='contest-logo'></div>
                 @if(User.isAuthorized && User.currentRole != UserRole.ANON) {
                     <div class='user-name'>@User.current.getFullName</div>

@@ -1,7 +1,33 @@
-.body{
-    font-family: 'Inter', system-ui;
-    font-style: normal;
+/*html{*/
+/*    min-height: 100vh;*/
+/*}*/
+
+/*body{*/
+/*    font-family: 'Inter', system-ui;*/
+/*    font-style: normal;*/
+/*    overflow-x: hidden;*/
+
+/*    min-height: 100vh;*/
+/*    padding: 0;*/
+/*}*/
+
+html {
+    width: 100%;
+    height: 100%;
+    display: table;
 }
+
+body {
+    width: 100%;
+    display: table-cell;
+    position: relative;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
 
 header{
     text-align: center;
@@ -13,12 +39,14 @@ header{
     font-weight: 600;
     z-index: 101;
     position: fixed;
+    height: 4rem;
 
 }
 
 .menu-logo{
     /*background-image: url(""); !*TODO: ask where to put image*!*/
     width: 48px;
+    height: 48px;
 }
 
 
@@ -40,7 +68,8 @@ header{
     align-items: center;
     height: 100%;
     width: 80%;
-    margin-top: 6.2rem;
+    top: 4rem;
+    margin-top: 2rem;
     padding-top: 1.5rem;
     transition-duration: 200ms;
     background: #FFF0AE;
@@ -92,7 +121,8 @@ header{
     align-content: space-around;
     justify-content: center;
     align-items: center;
-    margin-top: 5.5rem;
+    margin-top: 3rem;
+    margin-bottom: 8rem;
 }
 
 .short-contests .info-box {
@@ -165,11 +195,17 @@ header{
 
 }
 
+
+
 .info .extra-contest-info{
     display: none; /*#TODO: ask why do we need it*/
 }
 
+
 footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
     display: flex;
     flex-direction: column-reverse;
     flex-wrap: nowrap;

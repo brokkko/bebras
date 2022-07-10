@@ -10,6 +10,6 @@
     @if(additionalMessage != null) {
         <p class="warning">@Messages.get(additionalMessage)</p>
     }
-    <p>@Messages.get("form.enter_credentials")</p>
+    <p enter_credentials>@Messages.get("form.enter_credentials")</p>
     @Forms.getLoginForm.formatExtended(form, routes.Registration.login(Event.currentId), false, "form.do_login")
 }
