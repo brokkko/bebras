@@ -40,7 +40,10 @@ header{
     z-index: 101;
     position: fixed;
     height: 4rem;
-
+    border-bottom: #646C37;
+    border-bottom-style: solid;
+    border-width: 2px;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
 }
 
 .menu-logo{
@@ -79,8 +82,9 @@ header{
 }
 
 
-#menu_button{
 
+#menu_button{
+    z-index: 150;
 }
 #menu_button:checked + nav{
     transform: translateX(50%);
@@ -277,4 +281,99 @@ p[enter_credentials]{
     font-size: 2.5rem;
     margin: 2rem 0 0 0;
     text-align: center;
+}
+
+@media only screen and (min-device-width: 800px){
+    html{overflow-x: hidden;}
+    body{overflow-x: hidden;}
+    footer{overflow-x: hidden}
+    .navigation nav{
+        display: flex;
+        max-width: 30vh;
+        min-width: 30vh;
+        border-right: #F5972D;
+        border-width: 1px;
+        border-right-style: solid;
+        margin-top: -1.1rem;
+
+    }
+
+    .navigation .menu-item{
+
+        margin: 0.1rem;
+        padding: 0.3rem 0.3rem;
+        width: 90%;
+        text-decoration-line: unset;
+        text-underline: none;
+        text-underline-style: none;
+        font-weight: 700;
+        font-size: 1rem;
+
+    }
+
+    .content{
+        margin-top: 2.5rem;
+        margin-left: 33vh;
+        padding: 0;
+        align-items: flex-start;
+        overflow-x: hidden;
+
+    }
+
+    header{
+        font-size: 1.8rem;
+        padding: 0.3rem 0 0 0;
+        color: #FFF0AE;
+        font-weight: 600;
+        z-index: 101;
+        position: fixed;
+        height: 2.5rem;
+        text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+        max-width: 100%;
+    }
+
+    .short-contests .info-box{
+        padding: 0;
+        width: 100%;
+    }
+
+    .short-contests .info-box .info {
+
+        margin: 1rem 1rem 1rem 1rem;
+        line-height: 2.5rem;
+        background-color: #FCEAA4;
+        border-radius: 5px;
+        padding: 1.5rem 2rem 2rem 2rem;
+        width: 100%;
+
+
+    }
+
+    footer{
+        flex-direction: row-reverse;
+        width: 100%;
+
+    }
+
+    .developed-in-kio{
+        padding-bottom: 7px;
+        font-size: 1rem;
+        align-self: flex-end;
+    }
+
+    .developed-in-kio a{
+        color: #ffffff;
+        font-size: 1rem;
+    }
+
+    .copyright{
+        margin-left: 5rem;
+        margin-right: 4rem;
+        padding: 0.7rem 0 0rem 0;
+        font-size: 1rem;
+    }
+
+    #menu_button{
+        display: none;
+    }
 }
