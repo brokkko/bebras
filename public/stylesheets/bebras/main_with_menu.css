@@ -33,6 +33,8 @@
     --footer-text-color: white;
     --footer-background-color: #829A3D;
 
+    --error-background: #ffd5bf;
+
     /*offsets---------------------------------*/
 
     --header-height: 25wh;
@@ -72,7 +74,6 @@ html, body {
     padding: 0;
 }
 
-
 header{
     text-align: center;
     background-color: var(--header-background-color);
@@ -104,6 +105,16 @@ header{
 #menu_button{
 
 }
+
+#menu_button:checked{
+    background-image: url("../../images/menuLogo/markcross.png");
+    width: 40px;
+    height: 41px;
+    margin-top: calc(var(--header-height)/3);
+    margin-left: 2.9rem;
+    transform: scale(1.7);
+}
+
 #menu_button:checked + nav{
     transform: translateX(0%);
     display: flex;
@@ -315,6 +326,18 @@ p[enter_credentials]{
     margin: 2rem 0 0 0;
     text-align: center;
     color: var(--contest-warning-color);
+}
+
+/* errors */
+.error-inline{
+    color: var(--contest-warning-color);
+    font-size: var(--enter-credentials-font-size);
+    margin: 2px 2px;
+}
+
+.error {
+    background-color: var(--error-background);
+    padding: 0 0.5rem 0 0.5rem;
 }
 
 /*@media only screen and (min-device-width: 800px){*/
