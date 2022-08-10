@@ -1,2 +1,3 @@
 @import url("old_desktop.css") (min-device-width: 800px);
 @import url("phone_version.css") (max-device-width: 799px);
+@import url("phone_contest.css") (max-device-width: 799px);
