@@ -1,3 +1,4 @@
+
 var dces2contest = {
     solutions_loaders_registry: {},
     register_solution_loader: function (problem_type, loader) {
@@ -31,6 +32,38 @@ var dces2contest = {
 };
 
 (function () {
+
+    // --------------------------------Mobile-------------------------------------------------
+
+    document.addEventListener("DOMContentLoaded", function(e) {
+        console.log("our code")
+
+        let buttons = document.getElementsByClassName("page-button")
+        buttons = Array.from(buttons);
+
+        buttons = buttons.filter(b => b.innerText.match(/^-?\d+$/));
+
+        let pages = document.getElementsByClassName("page");
+        pages = Array.from(pages);
+
+        for( let i=0; i< pages.length; i++) {
+            pages[i].classList.remove("hidden");
+            // console.log(pages[i].classList)
+            // result[i].addEventListener()
+        }
+
+        for( let i=0; i< buttons.length; i++) {
+            buttons[i].addEventListener("click", () => {
+                pages[i].scrollIntoView({behavior: "smooth"});
+            })
+
+        }
+
+
+    })
+
+
+    // ---------------------------------------------------------------------------------
 
     var contest_info = {
         submit_url: null,
