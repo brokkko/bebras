@@ -94,14 +94,14 @@ var dces2contest = {
         });
 
         //show a page
-        if (!scrolling_problem_change_regime()) {
-            var allPages = $('.page');
-            var $current_page = $(allPages.get(current_page));
-            var $new_page = $(allPages.get(page));
-            animate_substitute($current_page, $new_page, function () {
-                window.scrollTo(0, $selectors.offset().top - 10);
-            });
-        }
+        // if (!scrolling_problem_change_regime()) {
+        //     var allPages = $('.page');
+        //     var $current_page = $(allPages.get(current_page));
+        //     var $new_page = $(allPages.get(page));
+        //     animate_substitute($current_page, $new_page, function () {
+        //         window.scrollTo(0, $selectors.offset().top - 10);
+        //     });
+        // }
 
         current_page = page;
     }
@@ -117,7 +117,7 @@ var dces2contest = {
     }
 
     function scrolling_problem_change_regime() {
-        return $('.contest-is-scrolling').size() > 0;
+        // return $('.contest-is-scrolling').size() > 0;
     }
 
     //problem data

@@ -2,6 +2,6 @@
 
 }
 
-.swPage {
-    font-size: 3.5rem;
+.content-footer{
+    height: var(--footer-height);
 }
