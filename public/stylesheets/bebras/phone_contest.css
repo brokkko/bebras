@@ -2,8 +2,6 @@
 *{
     --task-font-size: 2.5rem;
 
-    --footer-height: 5vh;
-
 }
 
 .page{
@@ -16,4 +14,107 @@
 
 .content-footer{
     height: var(--footer-height);
+}
+
+.navigation{
+    z-index: 1;
+}
+
+
+/* ---------------- header ----------------- */
+.navigation .extra-navigation{
+    position: fixed;
+    display: flex;
+
+    font-size: var(--header-font-size);
+    width: 100vw;
+    height: var(--header-height);
+
+    background: var(--contest-background-color);
+}
+
+.navigation .extra-navigation .stop-contest-warning {
+    display: none;
+}
+
+#time-status-info{
+    margin: 0 1rem 0 0;
+}
+
+#time-info{
+    min-width: 0;
+    color: var(--contest-warning-color);
+}
+
+#stop-contest{
+    margin-left: 3.5rem;
+
+    background-color: var(--link-button-background-color);
+    color: var(--button-text-color);
+    padding: 1rem 1.5rem 1rem 1.5rem;
+    text-decoration-line: unset;
+    font-size: var(--info-box-button-font-size);
+    font-style: normal;
+    width: fit-content;
+    border-radius: 3px;
+}
+
+#contest-time{
+    padding: 1em 0 1em 1.5em;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    font-weight: 600;
+}
+
+/* ---------------- content ----------------- */
+
+.all-problems-in-pages{
+    display: flex;
+}
+
+.content{
+    justify-content: flex-start;
+    margin-top: 7vh ;
+}
+
+
+/* ---------------- footer ----------------- */
+
+.content-footer{
+    position: fixed;
+    width: 100vw;
+    overflow: scroll;
+    height: 7vh;
+    bottom: 0;
+
+
+    font-size: var(--footer-font-size);
+    font-weight: 400;
+    text-align: center;
+
+    background-color: var(--contest-background-color);
+
+}
+
+.page-selectors {
+    width: 100vw;
+    display: flex;
+    height: 7vh;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.page-selector{
+    background-color: var(--link-button-background-color);
+    color: var(--button-text-color);
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    margin: 1em 0.5em 1em 0.5em;
+    text-decoration-line: unset;
+    font-size: var(--info-box-button-font-size);
+    font-style: normal;
+    width: fit-content;
+    border-radius: 3px;
+    font-weight: 600;
 }
