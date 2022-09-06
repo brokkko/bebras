@@ -1,7 +1,56 @@
 
 *{
+    /*colors----------------------------------*/
+
+    --header-background-color: #829A3D;
+    --header-text-color: #FFF0AE;
+    --header-border-color: #646C37;
+
+    --contest-background-color: #FCEAA4;
+    --contest-warning-color: #A51E00;
+
+    --menu-background-color: #FFF0AE;
+    --menu-block-color: #F3A25F;
+    --menu-text-color: #5B5E35;
+
+    --defult-text-color: black;
+    --button-text-color: white;
+    --button-background-color: #829A3D;
+    --link-button-background-color: #5B5E35;
+    --links-text-color: #4d502d;
+
+    --footer-text-color: white;
+    --footer-background-color: #829A3D;
+
+    --error-background: #ffd5bf;
+
+    /*offsets---------------------------------*/
+
+    --header-height: 7vh;
+    --footer-height: 5vh;
+
+    /*fonts----------------------------------------*/
+
+    --header-font-size: 2.5rem;
+    --page-header-font-size: 3rem;
+    --page-second-header-font-size: 2.5rem;
+    --menu-button-font-size: 3rem;
+    --info-box-header-font-size: 2rem;
+    --info-box-text-font-size: 1.7rem;
+    --info-box-button-font-size: 2.2rem;
+    --footer-font-size: 1.5rem;
+    --input-font-size: 3rem;
+    --input-header-font-size: 3rem;
+    --form-button-font-size: 3.5rem;
+    --enter-credentials-font-size: 2.5rem;
+    --link-font-size: 2.5rem;
+
     --task-font-size: 2.5rem;
 
+}
+
+#menu_button{
+    display: none;
 }
 
 .page{
