@@ -51,17 +51,6 @@
 
 }
 
-#menu_button{
-    display: none;
-}
-
-.page{
-    font-size: 2.5rem;
-
-    height: calc(100vh - var(--footer-height));
-    width: 100vw;
-
-}
 
 .content-footer{
     height: var(--footer-height);
@@ -123,6 +112,28 @@
 
 .all-problems-in-pages{
     display: flex;
+}
+
+/**{*/
+/*    overflow-x: scroll;*/
+/*}*/
+
+.page{
+    font-size: 2.5rem;
+    /*margin-left: 1em;*/
+    /*margin-right: 1em;*/
+    /*width: calc(100vw - 2em);*/
+    height: calc(100vh - var(--footer-height) - var(--header-height));
+    width: 100vw;
+    overflow: scroll;
+}
+
+.problem{
+    /*margin-left: 1em;*/
+    /*margin-right: 1em;*/
+    /*width: calc(100vw - 2em);*/
+    width: 100vw;
+    /*display: flex;*/
 }
 
 .content{
