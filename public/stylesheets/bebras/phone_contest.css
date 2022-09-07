@@ -29,6 +29,8 @@
     --header-height: 7vh;
     --footer-height: 5vh;
 
+    --task-info-margin: 1.5vw;
+
     /*fonts----------------------------------------*/
 
     --header-font-size: 2.5rem;
@@ -125,9 +127,51 @@
 
 .content{
     justify-content: flex-start;
-    margin-top: 7vh ;
+    width: 100vw;
+
+    /*padding-left: 1vw;*/
+    /*padding-right: 1vw;*/
 }
 
+.task-title{
+    margin-left: var(--task-info-margin);
+}
+
+.task-statement {
+    margin-left: var(--task-info-margin);
+    margin-right: var(--task-info-margin);
+}
+
+.section-title{
+    margin-left: var(--task-info-margin);
+    margin-right: var(--task-info-margin);
+}
+
+.task-question{
+    margin-left: var(--task-info-margin);
+    margin-right: var(--task-info-margin);
+}
+
+.task-answers{
+    margin-left: var(--task-info-margin);
+    margin-right: var(--task-info-margin);
+}
+
+
+
+.big-font{
+    font-size: var(--info-box-text-font-size);
+}
+
+
+.bebras-task-answer-selector{
+    width: 10vw;
+}
+
+/* ---------------- images ----------------- */
+.float-left{
+    width: calc(100vw - 2*var(--task-info-margin) - 1vw);
+}
 
 /* ---------------- footer ----------------- */
 

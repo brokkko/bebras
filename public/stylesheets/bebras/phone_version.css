@@ -25,12 +25,12 @@
 
     /*offsets---------------------------------*/
 
-    --header-height: 5rem;
+    --header-height: 7vh;
 
 
     /*fonts----------------------------------------*/
 
-    --header-font-size: 2.3rem;
+    --header-font-size: 2.5rem;
     --page-header-font-size: 3rem;
     --page-second-header-font-size: 2.5rem;
     --menu-button-font-size: 3rem;
@@ -68,6 +68,7 @@ header{
     text-align: center;
     background-color: var(--header-background-color);
     width: 100vw;
+    height: var(--header-height);
 
     font-size: var(--header-font-size);
     color: var(--header-text-color);

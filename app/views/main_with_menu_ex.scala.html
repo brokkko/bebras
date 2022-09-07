@@ -10,7 +10,9 @@
             </header>
         }
         <div class='navigation'>
-            <input type="checkbox" id="menu_button" class="menu-logo">
+            @if(show_header) {
+                <input type="checkbox" id="menu_button" class="menu-logo">
+            }
             <nav>
                 <label for="menu_button"></label>
                 <div class='contest-logo'></div>
