@@ -36,26 +36,30 @@ var dces2contest = {
     // --------------------------------Mobile-------------------------------------------------
 
     document.addEventListener("DOMContentLoaded", function(e) {
-        console.log("our code")
 
-        let buttons = document.getElementsByClassName("page-button")
-        buttons = Array.from(buttons);
+        if(window.innerWidth<800){
+            console.log("our code")
 
-        buttons = buttons.filter(b => b.innerText.match(/^-?\d+$/));
+            let buttons = document.getElementsByClassName("page-button")
+            buttons = Array.from(buttons);
 
-        let pages = document.getElementsByClassName("page");
-        pages = Array.from(pages);
+            buttons = buttons.filter(b => b.innerText.match(/^-?\d+$/));
 
-        for( let i=0; i< pages.length; i++) {
-            pages[i].classList.remove("hidden");
+            let pages = document.getElementsByClassName("page");
+            pages = Array.from(pages);
+
+            for( let i=0; i< pages.length; i++) {
+                pages[i].classList.remove("hidden");
+            }
+
+            for( let i=0; i< buttons.length; i++) {
+                buttons[i].addEventListener("click", () => {
+                    pages[i].scrollIntoView({behavior: "smooth"});
+                })
+
+            }
         }
 
-        for( let i=0; i< buttons.length; i++) {
-            buttons[i].addEventListener("click", () => {
-                pages[i].scrollIntoView({behavior: "smooth"});
-            })
-
-        }
 
 
     })
@@ -124,15 +128,15 @@ var dces2contest = {
             $(domPageSelector).addClass('active');
         });
 
-        //show a page
-        // if (!scrolling_problem_change_regime()) {
-        //     var allPages = $('.page');
-        //     var $current_page = $(allPages.get(current_page));
-        //     var $new_page = $(allPages.get(page));
-        //     animate_substitute($current_page, $new_page, function () {
-        //         window.scrollTo(0, $selectors.offset().top - 10);
-        //     });
-        // }
+        // show a page
+        if (window.innerWidth >= 800 && !scrolling_problem_change_regime() ) {
+            var allPages = $('.page');
+            var $current_page = $(allPages.get(current_page));
+            var $new_page = $(allPages.get(page));
+            animate_substitute($current_page, $new_page, function () {
+                window.scrollTo(0, $selectors.offset().top - 10);
+            });
+        }
 
         current_page = page;
     }
@@ -148,6 +152,10 @@ var dces2contest = {
     }
 
     function scrolling_problem_change_regime() {
+        if(window.innerWidth>=800){
+            return $('.contest-is-scrolling').size() > 0;
+        }
+
         // return $('.contest-is-scrolling').size() > 0;
     }
 
