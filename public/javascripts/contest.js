@@ -48,8 +48,6 @@ var dces2contest = {
 
         for( let i=0; i< pages.length; i++) {
             pages[i].classList.remove("hidden");
-            // console.log(pages[i].classList)
-            // result[i].addEventListener()
         }
 
         for( let i=0; i< buttons.length; i++) {
