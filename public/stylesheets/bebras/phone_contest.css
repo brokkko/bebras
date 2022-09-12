@@ -344,7 +344,21 @@
 .task-statement img[title="U6"]{
     width: 40vw !important;
 }
+/* ---------------- explanation ----------------- */
+.task-explanation p {
+    font-size: 1vh;
+    margin: 0.5vh 1.5vh 0.5vh 1.5vh !important;
+    padding: 0 0 0 1.5vh;
+    /*text-align: center;*/
+}
 
+.task-explanation{
+    border-radius: 15px;
+    background-color: var(--footer-background-color);
+    width: 96vw;
+    margin: 0 2vw 0 2vw;
+    padding: 2vh 0 2vh 0;
+}
 /* ---------------- footer ----------------- */
 
 .content-footer{
