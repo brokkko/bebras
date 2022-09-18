@@ -60,7 +60,7 @@ function isMobile() {
 
     document.addEventListener("DOMContentLoaded", function(e) {
 
-        if(window.innerWidth<800){
+        if(isMobile()){
             console.log("our code")
 
             let buttons = document.getElementsByClassName("page-button")
@@ -76,7 +76,7 @@ function isMobile() {
             }
             let prevButtonPos = buttons[0].scrollLeft;
 
-            for( let i=0; i< buttons.length; i++) {
+            for( let i=0; i < buttons.length; i++) {
                 buttons[i].addEventListener("click", () => {
                     for (let elem of buttons) {
                         if(elem.classList.contains("active-button")) {
@@ -168,7 +168,7 @@ function isMobile() {
         });
 
         // show a page
-        if (window.innerWidth >= 800 && !scrolling_problem_change_regime() ) {
+        if (!isMobile() && !scrolling_problem_change_regime() ) {
             var allPages = $('.page');
             var $current_page = $(allPages.get(current_page));
             var $new_page = $(allPages.get(page));
@@ -191,7 +191,7 @@ function isMobile() {
     }
 
     function scrolling_problem_change_regime() {
-        if(window.innerWidth>=800){
+        if(!isMobile()){
             return $('.contest-is-scrolling').size() > 0;
         }
 
