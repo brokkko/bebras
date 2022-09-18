@@ -31,6 +31,29 @@ var dces2contest = {
     }
 };
 
+function scrollTo(element, to, duration) {
+    if (duration <= 0) return;
+    let difference = to - element.scrollLeft;
+    let perTick = difference / duration * 10;
+
+    setTimeout(function() {
+        element.scrollLeft = element.scrollLeft + perTick;
+        if (element.scrollLeft === to) return;
+        scrollTo(element, to, duration - 10);
+    }, 10);
+}
+
+function isMobile() {
+    return navigator.userAgent.match(/Android/i)
+        || navigator.userAgent.match(/webOS/i)
+        || navigator.userAgent.match(/iPhone/i)
+        || navigator.userAgent.match(/iPad/i)
+        || navigator.userAgent.match(/iPod/i)
+        || navigator.userAgent.match(/BlackBerry/i)
+        || navigator.userAgent.match(/Windows Phone/i);
+}
+
+
 (function () {
 
     // --------------------------------Mobile-------------------------------------------------
@@ -51,9 +74,25 @@ var dces2contest = {
             for( let i=0; i< pages.length; i++) {
                 pages[i].classList.remove("hidden");
             }
+            let prevButtonPos = buttons[0].scrollLeft;
 
             for( let i=0; i< buttons.length; i++) {
                 buttons[i].addEventListener("click", () => {
+                    for (let elem of buttons) {
+                        if(elem.classList.contains("active-button")) {
+                            prevButtonPos = elem.scrollLeft;
+                            elem.classList.remove("active-button");
+                        }
+                    }
+                    buttons[i].classList.add("active-button");
+
+                    let leftPos = buttons[i].offsetLeft;
+                    leftPos -= window.innerWidth/2;
+                    setTimeout(()=>scrollTo(document.getElementsByClassName('page-selectors').item(0), leftPos, 500), 800)
+
+
+
+
                     pages[i].scrollIntoView({behavior: "smooth"});
                 })
 
