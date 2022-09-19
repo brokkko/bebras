@@ -63,6 +63,22 @@ function isMobile() {
         if(isMobile()){
             console.log("our code")
 
+            //button in contest
+            let resultsShown = false;
+            let contestResults = document.getElementById('contest-results');
+            let contestButton = document.getElementsByClassName('expand-results').item(0);
+            contestButton.addEventListener('click', (e)=>{
+                console.log(resultsShown)
+                if (resultsShown){
+                    contestResults.classList.remove('contest-results-show');
+                    resultsShown = false;
+                } else {
+                    contestResults.classList.add('contest-results-show');
+                    resultsShown = true
+                }
+
+            })
+
             let buttons = document.getElementsByClassName("page-button")
             buttons = Array.from(buttons);
 

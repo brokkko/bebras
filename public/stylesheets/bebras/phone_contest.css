@@ -428,6 +428,33 @@
     margin: 0 2vw 0 2vw;
     padding: 2vh 0 2vh 0;
 }
+
+#contest-finished-info{
+    margin-top: var(--header-height);
+    word-break: break-all;
+    justify-content: space-between;
+}
+
+#contest-finished-info p{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
+.extra-navigation nav{
+    z-index: 1002;
+    display: flex;
+    position: fixed;
+    top: 0;
+    transform: translate(0, -8vh);
+    width: 100vw;
+    height: var(--header-height);
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
 /* ---------------- footer ----------------- */
 
 .content-footer{
@@ -472,14 +499,3 @@
     background-color: var(--header-background-color);
 }
 
-#contest-finished-info{
-    margin-top: var(--header-height);
-    word-break: break-all;
-    justify-content: space-between;
-}
-
-#contest-finished-info p{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}

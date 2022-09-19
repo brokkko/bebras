@@ -50,7 +50,10 @@
         </div>
     </div>
     @if(status != "going" && !show_menu) {
-        <nav><a class='menu-item' href="@routes.Application.enter(Event.currentId)">Назад</a></nav>
+        <nav>
+            <input type="checkbox"  class="expand-results">
+            <a class='menu-item contest-back-button' href="@routes.Application.enter(Event.currentId)">Назад</a>
+        </nav>
     }
 } {
     <div id='all-problems-in-pages'>
