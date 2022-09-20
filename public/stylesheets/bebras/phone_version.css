@@ -282,7 +282,7 @@ header{
 
 }
 
-.link-button{
+.link-button, .additional-navigation a{
     background-color: var(--link-button-background-color);
     color: var(--button-text-color);
     padding: 0.5rem 1rem 0.5rem 1rem;
@@ -292,6 +292,17 @@ header{
     width: fit-content;
     font-weight: 600;
     border-radius: 3px;
+    white-space: nowrap;
+}
+
+.additional-navigation ul{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    height: 5vh;
+    gap: 2rem;
+    margin-left: 2rem;
+    align-items: center;
 }
 
 .info .extra-contest-info{
