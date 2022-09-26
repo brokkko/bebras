@@ -76,7 +76,8 @@
     width: 100vw;
     height: var(--header-height);
 
-    background: var(--contest-background-color);
+    /*background: var(--contest-background-color);*/
+
 }
 
 .navigation .extra-navigation .stop-contest-warning {

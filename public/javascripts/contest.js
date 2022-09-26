@@ -63,6 +63,18 @@ function isMobile() {
         if(isMobile()){
             console.log("our code")
 
+            // let copyrightButton = document.querySelector('.copyright-logo')
+            // copyrightButton.onClick = () => {
+            //     let footer = document.querySelector('footer')
+            //     console.log('footer clicked')
+            //     if (footer.classList.contains('footer-hidden')) {
+            //         footer.classList.remove('footer-hidden')
+            //     }
+            //     else{
+            //         footer.classList.add('footer-hidden')
+            //     }
+            // }
+
             //button in contest
             let resultsShown = false;
             let contestResults = document.getElementById('contest-results');

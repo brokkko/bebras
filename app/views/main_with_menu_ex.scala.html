@@ -6,7 +6,7 @@
     <div class="wrapper@if(!menu_to_left){ menu-to-right}">
         @if(show_header) {
             <header>
-                <div class="header-text">@Html(Event.current.getHtmlTitle)</div>
+                <div class="header-text">Бобёр 2022</div>
             </header>
         }
         <div class='navigation'>
@@ -49,10 +49,13 @@
     </div>
     @if(show_footer) {
         <footer>
+            <button class='copyright-logo'></button>
+            <div class="footer-text">
             <p class='developed-in-kio'>Разработано в <a target="blank" href="http://ipo.spb.ru">АНО «КИО»</a></p>
             <p class="copyright">
                 © 2013–2021 @Event.getOrganizationName. Все права защищены <br>@*·*@ Перепечатка материалов с разрешения администрации сайта
             </p>
+            </div>
         </footer>
     }
 }
