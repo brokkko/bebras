@@ -56,6 +56,7 @@ body {
     width: 100%;
     display: table-cell;
     position: relative;
+    background: linear-gradient(171.99deg, #FFFA8A 6.66%, #FFFCBE 93.61%);
 }
 
 html, body {
@@ -66,11 +67,12 @@ html, body {
 header{
     position: fixed;
     text-align: center;
-    background-color: var(--header-background-color);
     width: 100vw;
     height: var(--header-height);
 
-    font-size: var(--header-font-size);
+    background: transparent;
+
+    font-size: 4.5rem;
     color: var(--header-text-color);
     font-weight: 600;
     z-index: 101;
@@ -94,6 +96,12 @@ header{
 
 .header-text{
     margin-left: calc(36px + 3.2rem);
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 400;
+    line-height: 43px;
+    text-align: center;
+    color: #FFFFFF;
 
 }
 
@@ -134,6 +142,9 @@ header{
 #menu_button:checked + nav{
     transform: translateX(0%);
     display: flex;
+    background: linear-gradient(167.82deg, #FFE34F 11.05%, #FFFDD2 100%);
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.15), 5px 5px 5px rgba(0, 0, 0, 0.25);
+    border-bottom-right-radius: 2rem;
 }
 
 .content h1{
@@ -172,7 +183,6 @@ header{
 }
 
 .navigation .menu-item{
-    background: var(--menu-block-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -192,6 +202,10 @@ header{
     font-style: normal;
     font-weight: 700;
     color: var(--menu-text-color);
+
+    background: linear-gradient(93.79deg, rgba(255, 107, 0, 0.5) 0%, rgba(255, 168, 0, 0.5) 57.81%, rgba(255, 199, 0, 0.5) 100%);
+    opacity: 0.74;
+    box-shadow: 5px 5px 10px #8F875B;
 }
 
 .content{
@@ -330,15 +344,21 @@ footer{
     bottom: 0;
     width: 100%;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: row;
     flex-wrap: nowrap;
-
     font-size: var(--footer-font-size);
     font-weight: 400;
     text-align: center;
-
+    font-family: 'Rubik', serif;
+    font-style: normal;
+    border-top-left-radius: 11rem;
     color: var(--footer-text-color);
-    background-color: var(--footer-background-color);
+    background: linear-gradient(271.36deg, #C7CB12 0%, #D3D720 91.63%);
+    box-shadow: -10px -10px 20px rgb(112 119 67 / 20%), -5px -5px 10px rgb(112 119 67 / 60%);
+    justify-content: space-around;
+    align-items: center;
+    transition-duration: 500ms;
+    transition-timing-function: ease-in-out;
 }
 
 .footer-hidden{
@@ -367,6 +387,10 @@ footer{
 
 .developed-in-kio{
     padding-bottom: 10px;
+    margin-left: 3rem;
+    font-family: 'Rubik';
+    font-style: normal;
+    text-align: left;
 }
 
 .developed-in-kio a{
@@ -375,6 +399,10 @@ footer{
 
 .copyright{
     padding: 0.7rem 0 1rem 0;
+    margin-left: 3rem;
+    font-family: 'Rubik';
+    font-style: normal;
+    text-align: left;
 }
 
 /* Вход */
@@ -401,17 +429,41 @@ footer{
     font-size: var(--input-header-font-size);
     margin: 2rem 0 0 0;
 }
+.controls label{
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 300;
+    line-height: 36px;
+    color: rgba(0, 0, 0, 0.5);
+}
 
 .form-button{
-    background-color: var(--button-background-color);
-    color: var(--button-text-color);
-    padding: 0.5rem 1rem 0.5rem 1rem;
+    padding: 0.5em 1em 0.5em 1em;
     text-decoration-line: unset;
     font-size: var(--form-button-font-size);
-    font-style: normal;
-    font-weight: 700;
-    border-radius: 3px;
     margin: 1rem 0 1rem 0;
+
+    background: linear-gradient(89.51deg, rgba(198, 215, 1, 0.8) 15.28%, rgba(255, 199, 0, 0.8) 107.32%);
+    box-shadow: 10px 10px 20px rgba(112, 119, 67, 0.2), 5px 5px 10px rgba(112, 119, 67, 0.6);
+    border-radius: 60px;
+
+    border-style: none !important;
+
+    font-family: Rubik, serif;
+    font-size: 4em;
+    font-weight: 400;
+    line-height: 36px;
+    letter-spacing: 0em;
+    text-align: center;
+
+
+
+    font-style: normal;
+
+    text-align: center;
+    text-transform: lowercase;
+
+    color: #FFFFFF;
 }
 .form-actions{
     display: flex;
@@ -421,11 +473,17 @@ footer{
 
 .controls small{
     color: var(--contest-warning-color);
+    display: none;
 }
 
 p[enter_credentials]{
     font-size: var(--enter-credentials-font-size);
     margin: 2rem 0 0 0;
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 300;
+    line-height: 36px;
+    color: rgba(0, 0, 0, 0.5);
 
 }
 
