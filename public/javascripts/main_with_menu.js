@@ -30,10 +30,12 @@ $(function () {
     $window.resize(adjust_contents_size);
 
 
+    let footer = document.querySelector('footer')
+
     let copyrightButton = document.querySelector('.copyright-logo')
     console.log(copyrightButton)
     copyrightButton.addEventListener('click', () => {
-        let footer = document.querySelector('footer')
+
         console.log('footer clicked')
         if (footer.classList.contains('footer-hidden')) {
             footer.classList.remove('footer-hidden')

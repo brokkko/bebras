@@ -145,6 +145,9 @@ header{
     background: linear-gradient(167.82deg, #FFE34F 11.05%, #FFFDD2 100%);
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.15), 5px 5px 5px rgba(0, 0, 0, 0.25);
     border-bottom-right-radius: 2rem;
+
+
+
 }
 
 .content h1{
@@ -190,7 +193,7 @@ header{
     z-index: 100;
     height: fit-content;
     width: 80%;
-    border-radius: 3px;
+
 
     margin: 0.5rem 0.5rem;
     padding: 1rem 1rem;
@@ -203,9 +206,9 @@ header{
     font-weight: 700;
     color: var(--menu-text-color);
 
-    background: linear-gradient(93.79deg, rgba(255, 107, 0, 0.5) 0%, rgba(255, 168, 0, 0.5) 57.81%, rgba(255, 199, 0, 0.5) 100%);
+    /*background: linear-gradient(93.79deg, rgba(255, 107, 0, 0.5) 0%, rgba(255, 168, 0, 0.5) 57.81%, rgba(255, 199, 0, 0.5) 100%);*/
     opacity: 0.74;
-    box-shadow: 5px 5px 10px #8F875B;
+    /*box-shadow: 5px 5px 10px #8F875B;*/
 }
 
 .content{
@@ -218,6 +221,10 @@ header{
     align-items: center;
     margin-top: calc(var(--header-height));
     margin-bottom: 8rem;
+}
+
+.content:has(.info-box){
+    align-items: flex-start;
 }
 
 /*links*/
@@ -340,7 +347,7 @@ header{
 }
 
 footer{
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100%;
     display: flex;

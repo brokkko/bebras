@@ -6,8 +6,8 @@
 @main_with_menu(Event.current.getTitle)(List()) { } {
     <h1>Выберите вид регистрации</h1>
     @for((role, roleIndex) <- registerRole.getMayRegister.zipWithIndex) {
-        <div class='info-box'>
-            <div class='info'>
+        <div class='info-box info-box-registration'>
+            <div class='info-registration'>
                 <p class='header'><a href="@if(byUser) {
                     @routes.Registration.roleRegistrationByUser(event.getId, role)
                 } else {
