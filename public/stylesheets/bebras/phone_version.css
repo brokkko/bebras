@@ -224,11 +224,56 @@ header{
     align-items: center;
     margin-top: calc(var(--header-height));
     margin-bottom: 8rem;
+    color: rgba(0, 0, 0, 0.8);
+    font-family: 'Rubik';
 }
 
 .content:has(.info-box){
     align-items: flex-start;
 }
+
+.problem-index {
+    font-size: 4rem;
+    font-weight: 400 !important;
+    line-height: 47px;
+    color: #7F9200;
+    margin-top: 1rem;
+}
+.problem-title {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 4rem;
+    font-weight: 400;
+}
+.problem-country {
+    font-size: 3rem !important;
+    color: rgba(0, 0, 0, 0.4);
+}
+.section-title {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.problem-task-info{
+    display: flex;
+    flex-direction: column;
+    margin-left: 2rem;
+    font-family: 'Rubik';
+    font-style: normal;
+    gap: 1rem;
+}
+.problem-task-score{
+    margin-top: 2rem;
+}
+.problem-scores{
+    font-weight: 300;
+    font-size: 60px !important;
+    line-height: 36px;
+    text-align: right;
+    color: rgba(255, 153, 0, 0.8);
+    margin-left: 8vw;
+    margin-right: 8vw;
+}
+
 
 /*links*/
 
@@ -245,10 +290,15 @@ header{
 /*----*/
 
 .info-box{
-    display: flex;
-    font-size: var(--info-box-header-font-size);
-    height: fit-content;
-    flex-direction: column;
+    font-size: var(--task-text-font-size);
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 200;
+    line-height: 30px;
+    color: rgba(0, 0, 0, 0.6);
+    margin-left: 1rem !important;
+    margin-right: 1rem !important;
+    margin-top: 2rem !important;
 }
 
 .results-and-description{
@@ -279,7 +329,7 @@ header{
     color: var(--links-text-color);
 }
 
-.info-box {
+.short-contests .info-box {
     display: flex;
     overflow-wrap: break-word;
     flex-direction: column;
@@ -288,11 +338,16 @@ header{
     align-items: flex-start;
     margin: 1rem 1rem;
     line-height: 2.5rem;
-    background-color: var(--contest-background-color);
-    border-radius: 5px;
     padding: 1.5rem 2rem 2rem 2rem;
     width: 80vw;
     max-width: 74ch;
+    border-radius: 40px;
+
+    background: linear-gradient(93.79deg, rgba(255, 153, 0, 0.2) 0%, rgba(255, 230, 0, 0.2) 100%);
+    color: rgba(0, 0, 0, 0.6);
+    box-shadow: 5px 5px 10px rgba(180, 156, 93, 0.2), 10px 10px 20px rgba(180, 156, 93, 0.7);
+    font-family: 'Rubik';
+    font-style: normal;
 
 }
 
@@ -328,6 +383,19 @@ header{
     display: flex;
     align-items: center;
     z-index: -1;
+}
+.info-box-registration .info-registration .header{
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 45px;
+    line-height: 45px;
+    /* text-transform: lowercase; */
+    color: rgba(0, 0, 0, 0.6);
+}
+.info-box-registration .info-registration a{
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.6);
 }
 
 .info-box .info a{
@@ -367,16 +435,20 @@ header{
 }
 
 .link-button, .additional-navigation a{
-    background-color: var(--link-button-background-color);
     color: var(--button-text-color);
     padding: 0.5rem 1rem 0.5rem 1rem;
     text-decoration-line: unset;
-    font-size: var(--info-box-button-font-size);
-    font-style: normal;
     width: fit-content;
-    font-weight: 600;
-    border-radius: 3px;
-    white-space: nowrap;
+    background: linear-gradient(89.51deg, #BFCF01 15.28%, #FFC700 107.32%);
+    box-shadow: 10px 10px 20px rgb(112 119 67 / 20%), 5px 5px 10px rgb(112 119 67 / 60%);
+    border-radius: 60px;
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 35px;
+    line-height: 36px;
+    text-align: center;
+    text-transform: lowercase;
 }
 
 .additional-navigation ul{
@@ -568,8 +640,46 @@ p[enter_credentials]{
 }
 
 .error {
-    background-color: var(--error-background);
     padding: 0 0.5rem 0 0.5rem;
+    font-family: 'Rubik';
+    font-style: normal;
+}
+
+
+.search-applications{
+    display: flex;
+    flex-direction: column;
+}
+
+.search-applications .application-code {
+    background: #FFFBAA;
+    box-shadow: 1px 1px 2px rgb(255 255 187 / 30%), -1px -1px 2px rgb(230 226 153 / 50%), inset -5px 5px 10px rgb(230 226 153 / 20%), inset 5px -5px 10px rgb(230 226 153 / 20%), inset -5px -5px 10px rgb(255 255 187 / 90%), inset 5px 5px 13px rgb(230 226 153 / 90%);
+    border-radius: 100px;
+    width: 70vw;
+    height: 5vh;
+    border-style: none;
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 50px;
+    line-height: 36px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.search-applications input[type=submit] {
+    font-size: 3em;
+    margin: 1em 0;
+    background: linear-gradient(89.51deg, rgba(179, 194, 1, 0.7) 15.28%, rgba(236, 184, 0, 0.7) 107.32%);
+    border-radius: 100px;
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 400;
+    line-height: 36px;
+    text-align: center;
+    text-transform: lowercase;
+    color: #FFFFFF;;
+    border-style: none;
+    height: 5vh;
 }
 
 

@@ -71,12 +71,10 @@
 .navigation .extra-navigation{
     position: fixed;
     display: flex;
-
     font-size: var(--header-font-size);
     width: 100vw;
     height: var(--header-height);
-
-    /*background: var(--contest-background-color);*/
+    justify-content: space-between;
 
 }
 
@@ -90,21 +88,23 @@
 
 #time-info{
     min-width: 0;
-    color: var(--contest-warning-color);
     margin-right: 1.5rem;
 }
 
 #stop-contest{
-    margin-left: 3.5rem;
-
-    background-color: var(--link-button-background-color);
-    color: var(--button-text-color);
+    margin-left: 6rem;
     padding: 1rem 1.5rem 1rem 1.5rem;
     text-decoration-line: unset;
-    font-size: var(--info-box-button-font-size);
-    font-style: normal;
     width: fit-content;
-    border-radius: 3px;
+    border: 2px solid rgba(0, 0, 0, 0.4);
+    filter: drop-shadow(5px 5px 10px rgba(112, 119, 67, 0.2));
+    border-radius: 60px;
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 400;
+    text-align: center;
+    text-transform: lowercase;
+    color: rgba(0, 0, 0, 0.4);
 }
 
 #contest-time{
@@ -178,7 +178,11 @@
 
 .link-button{
     font-size: 1.5rem !important;
+    font-weight: 400;
     margin: 1rem 1rem 1rem 1rem !important;
+    background: linear-gradient(89.51deg, #BFCF01 15.28%, #FFC700 107.32%);
+    box-shadow: 10px 10px 20px rgb(112 119 67 / 20%), 5px 5px 10px rgb(112 119 67 / 60%);
+    border-radius: 60px;
 }
 
 .answer-sending-info{

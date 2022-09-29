@@ -1,12 +1,18 @@
 @(index:String, scores:Int, showSolutions:Boolean, title:String, country:String, countryName:String, statement:String, problemScript:String, images:java.util.Map[String, String], explanation:String, informatics:String, height:Int, uniqueId:String, correctAnswer:String, taskStatementCssClass:String)
 @import scala.List
 <div class='task-title section-title'>
-    <span class='problem-index'>Задача @index.</span>
-    <span class='problem-title'>@Html(title)</span>
-    @if(scores != 0) {
+    <div class="problem-task-score">
+    </div>
+    <div class="problem-task-info">
+        <span class='problem-index'>Задача @index.</span>
+        <span class='problem-title'>@Html(title)</span>
+        <span class='problem-country'><img alt="@country" src="@routes.Assets.at("images/flags/" + country + ".png")">@countryName</span>
+    </div>
+    <div class="problem-task-score">
+        @if(scores != 0) {
         <span class='problem-scores'>@scores&nbsp;баллов</span>
-    }
-    <span class='problem-country'><img alt="@country" src="@routes.Assets.at("images/flags/" + country + ".png")">@countryName</span>
+        }
+    </div>
 </div>
 <div class='dyn-type'>@uniqueId</div>
 <div class='task-statement @taskStatementCssClass'>

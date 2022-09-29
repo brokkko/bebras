@@ -2,12 +2,16 @@
 @import scala.List
 @import models.newproblems.bbtc.BBTCProblem
 <div class='task-title section-title'>
-    <span class='problem-index'>Задача @index.</span>
-    <span class='problem-title'>@Html(title)</span>
-    @if(scores != 0) {
-        <span class='problem-scores'>@scores&nbsp;баллов</span>
-    }
-    <span class='problem-country'><img alt="@country" src="@routes.Assets.at("images/flags/" + country + ".png")">@countryName</span>
+    <div class="problem-task-info">
+        <span class='problem-index'>Задача @index.</span>
+        <span class='problem-title'>@Html(title)</span>
+        <span class='problem-country'><img alt="@country" src="@routes.Assets.at("images/flags/" + country + ".png")">@countryName</span>
+    </div>
+    <div class="problem-task-score">
+        @if(scores != 0) {
+            <span class='problem-scores'>@scores&nbsp;баллов</span>
+        }
+    </div>
 </div>
 <div class='task-statement'>
     @Html(statement)
