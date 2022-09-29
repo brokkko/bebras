@@ -141,13 +141,8 @@ header{
 
 #menu_button:checked + nav{
     transform: translateX(0%);
-    display: flex;
-    background: linear-gradient(167.82deg, #FFE34F 11.05%, #FFFDD2 100%);
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.15), 5px 5px 5px rgba(0, 0, 0, 0.25);
+
     border-bottom-right-radius: 2rem;
-
-
-
 }
 
 .content h1{
@@ -186,6 +181,8 @@ header{
     background: var(--menu-background-color);
     font-size: var(--menu-button-font-size);
     font-weight: 700;
+    background: linear-gradient(167.82deg, #FFE34F 11.05%, #FFFDD2 100%);
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.15), 5px 5px 5px rgba(0, 0, 0, 0.25);
 }
 
 .navigation .menu-item{
@@ -214,6 +211,23 @@ header{
     /*box-shadow: 5px 5px 10px #8F875B;*/
 }
 
+span.menu-item{
+    width: 100%;
+    padding-left: 8vw !important;
+    padding-right: 6vw !important;
+    background: linear-gradient(93.79deg, rgba(255, 107, 0, 0.6) 0%, rgba(255, 168, 0, 0.6) 57.81%, rgba(255, 199, 0, 0.6) 100%);
+    opacity: 0.74;
+    box-shadow: 5px 5px 10px #8f875b;
+    border-bottom-right-radius: 10rem;
+    border-top-right-radius: 10rem;
+    height: 8vh;
+    display: flex;
+    align-items: center;
+    align-self: flex-start;
+    margin-left: -1vw !important;
+    flex-grow: 0.06;
+}
+
 .content{
     display: flex;
     width: 100%;
@@ -228,7 +242,7 @@ header{
     font-family: 'Rubik';
 }
 
-.content:has(.info-box){
+.content:has(.info-box-registration){
     align-items: flex-start;
 }
 
@@ -350,6 +364,13 @@ header{
     font-style: normal;
 
 }
+
+.short-contests{
+    display: flex;
+    gap: 2vh;
+    flex-direction: column;
+}
+
 
 .info-box-registration{
     display: flex;

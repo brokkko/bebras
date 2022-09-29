@@ -34,16 +34,19 @@ $(function () {
 
     let copyrightButton = document.querySelector('.copyright-logo')
     console.log(copyrightButton)
-    copyrightButton.addEventListener('click', () => {
+    if (copyrightButton){
+        copyrightButton.addEventListener('click', () => {
 
-        console.log('footer clicked')
-        if (footer.classList.contains('footer-hidden')) {
-            footer.classList.remove('footer-hidden')
-        }
-        else{
-            footer.classList.add('footer-hidden')
-        }
-    })
+            console.log('footer clicked')
+            if (footer.classList.contains('footer-hidden')) {
+                footer.classList.remove('footer-hidden')
+            }
+            else{
+                footer.classList.add('footer-hidden')
+            }
+        })
+    }
+
 
 
 
