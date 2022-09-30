@@ -167,7 +167,7 @@ header{
 .navigation nav{
     position: fixed;
     display: flex;
-    transform: translateX(-100%);
+    transform: translateX(-110%);
     flex-direction: column;
     align-content: space-around;
     align-items: center;
@@ -246,6 +246,35 @@ span.menu-item{
     align-items: flex-start;
 }
 
+/*-----------------start contest--------------------*/
+
+.content:has(.start-contest-marker){
+    justify-content: flex-start;
+    display: flex;
+    width: 95vw;
+    margin-left: 5vw;
+    align-items: flex-start;
+    gap: 3vh;
+}
+
+.content:has(.start-contest-marker) .warning{
+    align-items: flex-start !important;
+    text-align: left;
+    padding: 0;
+    margin: 0;
+}
+
+.start-contest-marker{
+    /*margin: 0 !important;*/
+    /*padding: 0 !important;*/
+    text-align: left !important;
+}
+
+.content:has(.start-contest-marker) .contest-select{
+    align-self: center !important;
+}
+
+/*--------------------------------------------*/
 .problem-index {
     font-size: 4rem;
     font-weight: 400 !important;

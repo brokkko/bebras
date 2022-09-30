@@ -6,7 +6,7 @@
 @import scala.List
 @main_with_menu(Event.current.getTitle)(List(new ResourceLink("contests_list.css"), CssJsWidget.get("start_contest"))) { } {
     @defining(Contest.current) { contest =>
-        <h1>Подтвердите, что собираетесь начать</h1>
+        <h1 class="start-contest-marker">Подтвердите, что собираетесь начать</h1>
         <p>Вы собираетесь начать соревнование <b>@contest.getName</b>.</p>
         @if(contest.getDescription != null) {
             <p>@contest.getDescription</p>

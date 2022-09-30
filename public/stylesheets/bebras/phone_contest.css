@@ -419,6 +419,17 @@
     justify-content: center;
 }
 
+.task-statement img{
+    width: 100%;
+}
+
+.task-statement img[src="/~res/lCC-_c7Ek6fmbvFc0tu-1603043470635.png"]{
+    padding-bottom: 80px;
+    width: 120%;
+    margin-left: -100px;
+    padding-left: 73px;
+}
+
 .task-statement img[title="Cogito ergo sum"]{
     width: 70vw !important;
 }
@@ -486,6 +497,12 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
+
+    background: linear-gradient(91.76deg, #9EB410 0%, #AFC715 55.66%, #B9D213 90.57%);
+    box-shadow: 10px 10px 20px rgb(112 119 67 / 20%), 5px 5px 10px rgb(112 119 67 / 60%);
+    border-bottom-right-radius: 12rem;
+    border-bottom: 2px var(--header-border-color) solid;
+    text-shadow: 0 4px 4px rgb(0 0 0 / 10%);
 }
 /* ---------------- footer ----------------- */
 
