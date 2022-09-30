@@ -703,5 +703,41 @@ p[enter_credentials]{
     height: 5vh;
 }
 
+.section-title {
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 50px !important;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.task-statement, .task-question{
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.problem .clear {
+    clear: both;
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 50px !important;
+    /* line-height: 24px; */
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.page-button {
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+
+
 
 
