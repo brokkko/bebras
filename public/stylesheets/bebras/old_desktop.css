@@ -1,5 +1,9 @@
 /* text on page */
 
+.expand-results{
+    display: none;
+}
+
 h1 {
     font-size: 2em;
     margin: 0.5em 0;
